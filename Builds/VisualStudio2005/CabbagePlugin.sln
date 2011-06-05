@@ -1,0 +1,19 @@
+Microsoft Visual Studio Solution File, Format Version 8.00
+# Visual C++ Express 2005
+Project("{2E8C193A-90FB-1A45-D026-FC1C12941D40}") = "CabbagePlugin", "CabbagePlugin.vcproj", "{BC88ACAA-D3F3-A434-D088-FC1432E09485}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{BC88ACAA-D3F3-A434-D088-FC1432E09485}.Debug|Win32.ActiveCfg = Debug|Win32
+		{BC88ACAA-D3F3-A434-D088-FC1432E09485}.Debug|Win32.Build.0 = Debug|Win32
+		{BC88ACAA-D3F3-A434-D088-FC1432E09485}.Release|Win32.ActiveCfg = Release|Win32
+		{BC88ACAA-D3F3-A434-D088-FC1432E09485}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

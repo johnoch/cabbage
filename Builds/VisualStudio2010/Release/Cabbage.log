@@ -1,0 +1,33 @@
+﻿Build started 19/05/2011 15:32:56.
+     1>Project "C:\MyDocuments\My Dropbox\CabbageApril2011\Builds\VisualStudio2010\Cabbage.vcxproj" on node 2 (build target(s)).
+     1>InitializeBuildStatus:
+         Creating ".\Release\Cabbage.unsuccessfulbuild" because "AlwaysCreate" was specified.
+       ClCompile:
+         C:\Program Files\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /IC:\MyDocuments\SourceCode\Csound5\csound5\H /I"C:\MyDocuments\My Dropbox\ASIOSDK2" /I"C:\MyDocuments\My Dropbox\vstsdk2.4" /Zi /nologo /W4 /WX- /Ox /Oy- /GL /D WIN32 /D _WINDOWS /D NDEBUG /D JUCER_VS2010_78A501D=1 /D MSVC /D Cabbage_Build_Standalone /D Cabbage_Named_Pipe /D USE_DOUBLE /D _MBCS /Gm- /EHsc /MT /GS /fp:precise /Zc:wchar_t /Zc:forScope /GR /Fo".\Release\\" /Fd".\Release\vc100.pdb" /Gd /TP /analyze- /errorReport:prompt ..\..\Source\CabbagePluginEditor.cpp
+         CabbagePluginEditor.cpp
+       Link:
+         C:\Program Files\Microsoft Visual Studio 10.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:".\Release\Cabbage.exe" /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /ManifestFile:".\Release\Cabbage.exe.intermediate.manifest" /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /DEBUG /PDB:".\Release\Cabbage.pdb" /SUBSYSTEM:WINDOWS /OPT:REF /OPT:ICF /LTCG /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:".\Release\Cabbage.lib" /MACHINE:X86 .\Release\CabbageGUIClass.obj
+         .\Release\CabbagePluginEditor.obj
+         .\Release\CabbagePluginProcessor.obj
+         .\Release\CabbageStandaloneDialog.obj
+         .\Release\StandaloneFilterApp.obj
+         .\Release\JuceLibraryCode1.obj
+         .\Release\JuceLibraryCode2.obj
+         .\Release\JuceLibraryCode3.obj
+         .\Release\JuceLibraryCode4.obj "C:\MyDocuments\SourceCode\Csound5\csound5\csound32.lib" 
+            Creating library .\Release\Cabbage.lib and object .\Release\Cabbage.exp
+         Generating code
+     1>c:\mydocuments\my dropbox\jucetip\juce\src\gui\components\positioning\juce_relativecoordinatepositioner.cpp(60): warning C4702: unreachable code
+     1>c:\mydocuments\my dropbox\jucetip\juce\src\gui\components\positioning\juce_relativerectangle.cpp(137): warning C4702: unreachable code
+         Finished generating code
+         Cabbage.vcxproj -> C:\MyDocuments\My Dropbox\CabbageApril2011\Builds\VisualStudio2010\.\Release\Cabbage.exe
+       Manifest:
+         C:\Program Files\Microsoft SDKs\Windows\v7.0A\bin\mt.exe /nologo /verbose /outputresource:".\Release\Cabbage.exe;#1" /manifest .\Release\Cabbage.exe.intermediate.manifest
+       FinalizeBuildStatus:
+         Deleting file ".\Release\Cabbage.unsuccessfulbuild".
+         Touching ".\Release\Cabbage.lastbuildstate".
+     1>Done Building Project "C:\MyDocuments\My Dropbox\CabbageApril2011\Builds\VisualStudio2010\Cabbage.vcxproj" (build target(s)).
+
+Build succeeded.
+
+Time Elapsed 00:00:46.67

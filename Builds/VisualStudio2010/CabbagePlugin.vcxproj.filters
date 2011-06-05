@@ -1,0 +1,66 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="CabbagePlugin">
+      <UniqueIdentifier>{C988DFBE-1A2F-8E2B-D1CE-3E015530D5FC}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="CabbagePlugin\Source">
+      <UniqueIdentifier>{DE74155B-096E-A068-BB2C-40CAD9E0AB13}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Juce Library Code">
+      <UniqueIdentifier>{F7048EA6-F4B2-F31B-E402-E05D678A1111}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Juce VST Wrapper">
+      <UniqueIdentifier>{E7C93B65-34E0-8EC9-DCEB-74C257AD64C4}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\JuceLibraryCode\JuceLibraryCode1.cpp">
+      <Filter>Juce Library Code</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\JuceLibraryCode\JuceLibraryCode2.cpp">
+      <Filter>Juce Library Code</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\JuceLibraryCode\JuceLibraryCode3.cpp">
+      <Filter>Juce Library Code</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\JuceLibraryCode\JuceLibraryCode4.cpp">
+      <Filter>Juce Library Code</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\CabbageGUIClass.cpp">
+      <Filter>CabbagePlugin\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\CabbagePluginEditor.cpp">
+      <Filter>CabbagePlugin\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\CabbagePluginProcessor.cpp">
+      <Filter>CabbagePlugin\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\juceTip\juce\src\audio\plugin_client\VST\juce_VST_Wrapper.cpp">
+      <Filter>Juce VST Wrapper</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\JuceLibraryCode\AppConfig.h">
+      <Filter>Juce Library Code</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\JuceLibraryCode\JuceHeader.h">
+      <Filter>Juce Library Code</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\JuceLibraryCode\JucePluginCharacteristics.h">
+      <Filter>Juce Library Code</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\CabbageUtils.h">
+      <Filter>CabbagePlugin\Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\CabbageGUIClass.h">
+      <Filter>CabbagePlugin\Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\CabbagePluginEditor.h">
+      <Filter>CabbagePlugin\Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\CabbagePluginProcessor.h">
+      <Filter>CabbagePlugin\Source</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

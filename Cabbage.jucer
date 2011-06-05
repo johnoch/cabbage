@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<JUCERPROJECT id="bMOjkj" name="Cabbage" projectType="guiapp" version="1.0.0"
+              juceLinkage="amalg_multi" buildVST="1" buildRTAS="0" buildAU="1"
+              pluginName="Juce Project" pluginDesc="Juce Project" pluginManufacturer="yourcompany"
+              pluginManufacturerCode="Manu" pluginCode="Plug" pluginChannelConfigs="{1, 1}, {2, 2}"
+              pluginIsSynth="0" pluginWantsMidiIn="0" pluginProducesMidiOut="0"
+              pluginSilenceInIsSilenceOut="0" pluginTailLength="0" pluginEditorRequiresKeys="0"
+              pluginAUExportPrefix="JuceProjectAU" pluginAUViewClass="JuceProjectAU_V1"
+              pluginRTASCategory="" bundleIdentifier="com.yourcompany.Cabbage"
+              jucerVersion="3.0.0">
+  <EXPORTFORMATS>
+    <XCODE_MAC targetFolder="Builds/MacOSX" vstFolder="~/SDKs/vstsdk2.4" rtasFolder="~/SDKs/PT_80_SDK"
+               objCExtraSuffix="pRcQk1" juceFolder="..\..\SourceCode\juceTip\juce"/>
+    <VS2008 targetFolder="Builds/VisualStudio2008" vstFolder="c:\SDKs\vstsdk2.4"
+            rtasFolder="c:\SDKs\PT_80_SDK" libraryType="1" juceFolder="..\..\SourceCode\juceTip\juce"/>
+    <LINUX_MAKE targetFolder="Builds/Linux" vstFolder="~/SDKs/vstsdk2.4" juceFolder="..\juceTip\juce"
+                extraCompilerFlags="-I &quot;/home/rory/SourceCode/csound5/H&quot;"
+                extraLinkerFlags="-L &quot;/home/rory/SourceCode/csound5&quot;"/>
+  </EXPORTFORMATS>
+  <CONFIGURATIONS>
+    <CONFIGURATION name="Debug" isDebug="1" optimisation="1" targetName="Cabbage"
+                   osxSDK="default" osxCompatibility="default" osxArchitecture="default"/>
+    <CONFIGURATION name="Release" isDebug="0" optimisation="2" targetName="Cabbage"
+                   osxSDK="default" osxCompatibility="default" osxArchitecture="default"/>
+  </CONFIGURATIONS>
+  <MAINGROUP id="ShWWl3" name="Cabbage">
+    <GROUP id="n8QYKj" name="Source">
+      <FILE id="OtLZXe" name="CabbageUtils.h" compile="0" resource="0" file="Source/CabbageUtils.h"/>
+      <FILE id="osXPhh" name="CabbagePluginEditor.cpp" compile="1" resource="0"
+            file="Source\CabbagePluginEditor.cpp"/>
+      <FILE id="CWFRH6" name="CabbagePluginEditor.h" compile="0" resource="0"
+            file="Source\CabbagePluginEditor.h"/>
+      <FILE id="NCtMdP" name="CabbagePluginProcessor.cpp" compile="1" resource="0"
+            file="Source\CabbagePluginProcessor.cpp"/>
+      <FILE id="CxC1X" name="CabbagePluginProcessor.h" compile="0" resource="0"
+            file="Source\CabbagePluginProcessor.h"/>
+      <FILE id="Za1YsS" name="CabbageStandaloneDialog.cpp" compile="1" resource="0"
+            file="Source\CabbageStandaloneDialog.cpp"/>
+      <FILE id="PF491W" name="CabbageStandaloneDialog.h" compile="0" resource="0"
+            file="Source\CabbageStandaloneDialog.h"/>
+      <FILE id="ttlVDA" name="juce_AudioFilterStreamer.cpp" compile="1" resource="0"
+            file="Source\juce_AudioFilterStreamer.cpp"/>
+      <FILE id="HSWCXy" name="juce_AudioFilterStreamer.h" compile="0" resource="0"
+            file="Source\juce_AudioFilterStreamer.h"/>
+      <FILE id="lgrWnS" name="StandaloneFilterApp.cpp" compile="1" resource="0"
+            file="Source\StandaloneFilterApp.cpp"/>
+    </GROUP>
+  </MAINGROUP>
+  <JUCEOPTIONS JUCE_FORCE_DEBUG="default" JUCE_LOG_ASSERTIONS="default" JUCE_ASIO="default"
+               JUCE_WASAPI="default" JUCE_DIRECTSOUND="default" JUCE_ALSA="default"
+               JUCE_QUICKTIME="default" JUCE_OPENGL="default" JUCE_USE_FLAC="default"
+               JUCE_USE_OGGVORBIS="default" JUCE_USE_CDBURNER="default" JUCE_USE_CDREADER="default"
+               JUCE_USE_CAMERA="default" JUCE_ENABLE_REPAINT_DEBUGGING="default"
+               JUCE_USE_XINERAMA="default" JUCE_USE_XSHM="default" JUCE_USE_XRENDER="default"
+               JUCE_USE_XCURSOR="default" JUCE_PLUGINHOST_VST="default" JUCE_PLUGINHOST_AU="default"
+               JUCE_ONLY_BUILD_CORE_LIBRARY="default" JUCE_WEB_BROWSER="default"
+               JUCE_SUPPORT_CARBON="default" JUCE_CHECK_MEMORY_LEAKS="enabled"
+               JUCE_CATCH_UNHANDLED_EXCEPTIONS="enabled" JUCE_DIRECT2D="default"/>
+</JUCERPROJECT>

@@ -1,0 +1,176 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 45;
+	objects = {
+
+		ABDD431FE39B2501674A9F94 = { isa = PBXBuildFile; fileRef = 5C1517993209AF8A6D772C36; };
+		B9BE5A94E1030E31455041C7 = { isa = PBXBuildFile; fileRef = 2EC2F3658AFBD372B3E61667; };
+		F70468F462A9869192A8DE5A = { isa = PBXBuildFile; fileRef = 9B132E4ADD9BEF3F4A0AB9EF; };
+		C38A848F2E67DB4B7B5003B1 = { isa = PBXBuildFile; fileRef = 0949163AD9EE57AC4B61414F; };
+		8F96AD80283506CCAF79B34F = { isa = PBXBuildFile; fileRef = C77249A06CC84AB2E82807DC; };
+		B36BEFA8D78BD7994379EE37 = { isa = PBXBuildFile; fileRef = 350F27AEA90AD710B01A09D2; };
+		F7DC3ABE112C081170D73601 = { isa = PBXBuildFile; fileRef = C60073CCF5CC6116011DA3A5; };
+		0D397FF718970ACCDEDBD4CC = { isa = PBXBuildFile; fileRef = 1554027BD79FF70AC5BECA52; };
+		4CF8B71FBA3B793166C12879 = { isa = PBXBuildFile; fileRef = 290FC585A996F08CA2F90D8B; };
+		89D3804B8457F29CA3EF84A8 = { isa = PBXBuildFile; fileRef = BA04EFFEC3611E10DC5CE55A; };
+		80823739CE3D4028C3EAB6C5 = { isa = PBXBuildFile; fileRef = 9321E8E7089088F7B7C9E3AC; };
+		A0ED64E113B8646DD36F1F34 = { isa = PBXBuildFile; fileRef = 38E19CE08914DFECEB7AF71A; };
+		BC747582FF733B750D44533F = { isa = PBXBuildFile; fileRef = 810855EB960F520FCF5E8B69; };
+		C80A8513DB4E017D3729973A = { isa = PBXBuildFile; fileRef = CA3E2EE7A2FAC53293410FA9; };
+		C49195B4B709C885620EDB45 = { isa = PBXBuildFile; fileRef = 1455F7E2CFD64855772582E8; };
+		5C1517993209AF8A6D772C36 = { isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		2EC2F3658AFBD372B3E61667 = { isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		9B132E4ADD9BEF3F4A0AB9EF = { isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		0949163AD9EE57AC4B61414F = { isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
+		C77249A06CC84AB2E82807DC = { isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
+		350F27AEA90AD710B01A09D2 = { isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
+		B69540040C47C26446A8819F = { isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Cabbage.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		9879AE064D6F0B640646342D = { isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = Info.plist; path = Info.plist; sourceTree = SOURCE_ROOT; };
+		C60073CCF5CC6116011DA3A5 = { isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = CabbagePluginEditor.cpp; path = ../../Source/CabbagePluginEditor.cpp; sourceTree = SOURCE_ROOT; };
+		9AF1FDDFA4F456190034F1CA = { isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = CabbagePluginEditor.h; path = ../../Source/CabbagePluginEditor.h; sourceTree = SOURCE_ROOT; };
+		1554027BD79FF70AC5BECA52 = { isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = CabbagePluginProcessor.cpp; path = ../../Source/CabbagePluginProcessor.cpp; sourceTree = SOURCE_ROOT; };
+		C5D5891C80B1AA9F0E32ADC8 = { isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = CabbagePluginProcessor.h; path = ../../Source/CabbagePluginProcessor.h; sourceTree = SOURCE_ROOT; };
+		290FC585A996F08CA2F90D8B = { isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = CabbageStandaloneDialog.cpp; path = ../../Source/CabbageStandaloneDialog.cpp; sourceTree = SOURCE_ROOT; };
+		E6F614294A9DF41B3047EFA1 = { isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = CabbageStandaloneDialog.h; path = ../../Source/CabbageStandaloneDialog.h; sourceTree = SOURCE_ROOT; };
+		BA04EFFEC3611E10DC5CE55A = { isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = juce_AudioFilterStreamer.cpp; path = ../../Source/juce_AudioFilterStreamer.cpp; sourceTree = SOURCE_ROOT; };
+		27935697C2DEBD781D40E78F = { isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = juce_AudioFilterStreamer.h; path = ../../Source/juce_AudioFilterStreamer.h; sourceTree = SOURCE_ROOT; };
+		9321E8E7089088F7B7C9E3AC = { isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = StandaloneFilterApp.cpp; path = ../../Source/StandaloneFilterApp.cpp; sourceTree = SOURCE_ROOT; };
+		6C1374902B3DD87D279E346D = { isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AppConfig.h; path = ../../JuceLibraryCode/AppConfig.h; sourceTree = SOURCE_ROOT; };
+		239F4B4D3DF80CDD8BAAA8CD = { isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = JuceHeader.h; path = ../../JuceLibraryCode/JuceHeader.h; sourceTree = SOURCE_ROOT; };
+		38E19CE08914DFECEB7AF71A = { isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = JuceLibraryCode1.mm; path = ../../JuceLibraryCode/JuceLibraryCode1.mm; sourceTree = SOURCE_ROOT; };
+		810855EB960F520FCF5E8B69 = { isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = JuceLibraryCode2.mm; path = ../../JuceLibraryCode/JuceLibraryCode2.mm; sourceTree = SOURCE_ROOT; };
+		CA3E2EE7A2FAC53293410FA9 = { isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = JuceLibraryCode3.mm; path = ../../JuceLibraryCode/JuceLibraryCode3.mm; sourceTree = SOURCE_ROOT; };
+		1455F7E2CFD64855772582E8 = { isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = JuceLibraryCode4.mm; path = ../../JuceLibraryCode/JuceLibraryCode4.mm; sourceTree = SOURCE_ROOT; };
+		DD70B41BACC515250C947883 = { isa = PBXGroup; children = (
+				C60073CCF5CC6116011DA3A5,
+				9AF1FDDFA4F456190034F1CA,
+				1554027BD79FF70AC5BECA52,
+				C5D5891C80B1AA9F0E32ADC8,
+				290FC585A996F08CA2F90D8B,
+				E6F614294A9DF41B3047EFA1,
+				BA04EFFEC3611E10DC5CE55A,
+				27935697C2DEBD781D40E78F,
+				9321E8E7089088F7B7C9E3AC ); name = Source; sourceTree = "<group>"; };
+		DA0A28E3E34EF0B83113A98E = { isa = PBXGroup; children = (
+				6C1374902B3DD87D279E346D,
+				239F4B4D3DF80CDD8BAAA8CD,
+				38E19CE08914DFECEB7AF71A,
+				810855EB960F520FCF5E8B69,
+				CA3E2EE7A2FAC53293410FA9,
+				1455F7E2CFD64855772582E8 ); name = "Juce Library Code"; sourceTree = "<group>"; };
+		9E78A8C748AB35F60127AEAF = { isa = PBXGroup; children = (
+				9879AE064D6F0B640646342D ); name = Resources; sourceTree = "<group>"; };
+		A2275E9C2E14D8EE71745901 = { isa = PBXGroup; children = (
+				5C1517993209AF8A6D772C36,
+				2EC2F3658AFBD372B3E61667,
+				9B132E4ADD9BEF3F4A0AB9EF,
+				0949163AD9EE57AC4B61414F,
+				C77249A06CC84AB2E82807DC,
+				350F27AEA90AD710B01A09D2 ); name = Frameworks; sourceTree = "<group>"; };
+		BD2C2B288D5443255C79AD5D = { isa = PBXGroup; children = (
+				B69540040C47C26446A8819F ); name = Products; sourceTree = "<group>"; };
+		0AB8DAC3CD4880AF98458A8F = { isa = PBXGroup; children = (
+				DD70B41BACC515250C947883,
+				DA0A28E3E34EF0B83113A98E,
+				9E78A8C748AB35F60127AEAF,
+				A2275E9C2E14D8EE71745901,
+				BD2C2B288D5443255C79AD5D ); name = Source; sourceTree = "<group>"; };
+		8237023101B6B2B3657C2BFE = { isa = XCBuildConfiguration; buildSettings = {
+				PREBINDING = NO;
+				HEADER_SEARCH_PATHS = " $(inherited)";
+				GCC_OPTIMIZATION_LEVEL = 0;
+				INFOPLIST_FILE = Info.plist;
+				INSTALL_PATH = "$(HOME)/Applications";
+				ONLY_ACTIVE_ARCH = YES;
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+				"_DEBUG=1",
+				"DEBUG=1",
+				"JUCE_ObjCExtraSuffix=kWokop",
+				"JUCER_XCODE_IPHONE_5BC26AE3=1"); }; name = Debug; };
+		1BD38BA42C2E48AD7BC8AAC5 = { isa = XCBuildConfiguration; buildSettings = {
+				PREBINDING = NO;
+				HEADER_SEARCH_PATHS = " $(inherited)";
+				GCC_OPTIMIZATION_LEVEL = s;
+				INFOPLIST_FILE = Info.plist;
+				INSTALL_PATH = "$(HOME)/Applications";
+				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+				"_NDEBUG=1",
+				"NDEBUG=1",
+				"JUCE_ObjCExtraSuffix=kWokop",
+				"JUCER_XCODE_IPHONE_5BC26AE3=1"); }; name = Release; };
+		0D854A6DE1B9B8AC74673F82 = { isa = XCBuildConfiguration; buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				GCC_C_LANGUAGE_STANDARD = c99;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_CHECK_SWITCH_STATEMENTS = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				GCC_WARN_MISSING_PARENTHESES = YES;
+				GCC_WARN_NON_VIRTUAL_DESTRUCTOR = YES;
+				GCC_WARN_TYPECHECK_CALLS_TO_PRINTF = YES;
+				WARNING_CFLAGS = -Wreorder;
+				GCC_MODEL_TUNING = G5;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				ZERO_LINK = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf";
+				PRODUCT_NAME = "Cabbage"; }; name = Debug; };
+		F01B0DD9C970CA22A9454196 = { isa = XCBuildConfiguration; buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				GCC_C_LANGUAGE_STANDARD = c99;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_CHECK_SWITCH_STATEMENTS = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				GCC_WARN_MISSING_PARENTHESES = YES;
+				GCC_WARN_NON_VIRTUAL_DESTRUCTOR = YES;
+				GCC_WARN_TYPECHECK_CALLS_TO_PRINTF = YES;
+				WARNING_CFLAGS = -Wreorder;
+				GCC_MODEL_TUNING = G5;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				ZERO_LINK = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf";
+				PRODUCT_NAME = "Cabbage"; }; name = Release; };
+		B80EA5845D84ED88F6C51C6F = { isa = XCConfigurationList; buildConfigurations = (
+				0D854A6DE1B9B8AC74673F82,
+				F01B0DD9C970CA22A9454196 ); defaultConfigurationIsVisible = 0; defaultConfigurationName = Debug; };
+		5040C2CF3DE797DF95D53153 = { isa = XCConfigurationList; buildConfigurations = (
+				8237023101B6B2B3657C2BFE,
+				1BD38BA42C2E48AD7BC8AAC5 ); defaultConfigurationIsVisible = 0; defaultConfigurationName = Debug; };
+		3B7FC3B7A63FBA81F416A518 = { isa = PBXResourcesBuildPhase; buildActionMask = 2147483647; files = (  ); runOnlyForDeploymentPostprocessing = 0; };
+		0716C016752BC4EE6D28DAC4 = { isa = PBXSourcesBuildPhase; buildActionMask = 2147483647; files = (
+				F7DC3ABE112C081170D73601,
+				0D397FF718970ACCDEDBD4CC,
+				4CF8B71FBA3B793166C12879,
+				89D3804B8457F29CA3EF84A8,
+				80823739CE3D4028C3EAB6C5,
+				A0ED64E113B8646DD36F1F34,
+				BC747582FF733B750D44533F,
+				C80A8513DB4E017D3729973A,
+				C49195B4B709C885620EDB45 ); runOnlyForDeploymentPostprocessing = 0; };
+		BC3BF06F5E160F06E7FAD8B5 = { isa = PBXFrameworksBuildPhase; buildActionMask = 2147483647; files = (
+				ABDD431FE39B2501674A9F94,
+				B9BE5A94E1030E31455041C7,
+				F70468F462A9869192A8DE5A,
+				C38A848F2E67DB4B7B5003B1,
+				8F96AD80283506CCAF79B34F,
+				B36BEFA8D78BD7994379EE37 ); runOnlyForDeploymentPostprocessing = 0; };
+		80474A72F39A232417854583 = { isa = PBXNativeTarget; buildConfigurationList = 5040C2CF3DE797DF95D53153; buildPhases = (
+				3B7FC3B7A63FBA81F416A518,
+				0716C016752BC4EE6D28DAC4,
+				BC3BF06F5E160F06E7FAD8B5 ); buildRules = ( ); dependencies = ( ); name = Cabbage; productName = Cabbage; productReference = B69540040C47C26446A8819F; productInstallPath = "$(HOME)/Applications"; productType = "com.apple.product-type.application"; };
+		7BE1ECCBE4B04115838A7ADB = { isa = PBXProject; buildConfigurationList = B80EA5845D84ED88F6C51C6F; compatibilityVersion = "Xcode 3.1"; hasScannedForEncodings = 0; mainGroup = 0AB8DAC3CD4880AF98458A8F; projectDirPath = ""; projectRoot = ""; targets = ( 80474A72F39A232417854583 ); };
+	};
+	rootObject = 7BE1ECCBE4B04115838A7ADB;
+}
