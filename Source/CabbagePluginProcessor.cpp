@@ -316,7 +316,9 @@ if(index<(int)guiCtrls.size())//make sure index isn't out of range
 #else
 	Logger::writeToLog(guiCtrls.getReference(index).getStringProp("channel"));
 	guiCtrls.getReference(index).setNumProp("value", newValue);
+	#ifndef Cabbage_No_Csound
 	csound->SetChannel(guiCtrls.getReference(index).getStringProp("channel").toUTF8(), guiCtrls.getReference(index).getNumProp("value"));
+	#endif
 #endif
      }
    } 
@@ -419,6 +421,7 @@ void CabbagePluginAudioProcessor::releaseResources()
 //this following callback only runs in plugin mode, and only when one of the
 //host widgets is being used
 void CabbagePluginAudioProcessor::timerCallback(){
+#ifndef Cabbage_No_Csound
 	//initiliase any channels send host information to Csound
 	AudioPlayHead::CurrentPositionInfo hostInfo;
 	for(int i=0;i<(int)getGUILayoutCtrlsSize();i++){
@@ -443,6 +446,7 @@ void CabbagePluginAudioProcessor::timerCallback(){
 			csound->SetChannel(getGUILayoutCtrls(i).getStringProp("channel").toUTF8(), hostInfo.ppqPosition);
 		}
 	}
+#endif
 }
 //==============================================================================
 void CabbagePluginAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages)

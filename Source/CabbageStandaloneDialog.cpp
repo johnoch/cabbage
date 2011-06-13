@@ -165,7 +165,7 @@ void StandaloneFilterWindow::changeListenerCallback(juce::ChangeBroadcaster* /*s
           {
               text += String(filter->getDebugMessageArray().getReference(i).toUTF8());
           }
-          else
+          else 
           {
               text = (T("CABBAGE_DEBUG|")+String("Debug message string is empty?"));
               MemoryBlock messageData (text.toUTF8(), text.getNumBytesAsUTF8());

@@ -824,6 +824,7 @@ if(combo->isEnabled()) // before sending data to on named channel
 //=============================================================================
 bool CabbagePluginAudioProcessorEditor::keyPressed(const juce::KeyPress &key ,juce::Component *)
 {
+#ifndef Cabbage_No_Csound
 getFilter()->getCsound()->KeyPressed(key.getTextCharacter());
 //search through controls to see which is attached to the current key being pressed. 
 for(int i=0;i<(int)getFilter()->getGUICtrlsSize();i++){
@@ -841,7 +842,7 @@ if(key.getTextDescription().equalsIgnoreCase("e"))
 	layoutEditor->toFront(true);
 	layoutEditor->updateFrames();
 }
-
+#endif
 return true;
 }
 //==============================================================================

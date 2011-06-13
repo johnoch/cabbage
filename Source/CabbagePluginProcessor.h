@@ -188,12 +188,12 @@ private:
 	String filename;
 	String pluginName;
 	bool csoundStatus;
-	MYFLT cs_scale;
 	int csCompileResult;
 	void timerCallback();
 
 	//============== Csound related variables/methods ==============================
 #ifndef Cabbage_No_Csound
+	MYFLT cs_scale;
 	ScopedPointer<Csound> csound;				//Csound instance
 	MYFLT *CSspin, *CSspout;	//Csound audio IO pointers
 	int csndIndex;				//Csound sample counter
