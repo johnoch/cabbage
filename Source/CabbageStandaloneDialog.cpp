@@ -399,7 +399,7 @@ void StandaloneFilterWindow::buttonClicked (Button*)
         break;
 
 	case 10:
-		ipConnection->sendMessage(messageData);
+		
 		break;
 
     default:

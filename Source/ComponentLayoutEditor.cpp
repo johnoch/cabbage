@@ -27,7 +27,7 @@ ChildAlias::ChildAlias (Component* targetChild)
 
 ChildAlias::~ChildAlias ()
 {
-  // delete resizer;
+
 }
 
 void ChildAlias::resized ()
@@ -172,7 +172,7 @@ ComponentLayoutEditor::ComponentLayoutEditor ()
 
 ComponentLayoutEditor::~ComponentLayoutEditor ()
 {
-   if (target != getTopLevelComponent()->getChildComponent(0) ){deleteAndZero(target);} //added this to make sure we dont remove our background component
+   //if (target != getTopLevelComponent()->getChildComponent(0) ){deleteAndZero(target);} //added this to make sure we dont remove our background component
    //if (target) { deleteAndZero (target); } //original
 }
 

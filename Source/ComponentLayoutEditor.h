@@ -51,6 +51,7 @@ class ChildAlias   :   public Component
       Rectangle<int> startBounds;
       ScopedPointer<ComponentBoundsConstrainer> resizeContainer; //added resizeContainer to limit resizing sizes
       ScopedPointer<ResizableBorderComponent> resizer;
+	  JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ChildAlias);
     };
 
 //=============================================================================
@@ -84,6 +85,7 @@ class ComponentLayoutEditor   :   public Component
       
       SafePointer<Component> target;
       OwnedArray<ChildAlias> frames;
+	  JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ComponentLayoutEditor);
       
     };
 

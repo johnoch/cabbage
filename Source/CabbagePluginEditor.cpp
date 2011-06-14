@@ -29,10 +29,9 @@
 
 //==============================================================================
 CabbagePluginAudioProcessorEditor::CabbagePluginAudioProcessorEditor (CabbagePluginAudioProcessor* ownerFilter)
-: AudioProcessorEditor (ownerFilter)
+: AudioProcessorEditor (ownerFilter), LOCKED(true)
 {
 //This size will be altered if a valid file is input
-
 #ifdef Cabbage_GUI_Editor
 componentPanel = new CabbageMainPanel();
 componentPanel->setBounds(0, 0, getWidth(), getHeight());
@@ -41,34 +40,34 @@ layoutEditor->setBounds(0, 0, getWidth(), getHeight());
 addAndMakeVisible(layoutEditor);
 addAndMakeVisible(componentPanel);
 layoutEditor->setTargetComponent(componentPanel);
-
-
-
-
 #else
 componentPanel = new Component();
 addAndMakeVisible(componentPanel);
-#endif
-
-
-componentPanel->addKeyListener(this);
-//only want to grab keyboard focus on standalone mode as DAW handle their own keystrokes
 #ifdef Cabbage_Build_Standalone
 componentPanel->setWantsKeyboardFocus(true);
 componentPanel->toFront(true);
 componentPanel->grabKeyboardFocus();
 #endif
-
-layoutEditor->setEnabled(true);
-layoutEditor->toFront(true); 
+#endif
 
 
-//componentPanel->setInterceptsMouseClicks(false, true);	
+componentPanel->addKeyListener(this);
+//only want to grab keyboard focus on standalone mode as DAW handle their own keystrokes
+
+
+
+
+
+componentPanel->setInterceptsMouseClicks(false, true);	
 setSize (400, 400);
 InsertGUIControls();
 startTimer(10);
-layoutEditor->updateFrames();
 
+#ifdef Cabbage_GUI_Editor
+layoutEditor->setEnabled(false);
+layoutEditor->toFront(false); 
+layoutEditor->updateFrames();
+#endif
 /*
 debugLabel = new Label("debug");
 debugLabel->setBounds(10, 10, 100, 40);
@@ -79,16 +78,51 @@ componentPanel->addAndMakeVisible(debugLabel);
 CabbagePluginAudioProcessorEditor::~CabbagePluginAudioProcessorEditor()
 {
 #ifdef Cabbage_GUI_Editor
-delete componentPanel;
-delete layoutEditor;
+//delete componentPanel;
+//delete layoutEditor;
 #endif
 }
 
 //==============================================================================
+void CabbagePluginAudioProcessorEditor::mouseDown(const MouseEvent &e)
+{
+#ifdef Cabbage_GUI_Editor
+PopupMenu m;
+if(LOCKED==true)
+m.addItem(12, "Edit-mode");
+else{
+m.addItem(1, "Insert...");
+m.addSeparator();
+m.addItem(10, "Lock");
+}
+
+if (e.mods.isRightButtonDown())
+ {
+ const int result = m.show();
+ if(result == 10)//Lock
+     {
+		 layoutEditor->setEnabled(false);
+		 componentPanel->toFront(true);
+		 componentPanel->setInterceptsMouseClicks(false, true);	
+		 LOCKED=true;
+     }
+ else if (result == 12)//Edit-mode
+     {
+		 layoutEditor->setEnabled(true);
+		 layoutEditor->updateFrames();
+		 layoutEditor->toFront(true); 
+		 LOCKED=false;
+     }
+}
+#endif
+}
+//==============================================================================
 void CabbagePluginAudioProcessorEditor::resized()
 {
+#ifdef Cabbage_GUI_Editor
 if(componentPanel)componentPanel->setBounds(0, 0, this->getWidth(), this->getHeight());
 if(layoutEditor)layoutEditor->setBounds(0, 0, this->getWidth(), this->getHeight());
+#endif
 }
 
 //==============================================================================

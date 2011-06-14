@@ -60,6 +60,8 @@ private:
 	void InsertLabel(CabbageGUIClass cAttr);
 	void buttonClicked (Button*);
 	void timerCallback();
+	void mouseDown(const MouseEvent &e);
+	bool LOCKED;
 	//CabbagePluginAudioProcessor* filter;
 	CabbagePluginAudioProcessor* getFilter() const
     {
@@ -69,8 +71,8 @@ private:
 	OwnedArray<Component> controls;
 	OwnedArray<Component> layoutComps;
 #ifdef Cabbage_GUI_Editor
-	CabbageMainPanel* componentPanel;
-	ComponentLayoutEditor* layoutEditor;
+	ScopedPointer<CabbageMainPanel> componentPanel;
+	ScopedPointer<ComponentLayoutEditor> layoutEditor;
 #else
 	ScopedPointer<Component> componentPanel;
 #endif

@@ -54,11 +54,9 @@ public:
 	bool LOCKED;
 	CabbageMainPanel();
 	~CabbageMainPanel();
-	void mouseDown(const MouseEvent &e);
-	void mouseDrag(const MouseEvent &e){};
-	void mouseUp(const MouseEvent &e){};
 	void paint(Graphics &g);
 	ComponentLayoutEditor* getLayoutEditor();
+	void setLayoutEditor(ComponentLayoutEditor* ed);
 
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CabbageMainPanel);
 

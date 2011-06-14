@@ -35,6 +35,7 @@ setName("CabbageMainPanel");
 setVisible(true);
 setSize(0,0);
 LOCKED=true;
+
 }
 
 CabbageMainPanel::~CabbageMainPanel()
@@ -52,7 +53,14 @@ ComponentLayoutEditor* CabbageMainPanel::getLayoutEditor()
 return layoutEditor;
 }
 
-void CabbageMainPanel::mouseDown(const MouseEvent &e)
+void CabbageMainPanel::setLayoutEditor(ComponentLayoutEditor* ed)
 {
-
-};
+   jassert (ed);
+   
+   if (layoutEditor)
+   {
+      deleteAndZero (layoutEditor);
+   }
+   
+   layoutEditor = ed;
+}
