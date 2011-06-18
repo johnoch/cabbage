@@ -42,21 +42,47 @@ public:
 //-----------------------------------------------------------------------------
 
 class CabbageMainPanel   : public Component,
-						   public CabbageUtils
+						   public CabbageUtils,
+						   public ChangeBroadcaster
 {
 private:	
 	
 	ScopedPointer<ComponentLayoutEditor> layoutEditor;
 	OwnedArray<Component > comps;
-	OwnedArray<Component > clipBoard;	
+	OwnedArray<Component > clipBoard;
+	int currentIndex;
+	bool LOCKED;
+	String mouseState;
+
+
 
 public:
-	bool LOCKED;
+	inline String getMouseState(){
+		return mouseState;
+	}
+
+	inline void setMouseState(String state){
+		mouseState = state;
+	}
+
+
+	String getCurrentBounds(){
+	return T("bounds(") + String(left) + T(", ") + String(top) + T(", ") + String(width) + T(", ")
+			+ String(height) + T(")");
+	}
 	CabbageMainPanel();
 	~CabbageMainPanel();
 	void paint(Graphics &g);
 	ComponentLayoutEditor* getLayoutEditor();
 	void setLayoutEditor(ComponentLayoutEditor* ed);
+	int width, height, top, left;
+	inline int getIndex(){
+	return currentIndex;
+	}
+
+	inline void setIndex(int index){
+	currentIndex = index;
+	}
 
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CabbageMainPanel);
 

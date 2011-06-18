@@ -7,9 +7,10 @@
 *
 */
 #include "ComponentLayoutEditor.h"
+#include "CabbageMainPanel.h"
 
-ChildAlias::ChildAlias (Component* targetChild)
-:   target (targetChild)
+ChildAlias::ChildAlias (Component* targetChild, int ind)
+:   target (targetChild), index(ind)
 {   
    resizeContainer = new ComponentBoundsConstrainer();
    resizeContainer->setMinimumSize(target.getComponent()->getWidth()/2, target.getComponent()->getHeight()/2); //set minimum size so objects cant be resized too small
@@ -58,6 +59,11 @@ const Component* ChildAlias::getTargetChild ()
    return target.getComponent ();
 }
 
+const Component* ChildAlias::getTarget()
+{
+   return target;
+}
+
 void ChildAlias::updateFromTarget ()
 {
    if (target != NULL)
@@ -103,6 +109,7 @@ bool ChildAlias::boundsChangedSinceStart ()
 
 void ChildAlias::mouseDown (const MouseEvent& e)
 {
+((CabbageMainPanel*)(getTarget()->getParentComponent()))->setMouseState("down");
    toFront (true);
    if (e.eventComponent == resizer)
    {
@@ -116,10 +123,15 @@ void ChildAlias::mouseDown (const MouseEvent& e)
    userAdjusting = true;
    startBounds = getBounds ();
    userStartedChangingBounds ();
+   ((CabbageMainPanel*)(getTarget()->getParentComponent()))->setIndex(index);
+   updateCurrentDimensions(getPosition().getX(), getPosition().getY(), getWidth(), getHeight());
+   ((CabbageMainPanel*)(getTarget()->getParentComponent()))->sendChangeMessage();
+   
 }
 
 void ChildAlias::mouseUp (const MouseEvent& e)
-{   
+{ 
+((CabbageMainPanel*)(getTarget()->getParentComponent()))->setMouseState("up");
    if (e.eventComponent == resizer)
    {
    }
@@ -129,8 +141,15 @@ void ChildAlias::mouseUp (const MouseEvent& e)
       getTopLevelComponent()->getChildComponent(0)->grabKeyboardFocus(); 
    }
    if (userAdjusting) userStoppedChangingBounds ();
-   userAdjusting = false;
+   userAdjusting = false;   
    
+  // updateCurrentDimensions(getPosition().getX(), getPosition().getY(), 1000, 2000);
+   ((CabbageMainPanel*)(getTarget()->getParentComponent()))->width = getWidth();
+   ((CabbageMainPanel*)(getTarget()->getParentComponent()))->height = getHeight();
+   ((CabbageMainPanel*)(getTarget()->getParentComponent()))->left = getPosition().getX();
+   ((CabbageMainPanel*)(getTarget()->getParentComponent()))->top = getPosition().getY();      
+   ((CabbageMainPanel*)(getTarget()->getParentComponent()))->sendChangeMessage();
+
 }
 
 void ChildAlias::mouseDrag (const MouseEvent& e)
@@ -159,6 +178,14 @@ void ChildAlias::mouseExit (const MouseEvent& e)
 {
    interest = false;
    repaint ();
+}
+
+void ChildAlias::updateCurrentDimensions(int x, int y, int width, int height)
+{
+   ((CabbageMainPanel*)(getTarget()->getParentComponent()))->width = width;
+   ((CabbageMainPanel*)(getTarget()->getParentComponent()))->height = height;
+   ((CabbageMainPanel*)(getTarget()->getParentComponent()))->left = x;
+   ((CabbageMainPanel*)(getTarget()->getParentComponent()))->top = y;
 }
 
 //=============================================================================
@@ -219,6 +246,7 @@ void ComponentLayoutEditor::bindWithTarget ()
 
 void ComponentLayoutEditor::updateFrames ()
 {
+   int compIndex = 0;
    frames.clear ();
    
    if (target != NULL)
@@ -232,7 +260,8 @@ void ComponentLayoutEditor::updateFrames ()
          Component* c = t->getChildComponent (i);
          if (c)
          {
-                ChildAlias* alias = createAlias (c);
+                ChildAlias* alias = createAlias (c, compIndex++);
+//				alias->addChangeListener(this);
                 if (alias)
                 {
                frames.add (alias);
@@ -262,7 +291,7 @@ const Component* ComponentLayoutEditor::getTarget ()
    return 0;
 }
 
-ChildAlias* ComponentLayoutEditor::createAlias (Component* child)
+ChildAlias* ComponentLayoutEditor::createAlias (Component* child, int index)
 {
-   return new ChildAlias (child);
+   return new ChildAlias (child, index);
 }

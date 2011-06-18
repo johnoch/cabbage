@@ -151,14 +151,42 @@ StandaloneFilterWindow::~StandaloneFilterWindow()
 }
 
 //==============================================================================
+// sends messages to WinXound
+//==============================================================================
+void StandaloneFilterWindow::sendMessageToWinXound(String messageType, String message)
+{
+String text = messageType+T("|")+message;
+MemoryBlock messageData (text.toUTF8(), text.getNumBytesAsUTF8());
+ipConnection->sendMessage(messageData);
+}
+
+void StandaloneFilterWindow::sendMessageToWinXound(String messageType, int value)
+{
+String text = messageType+T("|")+String(value);
+MemoryBlock messageData (text.toUTF8(), text.getNumBytesAsUTF8());
+ipConnection->sendMessage(messageData);
+}
+//==============================================================================
 // listener Callback - updates WinXound compiler output with Cabbage messages
 //==============================================================================
 void StandaloneFilterWindow::changeListenerCallback(juce::ChangeBroadcaster* /*source*/)
 {
-// MOD - Stefano Bonetti
+String text = "";
 #ifdef Cabbage_Named_Pipe
+if(filter->getChangeMessageType().containsIgnoreCase("GUI_insert")){
+//IF A USER INSERTS A WIDGET, THE NEW WIDGET TEXT IS SENT TO WINXOUND WHO IN TURN
+//UPDATES CABBAGE
+sendMessageToWinXound(T("CABBAGE_FILE_UPDATED"), csdFile.getFullPathName());
+sendMessageToWinXound(T("CABBAGE_UPDATE"), "");
+}
+else if(filter->getChangeMessageType().containsIgnoreCase("GUI_mod")){
+//IF A USER MODIFIES A WIDGET, THE NEW WIDGET BOUNDS() ARE SENT TO WINXOUND, NOT NEED FOR UPDATE
+sendMessageToWinXound(T("CABBAGE_FILE_UPDATED"), csdFile.getFullPathName());
+sendMessageToWinXound(T("CABBAGE_SELECT_LINE"), filter->getCurrentLine()+1); 
+}
+else
+// MOD - Stefano Bonetti
   if(filter && ipConnection->isConnected()){
-      String text = "";
       for(int i=0;i<filter->getDebugMessageArray().size();i++)
       {
           if(filter->getDebugMessageArray().getReference(i).length()>0)
@@ -167,19 +195,14 @@ void StandaloneFilterWindow::changeListenerCallback(juce::ChangeBroadcaster* /*s
           }
           else 
           {
-              text = (T("CABBAGE_DEBUG|")+String("Debug message string is empty?"));
-              MemoryBlock messageData (text.toUTF8(), text.getNumBytesAsUTF8());
-              ipConnection->sendMessage(messageData);
+              sendMessageToWinXound(T("CABBAGE_DEBUG"), "Debug message string is empty?");
               break;
           }
 
       }
 
       filter->clearDebugMessageArray();
-      String messageToSend = "CABBAGE_DEBUG|" + text;
-      MemoryBlock messageData (messageToSend.toUTF8(), messageToSend.getNumBytesAsUTF8());
-      ipConnection->sendMessage(messageData);
-
+	  sendMessageToWinXound(T("CABBAGE_DEBUG"), text);
   }
 #endif
   // MOD - End
@@ -211,6 +234,7 @@ void StandaloneFilterWindow::resetFilter()
 	filter = createCabbagePluginFilter(csdFile.getFullPathName());
 	filter->addChangeListener(this);
 	filter->sendChangeMessage();
+	filter->setGUIMode(true);
 	filter->createGUI(csdFile.loadFileAsString());
 	this->setName(filter->getPluginName());
 
@@ -228,10 +252,8 @@ void StandaloneFilterWindow::resetFilter()
         globalSettings->removeValue ("filterState");
 	
 #ifdef Cabbage_Named_Pipe
-	//notify WinXOund that Cabbage is set up and ready for action
-	String messageToSend = "CABBAGE_LOADED";
-	MemoryBlock messageData(messageToSend.toUTF8(), messageToSend.getNumBytesAsUTF8());
-	ipConnection->sendMessage(messageData);
+	//notify WinXound that Cabbage is set up and ready for action
+	sendMessageToWinXound(T("CABBAGE_LOADED"), "");
 #endif
 
 
@@ -331,10 +353,6 @@ void StandaloneFilterWindow::resized()
 //==============================================================================
 void StandaloneFilterWindow::buttonClicked (Button*)
 {
-
-	String messageToSend = "CABBAGE_SELECT_LINES|4,10";
-	MemoryBlock messageData(messageToSend.toUTF8(), messageToSend.getNumBytesAsUTF8());
-
     if (filter == nullptr)
         return;
 
@@ -454,14 +472,9 @@ String VST;
 	
 	
 #ifdef Cabbage_Named_Pipe
-	String messageToSend = "CABBAGE_PLUGIN_FILE_UPDATED|" + csdFile.getFullPathName()+T("|")+loc_csdFile.getFullPathName();
-	MemoryBlock messageData(messageToSend.toUTF8(), messageToSend.getNumBytesAsUTF8());
-	ipConnection->sendMessage(messageData);
+	sendMessageToWinXound("CABBAGE_PLUGIN_FILE_UPDATED", csdFile.getFullPathName()+T("|")+loc_csdFile.getFullPathName());
 	csdFile = loc_csdFile;	
-	messageData.removeSection(0, messageToSend.getNumBytesAsUTF8());
-	messageToSend = "CABBAGE_SHOW_MESSAGE|Info|Cabbage has been updated";
-	messageData.append(messageToSend.toUTF8(),messageToSend.getNumBytesAsUTF8()); 
-	ipConnection->sendMessage(messageData);
+	sendMessageToWinXound("CABBAGE_SHOW_MESSAGE|Info", "Cabbage has been updated");
 #endif
 
 	}

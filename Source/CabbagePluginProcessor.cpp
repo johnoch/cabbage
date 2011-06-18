@@ -32,7 +32,12 @@
 // STANDALONE - CONSTRUCTOR 
 //===========================================================
 CabbagePluginAudioProcessor::CabbagePluginAudioProcessor(String inputfile)
-:csoundStatus(false), csdFile(File(inputfile)), showMIDI(false), csCompileResult(1)
+:csoundStatus(false), 
+csdFile(File(inputfile)), 
+showMIDI(false), 
+csCompileResult(1), 
+changeMessageType(""), 
+guiMODE(false)
 {
 #ifndef Cabbage_No_Csound
 csound = new Csound();
@@ -240,14 +245,10 @@ void CabbagePluginAudioProcessor::createGUI(String source)
 
 
 //===========================================================
-// MESSAGE CALLBACK FOR STANDALONE
+// CALLBACKS FOR STANDALONE
 //===========================================================
 #ifndef Cabbage_No_Csound
-
-void CabbagePluginAudioProcessor::messageCallback(CSOUND* csound,
-                                                int /*attr*/,
-                                                const char* fmt,
-                                                va_list args)
+void CabbagePluginAudioProcessor::messageCallback(CSOUND* csound, int /*attr*/,  const char* fmt, va_list args)
 {
 #ifdef Cabbage_Named_Pipe
   CabbagePluginAudioProcessor* ud = (CabbagePluginAudioProcessor *) csoundGetHostData(csound);
@@ -261,10 +262,16 @@ void CabbagePluginAudioProcessor::messageCallback(CSOUND* csound,
   ud = nullptr;
 // MOD - End
 #endif
-
-
 }
 #endif
+
+void CabbagePluginAudioProcessor::changeListenerCallback(ChangeBroadcaster *source)
+{
+#ifdef Cabbage_GUI_Editor
+changeMessageType = T("GUI");
+sendChangeMessage();
+#endif
+}
 
  
 //==============================================================================

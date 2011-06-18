@@ -34,7 +34,9 @@ class CabbagePluginAudioProcessorEditor  : public AudioProcessorEditor,
 								public ComboBoxListener,
 								public ButtonListener,
 								public Timer,
-								public KeyListener
+								public KeyListener,
+								public ChangeBroadcaster,
+								public ChangeListener
 {
 public:
     CabbagePluginAudioProcessorEditor (CabbagePluginAudioProcessor* ownerFilter);
@@ -62,6 +64,7 @@ private:
 	void timerCallback();
 	void mouseDown(const MouseEvent &e);
 	bool LOCKED;
+	int lineNumber;
 	//CabbagePluginAudioProcessor* filter;
 	CabbagePluginAudioProcessor* getFilter() const
     {

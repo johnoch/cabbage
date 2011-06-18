@@ -126,6 +126,8 @@ private:
 	OwnedArray <socketConnection, CriticalSection> activeConnections;
     ScopedPointer<CabbagePluginAudioProcessor> filter;
     ScopedPointer<AudioDeviceManager> deviceManager;
+	void sendMessageToWinXound(String messageType, String message);
+	void sendMessageToWinXound(String messageType, int value);
 	AudioProcessorPlayer player;
     TextButton optionsButton;
     void deleteFilter();

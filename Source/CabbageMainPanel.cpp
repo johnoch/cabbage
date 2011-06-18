@@ -35,7 +35,6 @@ setName("CabbageMainPanel");
 setVisible(true);
 setSize(0,0);
 LOCKED=true;
-
 }
 
 CabbageMainPanel::~CabbageMainPanel()

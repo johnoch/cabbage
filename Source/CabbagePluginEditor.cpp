@@ -29,10 +29,12 @@
 
 //==============================================================================
 CabbagePluginAudioProcessorEditor::CabbagePluginAudioProcessorEditor (CabbagePluginAudioProcessor* ownerFilter)
-: AudioProcessorEditor (ownerFilter), LOCKED(true)
+: AudioProcessorEditor (ownerFilter)
 {
 //This size will be altered if a valid file is input
 #ifdef Cabbage_GUI_Editor
+//determine whether instrument should be opened in GUI mode or not
+addChangeListener(ownerFilter);
 componentPanel = new CabbageMainPanel();
 componentPanel->setBounds(0, 0, getWidth(), getHeight());
 layoutEditor = new ComponentLayoutEditor();
@@ -64,9 +66,17 @@ InsertGUIControls();
 startTimer(10);
 
 #ifdef Cabbage_GUI_Editor
+componentPanel->addChangeListener(this);
+if(!getFilter()->inGUIMode()){
 layoutEditor->setEnabled(false);
 layoutEditor->toFront(false); 
 layoutEditor->updateFrames();
+}
+else{
+layoutEditor->setEnabled(true);
+layoutEditor->toFront(true); 
+layoutEditor->updateFrames();
+}
 #endif
 /*
 debugLabel = new Label("debug");
@@ -83,6 +93,46 @@ CabbagePluginAudioProcessorEditor::~CabbagePluginAudioProcessorEditor()
 #endif
 }
 
+//===========================================================================
+//WHEN IN GUI EDITOR MODE THIS CALLBACK WILL NOTIFIY THE HOST IF A MOUSE UP
+//HAS BEEN TRIGGERED BY ANY OF THE INSTRUMENTS WIDGETS, THIS IN TURN UPDATED
+//WINXOUND WITH THE NEW COORDINATES AND SIZE
+//===========================================================================
+void CabbagePluginAudioProcessorEditor::changeListenerCallback(ChangeBroadcaster *source)
+{
+#ifdef Cabbage_GUI_Editor
+StringArray csdArray;
+String temp;
+csdArray.addLines(getFilter()->getCsoundInputFileText());
+
+if(componentPanel->getMouseState().equalsIgnoreCase("down")){
+for(int i=0; i<csdArray.size(); i++){
+	if(csdArray[i].containsIgnoreCase(componentPanel->getCurrentBounds())){
+	temp = csdArray[i].replace(componentPanel->getCurrentBounds(), T("bounds()"), true);
+	csdArray.set(i, temp);
+	getFilter()->updateCsoundFile(csdArray.joinIntoString("\n"));
+	lineNumber = i;
+	getFilter()->setCurrentLine(lineNumber);
+	}
+}
+}
+else if(componentPanel->getMouseState().equalsIgnoreCase("up")){
+//ONLY SEND UPDATED INFO ON A MOUSE UP
+Logger::writeToLog(componentPanel->getCurrentBounds());
+temp = csdArray[lineNumber].replace(T("bounds()"), componentPanel->getCurrentBounds());
+csdArray.set(lineNumber, temp);
+Logger::writeToLog(csdArray[lineNumber]);
+getFilter()->updateCsoundFile(csdArray.joinIntoString("\n"));
+getFilter()->setChangeMessageType("GUI_mod");	
+getFilter()->sendChangeMessage();
+}
+#endif
+}
+//==============================================================================
+// this function will display a context menu on right mouse click. The menu 
+// is populated by all a list of GUI abstractions stored in the CabbagePlant folder.  
+// Users can create their own GUI abstraction at any time, save them to this folder, and
+// insert them to their instrument whenever they like
 //==============================================================================
 void CabbagePluginAudioProcessorEditor::mouseDown(const MouseEvent &e)
 {
@@ -99,6 +149,25 @@ m.addItem(10, "Lock");
 if (e.mods.isRightButtonDown())
  {
  const int result = m.show();
+ if(result==1){
+	 /* the plan here is to simply send text to WinXound and get it
+	 to update the instrument. This way Cabbage don't have to keep track of 
+	 anything as all controls will automatically get added to the GUI controls vector
+	 when Cabbage is updated */
+	 StringArray csdArray;
+	 int endOfSection = 0;
+	 csdArray.addLines(getFilter()->getCsoundInputFileText());
+	 endOfSection = csdArray.indexOf("</Cabbage>", true);
+	 showMessage(endOfSection);
+	 csdArray.insert(endOfSection, T("button bounds(0, 0, 100, 50), channel(\"but1\"), items(\"on\", \"off\")"));
+	 showMessage(csdArray.joinIntoString("\n"));
+	 getFilter()->updateCsoundFile(csdArray.joinIntoString("\n"));
+	 getFilter()->setChangeMessageType("GUI_insert");	 
+//	 sendChangeMessage();
+
+ }
+
+
  if(result == 10)//Lock
      {
 		 layoutEditor->setEnabled(false);
@@ -128,9 +197,7 @@ if(layoutEditor)layoutEditor->setBounds(0, 0, this->getWidth(), this->getHeight(
 //==============================================================================
 void CabbagePluginAudioProcessorEditor::paint (Graphics& g)
 {
-
 if(getFilter()->getCsoundStatus()){
-
 	if(formPic.length()>2)
 			{
 			Image img = ImageCache::getFromFile (File (formPic));
@@ -634,7 +701,7 @@ try{
 			Colours::findColourForName(cAttr.getStringProp("colour"), Colours::grey));
 
 	componentPanel->addAndMakeVisible(controls[idx]);
-	((TextButton*)controls[idx])->addListener(this);
+
 
 	cAttr.setNumProp("min", 0);
 	cAttr.setNumProp("max", 1);
@@ -871,10 +938,6 @@ if(getFilter()->getGUICtrls(i).getStringProp("type")==T("button")){
 			//Logger::writeToLog("key pressed");
 		}
 	}
-if(key.getTextDescription().equalsIgnoreCase("e"))
-	layoutEditor->setEnabled(true);
-	layoutEditor->toFront(true);
-	layoutEditor->updateFrames();
 }
 #endif
 return true;

@@ -127,6 +127,14 @@ public:
 			 linkTo = val;
 	}
 
+	inline String getPropsString(){
+	if(type.equalsIgnoreCase("button"))
+	return type << T(" bounds(") << String(left) << T(", ") << String(top) << T(", ") << String(width)
+				<< T(", ") << String(height) << T("), channel(\"") << channel << T("\"), value(")
+				<< String(value) << T("), items(\"") << items[0].trim() << T("\", \"") << items[1].trim() << T("\")");
+	else return "not a button";
+	}
+
 	inline String getStringProp(String prop){
 		if(prop.equalsIgnoreCase(T("channel")))
 			return channel.trim();

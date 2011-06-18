@@ -35,6 +35,7 @@
 class CabbagePluginAudioProcessor  : public AudioProcessor,
 									 public CabbageUtils,
 									 public ChangeBroadcaster,
+									 public ChangeListener,
 									 public Timer
 {
 public:
@@ -86,12 +87,16 @@ public:
     void getStateInformation (MemoryBlock& destData);
     void setStateInformation (const void* data, int sizeInBytes);
 	//==============================================================================
-	void setCsoundInputFile(File inputfile){
-		csdFile = inputfile;
-	}
-
 	File getCsoundInputFile(){
 		return csdFile;
+	}
+
+	inline String getCsoundInputFileText(){
+		return csdFile.loadFileAsString();
+	}
+
+	void updateCsoundFile(String text){
+	csdFile.replaceWithText(text);
 	}
 	
 	String getDebugMessage(){
@@ -115,8 +120,7 @@ public:
 	}
 
 	void setPluginName(String name){
-	pluginName = name;
-	
+	pluginName = name;	
 	}
 
 	String getPluginName(){
@@ -146,6 +150,13 @@ public:
 		return csoundStatus;
 	}
 
+	inline bool inGUIMode(){
+		return guiMODE;
+	}
+
+	inline void setGUIMode(bool mode){
+		guiMODE=mode;
+	}
 	//===========================================================
 	inline int getGUICtrlsSize(){
 		return (int)guiCtrls.size();
@@ -163,16 +174,27 @@ public:
 		return guiCtrls.getReference(index);
 	}
 
+	inline String getChangeMessageType(){
+		return changeMessageType;
+	}
+
+	inline void setChangeMessageType(String text){
+		changeMessageType = text;
+	}
+
+	inline int getCurrentLine(){
+		return currentLine;
+	}
+
+	inline void setCurrentLine(int line){
+		currentLine = line;
+	}
+
 #ifndef Cabbage_No_Csound
 	Csound* getCsound(){
 		return csound;
 	}
 
-	void freeCsound(){
-		csound->Stop();
-		csound->Cleanup();
-		cabbageSleep(100);
-	}
 #endif
 
 	void createGUI(String source);
@@ -190,6 +212,10 @@ private:
 	bool csoundStatus;
 	int csCompileResult;
 	void timerCallback();
+	void changeListenerCallback(ChangeBroadcaster *source);
+	String changeMessageType;
+	bool guiMODE;
+	int currentLine;
 
 	//============== Csound related variables/methods ==============================
 #ifndef Cabbage_No_Csound

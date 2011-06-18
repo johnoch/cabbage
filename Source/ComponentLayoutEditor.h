@@ -11,18 +11,22 @@
 #define _COMPONENTLAYOUTEDITOR_H_
 
 #include "../JuceLibraryCode/JuceHeader.h"
+#include "CabbageUtils.h"
+
 
 //=============================================================================
-class ChildAlias   :   public Component
+class ChildAlias   :   public Component,
+						public CabbageUtils
     {
     public:
-      ChildAlias (Component* targetChild);
+      ChildAlias (Component* targetChild, int index);
       ~ChildAlias ();
       
       void resized ();
       void paint (Graphics& g);
       
       const Component* getTargetChild ();
+	  const Component* getTarget();
       
       void updateFromTarget ();
       void applyToTarget ();
@@ -40,8 +44,9 @@ class ChildAlias   :   public Component
       void mouseDrag (const MouseEvent& e);
       
     private:
-      
+	  int index;
       CriticalSection bounds;
+	  void updateCurrentDimensions(int x, int y, int width, int height);
       ScopedPointer<ComponentBoundsConstrainer>  constrainer;
 
       ComponentDragger dragger;
@@ -56,7 +61,7 @@ class ChildAlias   :   public Component
 
 //=============================================================================
 class ComponentLayoutEditor   :   public Component
-    {
+{
     public:
       
       enum ColourIds
@@ -81,7 +86,7 @@ class ComponentLayoutEditor   :   public Component
       
     private:
       
-      virtual ChildAlias* createAlias (Component* child);
+      virtual ChildAlias* createAlias (Component* child, int index);
       
       SafePointer<Component> target;
       OwnedArray<ChildAlias> frames;
