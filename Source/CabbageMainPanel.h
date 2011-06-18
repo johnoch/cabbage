@@ -65,7 +65,6 @@ public:
 		mouseState = state;
 	}
 
-
 	String getCurrentBounds(){
 	return T("bounds(") + String(left) + T(", ") + String(top) + T(", ") + String(width) + T(", ")
 			+ String(height) + T(")");

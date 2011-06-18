@@ -20,6 +20,7 @@
 
 #include "CabbagePluginProcessor.h"
 #include "CabbagePluginEditor.h"
+#include  "CabbageCustomWidgets.h"
 
 #ifdef Cabbage_GUI_Editor
 #include "ComponentLayoutEditor.h"
@@ -29,7 +30,7 @@
 
 //==============================================================================
 CabbagePluginAudioProcessorEditor::CabbagePluginAudioProcessorEditor (CabbagePluginAudioProcessor* ownerFilter)
-: AudioProcessorEditor (ownerFilter)
+: AudioProcessorEditor (ownerFilter), lineNumber(0)
 {
 //This size will be altered if a valid file is input
 #ifdef Cabbage_GUI_Editor
@@ -100,6 +101,7 @@ CabbagePluginAudioProcessorEditor::~CabbagePluginAudioProcessorEditor()
 //===========================================================================
 void CabbagePluginAudioProcessorEditor::changeListenerCallback(ChangeBroadcaster *source)
 {
+//this needs to be modified so that it works with both pos()+size() as well as bounds()
 #ifdef Cabbage_GUI_Editor
 StringArray csdArray;
 String temp;
@@ -517,6 +519,57 @@ catch(...){
 void CabbagePluginAudioProcessorEditor::InsertSlider(CabbageGUIClass cAttr)
 {
 try{
+	float left = cAttr.getNumProp("left");
+	float top = cAttr.getNumProp("top");
+	float width = cAttr.getNumProp("width");
+	float height = cAttr.getNumProp("height");	
+	controls.add(new CabbageSlider(cAttr.getStringProp("name"), 
+										 cAttr.getStringProp("caption"), 
+										 cAttr.getNumProp("min"),
+										 cAttr.getNumProp("max"),
+										 cAttr.getNumProp("value"),
+										 cAttr.getStringProp("kind"), 
+										 cAttr.getStringProp("colour")
+										 ));	
+	int idx = controls.size()-1;
+
+	//check to see if widgets is anchored
+	//if it is offset it's position accordingly. 
+	int relY=0,relX=0;
+	for(int y=0;y<layoutComps.size();y++){
+	if(cAttr.getStringProp("reltoplant").length()>0)
+	if(layoutComps[y]->getProperties().getWithDefault(String("plant"), -99).toString().equalsIgnoreCase(cAttr.getStringProp("reltoplant")))
+	{
+		relX = layoutComps[y]->getPosition().getX();
+		relY = layoutComps[y]->getPosition().getY();
+		width = width*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
+		height = height*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
+		top = top*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
+		left = left*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
+	}
+	}
+
+	if(cAttr.getStringProp("kind").equalsIgnoreCase("vertical"))
+	((CabbageSlider*)controls[idx])->setBounds(left+relX, top+relY, width, height);
+	else if(cAttr.getStringProp("kind").equalsIgnoreCase("horizontal"))
+	((CabbageSlider*)controls[idx])->setBounds(left+relX, top+relY, width, height);
+	else
+	((CabbageSlider*)controls[idx])->setBounds(left+relX, top+relY, width, height);
+	//controls[idx]->setBounds(cAttr.left, cAttr.top, cAttr.width, cAttr.height);
+
+	componentPanel->addAndMakeVisible(controls[idx]);
+	((CabbageSlider*)controls[idx])->slider->setRange(cAttr.getNumProp("min"), cAttr.getNumProp("max"), 0.01);
+	((CabbageSlider*)controls[idx])->slider->setValue(cAttr.getNumProp("value"));
+	((CabbageSlider*)controls[idx])->slider->repaint();
+	((CabbageSlider*)controls[idx])->slider->addListener(this);
+
+
+	controls[idx]->getProperties().set(String("midiChan"), cAttr.getNumProp("midiChan"));
+	controls[idx]->getProperties().set(String("midiCtrl"), cAttr.getNumProp("midiCtrl"));
+
+//	((Slider*)controls[idx])->addListener(this);	
+	
+/*
 	controls.add(new Slider(cAttr.getStringProp("name")));	
 	int idx = controls.size()-1;
 	float left = cAttr.getNumProp("left");
@@ -615,6 +668,7 @@ try{
 	controls[idx]->getProperties().set(String("midiCtrl"), cAttr.getNumProp("midiCtrl"));
 
 	((Slider*)controls[idx])->addListener(this);
+	*/
 }
 catch(...){
     Logger::writeToLog(T("Syntax error: 'slider..."));
