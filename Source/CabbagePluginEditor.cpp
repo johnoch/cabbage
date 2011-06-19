@@ -553,10 +553,13 @@ try{
 	{
 		relX = layoutComps[y]->getPosition().getX();
 		relY = layoutComps[y]->getPosition().getY();
+		((CabbageSlider*)controls[idx])->getProperties().set("plantX", var(relX));
+		((CabbageSlider*)controls[idx])->getProperties().set("plantY", var(relY));
 		width = width*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
 		height = height*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
 		top = top*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
 		left = left*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
+		
 	}
 	}
 
@@ -578,108 +581,6 @@ try{
 	controls[idx]->getProperties().set(String("midiChan"), cAttr.getNumProp("midiChan"));
 	controls[idx]->getProperties().set(String("midiCtrl"), cAttr.getNumProp("midiCtrl"));
 
-//	((Slider*)controls[idx])->addListener(this);	
-	
-/*
-	controls.add(new Slider(cAttr.getStringProp("name")));	
-	int idx = controls.size()-1;
-	float left = cAttr.getNumProp("left");
-	float top = cAttr.getNumProp("top");
-	float width = cAttr.getNumProp("width");
-	float height = cAttr.getNumProp("height");
-
-	//check to see if widgets is anchored
-	//if it is offset it's position accordingly. 
-	int relY=0,relX=0;
-	for(int y=0;y<layoutComps.size();y++){
-	if(cAttr.getStringProp("reltoplant").length()>0)
-	if(layoutComps[y]->getProperties().getWithDefault(String("plant"), -99).toString().equalsIgnoreCase(cAttr.getStringProp("reltoplant")))
-	{
-		relX = layoutComps[y]->getPosition().getX();
-		relY = layoutComps[y]->getPosition().getY();
-		width = width*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
-		height = height*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
-		top = top*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
-		left = left*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
-	}
-	}
-
-	if(cAttr.getStringProp("kind")==T("vertical")){
-		((Slider*)controls[idx])->setSliderStyle(Slider::LinearVertical);
-		((Slider*)controls[idx])->setTextBoxStyle (Slider::TextBoxBelow, true, 60, 20);
-		if(cAttr.getStringProp("caption").length()>0){
-			((Slider*)controls[idx])->setBounds(left+10+relX, top+15+relY, width-20, height-25);
-			layoutComps.add(new GroupComponent(T("GroupBox"), cAttr.getStringProp("caption")));
-			layoutComps[layoutComps.size()-1]->setBounds(left+relX, top+relY, width, height);
-							if(cAttr.getStringProp("colour").length()>0){
-	((GroupComponent*)layoutComps[layoutComps.size()-1])->setColour(GroupComponent::outlineColourId,
-		Colours::findColourForName(cAttr.getStringProp("colour"), Colours::black));
-	((GroupComponent*)layoutComps[layoutComps.size()-1])->setColour(GroupComponent::textColourId,
-		Colours::findColourForName(cAttr.getStringProp("colour"), Colours::black));
-	}
-			componentPanel->addAndMakeVisible(layoutComps[layoutComps.size()-1]);
-		}
-		else ((Slider*)controls[idx])->setBounds(left+relX, top+relY, width, height);
-
-	}
-	else if(cAttr.getStringProp("kind")==T("rotary")){
-		((Slider*)controls[idx])->setSliderStyle(Slider::Rotary);
-		((Slider*)controls[idx])->setSliderStyle(Slider::RotaryVerticalDrag);
-		((Slider*)controls[idx])->setRotaryParameters(float_Pi * 1.2f, float_Pi * 2.8f, false);
-		((Slider*)controls[idx])->setTextBoxStyle (Slider::TextBoxBelow, true, 60, 20);
-
-		if(cAttr.getStringProp("colour").length()>0)
-		((Slider*)controls[idx])->setColour(Slider::rotarySliderFillColourId,
-			Colours::findColourForName(cAttr.getStringProp("colour"), Colours::coral));
-
-		if(cAttr.getStringProp("caption").length()>0){
-			((Slider*)controls[idx])->setBounds(left+relX, top+20+relY, width, height-30);
-			layoutComps.add(new GroupComponent(T("GroupBox"), cAttr.getStringProp("caption")));
-			layoutComps[layoutComps.size()-1]->setBounds(left+relX, top+relY, width, height);
-							if(cAttr.getStringProp("colour").length()>0){
-	((GroupComponent*)layoutComps[layoutComps.size()-1])->setColour(GroupComponent::outlineColourId,
-		Colours::findColourForName(cAttr.getStringProp("colour"), Colours::black));
-	((GroupComponent*)layoutComps[layoutComps.size()-1])->setColour(GroupComponent::textColourId,
-		Colours::findColourForName(cAttr.getStringProp("colour"), Colours::black));
-	}
-			componentPanel->addAndMakeVisible(layoutComps[layoutComps.size()-1]);
-		}
-		else ((Slider*)controls[idx])->setBounds(left+relX, top+relY, width, height);
-	}
-	else
-		if(cAttr.getStringProp("caption").length()>0){
-			((Slider*)controls[idx])->setBounds(left+10+relX, top+15, width-20, height-22);
-			layoutComps.add(new GroupComponent(T("GroupBox"), cAttr.getStringProp("caption")));
-			layoutComps[layoutComps.size()-1]->setBounds(left+relX, top+relY, width, height);
-				if(cAttr.getStringProp("colour").length()>0){
-	((GroupComponent*)layoutComps[layoutComps.size()-1])->setColour(GroupComponent::outlineColourId,
-		Colours::findColourForName(cAttr.getStringProp("colour"), Colours::black));
-	((GroupComponent*)layoutComps[layoutComps.size()-1])->setColour(GroupComponent::textColourId,
-		Colours::findColourForName(cAttr.getStringProp("colour"), Colours::black));
-	}
-			componentPanel->addAndMakeVisible(layoutComps[layoutComps.size()-1]);
-
-		}
-		else ((Slider*)controls[idx])->setBounds(left+relX, top+relY, width, height);
-
-		if(cAttr.getStringProp("colour").length()>0){
-	((Slider*)controls[idx])->setColour(Slider::thumbColourId,
-		Colours::findColourForName(cAttr.getStringProp("colour"), Colours::coral));
-	((Slider*)controls[idx])->setColour(Slider::rotarySliderOutlineColourId,
-		Colours::findColourForName(cAttr.getStringProp("colour"), Colours::coral));
-		}
- 
-
-
-	componentPanel->addAndMakeVisible(controls[idx]);
-
-	((Slider*)controls[idx])->setRange(cAttr.getNumProp("min"), cAttr.getNumProp("max"), 0.001);
-	((Slider*)controls[idx])->setValue(cAttr.getNumProp("value"));
-	controls[idx]->getProperties().set(String("midiChan"), cAttr.getNumProp("midiChan"));
-	controls[idx]->getProperties().set(String("midiCtrl"), cAttr.getNumProp("midiCtrl"));
-
-	((Slider*)controls[idx])->addListener(this);
-	*/
 }
 catch(...){
     Logger::writeToLog(T("Syntax error: 'slider..."));
@@ -745,6 +646,9 @@ try{
 	{
 		relX = layoutComps[y]->getPosition().getX();
 		relY = layoutComps[y]->getPosition().getY();
+		//retain relative component position
+		((CabbageButton*)controls[idx])->getProperties().set("plantX", var(relX));
+		((CabbageButton*)controls[idx])->getProperties().set("plantY", var(relY));
 		width = width*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
 		height = height*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
 		top = top*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
@@ -773,7 +677,6 @@ try{
 		cAttr.getItems(0),
 		cAttr.getStringProp("colour")));	
 	int idx = controls.size()-1;
-
 	float left = cAttr.getNumProp("left");
 	float top = cAttr.getNumProp("top");
 	float width = cAttr.getNumProp("width");
@@ -788,6 +691,9 @@ try{
 	{
 		relX = layoutComps[y]->getPosition().getX();
 		relY = layoutComps[y]->getPosition().getY();
+		//retain relative component position
+		((CabbageCheckbox*)controls[idx])->getProperties().set("plantX", var(relX));
+		((CabbageCheckbox*)controls[idx])->getProperties().set("plantY", var(relY));
 		width = width*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
 		height = height*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
 		top = top*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
@@ -880,6 +786,9 @@ try{
 	{
 		relX = layoutComps[y]->getPosition().getX();
 		relY = layoutComps[y]->getPosition().getY();
+		//retain relative component position
+		((CabbageComboBox*)controls[idx])->getProperties().set("plantX", var(relX));
+		((CabbageComboBox*)controls[idx])->getProperties().set("plantY", var(relY));
 		width = width*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
 		height = height*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
 		top = top*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();

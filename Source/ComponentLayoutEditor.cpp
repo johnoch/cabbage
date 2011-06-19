@@ -21,7 +21,6 @@ ChildAlias::ChildAlias (Component* targetChild, String type, int ind)
    
    interest = false;
    userAdjusting = false;
-   
    updateFromTarget ();
    setRepaintsOnMouseActivity (true);
 }
@@ -79,7 +78,11 @@ void ChildAlias::applyToTarget ()
       //!target.hasBeenDeleted ())
    {
       Component* c = (Component*) target.getComponent ();
-      c->toFront(false); //added this to bring the the component to the front
+		if(type.containsIgnoreCase("juce::GroupComponent")||
+			type.containsIgnoreCase("CabbageImage"))
+			c->toBack();
+		else 
+			c->toFront(true);
       c->setBounds (getBounds ());
       userChangedBounds ();
    }
@@ -124,11 +127,15 @@ void ChildAlias::mouseDown (const MouseEvent& e)
    startBounds = getBounds ();
    userStartedChangingBounds ();
    //update dimensions
+   
+   int offX = getProperties().getWithDefault(var::identifier("plantX"), 0);
+   int offY = getProperties().getWithDefault(var::identifier("plantY"), 0);
+
    ((CabbageMainPanel*)(getTarget()->getParentComponent()))->setIndex(index);
    ((CabbageMainPanel*)(getTarget()->getParentComponent()))->width = getWidth();
    ((CabbageMainPanel*)(getTarget()->getParentComponent()))->height = getHeight();
-   ((CabbageMainPanel*)(getTarget()->getParentComponent()))->left = getPosition().getX();
-   ((CabbageMainPanel*)(getTarget()->getParentComponent()))->top = getPosition().getY(); 
+   ((CabbageMainPanel*)(getTarget()->getParentComponent()))->left = getPosition().getX()-offX;
+   ((CabbageMainPanel*)(getTarget()->getParentComponent()))->top = getPosition().getY()-offY; 
    ((CabbageMainPanel*)(getTarget()->getParentComponent()))->sendChangeMessage();
    
 }
@@ -147,11 +154,13 @@ void ChildAlias::mouseUp (const MouseEvent& e)
    if (userAdjusting) userStoppedChangingBounds ();
    userAdjusting = false;   
    
+   int offX = getProperties().getWithDefault(var::identifier("plantX"), 0);
+   int offY = getProperties().getWithDefault(var::identifier("plantY"), 0);
    //update dimensions
    ((CabbageMainPanel*)(getTarget()->getParentComponent()))->width = getWidth();
    ((CabbageMainPanel*)(getTarget()->getParentComponent()))->height = getHeight();
-   ((CabbageMainPanel*)(getTarget()->getParentComponent()))->left = getPosition().getX();
-   ((CabbageMainPanel*)(getTarget()->getParentComponent()))->top = getPosition().getY();      
+   ((CabbageMainPanel*)(getTarget()->getParentComponent()))->left = getPosition().getX()-offX;;
+   ((CabbageMainPanel*)(getTarget()->getParentComponent()))->top = getPosition().getY()-offY;      
    ((CabbageMainPanel*)(getTarget()->getParentComponent()))->sendChangeMessage();
 
    if(type.containsIgnoreCase("juce::GroupComponent")||
@@ -268,10 +277,13 @@ void ComponentLayoutEditor::updateFrames ()
 		 if (c)
          {
                 ChildAlias* alias = createAlias (c, type, compIndex++);
-                if (alias)
+				//pass on relative X and Y's to alias components so they are plant aware...
+				alias->getProperties().set("plantX", var(c->getProperties().getWithDefault(var::identifier("plantX"), 0)));
+                alias->getProperties().set("plantY", var(c->getProperties().getWithDefault(var::identifier("plantY"), 0)));
+				if (alias)
                 {
-               frames.add (alias);
-               addAndMakeVisible (alias);
+                frames.add (alias);
+                addAndMakeVisible (alias);
                 }
          }
       }

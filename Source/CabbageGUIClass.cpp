@@ -102,7 +102,7 @@ CabbageGUIClass::CabbageGUIClass(String compStr, int ID):
           channel = "checkchan";
           caption = "";
           name = "checkbox";
-		  caption = "Check";
+		  caption = "";
 		  items.add(T(""));
 		  min = 0;
 		  max = 1;

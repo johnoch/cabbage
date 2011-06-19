@@ -35,6 +35,7 @@ String buttonType;
 //---- constructor -----
 CabbageButton(String name, String caption, String buttonText, String colour)
 {
+	setName(name);
 	offX=offY=offWidth=offHeight=0;
 	groupbox = new GroupComponent(String("groupbox_")+name);
 	button = new TextButton(name);
@@ -79,11 +80,12 @@ class CabbageSlider : public Component
 public:
 ScopedPointer<GroupComponent> groupbox;
 ScopedPointer<Slider> slider;
-int offX, offY, offWidth, offHeight;
+int offX, offY, offWidth, offHeight, plantX, plantY;
 String sliderType;
 //---- constructor -----
-CabbageSlider(String name, String caption, String kind, String colour)
+CabbageSlider(String name, String caption, String kind, String colour): plantX(-99), plantY(-99)
 {
+	setName(name);
 	offX=offY=offWidth=offHeight=0;
 	groupbox = new GroupComponent(String("groupbox_")+name);
 	slider = new Slider(name);
@@ -180,6 +182,7 @@ String sliderType;
 //---- constructor -----
 CabbageCheckbox(String name, String caption, String buttonText, String colour)
 {
+	setName(name);
 	offX=offY=offWidth=offHeight=0;
 	groupbox = new GroupComponent(String("groupbox_")+name);
 	button = new ToggleButton(name);
@@ -239,6 +242,7 @@ String sliderType;
 //---- constructor -----
 CabbageComboBox(String name, String caption, String text, String colour)
 {
+	setName(name);
 	offX=offY=offWidth=offHeight=0;
 	groupbox = new GroupComponent(String("groupbox_")+name);
 	combo = new ComboBox(name);
@@ -300,7 +304,7 @@ public:
 	CabbageImage(String name, String file, int top, int left, int width, int height, String outline, String fill, String shape, int line):
 	picFile(file), file(file), top(top), left(left), width(width), height(height), fill(fill), outline(outline), shape(shape), line(line){
 		widget = new Component(name);
-
+		setName(name);
 		img = ImageCache::getFromFile (File (file));
 	}
 	~CabbageImage(){

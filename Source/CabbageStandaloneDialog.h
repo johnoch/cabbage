@@ -80,7 +80,7 @@ public:
 		}
 
 		void connectionLost(){
-			showMessage("Connection with WinXound has been lost, please restart both WinXound and Cabbage");
+			owner.sendMessageToWinXound("CABBAGE_SHOW_MESSAGE|Warning", T("Connection with WinXound has been lost, please restart Cabbage"));
 			Logger::writeToLog(T("Connection #") + String (ourNumber) + T(" - connection lost"));
 		}
 

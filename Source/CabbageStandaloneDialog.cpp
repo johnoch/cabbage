@@ -183,6 +183,7 @@ else if(filter->getChangeMessageType().containsIgnoreCase("GUI_mod")){
 //IF A USER MODIFIES A WIDGET, THE NEW WIDGET BOUNDS() ARE SENT TO WINXOUND, NOT NEED FOR UPDATE
 sendMessageToWinXound(T("CABBAGE_FILE_UPDATED"), csdFile.getFullPathName());
 sendMessageToWinXound(T("CABBAGE_SELECT_LINE"), filter->getCurrentLine()+1); 
+sendMessageToWinXound(T("CABBAGE_UPDATE"), "");
 }
 else
 // MOD - Stefano Bonetti
@@ -203,6 +204,7 @@ else
 
       filter->clearDebugMessageArray();
 	  sendMessageToWinXound(T("CABBAGE_DEBUG"), text);
+
   }
 #endif
   // MOD - End
