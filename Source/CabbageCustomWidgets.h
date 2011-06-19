@@ -23,10 +23,53 @@
 #include "../JuceLibraryCode/JuceHeader.h"
 
 //==============================================================================
-// all custom cabbage widgets can be decalred in this file
+// custom button component with optional surrounding groupbox
 //==============================================================================
+class CabbageButton : public Component
+{
+public:
+ScopedPointer<GroupComponent> groupbox;
+ScopedPointer<Button> button;
+int offX, offY, offWidth, offHeight;
+String buttonType;
+//---- constructor -----
+CabbageButton(String name, String caption, String buttonText, String colour)
+{
+	offX=offY=offWidth=offHeight=0;
+	groupbox = new GroupComponent(String("groupbox_")+name);
+	button = new TextButton(name);
+	addAndMakeVisible(button);
+	addAndMakeVisible(groupbox);
+	groupbox->setVisible(false);
 
+	button->setButtonText(buttonText);
+	if(caption.length()>0){
+		offX=10;
+		offY=15;
+		offWidth=-20;
+		offHeight=-25;
+		groupbox->setVisible(true);
+		groupbox->setText(caption);
+	}
 
+	if(colour.length()>0)
+	button->setColour(TextButton::buttonColourId,
+			Colours::findColourForName(colour, Colours::grey));
+}
+//---------------------------------------------
+~CabbageButton(){
+
+}
+
+//---------------------------------------------
+void resized()
+{
+groupbox->setBounds(0, 0, getWidth(), getHeight()); 
+button->setBounds(offX, offY, getWidth()+offWidth, getHeight()+offHeight); 
+}
+
+JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CabbageButton);
+};
 
 //==============================================================================
 // custom slider component with optional surrounding groupbox
@@ -39,7 +82,7 @@ ScopedPointer<Slider> slider;
 int offX, offY, offWidth, offHeight;
 String sliderType;
 //---- constructor -----
-CabbageSlider(String name, String caption, int min, int max, int value, String kind, String colour)
+CabbageSlider(String name, String caption, String kind, String colour)
 {
 	offX=offY=offWidth=offHeight=0;
 	groupbox = new GroupComponent(String("groupbox_")+name);
@@ -49,6 +92,11 @@ CabbageSlider(String name, String caption, int min, int max, int value, String k
 	groupbox->setVisible(false);
 	sliderType = kind; 
 	
+	groupbox->setColour(GroupComponent::outlineColourId,
+		Colours::findColourForName(colour, Colours::black));
+	groupbox->setColour(GroupComponent::textColourId,
+		Colours::findColourForName(colour, Colours::black));
+
 	if(kind.contains(T("vertical"))){
 	slider->setSliderStyle(Slider::LinearVertical);
 	slider->setTextBoxStyle (Slider::TextBoxBelow, true, 60, 20);
@@ -71,7 +119,7 @@ CabbageSlider(String name, String caption, int min, int max, int value, String k
 
 		if(colour.length()>0){
 		slider->setColour(Slider::rotarySliderFillColourId,
-						  Colours::findColourForName(colour, Colours::coral));
+						  Colours::findColourForName(colour, Colours::black));
 		}
 		if(caption.length()>0){
 			offX=0;
@@ -99,10 +147,9 @@ CabbageSlider(String name, String caption, int min, int max, int value, String k
 					  Colours::findColourForName(colour, Colours::coral));
 	}
 	}
-
-
-slider->setRange(min, max, 0.01);
-slider->setValue(value);
+	
+	slider->setColour(Slider::rotarySliderOutlineColourId,
+					  Colours::findColourForName(colour, Colours::black));
 }//--- end of constructor ----
 
 //---------------------------------------------
@@ -120,6 +167,179 @@ slider->setBounds(offX, offY, getWidth()+offWidth, getHeight()+offHeight);
 JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CabbageSlider);
 };
 
+//==============================================================================
+// custom checkbox component with optional surrounding groupbox
+//==============================================================================
+class CabbageCheckbox : public Component
+{
+public:
+ScopedPointer<GroupComponent> groupbox;
+ScopedPointer<ToggleButton> button;
+int offX, offY, offWidth, offHeight;
+String sliderType;
+//---- constructor -----
+CabbageCheckbox(String name, String caption, String buttonText, String colour)
+{
+	offX=offY=offWidth=offHeight=0;
+	groupbox = new GroupComponent(String("groupbox_")+name);
+	button = new ToggleButton(name);
+	addAndMakeVisible(button);
+	addAndMakeVisible(groupbox);
+	groupbox->setVisible(false);
+
+	groupbox->setColour(GroupComponent::outlineColourId,
+		Colours::findColourForName(colour, Colours::black));
+	groupbox->setColour(GroupComponent::textColourId,
+		Colours::findColourForName(colour, Colours::black));
+
+	button->setButtonText(buttonText);
+	if(caption.length()>0){
+		offX=10;
+		offY=15;
+		offWidth=-20;
+		offHeight=-25;
+		groupbox->setVisible(true);
+		groupbox->setText(caption);
+	}
+
+	if(colour.length()>0)
+	button->setColour(TextButton::buttonColourId,
+			Colours::findColourForName(colour, Colours::grey));
+	button->setColour(ToggleButton::textColourId,
+			Colours::findColourForName(colour, Colours::grey));
+	button->setButtonText(buttonText);
+}
+//---------------------------------------------
+~CabbageCheckbox(){
+
+}
+
+//---------------------------------------------
+void resized()
+{
+groupbox->setBounds(0, 0, getWidth(), getHeight()); 
+button->setBounds(offX, offY, getWidth()+offWidth, getHeight()+offHeight); 
+}
+
+JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CabbageCheckbox);
+};
 
 
+//==============================================================================
+// custom checkbox component with optional surrounding groupbox
+//==============================================================================
+class CabbageComboBox : public Component
+{
+public:
+ScopedPointer<GroupComponent> groupbox;
+ScopedPointer<ComboBox> combo;
+ScopedPointer<LookAndFeel> lookFeel;
+int offX, offY, offWidth, offHeight;
+String sliderType;
+//---- constructor -----
+CabbageComboBox(String name, String caption, String text, String colour)
+{
+	offX=offY=offWidth=offHeight=0;
+	groupbox = new GroupComponent(String("groupbox_")+name);
+	combo = new ComboBox(name);
+	addAndMakeVisible(combo);
+	addAndMakeVisible(groupbox);
+	groupbox->setVisible(false);
+
+	groupbox->setColour(GroupComponent::outlineColourId,
+		Colours::findColourForName(colour, Colours::black));
+	groupbox->setColour(GroupComponent::textColourId,
+		Colours::findColourForName(colour, Colours::black));
+	
+	if(caption.length()>0){
+		offX=10;
+		offY=15;
+		offWidth=-20;
+		offHeight=-25;
+		groupbox->setVisible(true);
+		groupbox->setText(caption);
+	}
+	lookFeel = new LookAndFeel();
+	lookFeel->setColour(ComboBox::arrowColourId, Colours::red);
+	lookFeel->setColour(ComboBox::buttonColourId, Colours::yellow);
+	lookFeel->setColour(ComboBox::backgroundColourId, Colours::black);
+	lookFeel->setColour(ComboBox::textColourId, Colours::white);
+
+
+	if(caption.length()>0)
+	combo->setColour(TextButton::buttonColourId,
+			Colours::findColourForName(colour, Colours::grey));
+
+	combo->setEditableText (false);
+    combo->setJustificationType (Justification::centredLeft);
+	combo->setTextWhenNothingSelected(text);
+
+}
+//---------------------------------------------
+~CabbageComboBox(){
+
+}
+
+//---------------------------------------------
+void resized()
+{
+groupbox->setBounds(0, 0, getWidth(), getHeight()); 
+combo->setBounds(offX, offY, getWidth()+offWidth, getHeight()+offHeight); 
+}
+
+JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CabbageComboBox);
+};
+
+//==============================================================================
+// custom image component
+//==============================================================================
+class CabbageImage : public Component,
+						public CabbageUtils
+{
+public:
+	CabbageImage(String name, String file, int top, int left, int width, int height, String outline, String fill, String shape, int line):
+	picFile(file), file(file), top(top), left(left), width(width), height(height), fill(fill), outline(outline), shape(shape), line(line){
+		widget = new Component(name);
+
+		img = ImageCache::getFromFile (File (file));
+	}
+	~CabbageImage(){
+	}
+
+private:
+	ScopedPointer<Component> widget;
+	Image img;
+	int top, left, width, height, line;
+	String fill, outline, shape, file;
+	File picFile;	
+
+	void paint (Graphics& g){
+		if(file.length()>5){
+		g.drawImage(img, 0, 0, width, height, 0, 0, img.getWidth(), img.getHeight());
+		}
+		else{
+			if(shape.contains("rounded")){
+				g.setColour(Colours::findColourForName(outline, Colours::black));
+				g.fillRoundedRectangle(0,0, width, height, width*.02);
+				g.setColour(Colours::findColourForName(fill, Colours::black));
+				g.fillRoundedRectangle(line,line, width-(line*2), height-(line*2), width*.02);				
+			}
+			else if(shape.contains("ellipse")){
+				g.setColour(Colours::findColourForName(outline, Colours::black));
+				g.fillEllipse(0,0, width, height);
+				g.setColour(Colours::findColourForName(fill, Colours::black));
+				g.fillEllipse(line,line, width-(line*2), height-(line*2));				
+			}
+			else if(shape.contains("sharp")){
+				
+				g.setColour(Colours::findColourForName(outline, Colours::black));
+				g.fillRect(0,0, width, height);
+				g.setColour(Colours::findColourForName(fill, Colours::black));
+				g.fillRect(line,line, width-(line*2), height-(line*2));				
+			}
+		}
+
+	}
+	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CabbageImage);
+};
 #endif

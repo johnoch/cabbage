@@ -31,10 +31,6 @@ CabbageGUIClass::CabbageGUIClass(String compStr, int ID):
 {
 //Default values are assigned to all attributres 
 //before parsing begins
-
-
-	onoffcaptions.add(T(""));
-	onoffcaptions.add(T(""));
 	items.clear();
 	items.add(T(""));
 	key.clear();
@@ -89,8 +85,8 @@ CabbageGUIClass::CabbageGUIClass(String compStr, int ID):
           width = 70;
           height = 22;
           channel = "buttonchan";
-          onoffcaptions.add(T("off"));
-          onoffcaptions.add(T("on"));
+          items.add(T("off"));
+          items.add(T("on"));
           name = "button";
 		  max = 1;
 		  min = 0;
@@ -107,6 +103,7 @@ CabbageGUIClass::CabbageGUIClass(String compStr, int ID):
           caption = "";
           name = "checkbox";
 		  caption = "Check";
+		  items.add(T(""));
 		  min = 0;
 		  max = 1;
 		  type = name;
@@ -257,11 +254,11 @@ int CabbageGUIClass::parse(String str)
     identArray.add("stdout(");
     identArray.add("exit(");
     identArray.add("cssetup(");
-    identArray.add("onoffcaption(");
     identArray.add("kind(");
     identArray.add("fontcolour(");
     identArray.add("beveltype(");
     identArray.add("items(");
+	identArray.add("text(");
     identArray.add("runcsound(");
 	identArray.add("tabs(");
 	identArray.add("fill(");
@@ -302,17 +299,6 @@ int CabbageGUIClass::parse(String str)
 			else if(identArray.getReference(indx).equalsIgnoreCase("shape(")) shape = strTokens[0].trim();
 			else if(identArray.getReference(indx).equalsIgnoreCase("outline(")) outline = strTokens[0].trim();
 			else if(identArray.getReference(indx).equalsIgnoreCase("textcolour(")) textcolour = strTokens[0].trim();
-            
-            else if(identArray.getReference(indx).equalsIgnoreCase("onoffcaptions(")){
-				if(strTokens.size()<2){
-					debugMessage =T("WARNING: Not enough paramters passed to onoffcaptions(): usage onoffcaptions(\"onCap\", \"OffCap\"\")");
-				}
-				else{
-              onoffcaptions.clear();//clear any unwanted items	   
-			  onoffcaptions.add(strTokens[0].trim());
-              onoffcaptions.add(strTokens[1].trim());
-            }
-			}
 
             else if(identArray.getReference(indx).equalsIgnoreCase("key(")){
 				key.clear();
@@ -328,24 +314,16 @@ int CabbageGUIClass::parse(String str)
 
 			}
 
-            else if(identArray.getReference(indx).equalsIgnoreCase("items(")){
-				if(strTokens.size()<2){
-					debugMessage =T("WARNING: Only one item passed to items()");
-				}
-				else{
+            else if(identArray.getReference(indx).equalsIgnoreCase("items(")||
+					identArray.getReference(indx).equalsIgnoreCase("text(")){
               items.clear();//clear any unwanted items
-			  //items.push_back("Select");			
-              onoffcaptions.clear();//clear any unwanted items	
-			  onoffcaptions.add(strTokens[0].trim());
-              onoffcaptions.add(strTokens[1].trim());
-			  max=2;
 			  for(int i= 0;i<(int)strTokens.size();i++){
 				String test = strTokens[i]; 
 				items.add(strTokens[i]);	
 				max = i;
               }
 			}
-				}
+				
 			//numberic paramters
 			else if(identArray.getReference(indx).equalsIgnoreCase("size(")){
 				if(strTokens.size()<2){

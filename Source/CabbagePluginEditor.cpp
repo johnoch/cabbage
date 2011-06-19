@@ -109,9 +109,19 @@ csdArray.addLines(getFilter()->getCsoundInputFileText());
 
 if(componentPanel->getMouseState().equalsIgnoreCase("down")){
 for(int i=0; i<csdArray.size(); i++){
-	if(csdArray[i].containsIgnoreCase(componentPanel->getCurrentBounds())){
-	temp = csdArray[i].replace(componentPanel->getCurrentBounds(), T("bounds()"), true);
+	if(csdArray[i].containsIgnoreCase(componentPanel->getCurrentBounds())||
+	(csdArray[i].containsIgnoreCase(componentPanel->getCurrentPos())&&
+	csdArray[i].containsIgnoreCase(componentPanel->getCurrentPos())))
+	{
+		if(csdArray[i].containsIgnoreCase(componentPanel->getCurrentBounds()))
+			temp = csdArray[i].replace(componentPanel->getCurrentBounds(), T("bounds()"), true);
+		else if(csdArray[i].containsIgnoreCase(componentPanel->getCurrentSize())&&
+			csdArray[i].containsIgnoreCase(componentPanel->getCurrentPos())){
+			String temp1 = csdArray[i].replace(componentPanel->getCurrentSize()+T(","), T(""), true);
+			temp = temp1.replace(componentPanel->getCurrentPos(), T("bounds()"), true);
+		}
 	csdArray.set(i, temp);
+	Logger::writeToLog(temp);
 	getFilter()->updateCsoundFile(csdArray.joinIntoString("\n"));
 	lineNumber = i;
 	getFilter()->setCurrentLine(lineNumber);
@@ -127,6 +137,7 @@ Logger::writeToLog(csdArray[lineNumber]);
 getFilter()->updateCsoundFile(csdArray.joinIntoString("\n"));
 getFilter()->setChangeMessageType("GUI_mod");	
 getFilter()->sendChangeMessage();
+repaint();
 }
 #endif
 }
@@ -311,6 +322,7 @@ try{
 	}
 
 	((GroupComponent*)layoutComps[idx])->setBounds (left+relX, top+relY, width, height);
+	layoutComps[idx]->toBack();
 	componentPanel->addAndMakeVisible(layoutComps[idx]);
 	cAttr.setStringProp("yype", "groupbbox");
 
@@ -372,7 +384,7 @@ try{
 #endif
 
 		if(cAttr.getStringProp("file").length()<2)pic="";
-	layoutComps.add(new imageComponent("name", pic, top+relY, left+relX, width, 
+	layoutComps.add(new CabbageImage("name", pic, top+relY, left+relX, width, 
 		height, cAttr.getStringProp("outline"), cAttr.getStringProp("colour"), 
 		cAttr.getStringProp("shape"), cAttr.getNumProp("line")));
 
@@ -381,8 +393,9 @@ try{
 	layoutComps[idx]->getProperties().set(String("scaleY"), cAttr.getNumProp("scaleY"));
 	layoutComps[idx]->getProperties().set(String("scaleX"), cAttr.getNumProp("scaleX"));
 	layoutComps[idx]->getProperties().set(String("plant"), var(cAttr.getStringProp("plant")));
+	layoutComps[idx]->toBack();
 	componentPanel->addAndMakeVisible(layoutComps[idx]);
-	((imageComponent*)layoutComps[idx])->setBounds (left+relX, top+relY, width, height);
+	((CabbageImage*)layoutComps[idx])->setBounds (left+relX, top+relY, width, height);
 	cAttr.setStringProp("yype", "image");
 }
 catch(...){
@@ -446,6 +459,7 @@ try{
 	setSize(width, height);
 	componentPanel->setBounds(left, top, width, height);
 	formColour = Colours::findColourForName(cAttr.getStringProp("colour"), Colours::floralwhite);
+	componentPanel->setColour(cAttr.getStringProp("colour"));
 
 	
 #ifdef Cabbage_Build_Standalone
@@ -525,9 +539,6 @@ try{
 	float height = cAttr.getNumProp("height");	
 	controls.add(new CabbageSlider(cAttr.getStringProp("name"), 
 										 cAttr.getStringProp("caption"), 
-										 cAttr.getNumProp("min"),
-										 cAttr.getNumProp("max"),
-										 cAttr.getNumProp("value"),
 										 cAttr.getStringProp("kind"), 
 										 cAttr.getStringProp("colour")
 										 ));	
@@ -714,7 +725,10 @@ if(sliderThatWasMoved->isEnabled()) // before sending data to on named channel
 void CabbagePluginAudioProcessorEditor::InsertButton(CabbageGUIClass cAttr)
 {
 try{
-	controls.add(new TextButton(cAttr.getStringProp("name")));	
+	controls.add(new CabbageButton(cAttr.getStringProp("name"),
+		cAttr.getStringProp("caption"),
+		cAttr.getItems(1-(int)cAttr.getNumProp("value")),
+		cAttr.getStringProp("colour")));	
 	int idx = controls.size()-1;
 
 	float left = cAttr.getNumProp("left");
@@ -737,28 +751,10 @@ try{
 		left = left*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
 	}
 
-
-	if(cAttr.getStringProp("type")==T("button")){
-	((TextButton*)controls[idx])->setButtonText(cAttr.getOnOffcaptions(1-(int)cAttr.getNumProp("value")));
-	}
-
-	if(cAttr.getStringProp("caption").length()>0){
-			((TextButton*)controls[idx])->setBounds(left+12+relX, top+20+relY, width-25, height-30);
-			layoutComps.add(new GroupComponent(T("GroupBox"), cAttr.getStringProp("caption")));
-			layoutComps[layoutComps.size()-1]->setBounds(left, top, width, height);
-			componentPanel->addAndMakeVisible(layoutComps[layoutComps.size()-1]);
-		}
-	else ((TextButton*)controls[idx])->setBounds(left+relX, top+relY, width, height);
-
-	if(cAttr.getStringProp("colour").length()>0)
-	((TextButton*)controls[idx])->setColour(TextButton::buttonColourId,
-			Colours::findColourForName(cAttr.getStringProp("colour"), Colours::grey));
-
+	((CabbageButton*)controls[idx])->setBounds(left+relX, top+relY, width, height);
+	((CabbageButton*)controls[idx])->button->setButtonText(cAttr.getItems(0));
+	((CabbageButton*)controls[idx])->button->addListener(this);
 	componentPanel->addAndMakeVisible(controls[idx]);
-
-
-	cAttr.setNumProp("min", 0);
-	cAttr.setNumProp("max", 1);
 }
 catch(...){
     Logger::writeToLog(T("Syntax error: 'button..."));
@@ -772,8 +768,12 @@ catch(...){
 void CabbagePluginAudioProcessorEditor::InsertCheckBox(CabbageGUIClass cAttr)
 {
 try{
-	controls.add(new ToggleButton(cAttr.getStringProp("name")));	
+	controls.add(new CabbageCheckbox(cAttr.getStringProp("name"),
+		cAttr.getStringProp("caption"),
+		cAttr.getItems(0),
+		cAttr.getStringProp("colour")));	
 	int idx = controls.size()-1;
+
 	float left = cAttr.getNumProp("left");
 	float top = cAttr.getNumProp("top");
 	float width = cAttr.getNumProp("width");
@@ -794,16 +794,10 @@ try{
 		left = left*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
 	}
 	
-	if(cAttr.getStringProp("colour").length()>0)
-		((ToggleButton*)controls[idx])->setColour(ToggleButton::textColourId,
-			Colours::findColourForName(cAttr.getStringProp("colour"), Colours::grey));
-	
-	((ToggleButton*)controls[idx])->setBounds(left+relX, top+relY, width, height);
-	((ToggleButton*)controls[idx])->setButtonText(cAttr.getStringProp("caption"));
+	((CabbageCheckbox*)controls[idx])->setBounds(left+relX, top+relY, width, height);
 	componentPanel->addAndMakeVisible(controls[idx]);
-	((ToggleButton*)controls[idx])->addListener(this);
-	cAttr.setNumProp("min", 0);
-	cAttr.setNumProp("max", 1);
+	((CabbageCheckbox*)controls[idx])->button->addListener(this);
+	((CabbageButton*)controls[idx])->button->setButtonText(cAttr.getItems(0));
 }
 catch(...){
     Logger::writeToLog(T("Syntax error: 'checkbox..."));
@@ -836,10 +830,10 @@ void CabbagePluginAudioProcessorEditor::buttonClicked(Button* button)
 				getFilter()->getGUICtrls(i).setNumProp("value", 0);
 				}
 				//toggle text values
-				if(getFilter()->getGUICtrls(i).getOnOffcaptions(1)==button->getButtonText())
-					button->setButtonText(getFilter()->getGUICtrls(i).getOnOffcaptions(0));
-				else if(getFilter()->getGUICtrls(i).getOnOffcaptions(0)==button->getButtonText())
-					button->setButtonText(getFilter()->getGUICtrls(i).getOnOffcaptions(1));
+				if(getFilter()->getGUICtrls(i).getItems(1)==button->getButtonText())
+					button->setButtonText(getFilter()->getGUICtrls(i).getItems(1));
+				else if(getFilter()->getGUICtrls(i).getItems(1)==button->getButtonText())
+					button->setButtonText(getFilter()->getGUICtrls(i).getItems(1));
 
 			}
 			}
@@ -866,15 +860,16 @@ void CabbagePluginAudioProcessorEditor::buttonClicked(Button* button)
 void CabbagePluginAudioProcessorEditor::InsertComboBox(CabbageGUIClass cAttr)
 {
 try{
+	controls.add(new CabbageComboBox(cAttr.getStringProp("name"),
+		cAttr.getStringProp("caption"),
+		cAttr.getItems(0),
+		cAttr.getStringProp("colour")));	
+	int idx = controls.size()-1;
+
 	float left = cAttr.getNumProp("left");
 	float top = cAttr.getNumProp("top");
 	float width = cAttr.getNumProp("width");
 	float height = cAttr.getNumProp("height");
-	
-	
-	//controls.push_back(new ComboBox(str2Juce(cAttr.getStringProp("name")), left, top, width, height, str2Juce(cAttr.getStringProp("colour")), str2Juce(cAttr.getStringProp("outline")), cAttr.getNumProp("line")));	
-	controls.add(new ComboBox(cAttr.getStringProp("name")));
-	int idx = controls.size()-1;
 
 	//check to see if widgets is anchored
 	//if it is offset it's position accordingly. 
@@ -890,48 +885,22 @@ try{
 		top = top*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
 		left = left*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
 	}
-
-	if(cAttr.getStringProp("caption").length()>0){
-			((ComboBox*)controls[idx])->setBounds(left+12+relX, top+20+relY, width-25, height-30);
-			layoutComps.add(new GroupComponent(T("GroupBox"), cAttr.getStringProp("caption")));
-			layoutComps[layoutComps.size()-1]->setBounds(left+relX, top+relY, width, height);
-			componentPanel->addAndMakeVisible(layoutComps[layoutComps.size()-1]);
-		}
-		
-	else ((ComboBox*)controls[idx])->setBounds(left+relX, top+relY, width, height);
+    
+	controls[idx]->setBounds(left+relX, top+relY, width, height);
 
 //this needs some attention. 
 //At present comboxbox colours can't be changed...
 
-	feely = new LookAndFeel();
-	feely->setColour(ComboBox::arrowColourId, Colours::red);
-	feely->setColour(ComboBox::buttonColourId, Colours::yellow);
-	feely->setColour(ComboBox::backgroundColourId, Colours::black);
-	feely->setColour(ComboBox::textColourId, Colours::white);
-
-
-	if(cAttr.getStringProp("colour").length()>0)
-	((ComboBox*)controls[idx])->setColour(TextButton::buttonColourId,
-			Colours::findColourForName(cAttr.getStringProp("colour"), Colours::grey));
-
-	((ComboBox*)controls[idx])->setEditableText (false);
-    ((ComboBox*)controls[idx])->setJustificationType (Justification::centredLeft);
-
-	((ComboBox*)controls[idx])->setTextWhenNothingSelected(cAttr.getItems(0));
-	
     for(int i=1;i<(int)cAttr.getItemsSize()+1;i++){
 		String test  = cAttr.getItems(i-1);
-		((ComboBox*)controls[idx])->addItem(cAttr.getItems(i-1), i);
+		((CabbageComboBox*)controls[idx])->combo->addItem(cAttr.getItems(i-1), i);
 		cAttr.setNumProp("max", i);
 	}
 
-	((ComboBox*)controls[idx])->setSelectedId(cAttr.getNumProp("value"));
-	
-	cAttr.setNumProp("min", 1);
-	
-	componentPanel->addAndMakeVisible(((ComboBox*)controls[idx]));
-	((ComboBox*)controls[idx])->setName(cAttr.getStringProp("name"));
-	((ComboBox*)controls[idx])->addListener(this);
+	((CabbageComboBox*)controls[idx])->combo->setSelectedId(cAttr.getNumProp("value"));
+	componentPanel->addAndMakeVisible(((CabbageComboBox*)controls[idx]));
+	((CabbageComboBox*)controls[idx])->setName(cAttr.getStringProp("name"));
+	((CabbageComboBox*)controls[idx])->combo->addListener(this);
 
 }
 catch(...){
@@ -1018,7 +987,7 @@ for(int i=0;i<(int)getFilter()->getGUICtrlsSize();i++){
 	
 	else if(getFilter()->getGUICtrls(i).getStringProp("type")==T("button")){
 	if(controls[i])
-		((Button*)controls[i])->setButtonText(getFilter()->getGUICtrls(i).getOnOffcaptions(1-(int)value));
+		((Button*)controls[i])->setButtonText(getFilter()->getGUICtrls(i).getItems(1-(int)value));
 	}
 	
 	else if(getFilter()->getGUICtrls(i).getStringProp("type")==T("combobox")){
@@ -1081,7 +1050,7 @@ for(int i=0;i<(int)getFilter()->getGUILayoutCtrlsSize();i++){
 				}
 				else if(getFilter()->getGUICtrls(i).getStringProp("type")==T("button")){
 				if(controls[i])
-					((Button*)controls[i])->setButtonText(getFilter()->getGUICtrls(i).getOnOffcaptions(1-(int)value));
+					((Button*)controls[i])->setButtonText(getFilter()->getGUICtrls(i).getItems(1-(int)value));
 				}
 				else if(getFilter()->getGUICtrls(i).getStringProp("type")==T("combobox")){
 					if(controls[i]){

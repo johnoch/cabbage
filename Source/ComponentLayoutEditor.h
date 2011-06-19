@@ -19,7 +19,7 @@ class ChildAlias   :   public Component,
 						public CabbageUtils
     {
     public:
-      ChildAlias (Component* targetChild, int index);
+      ChildAlias (Component* targetChild, String type, int index);
       ~ChildAlias ();
       
       void resized ();
@@ -45,8 +45,8 @@ class ChildAlias   :   public Component,
       
     private:
 	  int index;
-      CriticalSection bounds;
-	  void updateCurrentDimensions(int x, int y, int width, int height);
+	  String type;
+	  CriticalSection bounds;
       ScopedPointer<ComponentBoundsConstrainer>  constrainer;
 
       ComponentDragger dragger;
@@ -86,7 +86,7 @@ class ComponentLayoutEditor   :   public Component
       
     private:
       
-      virtual ChildAlias* createAlias (Component* child, int index);
+      virtual ChildAlias* createAlias (Component* child, String type, int index);
       
       SafePointer<Component> target;
       OwnedArray<ChildAlias> frames;

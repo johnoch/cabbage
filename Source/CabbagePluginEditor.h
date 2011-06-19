@@ -93,58 +93,7 @@ private:
 //==============================================================================
 /**
 */
-class imageComponent : public Component,
-						public CabbageUtils
-{
-public:
-	imageComponent(String name, String file, int top, int left, int width, int height, String outline, String fill, String shape, int line):
-	picFile(file), file(file), top(top), left(left), width(width), height(height), fill(fill), outline(outline), shape(shape), line(line){
-		widget = new Component(name);
 
-		img = ImageCache::getFromFile (File (file));
-	}
-	~imageComponent(){
-	}
-
-private:
-	ScopedPointer<Component> widget;
-	Image img;
-	int top, left, width, height, line;
-	String fill, outline, shape, file;
-	File picFile;
-
-	
-	
-
-	void paint (Graphics& g){
-		if(file.length()>5){
-		g.drawImage(img, 0, 0, width, height, 0, 0, img.getWidth(), img.getHeight());
-		}
-		else{
-			if(shape.contains("rounded")){
-				g.setColour(Colours::findColourForName(outline, Colours::black));
-				g.fillRoundedRectangle(0,0, width, height, width*.02);
-				g.setColour(Colours::findColourForName(fill, Colours::black));
-				g.fillRoundedRectangle(line,line, width-(line*2), height-(line*2), width*.02);				
-			}
-			else if(shape.contains("ellipse")){
-				g.setColour(Colours::findColourForName(outline, Colours::black));
-				g.fillEllipse(0,0, width, height);
-				g.setColour(Colours::findColourForName(fill, Colours::black));
-				g.fillEllipse(line,line, width-(line*2), height-(line*2));				
-			}
-			else if(shape.contains("sharp")){
-				
-				g.setColour(Colours::findColourForName(outline, Colours::black));
-				g.fillRect(0,0, width, height);
-				g.setColour(Colours::findColourForName(fill, Colours::black));
-				g.fillRect(line,line, width-(line*2), height-(line*2));				
-			}
-		}
-
-	}
-	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (imageComponent);
-};
 
 
 #endif  // __PLUGINEDITOR_H_F4EBBBA1__

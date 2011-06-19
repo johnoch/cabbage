@@ -53,10 +53,19 @@ private:
 	int currentIndex;
 	bool LOCKED;
 	String mouseState;
+	String colour;
 
 
 
 public:
+	inline void setColour(String col){
+		colour = col;
+	}
+
+	inline String getColour(){
+		return colour;
+	}
+
 	inline String getMouseState(){
 		return mouseState;
 	}
@@ -69,6 +78,15 @@ public:
 	return T("bounds(") + String(left) + T(", ") + String(top) + T(", ") + String(width) + T(", ")
 			+ String(height) + T(")");
 	}
+
+	String getCurrentPos(){
+	return T("pos(") + String(left) + T(", ") + String(top) + T(")");
+	}
+
+	String getCurrentSize(){
+	return T("size(") + String(width) + T(", ") + String(height) + T(")");
+	}
+
 	CabbageMainPanel();
 	~CabbageMainPanel();
 	void paint(Graphics &g);

@@ -9,8 +9,8 @@
 #include "ComponentLayoutEditor.h"
 #include "CabbageMainPanel.h"
 
-ChildAlias::ChildAlias (Component* targetChild, int ind)
-:   target (targetChild), index(ind)
+ChildAlias::ChildAlias (Component* targetChild, String type, int ind)
+:   target (targetChild), index(ind), type(type)
 {   
    resizeContainer = new ComponentBoundsConstrainer();
    resizeContainer->setMinimumSize(target.getComponent()->getWidth()/2, target.getComponent()->getHeight()/2); //set minimum size so objects cant be resized too small
@@ -123,8 +123,12 @@ void ChildAlias::mouseDown (const MouseEvent& e)
    userAdjusting = true;
    startBounds = getBounds ();
    userStartedChangingBounds ();
+   //update dimensions
    ((CabbageMainPanel*)(getTarget()->getParentComponent()))->setIndex(index);
-   updateCurrentDimensions(getPosition().getX(), getPosition().getY(), getWidth(), getHeight());
+   ((CabbageMainPanel*)(getTarget()->getParentComponent()))->width = getWidth();
+   ((CabbageMainPanel*)(getTarget()->getParentComponent()))->height = getHeight();
+   ((CabbageMainPanel*)(getTarget()->getParentComponent()))->left = getPosition().getX();
+   ((CabbageMainPanel*)(getTarget()->getParentComponent()))->top = getPosition().getY(); 
    ((CabbageMainPanel*)(getTarget()->getParentComponent()))->sendChangeMessage();
    
 }
@@ -143,12 +147,19 @@ void ChildAlias::mouseUp (const MouseEvent& e)
    if (userAdjusting) userStoppedChangingBounds ();
    userAdjusting = false;   
    
-  // updateCurrentDimensions(getPosition().getX(), getPosition().getY(), 1000, 2000);
+   //update dimensions
    ((CabbageMainPanel*)(getTarget()->getParentComponent()))->width = getWidth();
    ((CabbageMainPanel*)(getTarget()->getParentComponent()))->height = getHeight();
    ((CabbageMainPanel*)(getTarget()->getParentComponent()))->left = getPosition().getX();
    ((CabbageMainPanel*)(getTarget()->getParentComponent()))->top = getPosition().getY();      
    ((CabbageMainPanel*)(getTarget()->getParentComponent()))->sendChangeMessage();
+
+   if(type.containsIgnoreCase("juce::GroupComponent")||
+	   type.containsIgnoreCase("CabbageImage"))
+	   toBack();
+   else 
+	   toFront(true);
+
 
 }
 
@@ -164,6 +175,9 @@ void ChildAlias::mouseDrag (const MouseEvent& e)
 		 constrainer->setMinimumOnscreenAmounts(getHeight(), getWidth(), getHeight(), getWidth());
          dragger.dragComponent (this,e, constrainer);
          applyToTarget ();
+		 if(type.containsIgnoreCase("juce::GroupComponent")||
+					type.containsIgnoreCase("CabbageImage"))
+			toBack();
       }
    }
 }
@@ -178,14 +192,6 @@ void ChildAlias::mouseExit (const MouseEvent& e)
 {
    interest = false;
    repaint ();
-}
-
-void ChildAlias::updateCurrentDimensions(int x, int y, int width, int height)
-{
-   ((CabbageMainPanel*)(getTarget()->getParentComponent()))->width = width;
-   ((CabbageMainPanel*)(getTarget()->getParentComponent()))->height = height;
-   ((CabbageMainPanel*)(getTarget()->getParentComponent()))->left = x;
-   ((CabbageMainPanel*)(getTarget()->getParentComponent()))->top = y;
 }
 
 //=============================================================================
@@ -253,15 +259,15 @@ void ComponentLayoutEditor::updateFrames ()
       //if (target && !target->hasBeenDeleted ())
    {
       Component* t = (Component*) target.getComponent ();
-      
+
       int n = t->getNumChildComponents ();
       for (int i=0; i<n; i++)
       {
          Component* c = t->getChildComponent (i);
-         if (c)
+		 String type(typeid(*c).name());
+		 if (c)
          {
-                ChildAlias* alias = createAlias (c, compIndex++);
-//				alias->addChangeListener(this);
+                ChildAlias* alias = createAlias (c, type, compIndex++);
                 if (alias)
                 {
                frames.add (alias);
@@ -291,7 +297,7 @@ const Component* ComponentLayoutEditor::getTarget ()
    return 0;
 }
 
-ChildAlias* ComponentLayoutEditor::createAlias (Component* child, int index)
+ChildAlias* ComponentLayoutEditor::createAlias (Component* child, String type, int index)
 {
-   return new ChildAlias (child, index);
+   return new ChildAlias (child, type, index);
 }
