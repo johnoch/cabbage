@@ -80,7 +80,7 @@ public:
 		}
 
 		void connectionLost(){
-			owner.sendMessageToWinXound("CABBAGE_SHOW_MESSAGE|Warning", T("Connection with WinXound has been lost, please restart Cabbage"));
+			showMessage("Connection with WinXound has been lost, please restart Cabbage");
 			Logger::writeToLog(T("Connection #") + String (ourNumber) + T(" - connection lost"));
 		}
 
@@ -93,6 +93,7 @@ public:
 				owner.resetFilter();
 				//owner.toFront(true);
 				Logger::writeToLog(T("Cabbage Updated"));
+				owner.sendMessageToWinXound(T("CABBAGE_SELECT_LINE"), owner.getCurrentLine()); 
 			}
 		/*
 			else if(message.toString().contains("CABBAGE_EXPORT_VSTI"))
@@ -120,6 +121,22 @@ public:
 	void changeListenerCallback(ChangeBroadcaster *source);
 	int exportPlugin(String type);
 
+	bool isGuiEnabled(){
+		return isGUIOn;
+	}
+
+	void setGuiEnabled(bool onoff){
+		isGUIOn = onoff;
+	}
+	
+	void setCurrentLine(int line){
+		currentLine=line;
+	}
+
+	int getCurrentLine(){
+		return currentLine;
+	}
+
 private:
 	ScopedPointer<socketServer> server;
 	ScopedPointer<socketConnection> ipConnection;  //*** MOD:STEFANO - ADDED
@@ -132,6 +149,8 @@ private:
     TextButton optionsButton;
     void deleteFilter();
 	File csdFile; 
+	bool isGUIOn;
+	int currentLine;
 	
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (StandaloneFilterWindow);
 };

@@ -31,15 +31,17 @@
 //===========================================================
 // STANDALONE - CONSTRUCTOR 
 //===========================================================
-CabbagePluginAudioProcessor::CabbagePluginAudioProcessor(String inputfile)
+CabbagePluginAudioProcessor::CabbagePluginAudioProcessor(String inputfile, bool guiOnOff)
 :csoundStatus(false), 
 csdFile(File(inputfile)), 
 showMIDI(false), 
 csCompileResult(1), 
 changeMessageType(""), 
-guiMODE(false)
+guiOnOff(guiOnOff)
 {
 #ifndef Cabbage_No_Csound
+//don't start of run Csound in edit mode
+if(!isGuiEnabled()){
 csound = new Csound();
 csound->PreCompile();
 csound->SetHostData(this);
@@ -73,6 +75,7 @@ else{
 }
 else
 Logger::writeToLog("Welcome to Cabbage");
+}//end of guiEnabled() check
 #endif
 }
 #else
@@ -139,13 +142,17 @@ else{
 CabbagePluginAudioProcessor::~CabbagePluginAudioProcessor()
 {
 #ifndef Cabbage_No_Csound
+if(!isGuiEnabled()){
 	const MessageManagerLock mmLock;
-	csound->DeleteChannelList(csoundChanList);
-	Logger::writeToLog("about to cleanup Csound");
-	csound->Cleanup();
-	csound->Reset();
-	csound = nullptr;
-	Logger::writeToLog("Csound cleaned up");
+	if(csound){
+		csound->DeleteChannelList(csoundChanList);
+		Logger::writeToLog("about to cleanup Csound");
+		csound->Cleanup();
+		csound->Reset();
+		csound = nullptr;
+		Logger::writeToLog("Csound cleaned up");
+	}
+}//end of gui enabled check
 #endif
 }
 
@@ -276,9 +283,9 @@ sendChangeMessage();
  
 //==============================================================================
 #ifdef Cabbage_Build_Standalone
-CabbagePluginAudioProcessor* JUCE_CALLTYPE createCabbagePluginFilter(String inputfile)
+CabbagePluginAudioProcessor* JUCE_CALLTYPE createCabbagePluginFilter(String inputfile, bool guiOnOff)
 {
-    return new CabbagePluginAudioProcessor(inputfile);
+    return new CabbagePluginAudioProcessor(inputfile, guiOnOff);
 }
 #else
 AudioProcessor* JUCE_CALLTYPE createPluginFilter()
@@ -324,7 +331,9 @@ if(index<(int)guiCtrls.size())//make sure index isn't out of range
 	Logger::writeToLog(guiCtrls.getReference(index).getStringProp("channel"));
 	guiCtrls.getReference(index).setNumProp("value", newValue);
 	#ifndef Cabbage_No_Csound
+	if(!isGuiEnabled()){
 	csound->SetChannel(guiCtrls.getReference(index).getStringProp("channel").toUTF8(), guiCtrls.getReference(index).getNumProp("value"));
+	}//end of GUI enabled check 
 	#endif
 #endif
      }
@@ -429,6 +438,7 @@ void CabbagePluginAudioProcessor::releaseResources()
 //host widgets is being used
 void CabbagePluginAudioProcessor::timerCallback(){
 #ifndef Cabbage_No_Csound
+if(!isGuiEnabled()){
 	//initiliase any channels send host information to Csound
 	AudioPlayHead::CurrentPositionInfo hostInfo;
 	for(int i=0;i<(int)getGUILayoutCtrlsSize();i++){
@@ -453,6 +463,7 @@ void CabbagePluginAudioProcessor::timerCallback(){
 			csound->SetChannel(getGUILayoutCtrls(i).getStringProp("channel").toUTF8(), hostInfo.ppqPosition);
 		}
 	}
+}// end of GUI enabled check
 #endif
 }
 //==============================================================================
@@ -504,7 +515,6 @@ else{
     {
         buffer.clear (i, 0, buffer.getNumSamples());
     }
-
 
 #endif
 }

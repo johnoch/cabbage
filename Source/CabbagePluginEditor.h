@@ -64,6 +64,7 @@ private:
 	void timerCallback();
 	void mouseDown(const MouseEvent &e);
 	bool LOCKED;
+	void insertCabbageText(String text);
 	int lineNumber;
 	//CabbagePluginAudioProcessor* filter;
 	CabbagePluginAudioProcessor* getFilter() const

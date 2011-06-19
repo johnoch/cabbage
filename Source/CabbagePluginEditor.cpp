@@ -46,21 +46,10 @@ layoutEditor->setTargetComponent(componentPanel);
 #else
 componentPanel = new Component();
 addAndMakeVisible(componentPanel);
-#ifdef Cabbage_Build_Standalone
-componentPanel->setWantsKeyboardFocus(true);
-componentPanel->toFront(true);
-componentPanel->grabKeyboardFocus();
-#endif
 #endif
 
 
 componentPanel->addKeyListener(this);
-//only want to grab keyboard focus on standalone mode as DAW handle their own keystrokes
-
-
-
-
-
 componentPanel->setInterceptsMouseClicks(false, true);	
 setSize (400, 400);
 InsertGUIControls();
@@ -68,10 +57,16 @@ startTimer(10);
 
 #ifdef Cabbage_GUI_Editor
 componentPanel->addChangeListener(this);
-if(!getFilter()->inGUIMode()){
+if(!ownerFilter->isGuiEnabled()){
 layoutEditor->setEnabled(false);
 layoutEditor->toFront(false); 
 layoutEditor->updateFrames();
+#ifdef Cabbage_Build_Standalone
+	//only want to grab keyboard focus on standalone mode as DAW handle their own keystrokes
+	componentPanel->setWantsKeyboardFocus(true);
+	componentPanel->toFront(true);
+	componentPanel->grabKeyboardFocus();
+#endif
 }
 else{
 layoutEditor->setEnabled(true);
@@ -79,11 +74,7 @@ layoutEditor->toFront(true);
 layoutEditor->updateFrames();
 }
 #endif
-/*
-debugLabel = new Label("debug");
-debugLabel->setBounds(10, 10, 100, 40);
-componentPanel->addAndMakeVisible(debugLabel);
-*/
+
 }
 
 CabbagePluginAudioProcessorEditor::~CabbagePluginAudioProcessorEditor()
@@ -135,7 +126,8 @@ temp = csdArray[lineNumber].replace(T("bounds()"), componentPanel->getCurrentBou
 csdArray.set(lineNumber, temp);
 Logger::writeToLog(csdArray[lineNumber]);
 getFilter()->updateCsoundFile(csdArray.joinIntoString("\n"));
-getFilter()->setChangeMessageType("GUI_mod");	
+getFilter()->setGuiEnabled(true);
+getFilter()->setChangeMessageType("GUI_edit");	
 getFilter()->sendChangeMessage();
 repaint();
 }
@@ -151,53 +143,106 @@ void CabbagePluginAudioProcessorEditor::mouseDown(const MouseEvent &e)
 {
 #ifdef Cabbage_GUI_Editor
 PopupMenu m;
-if(LOCKED==true)
-m.addItem(12, "Edit-mode");
+PopupMenu sm;
+sm.addItem(1, "5_vsliders");
+sm.addItem(2, "green_rslider");
+if(!getFilter()->isGuiEnabled())
+m.addItem(11, "Edit-mode");
 else{
-m.addItem(1, "Insert...");
+m.addItem(10, "Play-mode");
 m.addSeparator();
-m.addItem(10, "Lock");
+m.addSubMenu(T("Plants"), sm); 
+
+m.addItem(1, "Insert button");
+m.addItem(2, "Insert rslider");
+m.addItem(3, "Insert vslider");
+m.addItem(4, "Insert hslider");
+m.addItem(5, "Insert combobox");
+m.addItem(6, "Insert checkbox");
+m.addItem(7, "Insert groupbox");
+m.addItem(8, "Insert image");
+m.addItem(9, "Insert keyboard");
 }
 
 if (e.mods.isRightButtonDown())
  {
- const int result = m.show();
- if(result==1){
+ switch(m.show()){
 	 /* the plan here is to simply send text to WinXound and get it
 	 to update the instrument. This way Cabbage don't have to keep track of 
 	 anything as all controls will automatically get added to the GUI controls vector
 	 when Cabbage is updated */
-	 StringArray csdArray;
-	 int endOfSection = 0;
-	 csdArray.addLines(getFilter()->getCsoundInputFileText());
-	 endOfSection = csdArray.indexOf("</Cabbage>", true);
-	 showMessage(endOfSection);
-	 csdArray.insert(endOfSection, T("button bounds(0, 0, 100, 50), channel(\"but1\"), items(\"on\", \"off\")"));
-	 showMessage(csdArray.joinIntoString("\n"));
-	 getFilter()->updateCsoundFile(csdArray.joinIntoString("\n"));
-	 getFilter()->setChangeMessageType("GUI_insert");	 
-//	 sendChangeMessage();
+ case 1:
+	 insertCabbageText(T("button bounds(")+String(e.getPosition().getX())+(", ")+String(e.getPosition().getY())+T(", 60, 25), channel(\"but1\"), text(\"on\", \"off\")"));
+	 break;
+ case 2:
+	 insertCabbageText(T("rslider bounds(")+String(e.getPosition().getX())+(", ")+String(e.getPosition().getY())+T(", 90, 90), channel(\"rslider\"), caption(\"\"), range(0, 100, 0)"));
+	 break;
+ case 3:
+	 insertCabbageText(T("vslider bounds(")+String(e.getPosition().getX())+(", ")+String(e.getPosition().getY())+T(", 50, 125), channel(\"vslider\"), caption(\"\"), range(0, 100, 0)"));
+	 break;
+ case 4:
+	 insertCabbageText(T("hslider bounds(")+String(e.getPosition().getX())+(", ")+String(e.getPosition().getY())+T(", 225, 30), channel(\"hslider\"), caption(\"\"), range(0, 100, 0)"));
+	 break;
+ case 5:
+	 insertCabbageText(T("combobox bounds(")+String(e.getPosition().getX())+(", ")+String(e.getPosition().getY())+T(", 100, 30), channel(\"combobox\"), items(\"1\", \"2\", \"3\")"));
+	 break;
+ case 6:
+	 insertCabbageText(T("checkbox bounds(")+String(e.getPosition().getX())+(", ")+String(e.getPosition().getY())+T(", 100, 40), channel(\"checkbox\"), text(\"checkbox\")"));
+	 break;
+ case 7:
+	 insertCabbageText(T("groupbox bounds(")+String(e.getPosition().getX())+(", ")+String(e.getPosition().getY())+T(", 200, 150), text(\"checkbox\"), colour(\"black\"), caption(\"groupbBox\")"));
+	 break;
+ case 8:
+	 insertCabbageText(T("image bounds(")+String(e.getPosition().getX())+(", ")+String(e.getPosition().getY())+T(", 200, 150), text(\"checkbox\"), colour(\"white\"), caption(\"\"), outline(\"black\"), line(3)"));
+	 break;
+ case 9:
+	 insertCabbageText(T("keyboard bounds(")+String(e.getPosition().getX())+(", ")+String(e.getPosition().getY())+T(", 150, 60)"));
+	 break;
+ case 10:
+	 //Play-mode	 
+	 layoutEditor->setEnabled(false);
+	 componentPanel->toFront(true);
+	 componentPanel->setInterceptsMouseClicks(false, true);	
+	 getFilter()->setGuiEnabled(false);
+	 getFilter()->setChangeMessageType("GUI_lock");
+	 getFilter()->sendChangeMessage();
+	 break;
+ case 11:
+	 //Edit-mode
+	 layoutEditor->setEnabled(true);
+	 layoutEditor->updateFrames();
+	 layoutEditor->toFront(true); 
+	 getFilter()->setGuiEnabled(true);
+	 getFilter()->setChangeMessageType("GUI_edit");
+	 getFilter()->sendChangeMessage();
+	 break;
+ default:
+	 break;
+
 
  }
 
-
- if(result == 10)//Lock
-     {
-		 layoutEditor->setEnabled(false);
-		 componentPanel->toFront(true);
-		 componentPanel->setInterceptsMouseClicks(false, true);	
-		 LOCKED=true;
-     }
- else if (result == 12)//Edit-mode
-     {
-		 layoutEditor->setEnabled(true);
-		 layoutEditor->updateFrames();
-		 layoutEditor->toFront(true); 
-		 LOCKED=false;
-     }
 }
 #endif
 }
+//==============================================================================
+void CabbagePluginAudioProcessorEditor::insertCabbageText(String text)
+{
+	 StringArray csdArray;
+	 csdArray.addLines(getFilter()->getCsoundInputFileText());
+	 for(int i=0;i<csdArray.size();i++)
+		 if(csdArray[i].containsIgnoreCase("</Cabbage>")){
+			 csdArray.insert(i, text);
+			 getFilter()->setCurrentLine(i);
+			 i=csdArray.size();
+		 }
+		 Logger::writeToLog(String(getFilter()->getCurrentLine()));
+
+	 getFilter()->updateCsoundFile(csdArray.joinIntoString("\n"));
+	 getFilter()->setChangeMessageType("GUI_edit");
+	 getFilter()->sendChangeMessage();
+}
+
 //==============================================================================
 void CabbagePluginAudioProcessorEditor::resized()
 {
@@ -459,7 +504,11 @@ try{
 	setSize(width, height);
 	componentPanel->setBounds(left, top, width, height);
 	formColour = Colours::findColourForName(cAttr.getStringProp("colour"), Colours::floralwhite);
-	componentPanel->setColour(cAttr.getStringProp("colour"));
+#ifdef Cabbage_GUI_Editor
+	componentPanel->setCompColour(cAttr.getStringProp("colour"));
+#else
+	formColour = Colours::findColourForName(cAttr.getStringProp("colour"), Colours::floralwhite);
+#endif
 
 	
 #ifdef Cabbage_Build_Standalone
@@ -558,8 +607,7 @@ try{
 		width = width*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
 		height = height*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
 		top = top*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
-		left = left*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
-		
+		left = left*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();		
 	}
 	}
 
@@ -593,6 +641,7 @@ catch(...){
 void CabbagePluginAudioProcessorEditor::sliderValueChanged (Slider* sliderThatWasMoved)
 {
 #ifndef Cabbage_No_Csound
+if(!getFilter()->isGuiEnabled()){
 if(sliderThatWasMoved->isEnabled()) // before sending data to on named channel
     {
     //if(RUNNING){make sure Csound is playing before calling SetChannel()
@@ -617,6 +666,7 @@ if(sliderThatWasMoved->isEnabled()) // before sending data to on named channel
  			}
 		}
 }
+}//end of GUI enabled check
 #endif
 }
 
@@ -717,6 +767,7 @@ catch(...){
 void CabbagePluginAudioProcessorEditor::buttonClicked(Button* button)
 {
 #ifndef Cabbage_No_Csound
+if(!getFilter()->isGuiEnabled()){
 	if(button->isEnabled()){     // check button is ok before sending data to on named channel
 	if(dynamic_cast<TextButton*>(button)){//check what type of button it is
 		for(int i=0;i<(int)getFilter()->getGUICtrlsSize();i++){//find correct control from vector
@@ -754,6 +805,7 @@ void CabbagePluginAudioProcessorEditor::buttonClicked(Button* button)
      			}
 	}
 	}
+}//end of GUI enabled check
 #endif
 }
 
@@ -822,6 +874,7 @@ catch(...){
 void CabbagePluginAudioProcessorEditor::comboBoxChanged (ComboBox* combo)
 {
 #ifndef Cabbage_No_Csound
+if(!getFilter()->isGuiEnabled()){
 if(combo->isEnabled()) // before sending data to on named channel
     {
 		for(int i=0;i<(int)getFilter()->getGUICtrlsSize();i++){//find correct control from vector
@@ -850,6 +903,7 @@ if(combo->isEnabled()) // before sending data to on named channel
      				}
 		}
 	 }
+}//end of GUI enabled check
 #endif
 }
 
@@ -858,6 +912,7 @@ if(combo->isEnabled()) // before sending data to on named channel
 bool CabbagePluginAudioProcessorEditor::keyPressed(const juce::KeyPress &key ,juce::Component *)
 {
 #ifndef Cabbage_No_Csound
+if(!getFilter()->isGuiEnabled()){
 getFilter()->getCsound()->KeyPressed(key.getTextCharacter());
 //search through controls to see which is attached to the current key being pressed. 
 for(int i=0;i<(int)getFilter()->getGUICtrlsSize();i++){
@@ -871,6 +926,7 @@ if(getFilter()->getGUICtrls(i).getStringProp("type")==T("button")){
 		}
 	}
 }
+}//end of GUI enabled check
 #endif
 return true;
 }

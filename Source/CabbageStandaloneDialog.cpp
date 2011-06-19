@@ -24,7 +24,7 @@
 //==============================================================================
 //  Somewhere in the codebase of your plugin, you need to implement this function
 //  and make it create an instance of the filter subclass that you're building.
-extern CabbagePluginAudioProcessor* JUCE_CALLTYPE createCabbagePluginFilter(String inputfile);
+extern CabbagePluginAudioProcessor* JUCE_CALLTYPE createCabbagePluginFilter(String inputfile, bool guiOnOff);
 
 //==============================================================================
 StandaloneFilterWindow::StandaloneFilterWindow (const String& title,
@@ -32,7 +32,7 @@ StandaloneFilterWindow::StandaloneFilterWindow (const String& title,
     : DocumentWindow (title, backgroundColour,
                       DocumentWindow::minimiseButton
                        | DocumentWindow::closeButton),
-      optionsButton ("options")
+      optionsButton ("options"), isGUIOn(false)
 {
 	setTitleBarButtonsRequired (DocumentWindow::minimiseButton | DocumentWindow::closeButton, false);
     Component::addAndMakeVisible (&optionsButton);
@@ -51,7 +51,7 @@ StandaloneFilterWindow::StandaloneFilterWindow (const String& title,
 
 	JUCE_TRY
     {
-        filter = createCabbagePluginFilter("");
+        filter = createCabbagePluginFilter("", false);
 		filter->addChangeListener(this);
 		filter->sendChangeMessage();
 		filter->createGUI("");
@@ -173,17 +173,19 @@ void StandaloneFilterWindow::changeListenerCallback(juce::ChangeBroadcaster* /*s
 {
 String text = "";
 #ifdef Cabbage_Named_Pipe
-if(filter->getChangeMessageType().containsIgnoreCase("GUI_insert")){
-//IF A USER INSERTS A WIDGET, THE NEW WIDGET TEXT IS SENT TO WINXOUND WHO IN TURN
-//UPDATES CABBAGE
+if(filter->getChangeMessageType().containsIgnoreCase("GUI_edit")){
+setGuiEnabled(true);
+setCurrentLine(filter->getCurrentLine()+1);
 sendMessageToWinXound(T("CABBAGE_FILE_UPDATED"), csdFile.getFullPathName());
 sendMessageToWinXound(T("CABBAGE_UPDATE"), "");
 }
-else if(filter->getChangeMessageType().containsIgnoreCase("GUI_mod")){
-//IF A USER MODIFIES A WIDGET, THE NEW WIDGET BOUNDS() ARE SENT TO WINXOUND, NOT NEED FOR UPDATE
+else if(filter->getChangeMessageType().containsIgnoreCase("GUI_lock")){
+setGuiEnabled(false);
+setCurrentLine(filter->getCurrentLine()+1);
 sendMessageToWinXound(T("CABBAGE_FILE_UPDATED"), csdFile.getFullPathName());
-sendMessageToWinXound(T("CABBAGE_SELECT_LINE"), filter->getCurrentLine()+1); 
 sendMessageToWinXound(T("CABBAGE_UPDATE"), "");
+sendMessageToWinXound(T("CABBAGE_SELECT_LINE"), getCurrentLine()); 
+Logger::writeToLog(String(getCurrentLine()));
 }
 else
 // MOD - Stefano Bonetti
@@ -233,10 +235,10 @@ void StandaloneFilterWindow::resetFilter()
 //const MessageManagerLock mmLock; 
     deleteFilter();
 
-	filter = createCabbagePluginFilter(csdFile.getFullPathName());
+	filter = createCabbagePluginFilter(csdFile.getFullPathName(), isGuiEnabled());
+	filter->suspendProcessing(isGuiEnabled());
 	filter->addChangeListener(this);
 	filter->sendChangeMessage();
-	filter->setGUIMode(true);
 	filter->createGUI(csdFile.loadFileAsString());
 	this->setName(filter->getPluginName());
 

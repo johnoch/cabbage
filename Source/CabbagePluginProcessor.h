@@ -41,7 +41,7 @@ class CabbagePluginAudioProcessor  : public AudioProcessor,
 public:
     //==============================================================================
 #ifdef Cabbage_Build_Standalone
-    CabbagePluginAudioProcessor(String inputfile);
+    CabbagePluginAudioProcessor(String inputfile, bool guiOnOff);
 #else
 	CabbagePluginAudioProcessor();
 #endif
@@ -150,13 +150,6 @@ public:
 		return csoundStatus;
 	}
 
-	inline bool inGUIMode(){
-		return guiMODE;
-	}
-
-	inline void setGUIMode(bool mode){
-		guiMODE=mode;
-	}
 	//===========================================================
 	inline int getGUICtrlsSize(){
 		return (int)guiCtrls.size();
@@ -197,6 +190,14 @@ public:
 
 #endif
 
+	bool isGuiEnabled(){
+		return guiOnOff;
+	}
+
+	void setGuiEnabled(bool onoff){
+		guiOnOff = onoff;
+	}
+
 	void createGUI(String source);
 	MidiKeyboardState keyboardState;
 	//midiBuffers
@@ -214,7 +215,7 @@ private:
 	void timerCallback();
 	void changeListenerCallback(ChangeBroadcaster *source);
 	String changeMessageType;
-	bool guiMODE;
+	bool guiOnOff;
 	int currentLine;
 
 	//============== Csound related variables/methods ==============================

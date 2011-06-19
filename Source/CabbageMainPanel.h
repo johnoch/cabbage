@@ -58,7 +58,7 @@ private:
 
 
 public:
-	inline void setColour(String col){
+	inline void setCompColour(String col){
 		colour = col;
 	}
 
