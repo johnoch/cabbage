@@ -378,6 +378,7 @@ try{
 		Colours::findColourForName(cAttr.getStringProp("colour"), Colours::black));
 	}
 	layoutComps[idx]->getProperties().set(String("plant"), var(cAttr.getStringProp("plant")));
+
 }
 catch(...){
     Logger::writeToLog(T("Syntax error: 'groupbox..."));

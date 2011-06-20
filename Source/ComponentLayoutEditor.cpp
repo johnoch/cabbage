@@ -44,12 +44,14 @@ void ChildAlias::paint (Graphics& g)
 {
    Colour c;
    if (interest)
-      c = findColour (ComponentLayoutEditor::aliasHoverColour,true);
-   else c = findColour (ComponentLayoutEditor::aliasIdleColour,true);
+	c = Colours::findColourForName(T("white"), Colours::black);
+   else
+	c = findColour (ComponentLayoutEditor::aliasHoverColour,true);
+
    
-   g.setColour (c.withMultipliedAlpha (0.3f));
+   g.setColour (c.withMultipliedAlpha (0.2f));
    g.fillAll ();
-   g.setColour (c);
+   g.setColour (Colours::findColourForName(T("orange"), Colours::black));
    g.drawRect (0,0,getWidth(),getHeight(),1);
 }
 
@@ -81,6 +83,7 @@ void ChildAlias::applyToTarget ()
 		if(type.containsIgnoreCase("juce::GroupComponent")||
 			type.containsIgnoreCase("CabbageImage"))
 			c->toBack();
+			
 		else 
 			c->toFront(true);
       c->setBounds (getBounds ());
@@ -112,6 +115,7 @@ bool ChildAlias::boundsChangedSinceStart ()
 
 void ChildAlias::mouseDown (const MouseEvent& e)
 {
+if (e.mods.isLeftButtonDown()){
 ((CabbageMainPanel*)(getTarget()->getParentComponent()))->setMouseState("down");
    toFront (true);
    if (e.eventComponent == resizer)
@@ -137,7 +141,10 @@ void ChildAlias::mouseDown (const MouseEvent& e)
    ((CabbageMainPanel*)(getTarget()->getParentComponent()))->left = getPosition().getX()-offX;
    ((CabbageMainPanel*)(getTarget()->getParentComponent()))->top = getPosition().getY()-offY; 
    ((CabbageMainPanel*)(getTarget()->getParentComponent()))->sendChangeMessage();
-   
+}
+
+if (e.mods.isRightButtonDown())
+ this->setInterceptsMouseClicks(false, false);
 }
 
 void ChildAlias::mouseUp (const MouseEvent& e)
@@ -174,6 +181,7 @@ void ChildAlias::mouseUp (const MouseEvent& e)
 
 void ChildAlias::mouseDrag (const MouseEvent& e)
 {
+if (e.mods.isLeftButtonDown()){
    if (e.eventComponent == resizer)
    {
    }
@@ -189,6 +197,13 @@ void ChildAlias::mouseDrag (const MouseEvent& e)
 			toBack();
       }
    }
+   if(type.containsIgnoreCase("juce::GroupComponent")||
+	   type.containsIgnoreCase("CabbageImage"))
+	   toBack();
+   else 
+	   toFront(true);
+
+}//end of left click check
 }
 
 void ChildAlias::mouseEnter (const MouseEvent& e)
@@ -279,7 +294,7 @@ void ComponentLayoutEditor::updateFrames ()
                 ChildAlias* alias = createAlias (c, type, compIndex++);
 				//pass on relative X and Y's to alias components so they are plant aware...
 				alias->getProperties().set("plantX", var(c->getProperties().getWithDefault(var::identifier("plantX"), 0)));
-                alias->getProperties().set("plantY", var(c->getProperties().getWithDefault(var::identifier("plantY"), 0)));
+                alias->getProperties().set("plantY", var(c->getProperties().getWithDefault(var::identifier("plantY"), 0)));				
 				if (alias)
                 {
                 frames.add (alias);
