@@ -93,7 +93,9 @@ public:
 				owner.resetFilter();
 				//owner.toFront(true);
 				Logger::writeToLog(T("Cabbage Updated"));
+#ifdef Cabbage_GUI_Editor
 				owner.sendMessageToWinXound(T("CABBAGE_SELECT_LINE"), owner.getCurrentLine()); 
+#endif
 			}
 		/*
 			else if(message.toString().contains("CABBAGE_EXPORT_VSTI"))

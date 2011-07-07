@@ -56,8 +56,8 @@ private:
 	String colour;
 
 
-
 public:
+	int width, height, top, left;
 	inline void setCompColour(String col){
 		colour = col;
 	}
@@ -92,9 +92,25 @@ public:
 	void paint(Graphics &g);
 	ComponentLayoutEditor* getLayoutEditor();
 	void setLayoutEditor(ComponentLayoutEditor* ed);
-	int width, height, top, left;
+
 	inline int getIndex(){
 	return currentIndex;
+	}
+
+	int getCurrentWidth(){
+		return width;
+	}
+
+	int getCurrentHeight(){
+		return height;
+	}
+
+	int getCurrentTop(){
+		return top;
+	}
+
+	int getCurrentLeft(){
+		return left;
 	}
 
 	inline void setIndex(int index){

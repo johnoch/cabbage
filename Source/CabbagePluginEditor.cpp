@@ -73,6 +73,11 @@ layoutEditor->setEnabled(true);
 layoutEditor->toFront(true); 
 layoutEditor->updateFrames();
 }
+#else
+//only want to grab keyboard focus on standalone mode as DAW handle their own keystrokes
+componentPanel->setWantsKeyboardFocus(true);
+componentPanel->toFront(true);
+componentPanel->grabKeyboardFocus();
 #endif
 
 }
@@ -92,14 +97,36 @@ CabbagePluginAudioProcessorEditor::~CabbagePluginAudioProcessorEditor()
 //===========================================================================
 void CabbagePluginAudioProcessorEditor::changeListenerCallback(ChangeBroadcaster *source)
 {
-//this needs to be modified so that it works with both pos()+size() as well as bounds()
+
 #ifdef Cabbage_GUI_Editor
+/*
 StringArray csdArray;
 String temp;
+//break up lines in csd file into a string array
 csdArray.addLines(getFilter()->getCsoundInputFileText());
 
 if(componentPanel->getMouseState().equalsIgnoreCase("down")){
 for(int i=0; i<csdArray.size(); i++){
+		CabbageGUIClass cAttr(csdArray[i], 0);
+		Logger::writeToLog(csdArray[i]);
+		if(cAttr.getNumProp(T("top"))==componentPanel->getCurrentTop() &&
+			cAttr.getNumProp(T("left"))==componentPanel->getCurrentLeft() &&
+			cAttr.getNumProp(T("width"))==componentPanel->getCurrentWidth() &&
+			cAttr.getNumProp(T("height"))==componentPanel->getCurrentHeight())
+		{
+			temp = csdArray[i].replace(componentPanel->getCurrentBounds(), T("bounds()"), true);
+			csdArray.set(i, temp);
+			Logger::writeToLog(temp);
+			getFilter()->updateCsoundFile(csdArray.joinIntoString("\n"));
+			lineNumber = i;					
+		}
+		getFilter()->setCurrentLine(lineNumber);
+		}
+}
+*/
+
+/*											
+	for(int i=0; i<csdArray.size(); i++){
 	if(csdArray[i].containsIgnoreCase(componentPanel->getCurrentBounds())||
 	(csdArray[i].containsIgnoreCase(componentPanel->getCurrentPos())&&
 	csdArray[i].containsIgnoreCase(componentPanel->getCurrentPos())))
@@ -118,19 +145,19 @@ for(int i=0; i<csdArray.size(); i++){
 	getFilter()->setCurrentLine(lineNumber);
 	}
 }
-}
+}*/
+/*
 else if(componentPanel->getMouseState().equalsIgnoreCase("up")){
 //ONLY SEND UPDATED INFO ON A MOUSE UP
 Logger::writeToLog(componentPanel->getCurrentBounds());
 temp = csdArray[lineNumber].replace(T("bounds()"), componentPanel->getCurrentBounds());
 csdArray.set(lineNumber, temp);
-Logger::writeToLog(csdArray[lineNumber]);
 getFilter()->updateCsoundFile(csdArray.joinIntoString("\n"));
 getFilter()->setGuiEnabled(true);
 getFilter()->setChangeMessageType("GUI_edit");	
 getFilter()->sendChangeMessage();
-repaint();
 }
+*/
 #endif
 }
 //==============================================================================
@@ -293,7 +320,6 @@ void CabbagePluginAudioProcessorEditor::InsertGUIControls()
 {
 //add layout controls, non interactive..
 for(int i=0;i<getFilter()->getGUILayoutCtrlsSize();i++){
-	Logger::writeToLog(getFilter()->getGUILayoutCtrls(i).getStringProp("type"));
 	if(getFilter()->getGUILayoutCtrls(i).getStringProp("type")==T("form")){
 		SetupWindow(getFilter()->getGUILayoutCtrls(i));   //set main application
 		}
@@ -342,8 +368,11 @@ for(int i=0;i<getFilter()->getGUICtrlsSize();i++){
 void CabbagePluginAudioProcessorEditor::InsertGroupBox(CabbageGUIClass cAttr)
 {
 try{
-	layoutComps.add(new GroupComponent(cAttr.getStringProp("name"), 
-											cAttr.getStringProp("caption")));	
+	layoutComps.add(new CabbageGroupbox(cAttr.getStringProp("name"), 
+										 cAttr.getStringProp("caption"), 
+										 cAttr.getItems(0), 
+										 cAttr.getStringProp("colour")
+										 ));
 	int idx = layoutComps.size()-1;
 
 	float left = cAttr.getNumProp("left");
@@ -369,14 +398,6 @@ try{
 	((GroupComponent*)layoutComps[idx])->setBounds (left+relX, top+relY, width, height);
 	layoutComps[idx]->toBack();
 	componentPanel->addAndMakeVisible(layoutComps[idx]);
-	cAttr.setStringProp("yype", "groupbbox");
-
-	if(cAttr.getStringProp("colour").length()>0){
-	((GroupComponent*)layoutComps[idx])->setColour(GroupComponent::outlineColourId,
-		Colours::findColourForName(cAttr.getStringProp("colour"), Colours::black));
-	((GroupComponent*)layoutComps[idx])->setColour(GroupComponent::textColourId,
-		Colours::findColourForName(cAttr.getStringProp("colour"), Colours::black));
-	}
 	layoutComps[idx]->getProperties().set(String("plant"), var(cAttr.getStringProp("plant")));
 
 }
@@ -430,7 +451,7 @@ try{
 #endif
 
 		if(cAttr.getStringProp("file").length()<2)pic="";
-	layoutComps.add(new CabbageImage("name", pic, top+relY, left+relX, width, 
+		layoutComps.add(new CabbageImage(cAttr.getStringProp("name"), pic, top+relY, left+relX, width, 
 		height, cAttr.getStringProp("outline"), cAttr.getStringProp("colour"), 
 		cAttr.getStringProp("shape"), cAttr.getNumProp("line")));
 
@@ -463,19 +484,31 @@ try{
 	float width = cAttr.getNumProp("width");
 	float height = cAttr.getNumProp("height");
 
-
 	int relY=0,relX=0;
 	for(int y=0;y<layoutComps.size();y++){
-	if(cAttr.getStringProp("reltoplant").length()>0)
+	if(cAttr.getStringProp("reltoplant").length()>0){
 	if(layoutComps[y]->getProperties().getWithDefault(String("plant"), -99).toString().equalsIgnoreCase(cAttr.getStringProp("reltoplant")))
-	{
-		relX = layoutComps[y]->getPosition().getX();
-		relY = layoutComps[y]->getPosition().getY();
+		{
+		width = width*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
+		height = height*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
+		top = top*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
+		left = left*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
+
+		if(layoutComps[y]->getName().containsIgnoreCase("groupbox")||
+			layoutComps[y]->getName().containsIgnoreCase("image"))
+			{			
+			layoutComps[idx]->setBounds(left, top, width, height);
+			//if component is a member of a plant add it directly to the plant
+			layoutComps[y]->addAndMakeVisible(controls[idx]);
+			}
+		}
+	}
+	else{
+	    controls[idx]->setBounds(left+relX, top+relY, width, height);
+		componentPanel->addAndMakeVisible(controls[idx]);		
 	}
 	}
 
-	((Label*)layoutComps[idx])->setBounds(left+relX, top+relY, width, height);
-	componentPanel->addAndMakeVisible(layoutComps[idx]);
 	cAttr.setStringProp("type", "label");
 	((Label*)layoutComps[idx])->setFont(Font(height));
 
@@ -543,6 +576,11 @@ catch(...){
 void CabbagePluginAudioProcessorEditor::InsertMIDIKeyboard(CabbageGUIClass cAttr)
 {
 try{
+
+	layoutComps.add(new MidiKeyboardComponent(getFilter()->keyboardState,
+                                     MidiKeyboardComponent::horizontalKeyboard));	
+	int idx = layoutComps.size()-1;
+
 	float left = cAttr.getNumProp("left");
 	float top = cAttr.getNumProp("top");
 	float width = cAttr.getNumProp("width");
@@ -552,23 +590,31 @@ try{
 	//if it is offset it's position accordingly. 
 	int relY=0,relX=0;
 	for(int y=0;y<layoutComps.size();y++){
-	if(cAttr.getStringProp("reltoplant").length()>0)
+	if(cAttr.getStringProp("reltoplant").length()>0){
 	if(layoutComps[y]->getProperties().getWithDefault(String("plant"), -99).toString().equalsIgnoreCase(cAttr.getStringProp("reltoplant")))
 	{
-		relX = layoutComps[y]->getPosition().getX();
-		relY = layoutComps[y]->getPosition().getY();
 		width = width*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
 		height = height*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
+		top = top*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
+		left = left*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
+
+		if(layoutComps[y]->getName().containsIgnoreCase("groupbox")||
+			layoutComps[y]->getName().containsIgnoreCase("image"))
+			{			
+			layoutComps[idx]->setBounds(left, top, width, height);
+			//if component is a member of a plant add it directly to the plant
+			layoutComps[y]->addAndMakeVisible(layoutComps[idx]);
+			}
 	}
 	}
-
-	layoutComps.add(new MidiKeyboardComponent(getFilter()->keyboardState,
-                                     MidiKeyboardComponent::horizontalKeyboard));	
-	int idx = layoutComps.size()-1;
-
+	else{
 	((MidiKeyboardComponent*)layoutComps[idx])->setBounds(left+relX, top+relY, width, height);
-    layoutComps[idx]->getProperties().set(String("plant"), var(cAttr.getStringProp("plant")));
 	componentPanel->addAndMakeVisible(layoutComps[idx]);
+	}
+	}
+
+	layoutComps[idx]->getProperties().set(String("plant"), var(cAttr.getStringProp("plant")));
+
 }
 catch(...){
     Logger::writeToLog(T("Syntax error: 'keyboard..."));
@@ -594,33 +640,43 @@ try{
 										 ));	
 	int idx = controls.size()-1;
 
-	//check to see if widgets is anchored
-	//if it is offset it's position accordingly. 
+
 	int relY=0,relX=0;
+	if(layoutComps.size()>0){
 	for(int y=0;y<layoutComps.size();y++){
-	if(cAttr.getStringProp("reltoplant").length()>0)
+	if(cAttr.getStringProp("reltoplant").length()>0){
 	if(layoutComps[y]->getProperties().getWithDefault(String("plant"), -99).toString().equalsIgnoreCase(cAttr.getStringProp("reltoplant")))
-	{
-		relX = layoutComps[y]->getPosition().getX();
-		relY = layoutComps[y]->getPosition().getY();
-		((CabbageSlider*)controls[idx])->getProperties().set("plantX", var(relX));
-		((CabbageSlider*)controls[idx])->getProperties().set("plantY", var(relY));
+		{
 		width = width*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
 		height = height*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
 		top = top*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
-		left = left*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();		
+		left = left*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
+
+		if(layoutComps[y]->getName().containsIgnoreCase("groupbox")||
+			layoutComps[y]->getName().containsIgnoreCase("image"))
+			{			
+			controls[idx]->setBounds(left, top, width, height);
+			//if component is a member of a plant add it directly to the plant
+			layoutComps[y]->addAndMakeVisible(controls[idx]);
+			}
+		}
 	}
+		else{
+	    controls[idx]->setBounds(left+relX, top+relY, width, height);
+		componentPanel->addAndMakeVisible(controls[idx]);		
+		}
+	}
+	}
+	else{
+	    controls[idx]->setBounds(left+relX, top+relY, width, height);
+		componentPanel->addAndMakeVisible(controls[idx]);		
 	}
 
 	if(cAttr.getStringProp("kind").equalsIgnoreCase("vertical"))
 	((CabbageSlider*)controls[idx])->setBounds(left+relX, top+relY, width, height);
 	else if(cAttr.getStringProp("kind").equalsIgnoreCase("horizontal"))
 	((CabbageSlider*)controls[idx])->setBounds(left+relX, top+relY, width, height);
-	else
-	((CabbageSlider*)controls[idx])->setBounds(left+relX, top+relY, width, height);
-	//controls[idx]->setBounds(cAttr.left, cAttr.top, cAttr.width, cAttr.height);
-
-	componentPanel->addAndMakeVisible(controls[idx]);
+	
 	((CabbageSlider*)controls[idx])->slider->setRange(cAttr.getNumProp("min"), cAttr.getNumProp("max"), 0.01);
 	((CabbageSlider*)controls[idx])->slider->setValue(cAttr.getNumProp("value"));
 	((CabbageSlider*)controls[idx])->slider->repaint();
@@ -691,25 +747,36 @@ try{
 	//check to see if widgets is anchored
 	//if it is offset it's position accordingly. 
 	int relY=0,relX=0;
+	if(layoutComps.size()>0){
 	for(int y=0;y<layoutComps.size();y++)
-	if(cAttr.getStringProp("reltoplant").length()>0)
+	if(cAttr.getStringProp("reltoplant").length()>0){
 	if(layoutComps[y]->getProperties().getWithDefault(String("plant"), -99).toString().equalsIgnoreCase(cAttr.getStringProp("reltoplant")))
-	{
-		relX = layoutComps[y]->getPosition().getX();
-		relY = layoutComps[y]->getPosition().getY();
-		//retain relative component position
-		((CabbageButton*)controls[idx])->getProperties().set("plantX", var(relX));
-		((CabbageButton*)controls[idx])->getProperties().set("plantY", var(relY));
+		{
 		width = width*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
 		height = height*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
 		top = top*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
 		left = left*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
-	}
 
-	((CabbageButton*)controls[idx])->setBounds(left+relX, top+relY, width, height);
-	((CabbageButton*)controls[idx])->button->setButtonText(cAttr.getItems(0));
+		if(layoutComps[y]->getName().containsIgnoreCase("groupbox")||
+			layoutComps[y]->getName().containsIgnoreCase("image"))
+			{			
+			controls[idx]->setBounds(left, top, width, height);
+			layoutComps[y]->addAndMakeVisible(controls[idx]);
+			}
+		}
+	}
+		else{
+	    controls[idx]->setBounds(left+relX, top+relY, width, height);
+		componentPanel->addAndMakeVisible(controls[idx]);		
+		}
+	}
+	else{
+	    controls[idx]->setBounds(left+relX, top+relY, width, height);
+		componentPanel->addAndMakeVisible(controls[idx]);		
+	}
 	((CabbageButton*)controls[idx])->button->addListener(this);
-	componentPanel->addAndMakeVisible(controls[idx]);
+	if(cAttr.getItemsSize()>0)
+	((CabbageButton*)controls[idx])->button->setButtonText(cAttr.getItems(0));
 }
 catch(...){
     Logger::writeToLog(T("Syntax error: 'button..."));
@@ -733,28 +800,41 @@ try{
 	float width = cAttr.getNumProp("width");
 	float height = cAttr.getNumProp("height");
 
-	//check to see if widgets is anchored
-	//if it is offset it's position accordingly. 
+
 	int relY=0,relX=0;
-	for(int y=0;y<layoutComps.size();y++)
-	if(cAttr.getStringProp("reltoplant").length()>0)
+	if(layoutComps.size()>0){
+	for(int y=0;y<layoutComps.size();y++){
+	if(cAttr.getStringProp("reltoplant").length()>0){
 	if(layoutComps[y]->getProperties().getWithDefault(String("plant"), -99).toString().equalsIgnoreCase(cAttr.getStringProp("reltoplant")))
-	{
-		relX = layoutComps[y]->getPosition().getX();
-		relY = layoutComps[y]->getPosition().getY();
-		//retain relative component position
-		((CabbageCheckbox*)controls[idx])->getProperties().set("plantX", var(relX));
-		((CabbageCheckbox*)controls[idx])->getProperties().set("plantY", var(relY));
+		{
 		width = width*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
 		height = height*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
 		top = top*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
 		left = left*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
+
+		if(layoutComps[y]->getName().containsIgnoreCase("groupbox")||
+			layoutComps[y]->getName().containsIgnoreCase("image"))
+			{			
+			controls[idx]->setBounds(left, top, width, height);
+			//if component is a member of a plant add it directly to the plant
+			layoutComps[y]->addAndMakeVisible(controls[idx]);
+			}
+		}
+	}
+		else{
+	    controls[idx]->setBounds(left+relX, top+relY, width, height);
+		componentPanel->addAndMakeVisible(controls[idx]);		
+		}
+	}
+	}
+	else{
+	    controls[idx]->setBounds(left+relX, top+relY, width, height);
+		componentPanel->addAndMakeVisible(controls[idx]);		
 	}
 	
-	((CabbageCheckbox*)controls[idx])->setBounds(left+relX, top+relY, width, height);
-	componentPanel->addAndMakeVisible(controls[idx]);
 	((CabbageCheckbox*)controls[idx])->button->addListener(this);
-	((CabbageButton*)controls[idx])->button->setButtonText(cAttr.getItems(0));
+	if(cAttr.getItemsSize()>0)
+	((CabbageCheckbox*)controls[idx])->button->setButtonText(cAttr.getItems(0));
 }
 catch(...){
     Logger::writeToLog(T("Syntax error: 'checkbox..."));
@@ -789,8 +869,8 @@ if(!getFilter()->isGuiEnabled()){
 				}
 				//toggle text values
 				if(getFilter()->getGUICtrls(i).getItems(1)==button->getButtonText())
-					button->setButtonText(getFilter()->getGUICtrls(i).getItems(1));
-				else if(getFilter()->getGUICtrls(i).getItems(1)==button->getButtonText())
+					button->setButtonText(getFilter()->getGUICtrls(i).getItems(0));
+				else if(getFilter()->getGUICtrls(i).getItems(0)==button->getButtonText())
 					button->setButtonText(getFilter()->getGUICtrls(i).getItems(1));
 
 			}
@@ -801,7 +881,10 @@ if(!getFilter()->isGuiEnabled()){
      	for(int i=0;i<(int)getFilter()->getGUICtrlsSize();i++)//find correct control from vector
 			if(getFilter()->getGUICtrls(i).getStringProp("name")==button->getName()){
 				getFilter()->getCsound()->SetChannel(getFilter()->getGUICtrls(i).getStringProp("channel").toUTF8(), button->getToggleState());
- 			    //getFilter()->guiCtrls[i].value = button->getToggleState();
+ 			    if(button->getToggleState())
+				button->setToggleState(false, false);
+				else
+				button->setToggleState(true, false);
 				getFilter()->setParameterNotifyingHost(i, button->getToggleState());
      			}
 	}
@@ -833,22 +916,35 @@ try{
 	//check to see if widgets is anchored
 	//if it is offset it's position accordingly. 
 	int relY=0,relX=0;
-	for(int y=0;y<layoutComps.size();y++)
-	if(cAttr.getStringProp("reltoplant").length()>0)
+	if(layoutComps.size()>0){
+	for(int y=0;y<layoutComps.size();y++){
+	if(cAttr.getStringProp("reltoplant").length()>0){
 	if(layoutComps[y]->getProperties().getWithDefault(String("plant"), -99).toString().equalsIgnoreCase(cAttr.getStringProp("reltoplant")))
-	{
-		relX = layoutComps[y]->getPosition().getX();
-		relY = layoutComps[y]->getPosition().getY();
-		//retain relative component position
-		((CabbageComboBox*)controls[idx])->getProperties().set("plantX", var(relX));
-		((CabbageComboBox*)controls[idx])->getProperties().set("plantY", var(relY));
+		{
 		width = width*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
 		height = height*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
 		top = top*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
 		left = left*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
+
+		if(layoutComps[y]->getName().containsIgnoreCase("groupbox")||
+			layoutComps[y]->getName().containsIgnoreCase("image"))
+			{			
+			controls[idx]->setBounds(left, top, width, height);
+			//if component is a member of a plant add it directly to the plant
+			layoutComps[y]->addAndMakeVisible(controls[idx]);
+			}
+		}
 	}
-    
-	controls[idx]->setBounds(left+relX, top+relY, width, height);
+		else{
+	    controls[idx]->setBounds(left+relX, top+relY, width, height);
+		componentPanel->addAndMakeVisible(controls[idx]);		
+		}
+	}
+	}
+	else{
+	    controls[idx]->setBounds(left+relX, top+relY, width, height);
+		componentPanel->addAndMakeVisible(controls[idx]);		
+	}
 
 //this needs some attention. 
 //At present comboxbox colours can't be changed...
@@ -917,15 +1013,16 @@ if(!getFilter()->isGuiEnabled()){
 getFilter()->getCsound()->KeyPressed(key.getTextCharacter());
 //search through controls to see which is attached to the current key being pressed. 
 for(int i=0;i<(int)getFilter()->getGUICtrlsSize();i++){
-if(getFilter()->getGUICtrls(i).getStringProp("type")==T("button")){
 	if(controls[i])
 		if(getFilter()->getGUICtrls(i).getKeySize()>0)
 		if(getFilter()->getGUICtrls(i).getkey(0).equalsIgnoreCase(key.getTextDescription()))
 		if(key.isCurrentlyDown()){
-			this->buttonClicked((Button*)controls[i]);
-			//Logger::writeToLog("key pressed");
+			if(getFilter()->getGUICtrls(i).getStringProp("type")==T("button"))
+				this->buttonClicked(((CabbageButton*)controls[i])->button);
+			else if(getFilter()->getGUICtrls(i).getStringProp("type")==T("checkbox"))
+				this->buttonClicked(((CabbageCheckbox*)controls[i])->button);
 		}
-	}
+	
 }
 }//end of GUI enabled check
 #endif

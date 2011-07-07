@@ -27,11 +27,12 @@
 //==============================================================================
 class CabbageButton : public Component
 {
+int offX, offY, offWidth, offHeight;
+String buttonType;
+
 public:
 ScopedPointer<GroupComponent> groupbox;
 ScopedPointer<Button> button;
-int offX, offY, offWidth, offHeight;
-String buttonType;
 //---- constructor -----
 CabbageButton(String name, String caption, String buttonText, String colour)
 {
@@ -77,11 +78,11 @@ JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CabbageButton);
 //==============================================================================
 class CabbageSlider : public Component
 {
+int offX, offY, offWidth, offHeight, plantX, plantY;
+String sliderType;
 public:
 ScopedPointer<GroupComponent> groupbox;
 ScopedPointer<Slider> slider;
-int offX, offY, offWidth, offHeight, plantX, plantY;
-String sliderType;
 //---- constructor -----
 CabbageSlider(String name, String caption, String kind, String colour): plantX(-99), plantY(-99)
 {
@@ -174,11 +175,11 @@ JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CabbageSlider);
 //==============================================================================
 class CabbageCheckbox : public Component
 {
+int offX, offY, offWidth, offHeight;
+
 public:
 ScopedPointer<GroupComponent> groupbox;
 ScopedPointer<ToggleButton> button;
-int offX, offY, offWidth, offHeight;
-String sliderType;
 //---- constructor -----
 CabbageCheckbox(String name, String caption, String buttonText, String colour)
 {
@@ -233,12 +234,12 @@ JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CabbageCheckbox);
 //==============================================================================
 class CabbageComboBox : public Component
 {
-public:
-ScopedPointer<GroupComponent> groupbox;
-ScopedPointer<ComboBox> combo;
 ScopedPointer<LookAndFeel> lookFeel;
 int offX, offY, offWidth, offHeight;
 String sliderType;
+public:
+ScopedPointer<GroupComponent> groupbox;
+ScopedPointer<ComboBox> combo;
 //---- constructor -----
 CabbageComboBox(String name, String caption, String text, String colour)
 {
@@ -302,16 +303,15 @@ class CabbageImage : public Component,
 {
 public:
 	CabbageImage(String name, String file, int top, int left, int width, int height, String outline, String fill, String shape, int line):
-	picFile(file), file(file), top(top), left(left), width(width), height(height), fill(fill), outline(outline), shape(shape), line(line){
-		widget = new Component(name);
+	Component(name), picFile(file), file(file), top(top), left(left), width(width), height(height), fill(fill), outline(outline), shape(shape), line(line){
 		setName(name);
+		toBack();
 		img = ImageCache::getFromFile (File (file));
 	}
 	~CabbageImage(){
 	}
 
 private:
-	ScopedPointer<Component> widget;
 	Image img;
 	int top, left, width, height, line;
 	String fill, outline, shape, file;
@@ -346,4 +346,48 @@ private:
 	}
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CabbageImage);
 };
+
+//==============================================================================
+// custom groupbox component, this can act as a plant for other components 
+//==============================================================================
+class CabbageGroupbox : public GroupComponent
+{
+OwnedArray<Component> comps;
+int offX, offY, offWidth, offHeight;
+public:
+//---- constructor -----
+CabbageGroupbox(String name, String caption, String text, String colour):GroupComponent(name)
+{
+	toBack();
+	offX=offY=offWidth=offHeight=0;
+	if(colour.length()>0){
+	setColour(GroupComponent::outlineColourId,
+		Colours::findColourForName(colour, Colours::black));
+	setColour(GroupComponent::textColourId,
+		Colours::findColourForName(colour, Colours::black));
+	}
+	this->setText(text);
+
+}
+//---------------------------------------------
+~CabbageGroupbox(){
+
+}
+
+void addComponent(Component* comp)
+{
+	comps.add(comp);
+	int size = comps.size();
+	addAndMakeVisible(comps[size-1]);
+}
+
+//---------------------------------------------
+void resized()
+{
+
+}
+
+JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CabbageGroupbox);
+};
+
 #endif

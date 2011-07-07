@@ -27,7 +27,10 @@ CabbageGUIClass::CabbageGUIClass(String compStr, int ID):
 								scaleX(1), 
 								scaleY(1), 
 								midiChan(-99), 
-								midiCtrl(-99)
+								midiCtrl(-99),
+								boundsText(""),
+								posText(""),
+								sizeText("")
 {
 //Default values are assigned to all attributres 
 //before parsing begins
@@ -282,10 +285,9 @@ int CabbageGUIClass::parse(String str)
 			String newString = str.substring(identPos+identArray.getReference(indx).length());
 			String tstr = newString.substring(0, newString.indexOf(0, ")"));
 			if(tstr.length()==0) return 0;
-
 			StringArray strTokens;
 			strTokens.addTokens(tstr.removeCharacters(")\""), ",", "\"");
-				
+
 			if(identArray.getReference(indx).equalsIgnoreCase("name(")) name = strTokens[0].trim();
 			else if(identArray.getReference(indx).equalsIgnoreCase("plant(")) plant = strTokens[0].trim();
 			else if(identArray.getReference(indx).equalsIgnoreCase("caption(")) caption = strTokens[0].trim();
@@ -330,6 +332,7 @@ int CabbageGUIClass::parse(String str)
 					debugMessage =T("WARNING: Not enough paramters passed to size(): usage pos(width, height\")");
 				}
 				else{
+					sizeText = identArray.getReference(indx)+tstr+T(")");
 					width = strTokens[0].trim().getFloatValue();  
 					height = strTokens[1].trim().getFloatValue();  
 				}
@@ -352,10 +355,11 @@ int CabbageGUIClass::parse(String str)
 					debugMessage = T("WARNING: Not enough paramters passed to bounds(): usage pos(top, left width, height\")");
 				}
 				else{
-              left = strTokens[0].trim().getFloatValue();  
-              top = strTokens[1].trim().getFloatValue();  
-              width = strTokens[2].trim().getFloatValue();  
-              height = strTokens[3].trim().getFloatValue();  
+				  left = strTokens[0].trim().getFloatValue();  
+				  top = strTokens[1].trim().getFloatValue();  
+				  width = strTokens[2].trim().getFloatValue();  
+				  height = strTokens[3].trim().getFloatValue(); 
+				  boundsText = identArray.getReference(indx)+tstr+T(")");
 				}
             }
             else if(identArray.getReference(indx).equalsIgnoreCase("pos(")){
@@ -363,10 +367,9 @@ int CabbageGUIClass::parse(String str)
 					debugMessage =T("WARNING: Not enough paramters passed to pos(): usage pos(top, left\")");
 				}
 				else{
-              left = strTokens[0].trim().getFloatValue(); 
-              top = strTokens[1].trim().getFloatValue(); 
-			  //if(strTokens.size()>2)
-			  //reltoplant = strTokens[2].trim();
+				  left = strTokens[0].trim().getFloatValue(); 
+				  top = strTokens[1].trim().getFloatValue();
+				  posText = identArray.getReference(indx)+tstr+T(")");
 				}
             }
 			else if(identArray.getReference(indx).equalsIgnoreCase("range(")){

@@ -80,7 +80,7 @@ void ChildAlias::applyToTarget ()
       //!target.hasBeenDeleted ())
    {
       Component* c = (Component*) target.getComponent ();
-		if(type.containsIgnoreCase("juce::GroupComponent")||
+		if(type.containsIgnoreCase("CabbageGroupbox")||
 			type.containsIgnoreCase("CabbageImage"))
 			c->toBack();
 			
@@ -142,9 +142,6 @@ if (e.mods.isLeftButtonDown()){
    ((CabbageMainPanel*)(getTarget()->getParentComponent()))->top = getPosition().getY()-offY; 
    ((CabbageMainPanel*)(getTarget()->getParentComponent()))->sendChangeMessage();
 }
-
-if (e.mods.isRightButtonDown())
- this->setInterceptsMouseClicks(false, false);
 }
 
 void ChildAlias::mouseUp (const MouseEvent& e)
@@ -170,7 +167,7 @@ void ChildAlias::mouseUp (const MouseEvent& e)
    ((CabbageMainPanel*)(getTarget()->getParentComponent()))->top = getPosition().getY()-offY;      
    ((CabbageMainPanel*)(getTarget()->getParentComponent()))->sendChangeMessage();
 
-   if(type.containsIgnoreCase("juce::GroupComponent")||
+   if(type.containsIgnoreCase("CabbageGroupbox")||
 	   type.containsIgnoreCase("CabbageImage"))
 	   toBack();
    else 

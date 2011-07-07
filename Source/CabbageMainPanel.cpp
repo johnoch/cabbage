@@ -29,7 +29,7 @@
 // by toggling these two classes toFront() we can swap between edit and lock mode
  
 
-CabbageMainPanel::CabbageMainPanel()
+CabbageMainPanel::CabbageMainPanel() : width(-99), top(-99), height(-99), left(-99)
 {
 setName("CabbageMainPanel");
 setVisible(true);

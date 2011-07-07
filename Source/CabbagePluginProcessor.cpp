@@ -37,7 +37,8 @@ csdFile(File(inputfile)),
 showMIDI(false), 
 csCompileResult(1), 
 changeMessageType(""), 
-guiOnOff(guiOnOff)
+guiOnOff(guiOnOff),
+currentLine(-99)
 {
 #ifndef Cabbage_No_Csound
 //don't start of run Csound in edit mode
@@ -469,8 +470,10 @@ if(!isGuiEnabled()){
 //==============================================================================
 void CabbagePluginAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
 {
-#ifndef Cabbage_No_Csound
 float* audioBuffer;
+
+#ifndef Cabbage_No_Csound
+
 if(csCompileResult==0){
 keyboardState.processNextMidiBuffer (midiMessages,
                                          0, buffer.getNumSamples(),
@@ -517,6 +520,7 @@ else{
     }
 
 #endif
+
 }
 
 

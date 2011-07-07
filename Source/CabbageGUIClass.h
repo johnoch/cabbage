@@ -43,7 +43,7 @@ class CabbageGUIClass : public CabbageUtils
         StringArray items;
         StringArray onoffcaptions;
 		StringArray key;
-        String channel, name, text, type, colour, plant, reltoplant, textcolour, bounds, range,
+        String channel, name, sizeText, posText, boundsText, text, type, colour, plant, reltoplant, textcolour, bounds, range,
         fontcolour, outline, fill, shape, beveltype, caption, kind, topitem,
         exit, csstdout, cssetup, file, debugMessage;
 
@@ -128,11 +128,9 @@ public:
 	}
 
 	inline String getPropsString(){
-	if(type.equalsIgnoreCase("button"))
 	return type << T(" bounds(") << String(left) << T(", ") << String(top) << T(", ") << String(width)
 				<< T(", ") << String(height) << T("), channel(\"") << channel << T("\"), value(")
 				<< String(value) << T("), items(\"") << items[0].trim() << T("\", \"") << items[1].trim() << T("\")");
-	else return "not a button";
 	}
 
 	inline String getStringProp(String prop){
@@ -140,6 +138,12 @@ public:
 			return channel.trim();
 		else if(prop.equalsIgnoreCase(T("name")))
 			return name.trim();
+		else if(prop.equalsIgnoreCase(T("bounds")))
+			return boundsText.trim();
+		else if(prop.equalsIgnoreCase(T("pos")))
+			return posText.trim();
+		else if(prop.equalsIgnoreCase(T("size")))
+			return sizeText.trim();
 		else if(prop.equalsIgnoreCase(T("text")))
 			return text.trim();
 		else if(prop.equalsIgnoreCase(T("type")))
