@@ -310,10 +310,18 @@ int CabbagePluginAudioProcessor::getNumParameters()
 
 float CabbagePluginAudioProcessor::getParameter (int index)
 {	
-   	if(index<(int)guiCtrls.size())//make sure index isn't out of range
-		return guiCtrls.getReference(index).getNumProp("value");	
+#ifndef Cabbage_No_Csound
 
-	else return 0.f; 
+if(index<(int)guiCtrls.size()){//make sure index isn't out of range
+	MYFLT* val;
+	csoundGetChannelPtr(getCsoundStruct(), &val, guiCtrls.getReference(index).getStringProp("channel").toUTF8(),
+				CSOUND_CONTROL_CHANNEL | CSOUND_OUTPUT_CHANNEL);
+	setParameter(index, (float)*val);
+	return guiCtrls.getReference(index).getNumProp("value");	
+}
+else return 0.f; 
+
+#endif
 }
 
 void CabbagePluginAudioProcessor::setParameter (int index, float newValue)

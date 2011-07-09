@@ -1047,8 +1047,7 @@ void CabbagePluginAudioProcessorEditor::timerCallback()
 // It is possible in here to update our GUI controls with control
 // signals from Csound. I've removed this for now as most host allow automation.
 // It may prove useful however when running Cabbage in standalone mode...
-#ifndef Cabbage_No_Csound
-#ifndef Cabbage_Build_Standalone	
+#ifndef Cabbage_No_Csound	
 for(int i=0;i<(int)getFilter()->getGUICtrlsSize();i++){
 	float inValue = getFilter()->getParameter(i);
 
@@ -1099,7 +1098,7 @@ for(int i=0;i<(int)getFilter()->getGUILayoutCtrlsSize();i++){
 	debugLabel->setText(String(hostInfo.ppqPosition), false);
 	}
 }
-#else
+
 	//make sure that the instrument needs midi before turning this on
    MidiMessage message(0xf4, 0, 0, 0);
    if(!getFilter()->ccBuffer.isEmpty()){
@@ -1155,7 +1154,7 @@ for(int i=0;i<(int)getFilter()->getGUILayoutCtrlsSize();i++){
    }
    getFilter()->ccBuffer.clear();
 #endif
-#endif
+
 
 }
 //==============================================================================
