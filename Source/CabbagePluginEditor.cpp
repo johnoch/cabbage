@@ -53,7 +53,7 @@ componentPanel->addKeyListener(this);
 componentPanel->setInterceptsMouseClicks(false, true);	
 setSize (400, 400);
 InsertGUIControls();
-startTimer(10);
+startTimer(15);
 
 #ifdef Cabbage_GUI_Editor
 componentPanel->addChangeListener(this);
@@ -698,7 +698,6 @@ catch(...){
 void CabbagePluginAudioProcessorEditor::sliderValueChanged (Slider* sliderThatWasMoved)
 {
 #ifndef Cabbage_No_Csound
-if(!getFilter()->isGuiEnabled()){
 if(sliderThatWasMoved->isEnabled()) // before sending data to on named channel
     {
     //if(RUNNING){make sure Csound is playing before calling SetChannel()
@@ -706,8 +705,8 @@ if(sliderThatWasMoved->isEnabled()) // before sending data to on named channel
 			if(getFilter()->getGUICtrls(i).getStringProp("name")==sliderThatWasMoved->getName()){
 				getFilter()->getCsound()->SetChannel(getFilter()->getGUICtrls(i).getStringProp("channel").toUTF8(), sliderThatWasMoved->getValue());
  			    //getFilter()->guiCtrls[i].value = (float)sliderThatWasMoved->getValue();
-#ifndef Cabbage_Build_Standalone
 				int range = getFilter()->getGUICtrls(i).getNumProp("max")-getFilter()->getGUICtrls(i).getNumProp("min");
+#ifndef Cabbage_Build_Standalone
 				getFilter()->setParameterNotifyingHost(i, (float)(sliderThatWasMoved->getValue()-(getFilter()->getGUICtrls(i).getNumProp("min")))/range);
 #else
 				getFilter()->setParameterNotifyingHost(i, (float)(sliderThatWasMoved->getValue()));
@@ -723,7 +722,6 @@ if(sliderThatWasMoved->isEnabled()) // before sending data to on named channel
  			}
 		}
 }
-}//end of GUI enabled check
 #endif
 }
 
@@ -835,6 +833,8 @@ try{
 	((CabbageCheckbox*)controls[idx])->button->addListener(this);
 	if(cAttr.getItemsSize()>0)
 	((CabbageCheckbox*)controls[idx])->button->setButtonText(cAttr.getItems(0));
+
+	Logger::writeToLog(cAttr.getPropsString());
 }
 catch(...){
     Logger::writeToLog(T("Syntax error: 'checkbox..."));
@@ -880,14 +880,12 @@ if(!getFilter()->isGuiEnabled()){
 	else if(dynamic_cast<ToggleButton*>(button)){
      	for(int i=0;i<(int)getFilter()->getGUICtrlsSize();i++)//find correct control from vector
 			if(getFilter()->getGUICtrls(i).getStringProp("name")==button->getName()){
+				Logger::writeToLog("ButtonPress");
+				Logger::writeToLog(getFilter()->getGUICtrls(i).getPropsString());
 				getFilter()->getCsound()->SetChannel(getFilter()->getGUICtrls(i).getStringProp("channel").toUTF8(), button->getToggleState());
- 			    if(button->getToggleState())
-				button->setToggleState(false, false);
-				else
-				button->setToggleState(true, false);
-				getFilter()->setParameterNotifyingHost(i, button->getToggleState());
+				getFilter()->setParameterNotifyingHost(i, button->getToggleStateValue().getValue());
      			}
-	}
+ 			}
 	}
 }//end of GUI enabled check
 #endif
@@ -952,7 +950,7 @@ try{
     for(int i=1;i<(int)cAttr.getItemsSize()+1;i++){
 		String test  = cAttr.getItems(i-1);
 		((CabbageComboBox*)controls[idx])->combo->addItem(cAttr.getItems(i-1), i);
-		cAttr.setNumProp("max", i);
+		cAttr.setNumProp("maxItems", i);
 	}
 
 	((CabbageComboBox*)controls[idx])->combo->setSelectedId(cAttr.getNumProp("value"));
@@ -1039,29 +1037,29 @@ void CabbagePluginAudioProcessorEditor::timerCallback()
 #ifndef Cabbage_No_Csound
 #ifndef Cabbage_Build_Standalone	
 for(int i=0;i<(int)getFilter()->getGUICtrlsSize();i++){
-	float value = getFilter()->getParameter(i);
+	float inValue = getFilter()->getParameter(i);
 
 	if(getFilter()->getGUICtrls(i).getStringProp("type")==T("hslider")||
 			getFilter()->getGUICtrls(i).getStringProp("type")==T("rslider")||
 			getFilter()->getGUICtrls(i).getStringProp("type")==T("vslider")){
 	if(controls[i])
-			((Slider*)controls[i])->setValue(value, false);
+			((CabbageSlider*)controls[i])->slider->setValue(inValue, false);
 	}
 	
 	else if(getFilter()->getGUICtrls(i).getStringProp("type")==T("button")){
 	if(controls[i])
-		((Button*)controls[i])->setButtonText(getFilter()->getGUICtrls(i).getItems(1-(int)value));
+		((Button*)controls[i])->setButtonText(getFilter()->getGUICtrls(i).getItems(1-(int)inValue));
 	}
 	
 	else if(getFilter()->getGUICtrls(i).getStringProp("type")==T("combobox")){
 	if(controls[i])
-		((ComboBox*)controls[i])->setSelectedId((int)value, false);
+		((ComboBox*)controls[i])->setSelectedId((int)inValue, false);
 	}
 
 	else if(getFilter()->getGUICtrls(i).getStringProp("type")==T("checkbox")){
 	if(controls[i])
-	((Button*)controls[i])->setToggleState((bool)value, false);
-	getFilter()->getCsound()->SetChannel(getFilter()->getGUICtrls(i).getStringProp("channel").toUTF8(), value);
+	((CabbageCheckbox*)controls[i])->button->setToggleState((bool)inValue, false);
+	getFilter()->getCsound()->SetChannel(getFilter()->getGUICtrls(i).getStringProp("channel").toUTF8(), inValue);
 	}
 }
 

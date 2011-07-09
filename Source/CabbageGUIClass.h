@@ -38,8 +38,7 @@ class CabbageGUIClass : public CabbageUtils
 {
         float width, height, top, left, min, max, tabpage, 
 		noOfMenus, onoff, midiChan, midiCtrl, 
-		line, anchor, linkTo, scaleX, scaleY;
-        float value;
+		line, anchor, linkTo, scaleX, scaleY, value, maxItems;
         StringArray items;
         StringArray onoffcaptions;
 		StringArray key;
@@ -52,186 +51,18 @@ public:
 	CabbageGUIClass(String str, int ID);
     ~CabbageGUIClass();
 	int parse(String str);
+	float getNumProp(String prop);
+	void setNumProp(String prop, float val);
+	void setStringProp(String prop, String val);
+	String getStringProp(String prop);
+	String getPropsString();
 
-
-	//retrieve numerical attributes
-	inline float getNumProp(String prop){
-		if(prop.equalsIgnoreCase(T("width")))
-			return width;
-		else if(prop.equalsIgnoreCase(T("height")))
-			return height;
-		else if(prop.equalsIgnoreCase(T("top")))
-			return top;
-		else if(prop.equalsIgnoreCase(T("left")))
-			return left;
-		else if(prop.equalsIgnoreCase(T("min")))
-			return min;
-		else if(prop.equalsIgnoreCase(T("midichan")))
-			return midiChan;
-		else if(prop.equalsIgnoreCase(T("midictrl")))
-			return midiCtrl;
-		else if(prop.equalsIgnoreCase(T("max")))
-			return max;
-		else if(prop.equalsIgnoreCase(T("tabpage")))
-			return tabpage;
-		else if(prop.equalsIgnoreCase(T("noOfMenus")))
-			return noOfMenus;
-		else if(prop.equalsIgnoreCase(T("onoff")))
-			return onoff;
-		else if(prop.equalsIgnoreCase(T("value")))
-			return value;
-		else if(prop.equalsIgnoreCase(T("line")))
-			return line;
-		else if(prop.equalsIgnoreCase(T("scaleX")))
-			return scaleX;
-		else if(prop.equalsIgnoreCase(T("scaleY")))
-			return scaleY;
-		else if(prop.equalsIgnoreCase(T("linkTo")))
-			return linkTo;
-		else return -9999;
-	}
-
-	//set numerical attributes
-	inline void setNumProp(String prop, float val){
-		if(prop.equalsIgnoreCase(T("width")))
-			 width = val;
-		else if(prop.equalsIgnoreCase(T("height")))
-			 height = val;
-		else if(prop.equalsIgnoreCase(T("top")))
-			 top = val;
-		else if(prop.equalsIgnoreCase(T("left")))
-			 left = val;
-		else if(prop.equalsIgnoreCase(T("min")))
-			 min = val;
-		else if(prop.equalsIgnoreCase(T("midichan")))
-			 midiChan = val;
-		else if(prop.equalsIgnoreCase(T("midictrl")))
-			 midiCtrl = val;
-		else if(prop.equalsIgnoreCase(T("max")))
-			 max = val;
-		else if(prop.equalsIgnoreCase(T("tabpage")))
-			 tabpage = val;
-		else if(prop.equalsIgnoreCase(T("noOfMenus")))
-			 noOfMenus = val;
-		else if(prop.equalsIgnoreCase(T("onoff")))
-			 onoff = val;
-		else if(prop.equalsIgnoreCase(T("value")))
-			 value = val;
-		else if(prop.equalsIgnoreCase(T("line")))
-			 line = val;
-		else if(prop.equalsIgnoreCase(T("scaleX")))
-			 scaleX = val;
-		else if(prop.equalsIgnoreCase(T("scaleY")))
-			 scaleY = val;
-		else if(prop.equalsIgnoreCase(T("linkTo")))
-			 linkTo = val;
-	}
-
-	inline String getPropsString(){
-	return type << T(" bounds(") << String(left) << T(", ") << String(top) << T(", ") << String(width)
-				<< T(", ") << String(height) << T("), channel(\"") << channel << T("\"), value(")
-				<< String(value) << T("), items(\"") << items[0].trim() << T("\", \"") << items[1].trim() << T("\")");
-	}
-
-	inline String getStringProp(String prop){
-		if(prop.equalsIgnoreCase(T("channel")))
-			return channel.trim();
-		else if(prop.equalsIgnoreCase(T("name")))
-			return name.trim();
-		else if(prop.equalsIgnoreCase(T("bounds")))
-			return boundsText.trim();
-		else if(prop.equalsIgnoreCase(T("pos")))
-			return posText.trim();
-		else if(prop.equalsIgnoreCase(T("size")))
-			return sizeText.trim();
-		else if(prop.equalsIgnoreCase(T("text")))
-			return text.trim();
-		else if(prop.equalsIgnoreCase(T("type")))
-			return type.trim();
-		else if(prop.equalsIgnoreCase(T("colour")))
-			return colour.trim();
-		else if(prop.equalsIgnoreCase(T("fontcolour")))
-			return fontcolour.trim();
-		else if(prop.equalsIgnoreCase(T("outline")))
-			return outline.trim();
-		else if(prop.equalsIgnoreCase(T("fill")))
-			return fill.trim();
-		else if(prop.equalsIgnoreCase(T("shape")))
-			return shape.trim();
-		else if(prop.equalsIgnoreCase(T("beveltype")))
-			return beveltype.trim();
-		else if(prop.equalsIgnoreCase(T("caption")))
-			return caption.trim();
-		else if(prop.equalsIgnoreCase(T("kind")))
-			return kind.trim();
-		else if(prop.equalsIgnoreCase(T("topitem")))
-			return topitem.trim();
-		else if(prop.equalsIgnoreCase(T("file")))
-			return file.trim();
-		else if(prop.equalsIgnoreCase(T("cssetup")))
-			return cssetup.trim();
-		else if(prop.equalsIgnoreCase(T("csstdout")))
-			return csstdout.trim();
-		else if(prop.equalsIgnoreCase(T("exit")))
-			return exit.trim();
-		else if(prop.equalsIgnoreCase(T("plant")))
-			return plant.trim();
-		else if(prop.equalsIgnoreCase(T("reltoplant")))
-			return reltoplant.trim();
-		else if(prop.equalsIgnoreCase(T("textcolour")))
-			return textcolour.trim();
-		else if(prop.equalsIgnoreCase(T("debugmessage")))
-			return debugMessage;
-		else return "";
-	}
-
-	inline void setStringProp(String prop, String val){
-		if(prop.equalsIgnoreCase(T("channel")))
-			channel = val;
-		else if(prop.equalsIgnoreCase(T("name")))
-			name = val;
-		else if(prop.equalsIgnoreCase(T("text")))
-			 text = val;
-		else if(prop.equalsIgnoreCase(T("type")))
-			 type = val;
-		else if(prop.equalsIgnoreCase(T("colour")))
-			 colour = val;
-		else if(prop.equalsIgnoreCase(T("fontcolour")))
-			 fontcolour = val;
-		else if(prop.equalsIgnoreCase(T("outline")))
-			 outline = val;
-		else if(prop.equalsIgnoreCase(T("fill")))
-			 fill = val;
-		else if(prop.equalsIgnoreCase(T("shape")))
-			 shape = val;
-		else if(prop.equalsIgnoreCase(T("beveltype")))
-			 beveltype = val;
-		else if(prop.equalsIgnoreCase(T("caption")))
-			 caption = val;
-		else if(prop.equalsIgnoreCase(T("kind")))
-			 kind = val;
-		else if(prop.equalsIgnoreCase(T("topitem")))
-			 topitem = val;
-		else if(prop.equalsIgnoreCase(T("file")))
-			 file = val;
-		else if(prop.equalsIgnoreCase(T("cssetup")))
-			 cssetup = val;
-		else if(prop.equalsIgnoreCase(T("csstdout")))
-			 csstdout = val;
-		else if(prop.equalsIgnoreCase(T("exit")))
-			 exit = val;
-		else if(prop.equalsIgnoreCase(T("plant")))
-			 plant = val;
-		else if(prop.equalsIgnoreCase(T("reltoplant")))
-			 reltoplant = val;
-		else if(prop.equalsIgnoreCase(T("textcolour")))
-			textcolour = val;
-	}
 
 	inline String setOnOffcaptions(int index, String str){
 		if(index<=onoffcaptions.size())
 		onoffcaptions.getReference(index)=str;
 	}
+
 	inline String getOnOffcaptions(int index){
 		if(index<=onoffcaptions.size())
 		return onoffcaptions.getReference(index);

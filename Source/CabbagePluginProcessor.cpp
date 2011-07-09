@@ -84,7 +84,8 @@ Logger::writeToLog("Welcome to Cabbage");
 //===========================================================
 // PLUGIN - CONSTRUCTOR 
 //===========================================================
-CabbagePluginAudioProcessor::CabbagePluginAudioProcessor()
+CabbagePluginAudioProcessor::CabbagePluginAudioProcessor():
+guiOnOff(false)
 {
 //Cabbage plugins always try to load a csd file with the same name as the plugin library.
 //Therefore we need to find the name of the library and append a '.csd' to it. 
@@ -308,9 +309,10 @@ int CabbagePluginAudioProcessor::getNumParameters()
 }
 
 float CabbagePluginAudioProcessor::getParameter (int index)
-{
+{	
    	if(index<(int)guiCtrls.size())//make sure index isn't out of range
-		return guiCtrls.getReference(index).getNumProp("value");
+		return guiCtrls.getReference(index).getNumProp("value");	
+
 	else return 0.f; 
 }
 
@@ -321,25 +323,21 @@ by the host via automation. If it's called by the host it will send
 message back to the GUI to notify it to update controls */
 if(index<(int)guiCtrls.size())//make sure index isn't out of range
    {
-  if(guiCtrls.getReference(index).getNumProp("value") != newValue)
-    {
+//  if(guiCtrls.getReference(index).getNumProp("value") != newValue)
+//    {
 #ifndef Cabbage_Build_Standalone	
 	//scalling in here so that values go from 0-1
 	int range = getGUICtrls(index).getNumProp("max")-getGUICtrls(index).getNumProp("min");
 	guiCtrls.getReference(index).setNumProp("value", (newValue*range)+getGUICtrls(index).getNumProp("min"));
 	csound->SetChannel(guiCtrls.getReference(index).getStringProp("channel").toUTF8(), guiCtrls.getReference(index).getNumProp("value"));
-#else
-	Logger::writeToLog(guiCtrls.getReference(index).getStringProp("channel"));
+#else 
 	guiCtrls.getReference(index).setNumProp("value", newValue);
-	#ifndef Cabbage_No_Csound
-	if(!isGuiEnabled()){
 	csound->SetChannel(guiCtrls.getReference(index).getStringProp("channel").toUTF8(), guiCtrls.getReference(index).getNumProp("value"));
-	}//end of GUI enabled check 
-	#endif
 #endif
-     }
+//     }
    } 
 }
+
 
 const String CabbagePluginAudioProcessor::getParameterName (int index)
 {
