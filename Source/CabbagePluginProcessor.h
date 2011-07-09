@@ -188,6 +188,10 @@ public:
 		return csound;
 	}
 
+	CSOUND* getCsoundStruct(){
+		return csound->GetCsound();
+	}
+
 #endif
 
 	bool isGuiEnabled(){

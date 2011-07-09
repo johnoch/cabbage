@@ -880,8 +880,16 @@ if(!getFilter()->isGuiEnabled()){
 	else if(dynamic_cast<ToggleButton*>(button)){
      	for(int i=0;i<(int)getFilter()->getGUICtrlsSize();i++)//find correct control from vector
 			if(getFilter()->getGUICtrls(i).getStringProp("name")==button->getName()){
-				Logger::writeToLog("ButtonPress");
-				Logger::writeToLog(getFilter()->getGUICtrls(i).getPropsString());
+				Logger::writeToLog(String(button->getToggleStateValue().getValue()));
+
+				if(button->getToggleState()){
+					button->setToggleState(true, false);
+					//Logger::writeToLog("unpressed");
+				}
+				else{
+					button->setToggleState(false, false);
+					//Logger::writeToLog("pressed");
+				}
 				getFilter()->getCsound()->SetChannel(getFilter()->getGUICtrls(i).getStringProp("channel").toUTF8(), button->getToggleState());
 				getFilter()->setParameterNotifyingHost(i, button->getToggleStateValue().getValue());
      			}
@@ -1017,8 +1025,13 @@ for(int i=0;i<(int)getFilter()->getGUICtrlsSize();i++){
 		if(key.isCurrentlyDown()){
 			if(getFilter()->getGUICtrls(i).getStringProp("type")==T("button"))
 				this->buttonClicked(((CabbageButton*)controls[i])->button);
-			else if(getFilter()->getGUICtrls(i).getStringProp("type")==T("checkbox"))
+			else if(getFilter()->getGUICtrls(i).getStringProp("type")==T("checkbox")){
+				if(((CabbageCheckbox*)controls[i])->button->getToggleState())
+					((CabbageCheckbox*)controls[i])->button->setToggleState(0, false);
+				else
+					((CabbageCheckbox*)controls[i])->button->setToggleState(1, false);
 				this->buttonClicked(((CabbageCheckbox*)controls[i])->button);
+			}
 		}
 	
 }
