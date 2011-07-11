@@ -174,6 +174,7 @@ void StandaloneFilterWindow::changeListenerCallback(juce::ChangeBroadcaster* /*s
 String text = "";
 #ifdef Cabbage_Named_Pipe
 #ifdef Cabbage_GUI_Editor
+if(filter->isGuiEnabled()){
 if(filter->getChangeMessageType().containsIgnoreCase("GUI_edit")){
 setGuiEnabled(true);
 setCurrentLine(filter->getCurrentLine()+1);
@@ -188,6 +189,7 @@ sendMessageToWinXound(T("CABBAGE_UPDATE"), "");
 if(getCurrentLine()>1)
 sendMessageToWinXound(T("CABBAGE_SELECT_LINE"), getCurrentLine()); 
 Logger::writeToLog(String(getCurrentLine()));
+}
 }
 else
 #endif

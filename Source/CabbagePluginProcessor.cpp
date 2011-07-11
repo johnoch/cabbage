@@ -116,7 +116,7 @@ csoundChanList = NULL;
 numCsoundChannels = 0;
 csndIndex = 32;
 csound->SetMessageCallback(CabbagePluginAudioProcessor::messageCallback);
-
+startTimer(15);
 csCompileResult = csound->Compile( const_cast<char*>(csdFile.getFullPathName().toUTF8().getAddress()));
 if(csCompileResult==0){
 	CSspout = csound->GetSpout();
@@ -311,16 +311,19 @@ int CabbagePluginAudioProcessor::getNumParameters()
 float CabbagePluginAudioProcessor::getParameter (int index)
 {	
 #ifndef Cabbage_No_Csound
-
 if(index<(int)guiCtrls.size()){//make sure index isn't out of range
-	MYFLT* val;
+	int range = getGUICtrls(index).getNumProp("max")-getGUICtrls(index).getNumProp("min");
+	MYFLT* val=NULL;
 	csoundGetChannelPtr(getCsoundStruct(), &val, guiCtrls.getReference(index).getStringProp("channel").toUTF8(),
 				CSOUND_CONTROL_CHANNEL | CSOUND_OUTPUT_CHANNEL);
-	setParameter(index, (float)*val);
+#ifndef Cabbage_Build_Standalone
+	setParameter(index, *val/range);
+#else
+	setParameter(index, *val);
+#endif
 	return guiCtrls.getReference(index).getNumProp("value");	
 }
 else return 0.f; 
-
 #endif
 }
 
@@ -331,8 +334,8 @@ by the host via automation. If it's called by the host it will send
 message back to the GUI to notify it to update controls */
 if(index<(int)guiCtrls.size())//make sure index isn't out of range
    {
-//  if(guiCtrls.getReference(index).getNumProp("value") != newValue)
-//    {
+  if(guiCtrls.getReference(index).getNumProp("value") != newValue)
+     {
 #ifndef Cabbage_Build_Standalone	
 	//scalling in here so that values go from 0-1
 	int range = getGUICtrls(index).getNumProp("max")-getGUICtrls(index).getNumProp("min");
@@ -342,7 +345,7 @@ if(index<(int)guiCtrls.size())//make sure index isn't out of range
 	guiCtrls.getReference(index).setNumProp("value", newValue);
 	csound->SetChannel(guiCtrls.getReference(index).getStringProp("channel").toUTF8(), guiCtrls.getReference(index).getNumProp("value"));
 #endif
-//     }
+     }
    } 
 }
 

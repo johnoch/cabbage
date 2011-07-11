@@ -94,6 +94,7 @@ public:
 				//owner.toFront(true);
 				Logger::writeToLog(T("Cabbage Updated"));
 #ifdef Cabbage_GUI_Editor
+				if(owner.isGuiEnabled())
 				owner.sendMessageToWinXound(T("CABBAGE_SELECT_LINE"), owner.getCurrentLine()); 
 #endif
 			}

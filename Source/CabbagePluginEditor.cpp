@@ -1060,7 +1060,7 @@ for(int i=0;i<(int)getFilter()->getGUICtrlsSize();i++){
 	
 	else if(getFilter()->getGUICtrls(i).getStringProp("type")==T("button")){
 	if(controls[i])
-		((Button*)controls[i])->setButtonText(getFilter()->getGUICtrls(i).getItems(1-(int)inValue));
+		((CabbageButton*)controls[i])->button->setButtonText(getFilter()->getGUICtrls(i).getItems(1-(int)inValue));
 	}
 	
 	else if(getFilter()->getGUICtrls(i).getStringProp("type")==T("combobox")){
@@ -1069,9 +1069,10 @@ for(int i=0;i<(int)getFilter()->getGUICtrlsSize();i++){
 	}
 
 	else if(getFilter()->getGUICtrls(i).getStringProp("type")==T("checkbox")){
-	if(controls[i])
+	if(controls[i]){
 	((CabbageCheckbox*)controls[i])->button->setToggleState((bool)inValue, false);
 	getFilter()->getCsound()->SetChannel(getFilter()->getGUICtrls(i).getStringProp("channel").toUTF8(), inValue);
+	}
 	}
 }
 
@@ -1099,6 +1100,7 @@ for(int i=0;i<(int)getFilter()->getGUILayoutCtrlsSize();i++){
 	}
 }
 
+#ifdef Cabbage_Build_Standalone
 	//make sure that the instrument needs midi before turning this on
    MidiMessage message(0xf4, 0, 0, 0);
    if(!getFilter()->ccBuffer.isEmpty()){
@@ -1153,6 +1155,7 @@ for(int i=0;i<(int)getFilter()->getGUILayoutCtrlsSize();i++){
    
    }
    getFilter()->ccBuffer.clear();
+#endif
 #endif
 
 
