@@ -6,7 +6,7 @@
        public:
           CabbageStandalone()
           {
-          }
+          }   
 
           void initialise(const String& /*commandLineParameters*/)
           {
