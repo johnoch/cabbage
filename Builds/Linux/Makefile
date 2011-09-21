@@ -17,10 +17,10 @@ ifeq ($(CONFIG),Debug)
   LIBDIR := build
   OBJDIR := build/intermediate/Debug
   OUTDIR := build
-  CPPFLAGS := $(DEPFLAGS) -D "LINUX=1" -D "DEBUG=1" -D "_DEBUG=1" -D "Cabbage_Build_Standalone" -D "JUCER_LINUX_MAKE_7346DA2A=1" -I "/usr/include" -I "/usr/include/freetype2"
+  CPPFLAGS := $(DEPFLAGS) -D "LINUX=1" -D "DEBUG=1" -D "_DEBUG=1" -D "MSVC=1" -D "USE_DOUBLE=1" -D"Cabbage_GUI_Editor" -D "Cabbage_Build_Standalone" -D "Cabbage_Named_Pipe" -D "JUCER_LINUX_MAKE_7346DA2A=1" -I "/usr/include" -I "/usr/include/freetype2"
   CFLAGS += $(CPPFLAGS) $(TARGET_ARCH) -g -ggdb -O0
-  CXXFLAGS += $(CFLAGS) -I "/home/rory/SourceCode/csound5/H"
-  LDFLAGS += -L$(BINDIR) -L$(LIBDIR) -L"/usr/X11R6/lib/" -L"../../../juceTip/juce/bin"  -L "/home/rory/SourceCode/csound5" -lfreetype -lpthread -lrt -lX11 -lGL -lGLU -lXinerama -lasound -lcsound -lm -lsndfile
+  CXXFLAGS += $(CFLAGS) -I "/usr/local/include/csound"
+  LDFLAGS += -L$(BINDIR) -L$(LIBDIR) -L"/usr/X11R6/lib/" -L"../../../juceTip/juce/bin" -lfreetype -lpthread -lrt -lX11 -lGL -lGLU -lXinerama -lasound -lasound -lcsound64 -lm -lsndfile
   LDDEPS :=
   RESFLAGS :=  -D "LINUX=1" -D "DEBUG=1" -D "_DEBUG=1" -D "JUCER_LINUX_MAKE_7346DA2A=1" -I "/usr/include" -I "/usr/include/freetype2"
   TARGET := Cabbage
@@ -34,8 +34,8 @@ ifeq ($(CONFIG),Release)
   OUTDIR := build
   CPPFLAGS := $(DEPFLAGS) -D "LINUX=1" -D "NDEBUG=1" -D "JUCER_LINUX_MAKE_7346DA2A=1" -I "/usr/include" -I "/usr/include/freetype2"
   CFLAGS += $(CPPFLAGS) $(TARGET_ARCH) -Os
-  CXXFLAGS += $(CFLAGS) -I "/home/rory/SourceCode/csound5/H"
-  LDFLAGS += -L$(BINDIR) -L$(LIBDIR) -L"/usr/X11R6/lib/" -L"../../../juceTip/juce/bin" -lfreetype -lpthread -lrt -lX11 -lGL -lGLU -lXinerama -lasound -L "/home/rory/SourceCode/csound5"
+  CXXFLAGS += $(CFLAGS) -I "/usr/local/include/csound"
+  LDFLAGS += -L$(BINDIR) -L$(LIBDIR) -L"/usr/X11R6/lib/" -L"../../../juceTip/juce/bin" -lfreetype -lpthread -lrt -lX11 -lGL -lGLU -lXinerama -lasound -lasound -lcsound64 -lm -lsndfile
   LDDEPS :=
   RESFLAGS :=  -D "LINUX=1" -D "NDEBUG=1" -D "JUCER_LINUX_MAKE_7346DA2A=1" -I "/usr/include" -I "/usr/include/freetype2"
   TARGET := Cabbage
@@ -43,10 +43,12 @@ ifeq ($(CONFIG),Release)
 endif
 
 OBJECTS := \
+  $(OBJDIR)/CabbageGUIClass_79b9049f.o \
+  $(OBJDIR)/CabbageMainPanel_12c1333.o \
   $(OBJDIR)/CabbagePluginEditor_e9bade22.o \
   $(OBJDIR)/CabbagePluginProcessor_4c907dc7.o \
   $(OBJDIR)/CabbageStandaloneDialog_1f0ad88f.o \
-  $(OBJDIR)/juce_AudioFilterStreamer_b53eaeb2.o \
+  $(OBJDIR)/ComponentLayoutEditor_aa38c835.o \
   $(OBJDIR)/StandaloneFilterApp_e433cd25.o \
   $(OBJDIR)/JuceLibraryCode1_682c927f.o \
   $(OBJDIR)/JuceLibraryCode2_683aaa00.o \
@@ -68,6 +70,16 @@ clean:
 	-@rm -rf $(OBJDIR)/*
 	-@rm -rf $(OBJDIR)
 
+$(OBJDIR)/CabbageGUIClass_79b9049f.o: ../../Source/CabbageGUIClass.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling CabbageGUIClass.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
+$(OBJDIR)/CabbageMainPanel_12c1333.o: ../../Source/CabbageMainPanel.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling CabbageMainPanel.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
 $(OBJDIR)/CabbagePluginEditor_e9bade22.o: ../../Source/CabbagePluginEditor.cpp
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling CabbagePluginEditor.cpp"
@@ -83,9 +95,9 @@ $(OBJDIR)/CabbageStandaloneDialog_1f0ad88f.o: ../../Source/CabbageStandaloneDial
 	@echo "Compiling CabbageStandaloneDialog.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
-$(OBJDIR)/juce_AudioFilterStreamer_b53eaeb2.o: ../../Source/juce_AudioFilterStreamer.cpp
+$(OBJDIR)/ComponentLayoutEditor_aa38c835.o: ../../Source/ComponentLayoutEditor.cpp
 	-@mkdir -p $(OBJDIR)
-	@echo "Compiling juce_AudioFilterStreamer.cpp"
+	@echo "Compiling ComponentLayoutEditor.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/StandaloneFilterApp_e433cd25.o: ../../Source/StandaloneFilterApp.cpp

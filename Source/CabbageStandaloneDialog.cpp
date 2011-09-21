@@ -464,9 +464,9 @@ FileChooser saveFC(T("Save as..."), File::nonexistent, T(""));
 String VST;
 	if (saveFC.browseForFileToSave(true)){
 		if(type.contains("VSTi"))
-			VST = thisFile.getParentDirectory().getFullPathName() + T("\\CabbagePlugin.dll");
-		else if(type.contains(T("VSTfx")))
-			VST = thisFile.getParentDirectory().getFullPathName() + T("\\CabbagePluginFX.dll");
+			VST = thisFile.getParentDirectory().getFullPathName() + T("\\CabbagePluginSynth.dll");
+		else if(type.contains(T("VST")))
+			VST = thisFile.getParentDirectory().getFullPathName() + T("\\CabbagePluginEffect.dll");
 		else if(type.contains(T("AU"))){
 			showMessage("This feature only works on computers running OSX");
 			}

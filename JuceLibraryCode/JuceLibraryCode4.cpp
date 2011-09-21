@@ -12,16 +12,4 @@
 */
 
 #include "AppConfig.h"
-#if defined (JUCER_VS2010_78A501D)
- #include "../../juceTip/juce/amalgamation/juce_amalgamated4.cpp"
-#elif defined (JUCER_VS2008_78A5006)
- #include "../../juceTip/juce/amalgamation/juce_amalgamated4.cpp"
-#elif defined (JUCER_VS2005_78A5003)
- #include "../../juceTip/juce/amalgamation/juce_amalgamated4.cpp"
-#elif defined (JUCER_MSVC6_734A9119)
- #include "../../juceTip/juce/amalgamation/juce_amalgamated4.cpp"
-#elif defined (JUCER_LINUX_MAKE_7346DA2A)
- #include "../../juceTip/juce/amalgamation/juce_amalgamated4.cpp"
-#elif defined (JUCER_XCODE_MAC_F6D2F4CF)
- #include "../../juceTip/juce/amalgamation/juce_amalgamated4.cpp"
-#endif
+#include "../../juceTip/juce/amalgamation/juce_amalgamated4.cpp"

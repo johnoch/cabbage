@@ -10,29 +10,17 @@
 
 */
 
-#ifndef __APPHEADERFILE_979FA664__
-#define __APPHEADERFILE_979FA664__
+#ifndef __APPHEADERFILE_8BD39FD3__
+#define __APPHEADERFILE_8BD39FD3__
 
 #include "AppConfig.h"
-#if defined (JUCER_VS2010_78A501D)
- #include "../../juceTip/juce/juce_amalgamated.h"
-#elif defined (JUCER_VS2008_78A5006)
- #include "../../juceTip/juce/juce_amalgamated.h"
-#elif defined (JUCER_VS2005_78A5003)
- #include "../../juceTip/juce/juce_amalgamated.h"
-#elif defined (JUCER_MSVC6_734A9119)
- #include "../../juceTip/juce/juce_amalgamated.h"
-#elif defined (JUCER_LINUX_MAKE_7346DA2A)
- #include "../../juceTip/juce/juce_amalgamated.h"
-#elif defined (JUCER_XCODE_MAC_F6D2F4CF)
- #include "../../juceTip/juce/juce_amalgamated.h"
-#endif
+#include "../../juceTip/juce/juce_amalgamated.h"
 
 namespace ProjectInfo
 {
     const char* const  projectName    = "Cabbage";
-    const char* const  versionString  = "0.0.1";
+    const char* const  versionString  = "1.0.0";
     const int          versionNumber  = 0x10000;
 }
 
-#endif   // __APPHEADERFILE_979FA664__
+#endif   // __APPHEADERFILE_8BD39FD3__

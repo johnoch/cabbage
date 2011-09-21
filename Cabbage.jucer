@@ -10,13 +10,9 @@
               pluginRTASCategory="" bundleIdentifier="com.yourcompany.Cabbage"
               jucerVersion="3.0.0">
   <EXPORTFORMATS>
-    <XCODE_MAC targetFolder="Builds/MacOSX" vstFolder="~/SDKs/vstsdk2.4" rtasFolder="~/SDKs/PT_80_SDK"
-               objCExtraSuffix="pRcQk1" juceFolder="..\..\SourceCode\juceTip\juce"/>
-    <VS2008 targetFolder="Builds/VisualStudio2008" vstFolder="c:\SDKs\vstsdk2.4"
-            rtasFolder="c:\SDKs\PT_80_SDK" libraryType="1" juceFolder="..\..\SourceCode\juceTip\juce"/>
     <LINUX_MAKE targetFolder="Builds/Linux" vstFolder="~/SDKs/vstsdk2.4" juceFolder="..\juceTip\juce"
-                extraCompilerFlags="-I &quot;/home/rory/SourceCode/csound5/H&quot;"
-                extraLinkerFlags="-L &quot;/home/rory/SourceCode/csound5&quot;"/>
+                extraCompilerFlags="-I &quot;/usr/local/include/csound&quot;"
+                extraLinkerFlags="-lasound -lcsound64 -lm -lsndfile"/>
   </EXPORTFORMATS>
   <CONFIGURATIONS>
     <CONFIGURATION name="Debug" isDebug="1" optimisation="1" targetName="Cabbage"
@@ -26,6 +22,16 @@
   </CONFIGURATIONS>
   <MAINGROUP id="ShWWl3" name="Cabbage">
     <GROUP id="n8QYKj" name="Source">
+      <FILE id="PNzZSZ" name="CabbageCustomWidgets.h" compile="0" resource="0"
+            file="Source/CabbageCustomWidgets.h"/>
+      <FILE id="Z9I0Hf" name="CabbageGUIClass.cpp" compile="1" resource="0"
+            file="Source/CabbageGUIClass.cpp"/>
+      <FILE id="lHt33l" name="CabbageGUIClass.h" compile="0" resource="0"
+            file="Source/CabbageGUIClass.h"/>
+      <FILE id="QqeITc" name="CabbageMainPanel.cpp" compile="1" resource="0"
+            file="Source/CabbageMainPanel.cpp"/>
+      <FILE id="c9fP9J" name="CabbageMainPanel.h" compile="0" resource="0"
+            file="Source/CabbageMainPanel.h"/>
       <FILE id="OtLZXe" name="CabbageUtils.h" compile="0" resource="0" file="Source/CabbageUtils.h"/>
       <FILE id="osXPhh" name="CabbagePluginEditor.cpp" compile="1" resource="0"
             file="Source\CabbagePluginEditor.cpp"/>
@@ -39,10 +45,10 @@
             file="Source\CabbageStandaloneDialog.cpp"/>
       <FILE id="PF491W" name="CabbageStandaloneDialog.h" compile="0" resource="0"
             file="Source\CabbageStandaloneDialog.h"/>
-      <FILE id="ttlVDA" name="juce_AudioFilterStreamer.cpp" compile="1" resource="0"
-            file="Source\juce_AudioFilterStreamer.cpp"/>
-      <FILE id="HSWCXy" name="juce_AudioFilterStreamer.h" compile="0" resource="0"
-            file="Source\juce_AudioFilterStreamer.h"/>
+      <FILE id="UhrqSw" name="ComponentLayoutEditor.cpp" compile="1" resource="0"
+            file="Source/ComponentLayoutEditor.cpp"/>
+      <FILE id="eld39O" name="ComponentLayoutEditor.h" compile="0" resource="0"
+            file="Source/ComponentLayoutEditor.h"/>
       <FILE id="lgrWnS" name="StandaloneFilterApp.cpp" compile="1" resource="0"
             file="Source\StandaloneFilterApp.cpp"/>
     </GROUP>

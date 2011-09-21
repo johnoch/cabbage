@@ -123,11 +123,11 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Source\CabbageGUIClass.cpp" />
+    <ClCompile Include="..\..\Source\CabbageMainPanel.cpp" />
     <ClCompile Include="..\..\Source\CabbagePluginEditor.cpp" />
     <ClCompile Include="..\..\Source\CabbagePluginProcessor.cpp" />
     <ClCompile Include="..\..\Source\CabbageStandaloneDialog.cpp" />
     <ClCompile Include="..\..\Source\ComponentLayoutEditor.cpp" />
-    <ClCompile Include="..\..\Source\MainPanel.cpp" />
     <ClCompile Include="..\..\Source\StandaloneFilterApp.cpp" />
     <ClCompile Include="..\..\JuceLibraryCode\JuceLibraryCode1.cpp" />
     <ClCompile Include="..\..\JuceLibraryCode\JuceLibraryCode2.cpp" />
@@ -137,7 +137,9 @@
   <ItemGroup>
     <ClInclude Include="..\..\JuceLibraryCode\JucePluginCharacteristics.h" />
     <ClInclude Include="..\..\JuceLibraryCode\juce_IncludeCharacteristics.h" />
+    <ClInclude Include="..\..\Source\CabbageCustomWidgets.h" />
     <ClInclude Include="..\..\Source\CabbageGUIClass.h" />
+    <ClInclude Include="..\..\Source\CabbageMainPanel.h" />
     <ClInclude Include="..\..\Source\CabbagePluginEditor.h" />
     <ClInclude Include="..\..\Source\CabbagePluginProcessor.h" />
     <ClInclude Include="..\..\Source\CabbageStandaloneDialog.h" />
@@ -145,7 +147,6 @@
     <ClInclude Include="..\..\JuceLibraryCode\AppConfig.h" />
     <ClInclude Include="..\..\JuceLibraryCode\JuceHeader.h" />
     <ClInclude Include="..\..\Source\ComponentLayoutEditor.h" />
-    <ClInclude Include="..\..\Source\MainPanel.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />

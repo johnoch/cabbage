@@ -39,10 +39,10 @@
     <ClCompile Include="..\..\Source\CabbageGUIClass.cpp">
       <Filter>Cabbage\Source</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Source\ComponentLayoutEditor.cpp">
+    <ClCompile Include="..\..\Source\CabbageMainPanel.cpp">
       <Filter>Cabbage\Source</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Source\MainPanel.cpp">
+    <ClCompile Include="..\..\Source\ComponentLayoutEditor.cpp">
       <Filter>Cabbage\Source</Filter>
     </ClCompile>
   </ItemGroup>
@@ -74,10 +74,13 @@
     <ClInclude Include="..\..\JuceLibraryCode\juce_IncludeCharacteristics.h">
       <Filter>Juce Library Code</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Source\MainPanel.h">
+    <ClInclude Include="..\..\Source\ComponentLayoutEditor.h">
       <Filter>Cabbage\Source</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Source\ComponentLayoutEditor.h">
+    <ClInclude Include="..\..\Source\CabbageMainPanel.h">
+      <Filter>Cabbage\Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\CabbageCustomWidgets.h">
       <Filter>Cabbage\Source</Filter>
     </ClInclude>
   </ItemGroup>

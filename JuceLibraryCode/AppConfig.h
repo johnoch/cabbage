@@ -10,9 +10,6 @@
     they are given in juce_Config.h
 
 */
- #pragma warning(disable: 4244) //double to float loss of information warning 
- #pragma warning(disable: 4706) //assignment within conditional expression warning 
- #pragma warning(disable: 4996) //vsnprintf warning..
 
 //#define  JUCE_FORCE_DEBUG
 //#define  JUCE_LOG_ASSERTIONS
@@ -20,8 +17,9 @@
 //#define  JUCE_WASAPI
 //#define  JUCE_DIRECTSOUND
 //#define  JUCE_ALSA
-#define    JUCE_QUICKTIME 0
+//#define  JUCE_QUICKTIME
 //#define  JUCE_OPENGL
+//#define  JUCE_DIRECT2D
 //#define  JUCE_USE_FLAC
 //#define  JUCE_USE_OGGVORBIS
 //#define  JUCE_USE_CDBURNER
@@ -37,11 +35,5 @@
 //#define  JUCE_ONLY_BUILD_CORE_LIBRARY
 //#define  JUCE_WEB_BROWSER
 //#define  JUCE_SUPPORT_CARBON
-#ifdef DEBUG
-#define  JUCE_CHECK_MEMORY_LEAKS 1
-#endif
-#ifdef NDEBUG
-#define  JUCE_CHECK_MEMORY_LEAKS 0
-#endif
-#define  JUCE_CATCH_UNHANDLED_EXCEPTIONS 1
-
+#define    JUCE_CHECK_MEMORY_LEAKS 1
+#define    JUCE_CATCH_UNHANDLED_EXCEPTIONS 1

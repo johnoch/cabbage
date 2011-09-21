@@ -9,12 +9,10 @@ build/intermediate/Debug/CabbagePluginEditor_e9bade22.o: \
  ../../Source/../JuceLibraryCode/juce_PluginHeaders.h \
  ../../Source/../JuceLibraryCode/juce_IncludeCharacteristics.h \
  ../../Source/../JuceLibraryCode/JucePluginCharacteristics.h \
- /home/rory/SourceCode/csound5/H/csound.hpp \
- /home/rory/SourceCode/csound5/H/csound.h \
- /home/rory/SourceCode/csound5/H/sysdep.h \
- /home/rory/SourceCode/csound5/H/float-version.h \
- /home/rory/SourceCode/csound5/H/text.h \
- /home/rory/SourceCode/csound5/H/cfgvar.h \
- /home/rory/SourceCode/csound5/H/msg_attr.h \
- /home/rory/SourceCode/csound5/H/version.h \
- ../../Source/CabbagePluginEditor.h
+ /usr/local/include/csound/csound.hpp /usr/local/include/csound/csound.h \
+ /usr/local/include/csound/sysdep.h \
+ /usr/local/include/csound/float-version.h \
+ /usr/local/include/csound/text.h /usr/local/include/csound/cfgvar.h \
+ /usr/local/include/csound/msg_attr.h /usr/local/include/csound/version.h \
+ ../../Source/CabbagePluginEditor.h ../../Source/CabbageCustomWidgets.h \
+ ../../Source/ComponentLayoutEditor.h ../../Source/CabbageMainPanel.h

@@ -484,9 +484,7 @@ float* audioBuffer;
 #ifndef Cabbage_No_Csound
 
 if(csCompileResult==0){
-keyboardState.processNextMidiBuffer (midiMessages,
-                                         0, buffer.getNumSamples(),
-                                         true);
+keyboardState.processNextMidiBuffer (midiMessages, 0, buffer.getNumSamples(), true);
 midiBuffer = midiMessages;
 ccBuffer = midiMessages;
 

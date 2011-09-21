@@ -86,6 +86,7 @@ private:
     void changeListenerCallback (ChangeBroadcaster *source);
 	Colour formColour;
 	String formPic;
+	float inValue;
 	ScopedPointer<Label> debugLabel;
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CabbagePluginAudioProcessorEditor);
 };

@@ -1,55 +1,31 @@
 <Cabbage>
-form caption("Host info"), size(200, 100), colour("white")
-hostbpm channel("bpm")
-hosttime channel("time")
-hostppqpos channel("ppq")
-hostrecording channel("recording")
-hostplaying channel("playing")
+form caption("PVS Blur"), size(450, 80), colour("black")
+hslider pos(1, 1), size(430, 50) channel("blur"), min(0), max(1), value(0), caption("Blur time"), colour("white")
 </Cabbage>
 <CsoundSynthesizer>
 <CsOptions>
--d -n
+-d -n -+rtmidi=null -M0 -b1024 
 </CsOptions>
 <CsInstruments>
 sr = 44100
 ksmps = 32
 nchnls = 2
-0dbfs = 1
 
-
-opcode dataRW, k, Ski  
-Sname, kvalue, iRW      xin
-kout init 0
-setksmps 1
-       if (iRW==0) then 
-              fprintks Sname, "%2.1f\n", kvalue 
-       else 
-              kres readk Sname, 8, 0              
-              kout = kres        
-       endif
-       xout kout                  
-endop
+alpass
 
 instr 1
-ktime chnget "time"
-kbpm chnget "bpm"
-kplay chnget "playing"
-kmet metro kbpm/60
-if(kmet==1) then
-event "i", 100, 0, 1, 200
-endif
+kblurtime chnget "blur"
+asig init 0;inch 1                                
+fsig  pvsanal   asig, 1024, 256, 1024, 1 
+ftps  pvsblur   fsig, kblurtime, 10         
+atps  pvsynth   ftps  
+apan jspline 1, 1, 3
+outs atps*apan, atps*(1-apan)
 endin
-
-instr 100
-aenv expon 1, p3, 0.001
-a1 oscil aenv, p4, 1
-outs a1, a1
-endin
-
-
+        
 </CsInstruments>
 <CsScore>
 f1 0 1024 10 1
-i1 0 1000
+i1 0 3600
 </CsScore>
-</CsoundSynthesizer>
+</CsoundSynthesizer>     

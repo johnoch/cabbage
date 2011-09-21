@@ -134,6 +134,7 @@
     <ClInclude Include="..\..\JuceLibraryCode\AppConfig.h" />
     <ClInclude Include="..\..\JuceLibraryCode\JuceHeader.h" />
     <ClInclude Include="..\..\JuceLibraryCode\JucePluginCharacteristics.h" />
+    <ClInclude Include="..\..\Source\CabbageCustomWidgets.h" />
     <ClInclude Include="..\..\Source\CabbageGUIClass.h" />
     <ClInclude Include="..\..\Source\CabbagePluginEditor.h" />
     <ClInclude Include="..\..\Source\CabbagePluginProcessor.h" />

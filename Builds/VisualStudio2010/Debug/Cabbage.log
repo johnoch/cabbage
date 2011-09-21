@@ -1,32 +1,184 @@
-﻿Build started 14/09/2011 23:34:03.
+﻿Build started 15/09/2011 12:27:28.
      1>Project "C:\MyDocuments\CabbageSVN\Builds\VisualStudio2010\Cabbage.vcxproj" on node 2 (build target(s)).
      1>InitializeBuildStatus:
          Touching ".\Debug\Cabbage.unsuccessfulbuild".
        ClCompile:
-         c:\Program Files\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /IC:\MyDocuments\SourceCode\Csound5\csound5\H /I"C:\MyDocuments\My Dropbox\ASIOSDK2" /I"C:\MyDocuments\My Dropbox\vstsdk2.4" /ZI /nologo /W4 /WX- /Od /Oy- /D WIN32 /D _WINDOWS /D DEBUG /D _DEBUG /D JUCER_VS2008_78A5006=1 /D MSVC /D Cabbage_Build_Standalone /D Cabbage_Named_Pipe /D USE_DOUBLE /D Cabbage_GUI_Editor /D _MBCS /Gm- /EHsc /MTd /GS /fp:precise /Zc:wchar_t /Zc:forScope /GR /Fo".\Debug\\" /Fd".\Debug\vc100.pdb" /Gd /TP /analyze- /errorReport:prompt ..\..\Source\CabbageGUIClass.cpp ..\..\Source\CabbagePluginEditor.cpp ..\..\Source\CabbagePluginProcessor.cpp ..\..\Source\CabbageStandaloneDialog.cpp ..\..\Source\ComponentLayoutEditor.cpp ..\..\Source\MainPanel.cpp ..\..\Source\StandaloneFilterApp.cpp ..\..\JuceLibraryCode\JuceLibraryCode1.cpp ..\..\JuceLibraryCode\JuceLibraryCode2.cpp ..\..\JuceLibraryCode\JuceLibraryCode3.cpp ..\..\JuceLibraryCode\JuceLibraryCode4.cpp
+         c:\Program Files\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /IC:\MyDocuments\SourceCode\Csound5\csound5\H /I"C:\MyDocuments\My Dropbox\ASIOSDK2" /I"C:\MyDocuments\My Dropbox\vstsdk2.4" /ZI /nologo /W4 /WX- /Od /Oy- /D WIN32 /D _WINDOWS /D DEBUG /D _DEBUG /D JUCER_VS2008_78A5006=1 /D MSVC /D Cabbage_Build_Standalone /D Cabbage_Named_Pipe /D USE_DOUBLE /D Cabbage_GUI_Editor /D _MBCS /Gm- /EHsc /MTd /GS /fp:precise /Zc:wchar_t /Zc:forScope /GR /Fo".\Debug\\" /Fd".\Debug\vc100.pdb" /Gd /TP /analyze- /errorReport:prompt ..\..\Source\CabbageGUIClass.cpp ..\..\Source\CabbageMainPanel.cpp ..\..\Source\CabbagePluginEditor.cpp ..\..\Source\CabbagePluginProcessor.cpp ..\..\Source\CabbageStandaloneDialog.cpp ..\..\Source\ComponentLayoutEditor.cpp ..\..\Source\StandaloneFilterApp.cpp ..\..\JuceLibraryCode\JuceLibraryCode1.cpp ..\..\JuceLibraryCode\JuceLibraryCode2.cpp ..\..\JuceLibraryCode\JuceLibraryCode3.cpp ..\..\JuceLibraryCode\JuceLibraryCode4.cpp
          CabbageGUIClass.cpp
+     1>c:\mydocuments\cabbagesvn\source\cabbageguiclass.cpp(328): warning C4244: '=' : conversion from 'int' to 'float', possible loss of data
+         CabbageMainPanel.cpp
          CabbagePluginEditor.cpp
+     1>c:\mydocuments\cabbagesvn\source\cabbagecustomwidgets.h(327): warning C4244: 'argument' : conversion from 'double' to 'float', possible loss of data
+     1>c:\mydocuments\cabbagesvn\source\cabbagecustomwidgets.h(327): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
+     1>c:\mydocuments\cabbagesvn\source\cabbagecustomwidgets.h(327): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
+     1>c:\mydocuments\cabbagesvn\source\cabbagecustomwidgets.h(329): warning C4244: 'argument' : conversion from 'double' to 'float', possible loss of data
+     1>c:\mydocuments\cabbagesvn\source\cabbagecustomwidgets.h(329): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
+     1>c:\mydocuments\cabbagesvn\source\cabbagecustomwidgets.h(329): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
+     1>c:\mydocuments\cabbagesvn\source\cabbagecustomwidgets.h(329): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
+     1>c:\mydocuments\cabbagesvn\source\cabbagecustomwidgets.h(329): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
+     1>c:\mydocuments\cabbagesvn\source\cabbagecustomwidgets.h(333): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
+     1>c:\mydocuments\cabbagesvn\source\cabbagecustomwidgets.h(333): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
+     1>c:\mydocuments\cabbagesvn\source\cabbagecustomwidgets.h(335): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
+     1>c:\mydocuments\cabbagesvn\source\cabbagecustomwidgets.h(335): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
+     1>c:\mydocuments\cabbagesvn\source\cabbagecustomwidgets.h(335): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
+     1>c:\mydocuments\cabbagesvn\source\cabbagecustomwidgets.h(335): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
      1>c:\mydocuments\cabbagesvn\source\cabbageplugineditor.cpp(98): warning C4100: 'source' : unreferenced formal parameter
-     1>c:\mydocuments\cabbagesvn\source\cabbageplugineditor.cpp(708): warning C4189: 'range' : local variable is initialized but not referenced
-     1>c:\mydocuments\cabbagesvn\source\cabbageplugineditor.cpp(1073): warning C4800: 'float' : forcing value to bool 'true' or 'false' (performance warning)
+     1>c:\mydocuments\cabbagesvn\source\cabbageplugineditor.cpp(399): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>c:\mydocuments\cabbagesvn\source\cabbageplugineditor.cpp(399): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>c:\mydocuments\cabbagesvn\source\cabbageplugineditor.cpp(399): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>c:\mydocuments\cabbagesvn\source\cabbageplugineditor.cpp(399): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>c:\mydocuments\cabbagesvn\source\cabbageplugineditor.cpp(457): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>c:\mydocuments\cabbagesvn\source\cabbageplugineditor.cpp(457): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>c:\mydocuments\cabbagesvn\source\cabbageplugineditor.cpp(457): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>c:\mydocuments\cabbagesvn\source\cabbageplugineditor.cpp(457): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>c:\mydocuments\cabbagesvn\source\cabbageplugineditor.cpp(457): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>c:\mydocuments\cabbagesvn\source\cabbageplugineditor.cpp(466): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>c:\mydocuments\cabbagesvn\source\cabbageplugineditor.cpp(466): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>c:\mydocuments\cabbagesvn\source\cabbageplugineditor.cpp(466): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>c:\mydocuments\cabbagesvn\source\cabbageplugineditor.cpp(466): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>c:\mydocuments\cabbagesvn\source\cabbageplugineditor.cpp(501): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>c:\mydocuments\cabbagesvn\source\cabbageplugineditor.cpp(501): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>c:\mydocuments\cabbagesvn\source\cabbageplugineditor.cpp(501): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>c:\mydocuments\cabbagesvn\source\cabbageplugineditor.cpp(501): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>c:\mydocuments\cabbagesvn\source\cabbageplugineditor.cpp(508): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>c:\mydocuments\cabbagesvn\source\cabbageplugineditor.cpp(508): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>c:\mydocuments\cabbagesvn\source\cabbageplugineditor.cpp(508): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>c:\mydocuments\cabbagesvn\source\cabbageplugineditor.cpp(508): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>c:\mydocuments\cabbagesvn\source\cabbageplugineditor.cpp(535): warning C4244: 'initializing' : conversion from 'float' to 'int', possible loss of data
+     1>c:\mydocuments\cabbagesvn\source\cabbageplugineditor.cpp(536): warning C4244: 'initializing' : conversion from 'float' to 'int', possible loss of data
+     1>c:\mydocuments\cabbagesvn\source\cabbageplugineditor.cpp(537): warning C4244: 'initializing' : conversion from 'float' to 'int', possible loss of data
+     1>c:\mydocuments\cabbagesvn\source\cabbageplugineditor.cpp(538): warning C4244: 'initializing' : conversion from 'float' to 'int', possible loss of data
+     1>c:\mydocuments\cabbagesvn\source\cabbageplugineditor.cpp(605): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>c:\mydocuments\cabbagesvn\source\cabbageplugineditor.cpp(605): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>c:\mydocuments\cabbagesvn\source\cabbageplugineditor.cpp(605): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>c:\mydocuments\cabbagesvn\source\cabbageplugineditor.cpp(605): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>c:\mydocuments\cabbagesvn\source\cabbageplugineditor.cpp(612): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>c:\mydocuments\cabbagesvn\source\cabbageplugineditor.cpp(612): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>c:\mydocuments\cabbagesvn\source\cabbageplugineditor.cpp(612): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>c:\mydocuments\cabbagesvn\source\cabbageplugineditor.cpp(612): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>c:\mydocuments\cabbagesvn\source\cabbageplugineditor.cpp(659): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>c:\mydocuments\cabbagesvn\source\cabbageplugineditor.cpp(659): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>c:\mydocuments\cabbagesvn\source\cabbageplugineditor.cpp(659): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>c:\mydocuments\cabbagesvn\source\cabbageplugineditor.cpp(659): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>c:\mydocuments\cabbagesvn\source\cabbageplugineditor.cpp(666): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>c:\mydocuments\cabbagesvn\source\cabbageplugineditor.cpp(666): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>c:\mydocuments\cabbagesvn\source\cabbageplugineditor.cpp(666): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>c:\mydocuments\cabbagesvn\source\cabbageplugineditor.cpp(666): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>c:\mydocuments\cabbagesvn\source\cabbageplugineditor.cpp(672): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>c:\mydocuments\cabbagesvn\source\cabbageplugineditor.cpp(672): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>c:\mydocuments\cabbagesvn\source\cabbageplugineditor.cpp(672): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>c:\mydocuments\cabbagesvn\source\cabbageplugineditor.cpp(672): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>c:\mydocuments\cabbagesvn\source\cabbageplugineditor.cpp(677): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>c:\mydocuments\cabbagesvn\source\cabbageplugineditor.cpp(677): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>c:\mydocuments\cabbagesvn\source\cabbageplugineditor.cpp(677): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>c:\mydocuments\cabbagesvn\source\cabbageplugineditor.cpp(677): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>c:\mydocuments\cabbagesvn\source\cabbageplugineditor.cpp(679): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>c:\mydocuments\cabbagesvn\source\cabbageplugineditor.cpp(679): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>c:\mydocuments\cabbagesvn\source\cabbageplugineditor.cpp(679): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>c:\mydocuments\cabbagesvn\source\cabbageplugineditor.cpp(679): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>c:\mydocuments\cabbagesvn\source\cabbageplugineditor.cpp(709): warning C4244: 'initializing' : conversion from 'float' to 'int', possible loss of data
+     1>c:\mydocuments\cabbagesvn\source\cabbageplugineditor.cpp(709): warning C4189: 'range' : local variable is initialized but not referenced
+     1>c:\mydocuments\cabbagesvn\source\cabbageplugineditor.cpp(763): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>c:\mydocuments\cabbagesvn\source\cabbageplugineditor.cpp(763): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>c:\mydocuments\cabbagesvn\source\cabbageplugineditor.cpp(763): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>c:\mydocuments\cabbagesvn\source\cabbageplugineditor.cpp(763): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>c:\mydocuments\cabbagesvn\source\cabbageplugineditor.cpp(769): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>c:\mydocuments\cabbagesvn\source\cabbageplugineditor.cpp(769): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>c:\mydocuments\cabbagesvn\source\cabbageplugineditor.cpp(769): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>c:\mydocuments\cabbagesvn\source\cabbageplugineditor.cpp(769): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>c:\mydocuments\cabbagesvn\source\cabbageplugineditor.cpp(774): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>c:\mydocuments\cabbagesvn\source\cabbageplugineditor.cpp(774): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>c:\mydocuments\cabbagesvn\source\cabbageplugineditor.cpp(774): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>c:\mydocuments\cabbagesvn\source\cabbageplugineditor.cpp(774): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>c:\mydocuments\cabbagesvn\source\cabbageplugineditor.cpp(818): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>c:\mydocuments\cabbagesvn\source\cabbageplugineditor.cpp(818): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>c:\mydocuments\cabbagesvn\source\cabbageplugineditor.cpp(818): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>c:\mydocuments\cabbagesvn\source\cabbageplugineditor.cpp(818): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>c:\mydocuments\cabbagesvn\source\cabbageplugineditor.cpp(825): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>c:\mydocuments\cabbagesvn\source\cabbageplugineditor.cpp(825): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>c:\mydocuments\cabbagesvn\source\cabbageplugineditor.cpp(825): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>c:\mydocuments\cabbagesvn\source\cabbageplugineditor.cpp(825): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>c:\mydocuments\cabbagesvn\source\cabbageplugineditor.cpp(831): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>c:\mydocuments\cabbagesvn\source\cabbageplugineditor.cpp(831): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>c:\mydocuments\cabbagesvn\source\cabbageplugineditor.cpp(831): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>c:\mydocuments\cabbagesvn\source\cabbageplugineditor.cpp(831): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>c:\mydocuments\cabbagesvn\source\cabbageplugineditor.cpp(940): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>c:\mydocuments\cabbagesvn\source\cabbageplugineditor.cpp(940): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>c:\mydocuments\cabbagesvn\source\cabbageplugineditor.cpp(940): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>c:\mydocuments\cabbagesvn\source\cabbageplugineditor.cpp(940): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>c:\mydocuments\cabbagesvn\source\cabbageplugineditor.cpp(947): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>c:\mydocuments\cabbagesvn\source\cabbageplugineditor.cpp(947): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>c:\mydocuments\cabbagesvn\source\cabbageplugineditor.cpp(947): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>c:\mydocuments\cabbagesvn\source\cabbageplugineditor.cpp(947): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>c:\mydocuments\cabbagesvn\source\cabbageplugineditor.cpp(953): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>c:\mydocuments\cabbagesvn\source\cabbageplugineditor.cpp(953): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>c:\mydocuments\cabbagesvn\source\cabbageplugineditor.cpp(953): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>c:\mydocuments\cabbagesvn\source\cabbageplugineditor.cpp(953): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>c:\mydocuments\cabbagesvn\source\cabbageplugineditor.cpp(963): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
+     1>c:\mydocuments\cabbagesvn\source\cabbageplugineditor.cpp(966): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>c:\mydocuments\cabbagesvn\source\cabbageplugineditor.cpp(992): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
+     1>c:\mydocuments\cabbagesvn\source\cabbageplugineditor.cpp(1021): warning C4244: 'argument' : conversion from 'juce::juce_wchar' to 'char', possible loss of data
+     1>c:\mydocuments\cabbagesvn\source\cabbageplugineditor.cpp(1076): warning C4800: 'float' : forcing value to bool 'true' or 'false' (performance warning)
+     1>c:\mydocuments\cabbagesvn\source\cabbageplugineditor.cpp(1136): warning C4244: 'argument' : conversion from 'double' to 'int', possible loss of data
          CabbagePluginProcessor.cpp
+     1>c:\mydocuments\cabbagesvn\source\cabbagepluginprocessor.cpp(265): warning C4996: 'vsnprintf': This function or variable may be unsafe. Consider using vsnprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 c:\program files\microsoft visual studio 10.0\vc\include\stdio.h(354) : see declaration of 'vsnprintf'
      1>c:\mydocuments\cabbagesvn\source\cabbagepluginprocessor.cpp(277): warning C4100: 'source' : unreferenced formal parameter
+     1>c:\mydocuments\cabbagesvn\source\cabbagepluginprocessor.cpp(315): warning C4244: 'initializing' : conversion from 'float' to 'int', possible loss of data
+     1>c:\mydocuments\cabbagesvn\source\cabbagepluginprocessor.cpp(322): warning C4244: 'argument' : conversion from 'double' to 'float', possible loss of data
      1>c:\mydocuments\cabbagesvn\source\cabbagepluginprocessor.cpp(315): warning C4189: 'range' : local variable is initialized but not referenced
+     1>c:\mydocuments\cabbagesvn\source\cabbagepluginprocessor.cpp(505): warning C4244: '=' : conversion from 'double' to 'float', possible loss of data
+     1>c:\mydocuments\cabbagesvn\source\cabbagepluginprocessor.cpp(563): warning C4244: '=' : conversion from 'int' to 'unsigned char', possible loss of data
+     1>c:\mydocuments\cabbagesvn\source\cabbagepluginprocessor.cpp(569): warning C4244: '=' : conversion from 'int' to 'unsigned char', possible loss of data
+     1>c:\mydocuments\cabbagesvn\source\cabbagepluginprocessor.cpp(575): warning C4244: '=' : conversion from 'int' to 'unsigned char', possible loss of data
          CabbageStandaloneDialog.cpp
          ComponentLayoutEditor.cpp
      1>c:\mydocuments\cabbagesvn\source\componentlayouteditor.cpp(206): warning C4100: 'e' : unreferenced formal parameter
      1>c:\mydocuments\cabbagesvn\source\componentlayouteditor.cpp(212): warning C4100: 'e' : unreferenced formal parameter
      1>c:\mydocuments\cabbagesvn\source\componentlayouteditor.cpp(241): warning C4100: 'g' : unreferenced formal parameter
-         MainPanel.cpp
-     1>c1xx : fatal error C1083: Cannot open source file: '..\..\Source\MainPanel.cpp': No such file or directory
          StandaloneFilterApp.cpp
          JuceLibraryCode1.cpp
          JuceLibraryCode2.cpp
          JuceLibraryCode3.cpp
          JuceLibraryCode4.cpp
          Generating Code...
-     1>Done Building Project "C:\MyDocuments\CabbageSVN\Builds\VisualStudio2010\Cabbage.vcxproj" (build target(s)) -- FAILED.
+     1>c:\mydocuments\sourcecode\csound5\csound5\h\csound.hpp(211): warning C4706: assignment within conditional expression
+     1>c:\mydocuments\sourcecode\csound5\csound5\h\csound.hpp(224): warning C4706: assignment within conditional expression
+     1>c:\mydocuments\sourcecode\csound5\csound5\h\csound.hpp(238): warning C4706: assignment within conditional expression
+     1>c:\mydocuments\sourcecode\csound5\csound5\h\csound.hpp(253): warning C4706: assignment within conditional expression
+     1>c:\mydocuments\sourcecode\csound5\csound5\h\csound.hpp(270): warning C4706: assignment within conditional expression
+     1>c:\mydocuments\sourcecode\csound5\csound5\h\csound.hpp(211): warning C4706: assignment within conditional expression
+     1>c:\mydocuments\sourcecode\csound5\csound5\h\csound.hpp(224): warning C4706: assignment within conditional expression
+     1>c:\mydocuments\sourcecode\csound5\csound5\h\csound.hpp(238): warning C4706: assignment within conditional expression
+     1>c:\mydocuments\sourcecode\csound5\csound5\h\csound.hpp(253): warning C4706: assignment within conditional expression
+     1>c:\mydocuments\sourcecode\csound5\csound5\h\csound.hpp(270): warning C4706: assignment within conditional expression
+     1>c:\mydocuments\sourcecode\csound5\csound5\h\csound.hpp(211): warning C4706: assignment within conditional expression
+     1>c:\mydocuments\sourcecode\csound5\csound5\h\csound.hpp(224): warning C4706: assignment within conditional expression
+     1>c:\mydocuments\sourcecode\csound5\csound5\h\csound.hpp(238): warning C4706: assignment within conditional expression
+     1>c:\mydocuments\sourcecode\csound5\csound5\h\csound.hpp(253): warning C4706: assignment within conditional expression
+     1>c:\mydocuments\sourcecode\csound5\csound5\h\csound.hpp(270): warning C4706: assignment within conditional expression
+       Link:
+         c:\Program Files\Microsoft Visual Studio 10.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:".\Debug\Cabbage.exe" /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /NODEFAULTLIB:libcmt.lib /NODEFAULTLIB:msvcrt.lib /MANIFEST /ManifestFile:".\Debug\Cabbage.exe.intermediate.manifest" /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /DEBUG /PDB:".\Debug\Cabbage.pdb" /SUBSYSTEM:WINDOWS /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:".\Debug\Cabbage.lib" /MACHINE:X86 .\Debug\CabbageGUIClass.obj
+         .\Debug\CabbageMainPanel.obj
+         .\Debug\CabbagePluginEditor.obj
+         .\Debug\CabbagePluginProcessor.obj
+         .\Debug\CabbageStandaloneDialog.obj
+         .\Debug\ComponentLayoutEditor.obj
+         .\Debug\StandaloneFilterApp.obj
+         .\Debug\JuceLibraryCode1.obj
+         .\Debug\JuceLibraryCode2.obj
+         .\Debug\JuceLibraryCode3.obj
+         .\Debug\JuceLibraryCode4.obj "C:\MyDocuments\SourceCode\Csound5\csound5\csound32.lib" 
+         LINK : .\Debug\Cabbage.exe not found or not built by the last incremental link; performing full link
+            Creating library .\Debug\Cabbage.lib and object .\Debug\Cabbage.exp
+         Cabbage.vcxproj -> C:\MyDocuments\CabbageSVN\Builds\VisualStudio2010\.\Debug\Cabbage.exe
+       Manifest:
+         C:\Program Files\Microsoft SDKs\Windows\v7.0A\bin\mt.exe /nologo /verbose /outputresource:".\Debug\Cabbage.exe;#1" /manifest .\Debug\Cabbage.exe.intermediate.manifest
+       FinalizeBuildStatus:
+         Deleting file ".\Debug\Cabbage.unsuccessfulbuild".
+         Touching ".\Debug\Cabbage.lastbuildstate".
+     1>Done Building Project "C:\MyDocuments\CabbageSVN\Builds\VisualStudio2010\Cabbage.vcxproj" (build target(s)).
 
-Build FAILED.
+Build succeeded.
 
-Time Elapsed 00:00:42.50
+Time Elapsed 00:00:46.50

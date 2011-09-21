@@ -33,12 +33,12 @@
 #define JucePlugin_MaxNumInputChannels  2
 #define JucePlugin_MaxNumOutputChannels 2
 #define JucePlugin_PreferredChannelConfigurations   {1, 1}, {2, 2}
-#define JucePlugin_IsSynth              0
+#define JucePlugin_IsSynth              1
 #define JucePlugin_WantsMidiInput       1
 #define JucePlugin_ProducesMidiOutput   0
 #define JucePlugin_SilenceInProducesSilenceOut  0
 #define JucePlugin_TailLengthSeconds    0
-#define JucePlugin_EditorRequiresKeyboardFocus  0
+#define JucePlugin_EditorRequiresKeyboardFocus  1
 #define JucePlugin_VersionCode          0x10000
 #define JucePlugin_VersionString        "0.0.0"
 #define JucePlugin_VSTUniqueID          JucePlugin_PluginCode
