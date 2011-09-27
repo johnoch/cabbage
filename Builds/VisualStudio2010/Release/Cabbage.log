@@ -1,33 +1,178 @@
-﻿Build started 19/05/2011 15:32:56.
-     1>Project "C:\MyDocuments\My Dropbox\CabbageApril2011\Builds\VisualStudio2010\Cabbage.vcxproj" on node 2 (build target(s)).
+﻿Build started 27/09/2011 19:13:10.
+     1>Project "C:\MyDocuments\CabbageSVN\Builds\VisualStudio2010\Cabbage.vcxproj" on node 2 (build target(s)).
      1>InitializeBuildStatus:
-         Creating ".\Release\Cabbage.unsuccessfulbuild" because "AlwaysCreate" was specified.
+         Touching ".\Release\Cabbage.unsuccessfulbuild".
        ClCompile:
-         C:\Program Files\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /IC:\MyDocuments\SourceCode\Csound5\csound5\H /I"C:\MyDocuments\My Dropbox\ASIOSDK2" /I"C:\MyDocuments\My Dropbox\vstsdk2.4" /Zi /nologo /W4 /WX- /Ox /Oy- /GL /D WIN32 /D _WINDOWS /D NDEBUG /D JUCER_VS2010_78A501D=1 /D MSVC /D Cabbage_Build_Standalone /D Cabbage_Named_Pipe /D USE_DOUBLE /D _MBCS /Gm- /EHsc /MT /GS /fp:precise /Zc:wchar_t /Zc:forScope /GR /Fo".\Release\\" /Fd".\Release\vc100.pdb" /Gd /TP /analyze- /errorReport:prompt ..\..\Source\CabbagePluginEditor.cpp
+         c:\Program Files\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /IC:\MyDocuments\SourceCode\Csound5\csound5\H /I"C:\MyDocuments\My Dropbox\ASIOSDK2" /I"C:\MyDocuments\My Dropbox\vstsdk2.4" /Zi /nologo /W4 /WX- /Ox /Oy- /GL /D WIN32 /D _WINDOWS /D NDEBUG /D JUCER_VS2010_78A501D=1 /D MSVC /D Cabbage_Build_Standalone /D Cabbage_Named_Pipe /D USE_DOUBLE /D _MBCS /Gm- /EHsc /MT /GS /fp:precise /Zc:wchar_t /Zc:forScope /GR /Fo".\Release\\" /Fd".\Release\vc100.pdb" /Gd /TP /analyze- /errorReport:prompt ..\..\Source\CabbageGUIClass.cpp ..\..\Source\CabbagePluginEditor.cpp
+         CabbageGUIClass.cpp
+     1>..\..\Source\CabbageGUIClass.cpp(328): warning C4244: '=' : conversion from 'int' to 'float', possible loss of data
          CabbagePluginEditor.cpp
-       Link:
-         C:\Program Files\Microsoft Visual Studio 10.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:".\Release\Cabbage.exe" /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /ManifestFile:".\Release\Cabbage.exe.intermediate.manifest" /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /DEBUG /PDB:".\Release\Cabbage.pdb" /SUBSYSTEM:WINDOWS /OPT:REF /OPT:ICF /LTCG /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:".\Release\Cabbage.lib" /MACHINE:X86 .\Release\CabbageGUIClass.obj
-         .\Release\CabbagePluginEditor.obj
-         .\Release\CabbagePluginProcessor.obj
-         .\Release\CabbageStandaloneDialog.obj
-         .\Release\StandaloneFilterApp.obj
-         .\Release\JuceLibraryCode1.obj
-         .\Release\JuceLibraryCode2.obj
-         .\Release\JuceLibraryCode3.obj
-         .\Release\JuceLibraryCode4.obj "C:\MyDocuments\SourceCode\Csound5\csound5\csound32.lib" 
-            Creating library .\Release\Cabbage.lib and object .\Release\Cabbage.exp
-         Generating code
-     1>c:\mydocuments\my dropbox\jucetip\juce\src\gui\components\positioning\juce_relativecoordinatepositioner.cpp(60): warning C4702: unreachable code
-     1>c:\mydocuments\my dropbox\jucetip\juce\src\gui\components\positioning\juce_relativerectangle.cpp(137): warning C4702: unreachable code
-         Finished generating code
-         Cabbage.vcxproj -> C:\MyDocuments\My Dropbox\CabbageApril2011\Builds\VisualStudio2010\.\Release\Cabbage.exe
-       Manifest:
-         C:\Program Files\Microsoft SDKs\Windows\v7.0A\bin\mt.exe /nologo /verbose /outputresource:".\Release\Cabbage.exe;#1" /manifest .\Release\Cabbage.exe.intermediate.manifest
-       FinalizeBuildStatus:
-         Deleting file ".\Release\Cabbage.unsuccessfulbuild".
-         Touching ".\Release\Cabbage.lastbuildstate".
-     1>Done Building Project "C:\MyDocuments\My Dropbox\CabbageApril2011\Builds\VisualStudio2010\Cabbage.vcxproj" (build target(s)).
+     1>c:\mydocuments\cabbagesvn\source\CabbageCustomWidgets.h(327): warning C4244: 'argument' : conversion from 'double' to 'float', possible loss of data
+     1>c:\mydocuments\cabbagesvn\source\CabbageCustomWidgets.h(327): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
+     1>c:\mydocuments\cabbagesvn\source\CabbageCustomWidgets.h(327): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
+     1>c:\mydocuments\cabbagesvn\source\CabbageCustomWidgets.h(329): warning C4244: 'argument' : conversion from 'double' to 'float', possible loss of data
+     1>c:\mydocuments\cabbagesvn\source\CabbageCustomWidgets.h(329): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
+     1>c:\mydocuments\cabbagesvn\source\CabbageCustomWidgets.h(329): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
+     1>c:\mydocuments\cabbagesvn\source\CabbageCustomWidgets.h(329): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
+     1>c:\mydocuments\cabbagesvn\source\CabbageCustomWidgets.h(329): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
+     1>c:\mydocuments\cabbagesvn\source\CabbageCustomWidgets.h(333): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
+     1>c:\mydocuments\cabbagesvn\source\CabbageCustomWidgets.h(333): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
+     1>c:\mydocuments\cabbagesvn\source\CabbageCustomWidgets.h(335): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
+     1>c:\mydocuments\cabbagesvn\source\CabbageCustomWidgets.h(335): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
+     1>c:\mydocuments\cabbagesvn\source\CabbageCustomWidgets.h(335): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
+     1>c:\mydocuments\cabbagesvn\source\CabbageCustomWidgets.h(335): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
+     1>..\..\Source\CabbagePluginEditor.cpp(33): error C2143: syntax error : missing ';' before '<<'
+     1>..\..\Source\CabbagePluginEditor.cpp(33): error C2761: '{ctor}' : member function redeclaration not allowed
+     1>..\..\Source\CabbagePluginEditor.cpp(34): error C2512: 'juce::AudioProcessorEditor' : no appropriate default constructor available
+     1>..\..\Source\CabbagePluginEditor.cpp(34): error C2248: 'juce::AudioProcessorEditor::AudioProcessorEditor' : cannot access protected member declared in class 'juce::AudioProcessorEditor'
+                 c:\mydocuments\cabbagesvn\jucelibrarycode\../../juceTip/juce/juce_amalgamated.h(45473) : see declaration of 'juce::AudioProcessorEditor::AudioProcessorEditor'
+                 c:\mydocuments\cabbagesvn\jucelibrarycode\../../juceTip/juce/juce_amalgamated.h(45467) : see declaration of 'juce::AudioProcessorEditor'
+     1>..\..\Source\CabbagePluginEditor.cpp(35): error C2248: 'juce::AudioProcessorEditor::AudioProcessorEditor' : cannot access protected member declared in class 'juce::AudioProcessorEditor'
+                 c:\mydocuments\cabbagesvn\jucelibrarycode\../../juceTip/juce/juce_amalgamated.h(45473) : see declaration of 'juce::AudioProcessorEditor::AudioProcessorEditor'
+                 c:\mydocuments\cabbagesvn\jucelibrarycode\../../juceTip/juce/juce_amalgamated.h(45467) : see declaration of 'juce::AudioProcessorEditor'
+     1>..\..\Source\CabbagePluginEditor.cpp(35): error C2143: syntax error : missing ';' before '=='
+     1>..\..\Source\CabbagePluginEditor.cpp(35): error C2059: syntax error : '=='
+     1>..\..\Source\CabbagePluginEditor.cpp(36): error C2086: 'juce::AudioProcessorEditor ownerFilter' : redefinition
+                 ..\..\Source\CabbagePluginEditor.cpp(34) : see declaration of 'ownerFilter'
+     1>..\..\Source\CabbagePluginEditor.cpp(36): error C2512: 'juce::AudioProcessorEditor' : no appropriate default constructor available
+     1>..\..\Source\CabbagePluginEditor.cpp(37): error C2374: 'lineNumber' : redefinition; multiple initialization
+                 ..\..\Source\CabbagePluginEditor.cpp(34) : see declaration of 'lineNumber'
+     1>..\..\Source\CabbagePluginEditor.cpp(37): error C2248: 'juce::AudioProcessorEditor::AudioProcessorEditor' : cannot access protected member declared in class 'juce::AudioProcessorEditor'
+                 c:\mydocuments\cabbagesvn\jucelibrarycode\../../juceTip/juce/juce_amalgamated.h(45473) : see declaration of 'juce::AudioProcessorEditor::AudioProcessorEditor'
+                 c:\mydocuments\cabbagesvn\jucelibrarycode\../../juceTip/juce/juce_amalgamated.h(45467) : see declaration of 'juce::AudioProcessorEditor'
+     1>..\..\Source\CabbagePluginEditor.cpp(37): error C2143: syntax error : missing ';' before '>>'
+     1>..\..\Source\CabbagePluginEditor.cpp(37): error C2059: syntax error : '>>'
+     1>..\..\Source\CabbagePluginEditor.cpp(38): error C2143: syntax error : missing ';' before '{'
+     1>..\..\Source\CabbagePluginEditor.cpp(38): error C2447: '{' : missing function header (old-style formal list?)
+     1>..\..\Source\CabbagePluginEditor.cpp(289): error C2143: syntax error : missing ';' before '<<'
+     1>..\..\Source\CabbagePluginEditor.cpp(407): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>..\..\Source\CabbagePluginEditor.cpp(407): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>..\..\Source\CabbagePluginEditor.cpp(407): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>..\..\Source\CabbagePluginEditor.cpp(407): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>..\..\Source\CabbagePluginEditor.cpp(465): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>..\..\Source\CabbagePluginEditor.cpp(465): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>..\..\Source\CabbagePluginEditor.cpp(465): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>..\..\Source\CabbagePluginEditor.cpp(465): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>..\..\Source\CabbagePluginEditor.cpp(465): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>..\..\Source\CabbagePluginEditor.cpp(474): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>..\..\Source\CabbagePluginEditor.cpp(474): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>..\..\Source\CabbagePluginEditor.cpp(474): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>..\..\Source\CabbagePluginEditor.cpp(474): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>..\..\Source\CabbagePluginEditor.cpp(509): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>..\..\Source\CabbagePluginEditor.cpp(509): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>..\..\Source\CabbagePluginEditor.cpp(509): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>..\..\Source\CabbagePluginEditor.cpp(509): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>..\..\Source\CabbagePluginEditor.cpp(516): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>..\..\Source\CabbagePluginEditor.cpp(516): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>..\..\Source\CabbagePluginEditor.cpp(516): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>..\..\Source\CabbagePluginEditor.cpp(516): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>..\..\Source\CabbagePluginEditor.cpp(543): warning C4244: 'initializing' : conversion from 'float' to 'int', possible loss of data
+     1>..\..\Source\CabbagePluginEditor.cpp(544): warning C4244: 'initializing' : conversion from 'float' to 'int', possible loss of data
+     1>..\..\Source\CabbagePluginEditor.cpp(545): warning C4244: 'initializing' : conversion from 'float' to 'int', possible loss of data
+     1>..\..\Source\CabbagePluginEditor.cpp(546): warning C4244: 'initializing' : conversion from 'float' to 'int', possible loss of data
+     1>..\..\Source\CabbagePluginEditor.cpp(613): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>..\..\Source\CabbagePluginEditor.cpp(613): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>..\..\Source\CabbagePluginEditor.cpp(613): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>..\..\Source\CabbagePluginEditor.cpp(613): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>..\..\Source\CabbagePluginEditor.cpp(620): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>..\..\Source\CabbagePluginEditor.cpp(620): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>..\..\Source\CabbagePluginEditor.cpp(620): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>..\..\Source\CabbagePluginEditor.cpp(620): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>..\..\Source\CabbagePluginEditor.cpp(667): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>..\..\Source\CabbagePluginEditor.cpp(667): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>..\..\Source\CabbagePluginEditor.cpp(667): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>..\..\Source\CabbagePluginEditor.cpp(667): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>..\..\Source\CabbagePluginEditor.cpp(674): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>..\..\Source\CabbagePluginEditor.cpp(674): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>..\..\Source\CabbagePluginEditor.cpp(674): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>..\..\Source\CabbagePluginEditor.cpp(674): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>..\..\Source\CabbagePluginEditor.cpp(680): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>..\..\Source\CabbagePluginEditor.cpp(680): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>..\..\Source\CabbagePluginEditor.cpp(680): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>..\..\Source\CabbagePluginEditor.cpp(680): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>..\..\Source\CabbagePluginEditor.cpp(685): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>..\..\Source\CabbagePluginEditor.cpp(685): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>..\..\Source\CabbagePluginEditor.cpp(685): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>..\..\Source\CabbagePluginEditor.cpp(685): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>..\..\Source\CabbagePluginEditor.cpp(687): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>..\..\Source\CabbagePluginEditor.cpp(687): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>..\..\Source\CabbagePluginEditor.cpp(687): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>..\..\Source\CabbagePluginEditor.cpp(687): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>..\..\Source\CabbagePluginEditor.cpp(717): warning C4244: 'initializing' : conversion from 'float' to 'int', possible loss of data
+     1>..\..\Source\CabbagePluginEditor.cpp(774): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>..\..\Source\CabbagePluginEditor.cpp(774): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>..\..\Source\CabbagePluginEditor.cpp(774): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>..\..\Source\CabbagePluginEditor.cpp(774): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>..\..\Source\CabbagePluginEditor.cpp(780): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>..\..\Source\CabbagePluginEditor.cpp(780): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>..\..\Source\CabbagePluginEditor.cpp(780): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>..\..\Source\CabbagePluginEditor.cpp(780): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>..\..\Source\CabbagePluginEditor.cpp(785): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>..\..\Source\CabbagePluginEditor.cpp(785): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>..\..\Source\CabbagePluginEditor.cpp(785): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>..\..\Source\CabbagePluginEditor.cpp(785): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>..\..\Source\CabbagePluginEditor.cpp(829): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>..\..\Source\CabbagePluginEditor.cpp(829): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>..\..\Source\CabbagePluginEditor.cpp(829): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>..\..\Source\CabbagePluginEditor.cpp(829): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>..\..\Source\CabbagePluginEditor.cpp(836): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>..\..\Source\CabbagePluginEditor.cpp(836): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>..\..\Source\CabbagePluginEditor.cpp(836): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>..\..\Source\CabbagePluginEditor.cpp(836): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>..\..\Source\CabbagePluginEditor.cpp(842): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>..\..\Source\CabbagePluginEditor.cpp(842): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>..\..\Source\CabbagePluginEditor.cpp(842): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>..\..\Source\CabbagePluginEditor.cpp(842): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>..\..\Source\CabbagePluginEditor.cpp(951): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>..\..\Source\CabbagePluginEditor.cpp(951): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>..\..\Source\CabbagePluginEditor.cpp(951): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>..\..\Source\CabbagePluginEditor.cpp(951): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>..\..\Source\CabbagePluginEditor.cpp(958): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>..\..\Source\CabbagePluginEditor.cpp(958): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>..\..\Source\CabbagePluginEditor.cpp(958): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>..\..\Source\CabbagePluginEditor.cpp(958): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>..\..\Source\CabbagePluginEditor.cpp(964): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>..\..\Source\CabbagePluginEditor.cpp(964): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>..\..\Source\CabbagePluginEditor.cpp(964): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>..\..\Source\CabbagePluginEditor.cpp(964): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>..\..\Source\CabbagePluginEditor.cpp(974): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
+     1>..\..\Source\CabbagePluginEditor.cpp(977): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>..\..\Source\CabbagePluginEditor.cpp(1003): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
+     1>..\..\Source\CabbagePluginEditor.cpp(1032): warning C4244: 'argument' : conversion from 'juce::juce_wchar' to 'char', possible loss of data
+     1>..\..\Source\CabbagePluginEditor.cpp(1065): error C2143: syntax error : missing ';' before '<<'
+     1>..\..\Source\CabbagePluginEditor.cpp(1067): error C2143: syntax error : missing ';' before '=='
+     1>..\..\Source\CabbagePluginEditor.cpp(1070): error C2143: syntax error : missing ';' before '>>'
+     1>..\..\Source\CabbagePluginEditor.cpp(1073): error C2143: syntax error : missing ';' before '{'
+     1>..\..\Source\CabbagePluginEditor.cpp(1074): error C2143: syntax error : missing ';' before '<<'
+     1>..\..\Source\CabbagePluginEditor.cpp(1075): error C2143: syntax error : missing ';' before '{'
+     1>..\..\Source\CabbagePluginEditor.cpp(1078): error C2143: syntax error : missing ';' before '=='
+     1>..\..\Source\CabbagePluginEditor.cpp(1081): error C2143: syntax error : missing ';' before '>>'
+     1>..\..\Source\CabbagePluginEditor.cpp(1085): error C2181: illegal else without matching if
+     1>..\..\Source\CabbagePluginEditor.cpp(1096): error C2143: syntax error : missing ';' before '<<'
+     1>..\..\Source\CabbagePluginEditor.cpp(1097): error C2143: syntax error : missing ';' before '{'
+     1>..\..\Source\CabbagePluginEditor.cpp(1098): warning C4800: 'float' : forcing value to bool 'true' or 'false' (performance warning)
+     1>..\..\Source\CabbagePluginEditor.cpp(1102): error C2143: syntax error : missing ';' before '=='
+     1>..\..\Source\CabbagePluginEditor.cpp(1103): error C2143: syntax error : missing ';' before '{'
+     1>..\..\Source\CabbagePluginEditor.cpp(1104): warning C4800: 'float' : forcing value to bool 'true' or 'false' (performance warning)
+     1>..\..\Source\CabbagePluginEditor.cpp(1107): error C2143: syntax error : missing ';' before '>>'
+     1>..\..\Source\CabbagePluginEditor.cpp(1111): error C2059: syntax error : 'for'
+     1>..\..\Source\CabbagePluginEditor.cpp(1111): error C2143: syntax error : missing ')' before ';'
+     1>..\..\Source\CabbagePluginEditor.cpp(1111): error C2143: syntax error : missing ';' before '<'
+     1>..\..\Source\CabbagePluginEditor.cpp(1111): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+     1>..\..\Source\CabbagePluginEditor.cpp(1111): error C2143: syntax error : missing ';' before '++'
+     1>..\..\Source\CabbagePluginEditor.cpp(1111): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+     1>..\..\Source\CabbagePluginEditor.cpp(1111): error C2086: 'int i' : redefinition
+                 ..\..\Source\CabbagePluginEditor.cpp(1111) : see declaration of 'i'
+     1>..\..\Source\CabbagePluginEditor.cpp(1111): error C2059: syntax error : ')'
+     1>..\..\Source\CabbagePluginEditor.cpp(1111): error C2143: syntax error : missing ';' before '{'
+     1>..\..\Source\CabbagePluginEditor.cpp(1111): error C2447: '{' : missing function header (old-style formal list?)
+     1>..\..\Source\CabbagePluginEditor.cpp(1139): error C2059: syntax error : 'if'
+     1>..\..\Source\CabbagePluginEditor.cpp(1139): error C2143: syntax error : missing ';' before '{'
+     1>..\..\Source\CabbagePluginEditor.cpp(1139): error C2447: '{' : missing function header (old-style formal list?)
+     1>..\..\Source\CabbagePluginEditor.cpp(1191): error C2061: syntax error : identifier 'ccBuffer'
+     1>..\..\Source\CabbagePluginEditor.cpp(1195): fatal error C1020: unexpected #endif
+     1>Done Building Project "C:\MyDocuments\CabbageSVN\Builds\VisualStudio2010\Cabbage.vcxproj" (build target(s)) -- FAILED.
 
-Build succeeded.
+Build FAILED.
 
-Time Elapsed 00:00:46.67
+Time Elapsed 00:00:03.65
