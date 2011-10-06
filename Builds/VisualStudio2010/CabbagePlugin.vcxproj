@@ -127,8 +127,10 @@
     <ClCompile Include="..\..\JuceLibraryCode\JuceLibraryCode3.cpp" />
     <ClCompile Include="..\..\JuceLibraryCode\JuceLibraryCode4.cpp" />
     <ClCompile Include="..\..\Source\CabbageGUIClass.cpp" />
+    <ClCompile Include="..\..\Source\CabbageLookAndFeel.cpp" />
     <ClCompile Include="..\..\Source\CabbagePluginEditor.cpp" />
     <ClCompile Include="..\..\Source\CabbagePluginProcessor.cpp" />
+    <ClCompile Include="..\..\Source\imageBinaries.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\JuceLibraryCode\AppConfig.h" />
@@ -136,9 +138,11 @@
     <ClInclude Include="..\..\JuceLibraryCode\JucePluginCharacteristics.h" />
     <ClInclude Include="..\..\Source\CabbageCustomWidgets.h" />
     <ClInclude Include="..\..\Source\CabbageGUIClass.h" />
+    <ClInclude Include="..\..\Source\CabbageLookAndFeel.h" />
     <ClInclude Include="..\..\Source\CabbagePluginEditor.h" />
     <ClInclude Include="..\..\Source\CabbagePluginProcessor.h" />
     <ClInclude Include="..\..\Source\CabbageUtils.h" />
+    <ClInclude Include="..\..\Source\imageBinaries.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />

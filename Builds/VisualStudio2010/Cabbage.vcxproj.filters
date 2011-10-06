@@ -45,6 +45,12 @@
     <ClCompile Include="..\..\Source\ComponentLayoutEditor.cpp">
       <Filter>Cabbage\Source</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Source\CabbageLookAndFeel.cpp">
+      <Filter>Cabbage\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\imageBinaries.cpp">
+      <Filter>Cabbage\Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Source\CabbagePluginEditor.h">
@@ -81,6 +87,12 @@
       <Filter>Cabbage\Source</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\CabbageCustomWidgets.h">
+      <Filter>Cabbage\Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\CabbageLookAndFeel.h">
+      <Filter>Cabbage\Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\imageBinaries.h">
       <Filter>Cabbage\Source</Filter>
     </ClInclude>
   </ItemGroup>

@@ -6,18 +6,18 @@
        public:
           CabbageStandalone()
           {
-          }   
+          }
 
           void initialise(const String& /*commandLineParameters*/)
           {
              ApplicationProperties::getInstance()->setStorageParameters (T("Cabbage"), T("userSettings"), T("Cabbage"), 400, PropertiesFile::storeAsXML);
 
-			 filterWindow = new StandaloneFilterWindow (T("Cabbage"), Colours::white);
+			 filterWindow = new StandaloneFilterWindow (T("Cabbage"), Colours::black);
              filterWindow->setTitleBarButtonsRequired (DocumentWindow::allButtons, false);
              filterWindow->setVisible (true);
-             filterWindow->setResizable (true, true);
+             //turn off resizeable...
+			 //filterWindow->setResizable (true, true);
              juce::Thread::setCurrentThreadName("cabbage");
-           //  juce::Thread::setCurrentThreadName("cabbage");
           }
 
           void shutdown()

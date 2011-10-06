@@ -39,6 +39,12 @@
     <ClCompile Include="..\..\..\juceTip\juce\src\audio\plugin_client\VST\juce_VST_Wrapper.cpp">
       <Filter>Juce VST Wrapper</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Source\imageBinaries.cpp">
+      <Filter>CabbagePlugin\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\CabbageLookAndFeel.cpp">
+      <Filter>CabbagePlugin\Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\JuceLibraryCode\AppConfig.h">
@@ -63,6 +69,12 @@
       <Filter>CabbagePlugin\Source</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\CabbageCustomWidgets.h">
+      <Filter>CabbagePlugin\Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\CabbageLookAndFeel.h">
+      <Filter>CabbagePlugin\Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\imageBinaries.h">
       <Filter>CabbagePlugin\Source</Filter>
     </ClInclude>
   </ItemGroup>

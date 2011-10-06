@@ -96,9 +96,10 @@ CabbageSlider(String name, String caption, String kind, String colour): plantX(-
 	sliderType = kind; 
 	
 	groupbox->setColour(GroupComponent::outlineColourId,
-		Colours::findColourForName(colour, Colours::black));
+		Colours::findColourForName(colour, Colours::whitesmoke));
 	groupbox->setColour(GroupComponent::textColourId,
-		Colours::findColourForName(colour, Colours::black));
+		Colours::findColourForName(colour, Colours::whitesmoke));
+
 
 	if(kind.contains(T("vertical"))){
 	slider->setSliderStyle(Slider::LinearVertical);
@@ -121,8 +122,8 @@ CabbageSlider(String name, String caption, String kind, String colour): plantX(-
 		slider->setTextBoxStyle (Slider::TextBoxBelow, true, 60, 20);
 
 		if(colour.length()>0){
-		slider->setColour(Slider::rotarySliderFillColourId,
-						  Colours::findColourForName(colour, Colours::black));
+	//	slider->setColour(Slider::rotarySliderFillColourId,
+	//					  Colours::findColourForName(colour, Colours::black));
 		}
 		if(caption.length()>0){
 			offX=0;
@@ -146,13 +147,15 @@ CabbageSlider(String name, String caption, String kind, String colour): plantX(-
 
 
 	if(colour.length()>0){
-	slider->setColour(Slider::thumbColourId,
-					  Colours::findColourForName(colour, Colours::coral));
+//	slider->setColour(Slider::thumbColourId,
+//					  Colours::findColourForName(colour, Colours::coral));
 	}
 	}
 	
-	slider->setColour(Slider::rotarySliderOutlineColourId,
-					  Colours::findColourForName(colour, Colours::black));
+//	slider->setColour(Slider::rotarySliderOutlineColourId,
+//					  Colours::findColourForName(colour, Colours::black));
+	slider->setColour(Slider::ColourIds::textBoxBackgroundColourId, Colours::whitesmoke);
+	slider->setColour(Slider::ColourIds::textBoxTextColourId, Colours::black);
 }//--- end of constructor ----
 
 //---------------------------------------------
@@ -234,9 +237,8 @@ JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CabbageCheckbox);
 //==============================================================================
 class CabbageComboBox : public Component
 {
-ScopedPointer<LookAndFeel> lookFeel;
+//ScopedPointer<LookAndFeel> lookFeel;
 int offX, offY, offWidth, offHeight;
-String sliderType;
 public:
 ScopedPointer<GroupComponent> groupbox;
 ScopedPointer<ComboBox> combo;
@@ -245,10 +247,12 @@ CabbageComboBox(String name, String caption, String text, String colour)
 {
 	setName(name);
 	offX=offY=offWidth=offHeight=0;
+	
 	groupbox = new GroupComponent(String("groupbox_")+name);
 	combo = new ComboBox(name);
 	addAndMakeVisible(combo);
 	addAndMakeVisible(groupbox);
+
 	groupbox->setVisible(false);
 
 	groupbox->setColour(GroupComponent::outlineColourId,
@@ -264,16 +268,10 @@ CabbageComboBox(String name, String caption, String text, String colour)
 		groupbox->setVisible(true);
 		groupbox->setText(caption);
 	}
-	lookFeel = new LookAndFeel();
-	lookFeel->setColour(ComboBox::arrowColourId, Colours::red);
-	lookFeel->setColour(ComboBox::buttonColourId, Colours::yellow);
-	lookFeel->setColour(ComboBox::backgroundColourId, Colours::black);
-	lookFeel->setColour(ComboBox::textColourId, Colours::white);
 
+	combo->setColour(ComboBox::ColourIds::textColourId,
+			Colours::findColourForName("white", Colours::grey));
 
-	if(caption.length()>0)
-	combo->setColour(TextButton::buttonColourId,
-			Colours::findColourForName(colour, Colours::grey));
 
 	combo->setEditableText (false);
     combo->setJustificationType (Justification::centredLeft);
@@ -292,7 +290,7 @@ groupbox->setBounds(0, 0, getWidth(), getHeight());
 combo->setBounds(offX, offY, getWidth()+offWidth, getHeight()+offHeight); 
 }
 
-JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CabbageComboBox);
+//JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CabbageComboBox);
 };
 
 //==============================================================================

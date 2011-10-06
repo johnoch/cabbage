@@ -24,6 +24,7 @@
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "../JuceLibraryCode/JucePluginCharacteristics.h"
 #include "CabbagePluginProcessor.h"
+#include "CabbageLookAndFeel.h"
 
 class CabbageMainPanel;
 class ComponentLayoutEditor;
@@ -87,6 +88,7 @@ private:
 	Colour formColour;
 	String formPic;
 	float inValue;
+	ScopedPointer<CabbageLookAndFeel> lookAndFeel;
 	ScopedPointer<Label> debugLabel;
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CabbagePluginAudioProcessorEditor);
 };

@@ -55,8 +55,6 @@ numCsoundChannels = 0;
 csndIndex = 32;
 csound->SetMessageCallback(CabbagePluginAudioProcessor::messageCallback);
 
-
-
 if(!inputfile.isEmpty()){
 csCompileResult = csound->Compile( const_cast<char*>(inputfile.toUTF8().getAddress()));
 if(csCompileResult==0){

@@ -39,7 +39,7 @@ StandaloneFilterWindow::StandaloneFilterWindow (const String& title,
     optionsButton.addListener (this);
     optionsButton.setTriggeredOnMouseDown (true);
 	setAlwaysOnTop(true);
-
+	this->setResizable(false, false);
 // MOD - Stefano Bonetti 
 #ifdef Cabbage_Named_Pipe 
 	ipConnection = new socketConnection(*this);
@@ -64,9 +64,9 @@ StandaloneFilterWindow::StandaloneFilterWindow (const String& title,
         JUCEApplication::quit();
     }
 
-    filter->setPlayConfigDetails (JucePlugin_MaxNumInputChannels,
-                                  JucePlugin_MaxNumOutputChannels,
-                                  44100, 512);
+    filter->setPlayConfigDetails (JucePlugin_MaxNumInputChannels, 
+                                          JucePlugin_MaxNumOutputChannels,
+                                          44100, 512);
 
     PropertySet* const globalSettings = getGlobalSettings();
 
@@ -245,7 +245,7 @@ void StandaloneFilterWindow::resetFilter()
 	filter->addChangeListener(this);
 	filter->sendChangeMessage();
 	filter->createGUI(csdFile.loadFileAsString());
-	this->setName(filter->getPluginName());
+	setName(filter->getPluginName());
 
     if (filter != nullptr)
     {
@@ -332,11 +332,11 @@ PropertySet* StandaloneFilterWindow::getGlobalSettings()
 
 void StandaloneFilterWindow::showAudioSettingsDialog()
 {
+	const int numIns = filter->getNumInputChannels() <= 0 ? JucePlugin_MaxNumInputChannels : filter->getNumInputChannels();
+    const int numOuts = filter->getNumOutputChannels() <= 0 ? JucePlugin_MaxNumOutputChannels : filter->getNumOutputChannels();
+
     AudioDeviceSelectorComponent selectorComp (*deviceManager,
-                                               filter->getNumInputChannels(),
-                                               filter->getNumInputChannels(),
-                                               filter->getNumOutputChannels(),
-                                               filter->getNumOutputChannels(),
+                                               numIns, numIns, numOuts, numOuts,
                                                true, false, true, false);
 
     selectorComp.setSize (400, 350);
@@ -397,6 +397,7 @@ void StandaloneFilterWindow::buttonClicked (Button*)
         break;
     case 4:
         showAudioSettingsDialog();
+		resetFilter();
         break;
 
 	case 5: 
@@ -464,28 +465,33 @@ FileChooser saveFC(T("Save as..."), File::nonexistent, T(""));
 String VST;
 	if (saveFC.browseForFileToSave(true)){
 		if(type.contains("VSTi"))
-			VST = thisFile.getParentDirectory().getFullPathName() + T("\\CabbagePluginSynth.dll");
+			VST = thisFile.getParentDirectory().getFullPathName() + T("\\CabbagePluginSynth.dat");
 		else if(type.contains(T("VST")))
-			VST = thisFile.getParentDirectory().getFullPathName() + T("\\CabbagePluginEffect.dll");
+			VST = thisFile.getParentDirectory().getFullPathName() + T("\\CabbagePluginEffect.dat");
 		else if(type.contains(T("AU"))){
 			showMessage("This feature only works on computers running OSX");
 			}
 	//showMessage(VST);
 	File VSTData(VST);
-	if(VSTData.exists())showMessage("lib exists");
+	if(!VSTData.exists())showMessage("problem with plugin lib");
 	File dll(saveFC.getResult().withFileExtension(".dll").getFullPathName());
 	//showMessage(dll.getFullPathName());
-	if(VSTData.copyFileTo(dll))	showMessage("moved");
+	if(!VSTData.copyFileTo(dll))	showMessage("problem moving plugin lib");
 	File loc_csdFile(saveFC.getResult().withFileExtension(".csd").getFullPathName());
 	loc_csdFile.replaceWithText(csdFile.loadFileAsString());
 	
 	
 #ifdef Cabbage_Named_Pipe
-	sendMessageToWinXound("CABBAGE_PLUGIN_FILE_UPDATED", csdFile.getFullPathName()+T("|")+loc_csdFile.getFullPathName());
+	sendMessageToWinXound("CABBAGE_PLUGIN_FILE_UPDATE", csdFile.getFullPathName()+T("|")+loc_csdFile.getFullPathName());
+	//sendMessageToWinXound("CABBAGE_PLUGIN_FILE_UPDATE", "C:\Documents and Settings\Rory\Desktop\WinXound_3.4.0_Beta\WinXound\Cabbage\Examples\Subtractive.csd|C:\Documents and Settings\Rory\Desktop\Subtractive.csd");
+	/*String text;
+	text << T("CABBAGE_PLUGIN_FILE_UPDATE") << "|" << csdFile.getFullPathName()+T("|")+loc_csdFile.getFullPathName();
+	showMessage(text);
+	MemoryBlock messageData (text.toUTF8(), text.getNumBytesAsUTF8());
+	ipConnection->sendMessage(messageData);*/
 	csdFile = loc_csdFile;	
-	sendMessageToWinXound("CABBAGE_SHOW_MESSAGE|Info", "Cabbage has been updated");
+	sendMessageToWinXound("CABBAGE_SHOW_MESSAGE|Info", "WinXound has been updated\nyour .csd file");
 #endif
-
 	}
 #endif
 
