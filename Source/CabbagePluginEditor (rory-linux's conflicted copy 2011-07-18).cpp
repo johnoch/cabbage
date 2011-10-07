@@ -32,9 +32,7 @@
 CabbagePluginAudioProcessorEditor::CabbagePluginAudioProcessorEditor (CabbagePluginAudioProcessor* ownerFilter)
 : AudioProcessorEditor (ownerFilter), lineNumber(0), inValue(0)
 {
-//set custom skin yo use
-lookAndFeel = new CabbageLookAndFeel(); 
-Component::setLookAndFeel(lookAndFeel);
+//This size will be altered if a valid file is input
 #ifdef Cabbage_GUI_Editor
 //determine whether instrument should be opened in GUI mode or not
 addChangeListener(ownerFilter);
@@ -284,31 +282,36 @@ if(layoutEditor)layoutEditor->setBounds(0, 0, this->getWidth(), this->getHeight(
 //==============================================================================
 void CabbagePluginAudioProcessorEditor::paint (Graphics& g)
 {
-	
-/*
-
-	this needs attention!!
-
-	if(getFilter()->getCsoundStatus()){
+if(getFilter()->getCsoundStatus()){
 	if(formPic.length()>2)
 			{
 			Image img = ImageCache::getFromFile (File (formPic));
 			g.drawImage(img, 0, 0, getWidth(), getHeight(), 0, 0, img.getWidth(), img.getHeight());
 			}
 		else
-		*/
-			//g.fillAll (formColour);
+			g.fillAll (formColour);
 
 //componentPanel->toFront(true);
 #ifdef Cabbage_Build_Standalone
 componentPanel->grabKeyboardFocus();
 #endif
 
-	Image newSkin = ImageCache::getFromMemory (imageBinaries::skin1_png, imageBinaries::skin1_pngSize);
+#ifdef Cabbage_GUI_Editor
 
-	//for tiling the image to fit the component window
-	g.setTiledImageFill (newSkin, 0, 0, 1.0f);
-	g.fillRect (0, 0, this->getWidth(), this->getHeight());
+#endif
+}
+
+else{
+#ifndef Cabbage_No_Csound
+	Image cabbageImg;
+	File thisFile(File::getSpecialLocation(File::currentApplicationFile));
+	cabbageImg = ImageCache::getFromFile (thisFile.withFileExtension(T(".png")).getFullPathName());
+	g.drawImage(cabbageImg, 0, 0, getWidth(), getHeight(),
+                 0, 0, cabbageImg.getWidth(), cabbageImg.getHeight());
+	//g.drawFittedText(T("Csound did not compile correctly or you have support for Csound turned off"), 
+	//	20, getHeight()-40, getWidth()-40, 30, Justification::centred, 3); 
+#endif	
+	}
 	
 }
 
@@ -317,12 +320,6 @@ void CabbagePluginAudioProcessorEditor::InsertGUIControls()
 {
 //add layout controls, non interactive..
 for(int i=0;i<getFilter()->getGUILayoutCtrlsSize();i++){
-if(getFilter()->getGUILayoutCtrls(i).getStringProp("type")==T("image")){
-		InsertImage(getFilter()->getGUILayoutCtrls(i));   
-		}	
-}
-for(int i=0;i<getFilter()->getGUILayoutCtrlsSize();i++){
-
 	if(getFilter()->getGUILayoutCtrls(i).getStringProp("type")==T("form")){
 		SetupWindow(getFilter()->getGUILayoutCtrls(i));   //set main application
 		}
@@ -334,6 +331,9 @@ for(int i=0;i<getFilter()->getGUILayoutCtrlsSize();i++){
 		}
 	else if(getFilter()->getGUILayoutCtrls(i).getStringProp("type")==T("keyboard")){
 		InsertMIDIKeyboard(getFilter()->getGUILayoutCtrls(i));   
+		}
+	else if(getFilter()->getGUILayoutCtrls(i).getStringProp("type")==T("image")){
+		InsertImage(getFilter()->getGUILayoutCtrls(i));   
 		}
 	else if(getFilter()->getGUILayoutCtrls(i).getStringProp("type")==T("label")){
 		InsertLabel(getFilter()->getGUILayoutCtrls(i));   
@@ -529,7 +529,7 @@ catch(...){
 void CabbagePluginAudioProcessorEditor::SetupWindow(CabbageGUIClass cAttr)
 {
 try{
-	setName(cAttr.getStringProp("caption"));
+	this->setName(cAttr.getStringProp("caption"));
 	getFilter()->setPluginName(cAttr.getStringProp("caption"));
 	int left = cAttr.getNumProp("left");
 	int top = cAttr.getNumProp("top");
@@ -860,8 +860,6 @@ if(!getFilter()->isGuiEnabled()){
 				//toggle button values
 				if(getFilter()->getGUICtrls(i).getNumProp("value")==0){
 				getFilter()->setParameterNotifyingHost(i, 1.f);
-				//for(int p=0;p<1024;p++)
-				//getFilter()->getCsound()->TableSet(1, p, 0);
 				getFilter()->getCsound()->SetChannel(getFilter()->getGUICtrls(i).getStringProp("channel").toUTF8(), 1.f);
 				getFilter()->getGUICtrls(i).setNumProp("value", 1);
 				}
@@ -883,7 +881,7 @@ if(!getFilter()->isGuiEnabled()){
 	else if(dynamic_cast<ToggleButton*>(button)){
      	for(int i=0;i<(int)getFilter()->getGUICtrlsSize();i++)//find correct control from vector
 			if(getFilter()->getGUICtrls(i).getStringProp("name")==button->getName()){
-				Logger::writeToLog(String(button->getToggleStateValue().getValue()));
+				//Logger::writeToLog(String(button->getToggleStateValue().getValue()));
 
 				if(button->getToggleState()){
 					button->setToggleState(true, false);
@@ -914,10 +912,9 @@ try{
 	controls.add(new CabbageComboBox(cAttr.getStringProp("name"),
 		cAttr.getStringProp("caption"),
 		cAttr.getItems(0),
-		cAttr.getStringProp("colour")));
-
+		cAttr.getStringProp("colour")));	
 	int idx = controls.size()-1;
-	
+
 	float left = cAttr.getNumProp("left");
 	float top = cAttr.getNumProp("top");
 	float width = cAttr.getNumProp("width");
@@ -969,6 +966,7 @@ try{
 	componentPanel->addAndMakeVisible(((CabbageComboBox*)controls[idx]));
 	((CabbageComboBox*)controls[idx])->setName(cAttr.getStringProp("name"));
 	((CabbageComboBox*)controls[idx])->combo->addListener(this);
+
 }
 catch(...){
     Logger::writeToLog(T("Syntax error: 'combobox..."));
@@ -1068,8 +1066,8 @@ for(int i=0;i<(int)getFilter()->getGUICtrlsSize();i++){
 	}
 	
 	else if(getFilter()->getGUICtrls(i).getStringProp("type")==T("combobox")){
-	//if(controls[i])
-	//	((CabbageComboBox*)controls[i])->combo->setSelectedId((int)inValue, false);
+	if(controls[i])
+		((ComboBox*)controls[i])->setSelectedId((int)inValue, false);
 	}
 
 	else if(getFilter()->getGUICtrls(i).getStringProp("type")==T("checkbox")){

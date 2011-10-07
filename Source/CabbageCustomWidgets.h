@@ -389,3 +389,34 @@ JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CabbageGroupbox);
 };
 
 #endif
+
+//==============================================================================
+// custom table component 
+//==============================================================================
+class CabbageTable : public Component,
+						public CabbageUtils
+{
+public:
+	CabbageTable(String name, int top, int left, int width, int height):
+	width(width), left(left), top(top), height(height), line(2), redraw(0){
+	}
+
+	~CabbageTable(){
+	}
+
+private:
+	Image img;
+	int top, left, width, height, line, redraw;
+	void paint (Graphics& g){
+		if(!redraw){
+				g.setColour(Colours::findColourForName("black", Colours::black));
+				g.fillRoundedRectangle(0,0, width, height, width*.02);
+				g.setColour(Colours::findColourForName("grey", Colours::grey));
+				g.fillRoundedRectangle(line,line, width-(line*2), height-(line*2), width*.02);	
+		}
+	}
+
+
+
+JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CabbageTable);
+};
