@@ -248,6 +248,7 @@ void StandaloneFilterWindow::resetFilter()
 	filter->addChangeListener(this);
 	filter->sendChangeMessage();
 	filter->createGUI(csdFile.loadFileAsString());
+	String test = filter->getPluginName();
 	setName(filter->getPluginName());
 
     if (filter != nullptr)

@@ -215,6 +215,14 @@ void CabbagePluginAudioProcessor::createGUI(String source)
 								cAttr.setStringProp(T("relToPlant"), plantFlag);
 							guiLayoutCtrls.add(cAttr);
 							guiID++;
+
+							if(cAttr.getStringProp("type").containsIgnoreCase("form"))
+								if(cAttr.getStringProp("text").length()>2)
+									setPluginName(cAttr.getStringProp("text"));
+								else if(cAttr.getStringProp("caption").length()>2)
+									setPluginName(cAttr.getStringProp("caption"));
+								else setPluginName("Untitled Cabbage Patch!");
+
 							//StringArray log = logGUIAttributes(cAttr, T("Non-Interactive"));
 							//debugMessageArray.addArray(logGUIAttributes(cAttr, T("Non-Interactive")));
 							sendChangeMessage();

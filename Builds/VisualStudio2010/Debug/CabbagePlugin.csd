@@ -1,5 +1,5 @@
 <Cabbage>
-form size(500, 550)
+form size(500, 550), caption("Scratch")
 csoundoutput pos(0, 0), text("Csound Output")
 
 </Cabbage>

@@ -220,6 +220,8 @@ CabbageGUIClass::CabbageGUIClass(String compStr, int ID):
           height = 122;
           name = "form";
 		  type = "form";
+		  text = "";
+		  caption = "";
 	}
 
     else if(compStr.indexOfIgnoreCase("hostbpm ")!=-1){
