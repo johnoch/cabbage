@@ -208,6 +208,7 @@ public:
 	MidiBuffer midiBuffer;		
 	MidiBuffer ccBuffer;
 	bool showMIDI;
+	String csoundOutput;
 private:
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CabbagePluginAudioProcessor);

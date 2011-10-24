@@ -199,6 +199,7 @@ void CabbagePluginAudioProcessor::createGUI(String source)
 						if(tokes.getReference(0).equalsIgnoreCase(T("form"))
 								||tokes.getReference(0).equalsIgnoreCase(T("image"))
 								||tokes.getReference(0).equalsIgnoreCase(T("keyboard"))
+								||tokes.getReference(0).equalsIgnoreCase(T("csoundoutput"))
 								||tokes.getReference(0).equalsIgnoreCase(T("label"))
 								||tokes.getReference(0).equalsIgnoreCase(T("hostbpm"))
 								||tokes.getReference(0).equalsIgnoreCase(T("hosttime"))
@@ -231,14 +232,38 @@ void CabbagePluginAudioProcessor::createGUI(String source)
 								||tokes.getReference(0).equalsIgnoreCase(T("rslider"))
 								||tokes.getReference(0).equalsIgnoreCase(T("combobox"))
 								||tokes.getReference(0).equalsIgnoreCase(T("checkbox"))
+								||tokes.getReference(0).equalsIgnoreCase(T("xypad"))
 								||tokes.getReference(0).equalsIgnoreCase(T("button"))){
 							CabbageGUIClass cAttr(csdText[i].trimEnd(), guiID);
 							//attach widget to plant if need be
 							if(cAttr.getStringProp(T("relToPlant")).equalsIgnoreCase(T("")))
 								cAttr.setStringProp(T("relToPlant"), plantFlag);
+	//xypad contain two control paramters, one for x axis and another for y. As such we add two 
+	//to our contorl vector so that plugin hosts display two sliders. We name one of the xypad pads
+	// 'dummy' so that our editor doesn't display it. Our editor only needs to show one xypad. 
+							if(tokes.getReference(0).equalsIgnoreCase(T("xypad"))){
+								cAttr.setStringProp(T("xyChannel"), T("X"));
+								cAttr.setNumProp("sliderRange",  cAttr.getNumProp("xypadRangeX"));
+								cAttr.setNumProp("min",  cAttr.getNumProp("minX"));
+								cAttr.setNumProp("max",  cAttr.getNumProp("maxX"));
+								cAttr.setStringProp(T("channel"), cAttr.getStringProp("xChannel"));
+								guiCtrls.add(cAttr);
+
+								cAttr.setStringProp(T("xyChannel"), T("Y"));
+								cAttr.setNumProp("sliderRange",  cAttr.getNumProp("xypadRangeY"));
+								cAttr.setNumProp("min",  cAttr.getNumProp("minY"));
+								cAttr.setNumProp("max",  cAttr.getNumProp("maxY"));
+								cAttr.setStringProp(T("channel"), cAttr.getStringProp("yChannel"));
+								//append 'dummy' to name so the editor know not to display the 
+								//second xypad
+								cAttr.setStringProp("name", cAttr.getStringProp("name")+T("dummy"));
+								guiCtrls.add(cAttr);
+								guiID++;
+							}
+							else{
 							guiCtrls.add(cAttr);
 							guiID++;
-							
+							}
 							//debugMessageArray.addArray(logGUIAttributes(cAttr, T("Interactive")));
 							sendChangeMessage();
 						}
@@ -248,6 +273,8 @@ void CabbagePluginAudioProcessor::createGUI(String source)
 		else break;
         }
 
+			for(int i=0;i<guiCtrls.size();i++)
+				Logger::writeToLog(getGUICtrls(i).getStringProp("type"));
 }
 
 
@@ -263,6 +290,7 @@ void CabbagePluginAudioProcessor::messageCallback(CSOUND* csound, int /*attr*/, 
   vsnprintf(msg, MAX_BUFFER_SIZE, fmt, args);
 // MOD - Stefano Bonetti
   ud->debugMessage += String(msg); //We have to append the incoming msg
+  ud->csoundOutput += ud->debugMessage;
   ud->debugMessageArray.add(ud->debugMessage);
   ud->sendChangeMessage();
   ud->debugMessage = "";
@@ -310,16 +338,17 @@ float CabbagePluginAudioProcessor::getParameter (int index)
 {	
 #ifndef Cabbage_No_Csound
 if(index<(int)guiCtrls.size()){//make sure index isn't out of range
-	int range = getGUICtrls(index).getNumProp("max")-getGUICtrls(index).getNumProp("min");
-	MYFLT* val=NULL;
-	csoundGetChannelPtr(getCsoundStruct(), &val, guiCtrls.getReference(index).getStringProp("channel").toUTF8(),
-				CSOUND_CONTROL_CHANNEL | CSOUND_OUTPUT_CHANNEL);
-#ifndef Cabbage_Build_Standalone
-	setParameter(index, *val/range);
-#else
-	setParameter(index, *val);
-#endif
-	return guiCtrls.getReference(index).getNumProp("value");	
+        MYFLT* val=0;
+		csoundGetChannelPtr(getCsoundStruct(), &val, guiCtrls.getReference(index).getStringProp("channel").toUTF8(),
+                                CSOUND_CONTROL_CHANNEL | CSOUND_OUTPUT_CHANNEL);
+		//Logger::writeToLog(guiCtrls.getReference(index).getStringProp("channel"));
+
+//#ifdef Cabbage_Build_Standalone
+	        return *val;
+//#else
+
+//		return getGUICtrls(index).getNumProp("value");
+//#endif
 }
 else return 0.f; 
 #endif
@@ -330,21 +359,24 @@ void CabbagePluginAudioProcessor::setParameter (int index, float newValue)
 /* this will get called by the plugin GUI sliders or 
 by the host via automation. If it's called by the host it will send 
 message back to the GUI to notify it to update controls */
+float range, min, max;
 if(index<(int)guiCtrls.size())//make sure index isn't out of range
    {
   if(guiCtrls.getReference(index).getNumProp("value") != newValue)
      {
-#ifndef Cabbage_Build_Standalone	
-	//scalling in here so that values go from 0-1
-	int range = getGUICtrls(index).getNumProp("max")-getGUICtrls(index).getNumProp("min");
-	guiCtrls.getReference(index).setNumProp("value", (newValue*range)+getGUICtrls(index).getNumProp("min"));
-	csound->SetChannel(guiCtrls.getReference(index).getStringProp("channel").toUTF8(), guiCtrls.getReference(index).getNumProp("value"));
+#ifndef Cabbage_Build_Standalone        
+        //scaling in here because incoming values in plugin mode range from 0-1
+		range = getGUICtrls(index).getNumProp("sliderRange");
+		min = getGUICtrls(index).getNumProp("min");
+		guiCtrls.getReference(index).setNumProp("value", (newValue*range)+min);
+		//Logger::writeToLog(T("setParamters():")+String((newValue*range)+min));
+		csound->SetChannel(guiCtrls.getReference(index).getStringProp("channel").toUTF8(), guiCtrls.getReference(index).getNumProp("value"));
 #else 
-	guiCtrls.getReference(index).setNumProp("value", newValue);
-	csound->SetChannel(guiCtrls.getReference(index).getStringProp("channel").toUTF8(), guiCtrls.getReference(index).getNumProp("value"));
+        guiCtrls.getReference(index).setNumProp("value", newValue);
+        csound->SetChannel(guiCtrls.getReference(index).getStringProp("channel").toUTF8(), guiCtrls.getReference(index).getNumProp("value"));		
 #endif
      }
-   } 
+   }
 }
 
 
@@ -446,6 +478,7 @@ void CabbagePluginAudioProcessor::releaseResources()
 //host widgets is being used
 void CabbagePluginAudioProcessor::timerCallback(){
 #ifndef Cabbage_No_Csound
+
 if(!isGuiEnabled()){
 	//initiliase any channels send host information to Csound
 	AudioPlayHead::CurrentPositionInfo hostInfo;

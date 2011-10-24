@@ -36,15 +36,15 @@ using namespace std;
 
 class CabbageGUIClass : public CabbageUtils
 {
-        float width, height, top, left, min, max, tabpage, 
-		noOfMenus, onoff, midiChan, midiCtrl, 
-		line, anchor, linkTo, scaleX, scaleY, value, maxItems;
+        float width, height, top, left, min, max, tabpage, minX, minY, maxX, maxY, comboRange,
+		noOfMenus, onoff, midiChan, midiCtrl, sliderRange, xypadRangeY, xypadRangeX,
+		line, anchor, linkTo, scaleX, scaleY, value, valueX, valueY, maxItems;
         StringArray items;
         StringArray onoffcaptions;
 		StringArray key;
         String channel, name, sizeText, posText, boundsText, text, type, colour, plant, reltoplant, textcolour, bounds, range,
-        fontcolour, outline, fill, shape, beveltype, caption, kind, topitem,
-        exit, csstdout, cssetup, file, debugMessage;
+        fontcolour, outline, fill, shape, beveltype, caption, kind, topitem, yChannel, xChannel,
+        exit, csstdout, cssetup, file, debugMessage, xyChannel;
 
 public:
 	//constructor

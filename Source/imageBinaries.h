@@ -6,16 +6,19 @@
 namespace imageBinaries
 {
     extern const char*  button1_png;
-    const int           button1_pngSize = 2065;
+    const int           button1_pngSize = 3321;
 
-    extern const char*  horizontal1_png;
-    const int           horizontal1_pngSize = 156621;
+    extern const char*  horizontalbackground_png;
+    const int           horizontalbackground_pngSize = 73751;
+
+    extern const char*  horizontalthumb_png;
+    const int           horizontalthumb_pngSize = 2139;
 
     extern const char*  minilogo_png;
     const int           minilogo_pngSize = 3783;
 
     extern const char*  rotary1_png;
-    const int           rotary1_pngSize = 232449;
+    const int           rotary1_pngSize = 775441;
 
     extern const char*  skin1_png;
     const int           skin1_pngSize = 237;
@@ -23,8 +26,11 @@ namespace imageBinaries
     extern const char*  togglebutton1_png;
     const int           togglebutton1_pngSize = 1791;
 
-    extern const char*  vertical1_png;
-    const int           vertical1_pngSize = 118854;
+    extern const char*  verticalbackground_png;
+    const int           verticalbackground_pngSize = 60098;
+
+    extern const char*  verticalthumb_png;
+    const int           verticalthumb_pngSize = 1745;
 
 };
 

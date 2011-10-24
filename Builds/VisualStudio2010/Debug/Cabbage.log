@@ -1,9 +1,45 @@
-﻿Build started 07/10/2011 18:46:25.
-     1>Project "C:\MyDocuments\CabbageSVN\Builds\VisualStudio2010\Cabbage.vcxproj" on node 2 (clean target(s)).
-     1>_PrepareForClean:
-         Deleting file ".\Debug\Cabbage.lastbuildstate".
-     1>Done Building Project "C:\MyDocuments\CabbageSVN\Builds\VisualStudio2010\Cabbage.vcxproj" (clean target(s)).
+﻿Build started 24/10/2011 13:51:12.
+     1>Project "C:\MyDocuments\CabbageSVN\Builds\VisualStudio2010\Cabbage.vcxproj" on node 2 (build target(s)).
+     1>InitializeBuildStatus:
+         Creating ".\Debug\Cabbage.unsuccessfulbuild" because "AlwaysCreate" was specified.
+       ClCompile:
+         c:\Program Files\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /IC:\MyDocuments\SourceCode\Csound5\csound5\H /I"C:\MyDocuments\My Dropbox\ASIOSDK2" /I"C:\MyDocuments\My Dropbox\vstsdk2.4" /ZI /nologo /W4 /WX- /Od /Oy- /D WIN32 /D _WINDOWS /D DEBUG /D _DEBUG /D JUCER_VS2008_78A5006=1 /D MSVC /D Cabbage_Build_Standalone /D Cabbage_Named_Pipe /D USE_DOUBLE /D _MBCS /Gm- /EHsc /MTd /GS /fp:precise /Zc:wchar_t /Zc:forScope /GR /Fo".\Debug\\" /Fd".\Debug\vc100.pdb" /Gd /TP /analyze- /errorReport:prompt ..\..\Source\CabbagePluginEditor.cpp ..\..\Source\CabbagePluginProcessor.cpp ..\..\Source\CabbageStandaloneDialog.cpp
+         CabbagePluginEditor.cpp
+     1>c:\mydocuments\cabbagesvn\source\cabbagecustomwidgets.h(263): warning C4482: nonstandard extension used: enum 'juce::ComboBox::ColourIds' used in qualified name
+     1>c:\mydocuments\cabbagesvn\source\cabbagecustomwidgets.h(938): warning C4482: nonstandard extension used: enum 'juce::TextEditor::ColourIds' used in qualified name
+     1>c:\mydocuments\cabbagesvn\source\cabbagecustomwidgets.h(939): warning C4482: nonstandard extension used: enum 'juce::TextEditor::ColourIds' used in qualified name
+         CabbagePluginProcessor.cpp
+     1>c:\mydocuments\cabbagesvn\source\cabbagepluginprocessor.cpp(290): warning C4996: 'vsnprintf': This function or variable may be unsafe. Consider using vsnprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 c:\program files\microsoft visual studio 10.0\vc\include\stdio.h(354) : see declaration of 'vsnprintf'
+     1>c:\mydocuments\cabbagesvn\source\cabbagepluginprocessor.cpp(362): warning C4101: 'min' : unreferenced local variable
+     1>c:\mydocuments\cabbagesvn\source\cabbagepluginprocessor.cpp(362): warning C4101: 'range' : unreferenced local variable
+     1>c:\mydocuments\cabbagesvn\source\cabbagepluginprocessor.cpp(362): warning C4101: 'max' : unreferenced local variable
+         CabbageStandaloneDialog.cpp
+         Generating Code...
+       Link:
+         c:\Program Files\Microsoft Visual Studio 10.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:".\Debug\Cabbage.exe" /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /NODEFAULTLIB:libcmt.lib /NODEFAULTLIB:msvcrt.lib /MANIFEST /ManifestFile:".\Debug\Cabbage.exe.intermediate.manifest" /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /DEBUG /PDB:".\Debug\Cabbage.pdb" /SUBSYSTEM:WINDOWS /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:".\Debug\Cabbage.lib" /MACHINE:X86 .\Debug\CabbageGUIClass.obj
+         .\Debug\CabbageLookAndFeel.obj
+         .\Debug\CabbageMainPanel.obj
+         .\Debug\CabbagePluginEditor.obj
+         .\Debug\CabbagePluginProcessor.obj
+         .\Debug\CabbageStandaloneDialog.obj
+         .\Debug\ComponentLayoutEditor.obj
+         .\Debug\imageBinaries.obj
+         .\Debug\StandaloneFilterApp.obj
+         .\Debug\JuceLibraryCode1.obj
+         .\Debug\JuceLibraryCode2.obj
+         .\Debug\JuceLibraryCode3.obj
+         .\Debug\JuceLibraryCode4.obj "C:\MyDocuments\SourceCode\Csound5\csound5\csound32.lib" 
+         LINK : .\Debug\Cabbage.exe not found or not built by the last incremental link; performing full link
+            Creating library .\Debug\Cabbage.lib and object .\Debug\Cabbage.exp
+         Cabbage.vcxproj -> C:\MyDocuments\CabbageSVN\Builds\VisualStudio2010\.\Debug\Cabbage.exe
+       Manifest:
+         C:\Program Files\Microsoft SDKs\Windows\v7.0A\bin\mt.exe /nologo /verbose /outputresource:".\Debug\Cabbage.exe;#1" /manifest .\Debug\Cabbage.exe.intermediate.manifest
+       FinalizeBuildStatus:
+         Deleting file ".\Debug\Cabbage.unsuccessfulbuild".
+         Touching ".\Debug\Cabbage.lastbuildstate".
+     1>Done Building Project "C:\MyDocuments\CabbageSVN\Builds\VisualStudio2010\Cabbage.vcxproj" (build target(s)).
 
 Build succeeded.
 
-Time Elapsed 00:00:00.18
+Time Elapsed 00:00:40.35

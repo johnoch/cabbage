@@ -37,7 +37,8 @@ class CabbagePluginAudioProcessorEditor  : public AudioProcessorEditor,
 								public Timer,
 								public KeyListener,
 								public ChangeBroadcaster,
-								public ChangeListener
+								public ChangeListener,
+								public ActionListener
 {
 public:
     CabbagePluginAudioProcessorEditor (CabbagePluginAudioProcessor* ownerFilter);
@@ -58,7 +59,9 @@ private:
     void sliderValueChanged (Slider*);
 	void InsertButton(CabbageGUIClass cAttr);
 	void InsertCheckBox(CabbageGUIClass cAttr);
+	void InsertCsoundOutput(CabbageGUIClass cAttr);
 	void InsertMIDIKeyboard(CabbageGUIClass cAttr);
+	void InsertXYPad(CabbageGUIClass cAttr);
 	void InsertImage(CabbageGUIClass cAttr);
 	void InsertLabel(CabbageGUIClass cAttr);
 	void buttonClicked (Button*);
@@ -67,6 +70,7 @@ private:
 	bool LOCKED;
 	void insertCabbageText(String text);
 	int lineNumber;
+	void actionListenerCallback (const String& message);
 	//CabbagePluginAudioProcessor* filter;
 	CabbagePluginAudioProcessor* getFilter() const
     {

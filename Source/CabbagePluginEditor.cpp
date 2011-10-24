@@ -338,6 +338,9 @@ for(int i=0;i<getFilter()->getGUILayoutCtrlsSize();i++){
 	else if(getFilter()->getGUILayoutCtrls(i).getStringProp("type")==T("label")){
 		InsertLabel(getFilter()->getGUILayoutCtrls(i));   
 		}
+	else if(getFilter()->getGUILayoutCtrls(i).getStringProp("type")==T("csoundoutput")){
+		InsertCsoundOutput(getFilter()->getGUILayoutCtrls(i));   
+		}
 }
 //add interactive controls
 for(int i=0;i<getFilter()->getGUICtrlsSize();i++){
@@ -349,11 +352,14 @@ for(int i=0;i<getFilter()->getGUICtrlsSize();i++){
 	else if(getFilter()->getGUICtrls(i).getStringProp("type")==T("button")){				
 		InsertButton(getFilter()->getGUICtrls(i));       //insert button	
 		}
-		else if(getFilter()->getGUICtrls(i).getStringProp("type")==T("checkbox")){				
+	else if(getFilter()->getGUICtrls(i).getStringProp("type")==T("checkbox")){				
 		InsertCheckBox(getFilter()->getGUICtrls(i));       //insert checkbox
 		}
-		else if(getFilter()->getGUICtrls(i).getStringProp("type")==T("combobox")){				
+	else if(getFilter()->getGUICtrls(i).getStringProp("type")==T("combobox")){				
 		InsertComboBox(getFilter()->getGUICtrls(i));       //insert combobox	
+		}
+	else if(getFilter()->getGUICtrls(i).getStringProp("type")==T("xypad")){	
+		InsertXYPad(getFilter()->getGUICtrls(i));       //insert xypad	
 		}
 	}
 }
@@ -573,6 +579,59 @@ catch(...){
 //	MIDI keyboard, I've this listed as non-interactive
 // as it only sends MIDI, it doesn't communicate over the software bus
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+void CabbagePluginAudioProcessorEditor::InsertCsoundOutput(CabbageGUIClass cAttr)
+{
+try{
+
+	layoutComps.add(new CabbageMessageConsole(cAttr.getStringProp("name"), 
+										 cAttr.getStringProp("caption"), 
+										 cAttr.getStringProp("text")));	
+	int idx = layoutComps.size()-1;
+
+	float left = cAttr.getNumProp("left");
+	float top = cAttr.getNumProp("top");
+	float width = cAttr.getNumProp("width");
+	float height = cAttr.getNumProp("height");
+
+	//check to see if widgets is anchored
+	//if it is offset it's position accordingly. 
+	int relY=0,relX=0;
+	for(int y=0;y<layoutComps.size();y++){
+	if(cAttr.getStringProp("reltoplant").length()>0){
+	if(layoutComps[y]->getProperties().getWithDefault(String("plant"), -99).toString().equalsIgnoreCase(cAttr.getStringProp("reltoplant")))
+	{
+		width = width*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
+		height = height*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
+		top = top*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
+		left = left*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
+
+		if(layoutComps[y]->getName().containsIgnoreCase("groupbox")||
+			layoutComps[y]->getName().containsIgnoreCase("image"))
+			{			
+			layoutComps[idx]->setBounds(left, top, width, height);
+			//if component is a member of a plant add it directly to the plant
+			layoutComps[y]->addAndMakeVisible(layoutComps[idx]);
+			}
+	}
+	}
+	else{
+	((CabbageMessageConsole*)layoutComps[idx])->setBounds(left+relX, top+relY, width, height);
+	componentPanel->addAndMakeVisible(layoutComps[idx]);
+	}
+	}
+	layoutComps[idx]->setName("csoundoutput");
+	layoutComps[idx]->getProperties().set(String("plant"), var(cAttr.getStringProp("plant")));
+
+}
+catch(...){
+    Logger::writeToLog(T("Syntax error: 'message console..."));
+    }
+}
+
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//	MIDI keyboard, I've this listed as non-interactive
+// as it only sends MIDI, it doesn't communicate over the software bus
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 void CabbagePluginAudioProcessorEditor::InsertMIDIKeyboard(CabbageGUIClass cAttr)
 {
 try{
@@ -701,27 +760,31 @@ void CabbagePluginAudioProcessorEditor::sliderValueChanged (Slider* sliderThatWa
 if(sliderThatWasMoved->isEnabled()) // before sending data to on named channel
     {
     //if(RUNNING){make sure Csound is playing before calling SetChannel()
-		for(int i=0;i<(int)getFilter()->getGUICtrlsSize();i++)//find correct control from vector
-			if(getFilter()->getGUICtrls(i).getStringProp("name")==sliderThatWasMoved->getName()){
-				getFilter()->getCsound()->SetChannel(getFilter()->getGUICtrls(i).getStringProp("channel").toUTF8(), sliderThatWasMoved->getValue());
- 			    //getFilter()->guiCtrls[i].value = (float)sliderThatWasMoved->getValue();
-				int range = getFilter()->getGUICtrls(i).getNumProp("max")-getFilter()->getGUICtrls(i).getNumProp("min");
+                for(int i=0;i<(int)getFilter()->getGUICtrlsSize();i++)//find correct control from vector
+                        if(getFilter()->getGUICtrls(i).getStringProp("name")==sliderThatWasMoved->getName()){
+						//getFilter()->getCsound()->SetChannel(getFilter()->getGUICtrls(i).getStringProp("channel").toUTF8(), sliderThatWasMoved->getValue());
+                            //getFilter()->guiCtrls[i].value = (float)sliderThatWasMoved->getValue();
 #ifndef Cabbage_Build_Standalone
-				Logger::writeToLog(getFilter()->getGUICtrls(i).getPropsString());
-				getFilter()->setParameterNotifyingHost(i, (float)(sliderThatWasMoved->getValue()-(getFilter()->getGUICtrls(i).getNumProp("min")))/range);
+						getFilter()->getGUICtrls(i).setNumProp("value", (float)sliderThatWasMoved->getValue());
+                        Logger::writeToLog(getFilter()->getGUICtrls(i).getPropsString());
+						float min = getFilter()->getGUICtrls(i).getNumProp("min");
+						float range = getFilter()->getGUICtrls(i).getNumProp("sliderRange");
+						//getFilter()->setParameterNotifyingHost(i, (float)(sliderThatWasMoved->getValue()));
+						//normalise parameters in plugin mode. 
+                        getFilter()->setParameterNotifyingHost(i, (float)((sliderThatWasMoved->getValue()-min)/range));
 #else
-				getFilter()->setParameterNotifyingHost(i, (float)(sliderThatWasMoved->getValue()));
+						Logger::writeToLog(String(sliderThatWasMoved->getValue()));
+						getFilter()->setParameterNotifyingHost(i, (float)sliderThatWasMoved->getValue());
 #endif
-				//showMessage(sliderThatWasMoved->getName());
-     			}
-
+                        }
      else{// The next bit of code lets us change channel data even if Csound is not running
         for(int i=0;i<(int)getFilter()->getGUICtrlsSize();i++)//find correct control from vector
-     		if(getFilter()->getGUICtrls(i).getStringProp("name")==sliderThatWasMoved->getName()){
-				getFilter()->getGUICtrls(i).setNumProp("value", (float)sliderThatWasMoved->getValue());
-			getFilter()->getCsound()->SetChannel(getFilter()->getGUICtrls(i).getStringProp("channel").toUTF8(), sliderThatWasMoved->getValue());
- 			}
-		}
+                if(getFilter()->getGUICtrls(i).getStringProp("name")==sliderThatWasMoved->getName()){
+                                getFilter()->getGUICtrls(i).setNumProp("value", (float)sliderThatWasMoved->getValue());
+                        getFilter()->getCsound()->SetChannel(getFilter()->getGUICtrls(i).getStringProp("channel").toUTF8(), sliderThatWasMoved->getValue());
+                        }
+                }
+				
 }
 #endif
 }
@@ -992,7 +1055,10 @@ if(combo->isEnabled()) // before sending data to on named channel
 						getFilter()->getCsound()->SetChannel(getFilter()->getGUICtrls(i).getStringProp("channel").toUTF8(), (float)combo->getSelectedItemIndex()+1);
  						getFilter()->getGUICtrls(i).setNumProp("value", (int)combo->getSelectedItemIndex()+1);
 #ifndef Cabbage_Build_Standalone
-						getFilter()->setParameterNotifyingHost(i, (float)(combo->getSelectedItemIndex())/((float)getFilter()->getGUICtrls(i).getNumProp("max")-1));
+
+						getFilter()->getCsound()->SetChannel(getFilter()->getGUICtrls(i).getStringProp("channel").toUTF8(), combo->getSelectedItemIndex());
+						Logger::writeToLog(String("comboEvent():")+String(getFilter()->getGUICtrls(i).getNumProp("comboRange")));
+						getFilter()->setParameterNotifyingHost(i, (float)(combo->getSelectedItemIndex())/(getFilter()->getGUICtrls(i).getNumProp("comboRange")-1));
 #else
 						getFilter()->setParameterNotifyingHost(i, (float)(combo->getSelectedItemIndex()+1));
 #endif
@@ -1013,6 +1079,127 @@ if(combo->isEnabled()) // before sending data to on named channel
 #endif
 }
 
+//+++++++++++++++++++++++++++++++++++++++++++
+//					xypad
+//+++++++++++++++++++++++++++++++++++++++++++
+void CabbagePluginAudioProcessorEditor::InsertXYPad(CabbageGUIClass cAttr)
+{
+/*
+Our filters control vector contains two xypads, one for the X channel and one for the Y
+channel. Our editor only needs to display one so the xypad with 'dummy' appended to the name
+will be created but not shown. 
+*/
+try{
+	controls.add(new CabbageXYController(cAttr.getStringProp("name"),
+		cAttr.getStringProp("text"),
+		cAttr.getStringProp("caption"),
+		cAttr.getNumProp("minX"),
+		cAttr.getNumProp("maxX"),
+		cAttr.getNumProp("minY"),
+		cAttr.getNumProp("maxY")));	
+	int idx = controls.size()-1;
+
+	float left = cAttr.getNumProp("left");    
+	float top = cAttr.getNumProp("top");
+	float width = cAttr.getNumProp("width");
+	float height = cAttr.getNumProp("height");
+
+
+
+	//check to see if widgets is anchored
+	//if it is offset it's position accordingly. 
+	int relY=0,relX=0;
+	if(layoutComps.size()>0){
+	for(int y=0;y<layoutComps.size();y++)
+	if(cAttr.getStringProp("reltoplant").length()>0){
+	if(layoutComps[y]->getProperties().getWithDefault(String("plant"), -99).toString().equalsIgnoreCase(cAttr.getStringProp("reltoplant")))
+		{
+		width = width*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
+		height = height*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
+		top = top*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
+		left = left*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
+
+		if(layoutComps[y]->getName().containsIgnoreCase("groupbox")||
+			layoutComps[y]->getName().containsIgnoreCase("image"))
+			{			
+			controls[idx]->setBounds(left, top, width, height);
+			if(!cAttr.getStringProp("name").containsIgnoreCase("dummy"))
+			layoutComps[y]->addAndMakeVisible(controls[idx]);
+			}
+		}
+	}
+		else{
+	    controls[idx]->setBounds(left+relX, top+relY, width, height);
+		if(!cAttr.getStringProp("name").containsIgnoreCase("dummy"))
+		componentPanel->addAndMakeVisible(controls[idx]);		
+		}
+	}
+	else{
+	    controls[idx]->setBounds(left+relX, top+relY, width, height);
+		if(!cAttr.getStringProp("name").containsIgnoreCase("dummy"))
+		componentPanel->addAndMakeVisible(controls[idx]);		
+	}
+
+
+	float max = cAttr.getNumProp("maxX");
+	float min = cAttr.getNumProp("minX");
+	float valueX = cabbageABS(min-cAttr.getNumProp("valueX"))/cabbageABS(min-max);
+	//Logger::writeToLog(T("X:")+String(valueX));
+	max = cAttr.getNumProp("maxY");
+	min = cAttr.getNumProp("minY");
+	float valueY = cabbageABS(min-cAttr.getNumProp("valueY"))/cabbageABS(min-max);
+	//Logger::writeToLog(T("Y:")+String(valueY));
+	((CabbageXYController*)controls[idx])->xypad->setBallXY(valueX, valueY, true);
+	((CabbageXYController*)controls[idx])->xypad->addActionListener(this);
+	if(!cAttr.getStringProp("name").containsIgnoreCase("dummy"))
+	actionListenerCallback(cAttr.getStringProp("name"));
+
+}
+catch(...){
+    Logger::writeToLog(T("Syntax error: 'xy pad..."));
+    }
+	
+}
+
+					/******************************************/
+					/*     actionlistener method (xypad)      */
+					/******************************************/
+void CabbagePluginAudioProcessorEditor::actionListenerCallback (const String& message){
+//this event recieves action messages from custom components. For now it's only
+//needed for the xypad but could potentially be used later for other custom controls
+String name = message;
+
+for(int i=0;i<(int)getFilter()->getGUICtrlsSize();i++)//find correct control from vector
+		if(getFilter()->getGUICtrls(i).getStringProp("name")==name)
+		{
+			if(getFilter()->getGUICtrls(i).getStringProp("xyChannel").equalsIgnoreCase("X")){	
+			getFilter()->getCsound()->SetChannel(getFilter()->getGUICtrls(i).getStringProp("xChannel").toUTF8(), ((CabbageXYController*)controls[i])->xypad->getBallX());
+			getFilter()->getCsound()->SetChannel(getFilter()->getGUICtrls(i).getStringProp("yChannel").toUTF8(), ((CabbageXYController*)controls[i])->xypad->getBallY());
+			}
+#ifndef Cabbage_Build_Standalone
+            if(getFilter()->getGUICtrls(i).getStringProp("xyChannel").equalsIgnoreCase("X")){
+						//normalising values to host 
+						float min = getFilter()->getGUICtrls(i).getNumProp("min");
+						float max = getFilter()->getGUICtrls(i).getNumProp("max");
+						float ballPos  = ((CabbageXYController*)controls[i])->xypad->getBallX();
+						float value = (ballPos - min)/(max-min);
+						//Logger::writeToLog(T("actionListenerX:")+String(value));
+						getFilter()->setParameterNotifyingHost(i, value);
+						min = getFilter()->getGUICtrls(i+1).getNumProp("min");
+						max = getFilter()->getGUICtrls(i+1).getNumProp("max");
+						ballPos  = ((CabbageXYController*)controls[i])->xypad->getBallY();
+						value = (ballPos - min)/(max-min);						
+						//Logger::writeToLog(T("actionListenerY:")+String(value));
+						getFilter()->setParameterNotifyingHost(i+1, value);
+			}
+#else                        
+			if(getFilter()->getGUICtrls(i).getStringProp("xyChannel").equalsIgnoreCase("X")){
+			getFilter()->setParameterNotifyingHost(i, (float)(((CabbageXYController*)controls[i])->xypad->getBallX()));
+			getFilter()->setParameterNotifyingHost(i+1, (float)(((CabbageXYController*)controls[i])->xypad->getBallY()));
+			}
+#endif
+     	}
+}
 
 //=============================================================================
 bool CabbagePluginAudioProcessorEditor::keyPressed(const juce::KeyPress &key ,juce::Component *)
@@ -1051,8 +1238,9 @@ void CabbagePluginAudioProcessorEditor::timerCallback()
 // signals from Csound. I've removed this for now as most host allow automation.
 // It may prove useful however when running Cabbage in standalone mode...
 #ifndef Cabbage_No_Csound	
+#ifndef Cabbage_Build_Standalone
 for(int i=0;i<(int)getFilter()->getGUICtrlsSize();i++){
-	inValue = getFilter()->getParameter(i);
+	//inValue = getFilter()->getParameter(i);
 	if(getFilter()->getGUICtrls(i).getStringProp("type")==T("hslider")||
 			getFilter()->getGUICtrls(i).getStringProp("type")==T("rslider")||
 			getFilter()->getGUICtrls(i).getStringProp("type")==T("vslider")){
@@ -1067,9 +1255,21 @@ for(int i=0;i<(int)getFilter()->getGUICtrlsSize();i++){
 		((CabbageButton*)controls[i])->button->setButtonText(getFilter()->getGUICtrls(i).getItems(1-(int)inValue));
 	}
 	
+	else if(getFilter()->getGUICtrls(i).getStringProp("type")==T("xypad") &&
+		getFilter()->getGUICtrls(i).getStringProp("xyChannel").equalsIgnoreCase("X")){
+	if(controls[i]){
+		((CabbageXYController*)controls[i])->xypad->setBallXY(getFilter()->getParameter(i), getFilter()->getParameter(i+1), false);
+		}
+	}
+
 	else if(getFilter()->getGUICtrls(i).getStringProp("type")==T("combobox")){
 	//if(controls[i])
-	//	((CabbageComboBox*)controls[i])->combo->setSelectedId((int)inValue, false);
+#ifdef Cabbage_Build_Standalone
+	//	((CabbageComboBox*)controls[i])->combo->setSelectedId((int)getFilter()->getParameter(i), false);
+#else
+		//Logger::writeToLog(T("timerCallback():")+String(getFilter()->getParameter(i)));
+		((CabbageComboBox*)controls[i])->combo->setSelectedId(int(getFilter()->getParameter(i)+.5), false);
+#endif
 	}
 
 	else if(getFilter()->getGUICtrls(i).getStringProp("type")==T("checkbox")){
@@ -1103,6 +1303,12 @@ for(int i=0;i<(int)getFilter()->getGUILayoutCtrlsSize();i++){
 	debugLabel->setText(String(hostInfo.ppqPosition), false);
 	}
 }
+#endif
+for(int i=0;i<layoutComps.size();i++){
+	if(layoutComps[i]->getName().containsIgnoreCase("csoundoutput"))
+		((CabbageMessageConsole*)layoutComps[i])->editor->setText(getFilter()->csoundOutput);
+}
+
 
 #ifdef Cabbage_Build_Standalone
 	//make sure that the instrument needs midi before turning this on

@@ -172,6 +172,37 @@ CabbageGUIClass::CabbageGUIClass(String compStr, int ID):
 		  type = name;
           name.append(String(ID), 1024);
 	}
+    else if(compStr.indexOfIgnoreCase("csoundoutput ")!=-1){
+          top = 10;
+          left = 10;
+          width = 400;
+          height = 200;
+          colour = "";
+          name = "csoundoutput";
+		  type = name;
+          name.append(String(ID), 1024);
+	}
+    else if(compStr.indexOfIgnoreCase("xypad ")!=-1){
+          top = 10;
+          left = 10;
+          width = 200;
+          height = 200;
+          xChannel = "xypadchanX";
+		  yChannel = "xypadchanY";
+		  channel = "";
+          caption = "";
+          name = "xypad";
+		  caption = "";
+		  minX = 0;
+		  maxX = 200;
+		  minY = 0;
+		  maxY = 200;
+		  valueX = 0;
+		  valueY = 0;
+		  type = "xypad";
+          name.append(String(ID), 1024);
+		  xyChannel = "";
+	}
     else if(compStr.indexOfIgnoreCase("keyboard ")!=-1){
           top = 10;
           left = 10;
@@ -250,6 +281,8 @@ int CabbageGUIClass::parse(String str)
 	identArray.add(",line(");
 	identArray.add("bounds(");
 	identArray.add("range(");
+	identArray.add("rangex(");
+	identArray.add("rangey(");
 	identArray.add("plant(");
     identArray.add("channel(");
     identArray.add("name(");
@@ -296,7 +329,16 @@ int CabbageGUIClass::parse(String str)
 			else if(identArray.getReference(indx).equalsIgnoreCase("plant(")) plant = strTokens[0].trim();
 			else if(identArray.getReference(indx).equalsIgnoreCase("caption(")) caption = strTokens[0].trim();
             else if(identArray.getReference(indx).equalsIgnoreCase("channel(")||
-				identArray.getReference(indx).equalsIgnoreCase("chan(")) channel = strTokens[0].trim();
+				identArray.getReference(indx).equalsIgnoreCase("chan(")){
+					if(str.containsIgnoreCase("xypad")){
+					xChannel = strTokens[0].trim();
+					yChannel = strTokens[1].trim();
+					}
+					else
+					channel = strTokens[0].trim();
+					//assign X and Y channels for xypad
+
+			}
             else if(identArray.getReference(indx).equalsIgnoreCase(" colour(")||
 				identArray.getReference(indx).equalsIgnoreCase(",colour(")) colour = strTokens[0].trim();
 			else if(identArray.getReference(indx).equalsIgnoreCase("kind(")) kind = strTokens[0].trim();
@@ -323,6 +365,7 @@ int CabbageGUIClass::parse(String str)
             else if(identArray.getReference(indx).equalsIgnoreCase("items(")||
 					identArray.getReference(indx).equalsIgnoreCase("text(")){
               items.clear();//clear any unwanted items
+			  text = strTokens[0];
 			  for(int i= 0;i<(int)strTokens.size();i++){
 				String test = strTokens[i]; 
 				items.add(strTokens[i]);	
@@ -331,7 +374,7 @@ int CabbageGUIClass::parse(String str)
 					i++;
 				}
 				//messing with my checkbox!
-				maxItems = i;
+				comboRange = i;
               }
 			}
 
@@ -388,7 +431,30 @@ int CabbageGUIClass::parse(String str)
 				else{
 				min = strTokens[0].trim().getFloatValue();  
 				max = strTokens[1].trim().getFloatValue();  
-				value = strTokens[2].trim().getFloatValue();  
+				value = strTokens[2].trim().getFloatValue(); 
+				sliderRange = max-min;
+				}
+			}
+			else if(identArray.getReference(indx).equalsIgnoreCase("rangex(")){
+				if(strTokens.size()<3){
+					debugMessage =T("WARNING: Not enough paramters passed to range(): usage range(minx, max, value\")");
+				}
+				else{
+				minX = strTokens[0].trim().getFloatValue();  
+				maxX = strTokens[1].trim().getFloatValue();  
+				valueX = strTokens[2].trim().getFloatValue(); 
+				xypadRangeX = maxX-minX;
+				}
+			}
+			else if(identArray.getReference(indx).equalsIgnoreCase("rangey(")){
+				if(strTokens.size()<3){
+					debugMessage =T("WARNING: Not enough paramters passed to range(): usage range(minx, max, value\")");
+				}
+				else{
+				minY = strTokens[0].trim().getFloatValue();  
+				maxY = strTokens[1].trim().getFloatValue();  
+				valueY = strTokens[2].trim().getFloatValue();
+				xypadRangeY = maxY-minY;
 				}
 			}
 			else if(identArray.getReference(indx).equalsIgnoreCase("min(")){
@@ -448,6 +514,24 @@ float CabbageGUIClass::getNumProp(String prop)
 			return midiCtrl;
 		else if(prop.equalsIgnoreCase(T("max")))
 			return max;
+		else if(prop.equalsIgnoreCase(T("sliderRange")))
+			return sliderRange;
+		else if(prop.equalsIgnoreCase(T("xypadRangeY")))
+			return xypadRangeY;
+		else if(prop.equalsIgnoreCase(T("xypadRangeX")))
+			return xypadRangeX;
+		else if(prop.equalsIgnoreCase(T("maxX")))
+			return maxX;
+		else if(prop.equalsIgnoreCase(T("maxY")))
+			return maxY;
+		else if(prop.equalsIgnoreCase(T("minX")))
+			return minX;
+		else if(prop.equalsIgnoreCase(T("minY")))
+			return minY;
+		else if(prop.equalsIgnoreCase(T("valueX")))
+			return valueX;
+		else if(prop.equalsIgnoreCase(T("valueY")))
+			return valueY;
 		else if(prop.equalsIgnoreCase(T("tabpage")))
 			return tabpage;
 		else if(prop.equalsIgnoreCase(T("noOfMenus")))
@@ -456,6 +540,8 @@ float CabbageGUIClass::getNumProp(String prop)
 			return onoff;
 		else if(prop.equalsIgnoreCase(T("value")))
 			return value;
+		else if(prop.equalsIgnoreCase(T("comboRange")))
+			return comboRange;
 		else if(prop.equalsIgnoreCase(T("line")))
 			return line;
 		else if(prop.equalsIgnoreCase(T("scaleX")))
@@ -504,12 +590,30 @@ void CabbageGUIClass::setNumProp(String prop, float val)
 			 scaleY = val;
 		else if(prop.equalsIgnoreCase(T("linkTo")))
 			 linkTo = val;
+		else if(prop.equalsIgnoreCase(T("sliderRange")))
+			 sliderRange = val;
+		else if(prop.equalsIgnoreCase(T("xypadRangeY")))
+			 xypadRangeY = val;
+		else if(prop.equalsIgnoreCase(T("xypadRangeX")))
+			 xypadRangeX = val;
+		else if(prop.equalsIgnoreCase(T("maxX")))
+			 maxX =val;
+		else if(prop.equalsIgnoreCase(T("maxY")))
+			 maxY = val;
+		else if(prop.equalsIgnoreCase(T("minX")))
+			 minX = val;
+		else if(prop.equalsIgnoreCase(T("minY")))
+			 minY = val;
+		else if(prop.equalsIgnoreCase(T("valueX")))
+			 valueX = val;
+		else if(prop.equalsIgnoreCase(T("valueY")))
+			 valueY = val;
 }
 
 String CabbageGUIClass::getPropsString()
 {
 	return type << T(" bounds(") << String(left) << T(", ") << String(top) << T(", ") << String(width)
-				<< T(", ") << String(height) << T("), channel(\"") << channel << T("\"), value(")
+				<< T(", ") << String(height) << T("), channel(\"") << channel << T("), xyChannel(\"") << xyChannel << T("\"), value(")
 				<< String(value) << T("), items(\"") << items[0].trim() << T("\", \"") << items[1].trim() << T("\")")
 				<< T("), range(\"") << String(min) << T(", ") << String(max) << T(", ") << String(value) << T("\")");
 }
@@ -518,6 +622,12 @@ String CabbageGUIClass::getStringProp(String prop)
 {
 		if(prop.equalsIgnoreCase(T("channel")))
 			return channel.trim();
+		else if(prop.equalsIgnoreCase(T("xyChannel")))
+			return xyChannel.trim();
+		else if(prop.equalsIgnoreCase(T("xChannel")))
+			return xChannel.trim();
+		else if(prop.equalsIgnoreCase(T("yChannel")))
+			return yChannel.trim();
 		else if(prop.equalsIgnoreCase(T("name")))
 			return name.trim();
 		else if(prop.equalsIgnoreCase(T("bounds")))
@@ -571,42 +681,48 @@ void CabbageGUIClass::setStringProp(String prop, String val)
 {
 		if(prop.equalsIgnoreCase(T("channel")))
 			channel = val;
+		else if(prop.equalsIgnoreCase(T("xyChannel")))
+			xyChannel = val;
+		else if(prop.equalsIgnoreCase(T("yChannel")))
+			yChannel = val;
+		else if(prop.equalsIgnoreCase(T("xChannel")))
+			xChannel = val;
 		else if(prop.equalsIgnoreCase(T("name")))
 			name = val;
 		else if(prop.equalsIgnoreCase(T("text")))
-			 text = val;
+			text = val;
 		else if(prop.equalsIgnoreCase(T("type")))
-			 type = val;
+			type = val;
 		else if(prop.equalsIgnoreCase(T("colour")))
-			 colour = val;
+			colour = val;
 		else if(prop.equalsIgnoreCase(T("fontcolour")))
-			 fontcolour = val;
+			fontcolour = val;
 		else if(prop.equalsIgnoreCase(T("outline")))
-			 outline = val;
+			outline = val;
 		else if(prop.equalsIgnoreCase(T("fill")))
-			 fill = val;
+			fill = val;
 		else if(prop.equalsIgnoreCase(T("shape")))
-			 shape = val;
+			shape = val;
 		else if(prop.equalsIgnoreCase(T("beveltype")))
-			 beveltype = val;
+			beveltype = val;
 		else if(prop.equalsIgnoreCase(T("caption")))
-			 caption = val;
+			caption = val;
 		else if(prop.equalsIgnoreCase(T("kind")))
-			 kind = val;
+			kind = val;
 		else if(prop.equalsIgnoreCase(T("topitem")))
-			 topitem = val;
+			topitem = val;
 		else if(prop.equalsIgnoreCase(T("file")))
-			 file = val;
+			file = val;
 		else if(prop.equalsIgnoreCase(T("cssetup")))
-			 cssetup = val;
+			cssetup = val;
 		else if(prop.equalsIgnoreCase(T("csstdout")))
-			 csstdout = val;
+			csstdout = val;
 		else if(prop.equalsIgnoreCase(T("exit")))
-			 exit = val;
+			exit = val;
 		else if(prop.equalsIgnoreCase(T("plant")))
-			 plant = val;
+			plant = val;
 		else if(prop.equalsIgnoreCase(T("reltoplant")))
-			 reltoplant = val;
+			reltoplant = val;
 		else if(prop.equalsIgnoreCase(T("textcolour")))
 			textcolour = val;
 }

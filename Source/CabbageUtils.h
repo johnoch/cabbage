@@ -27,6 +27,10 @@
 
 using namespace std;
 #pragma warning(disable: 4389)
+#pragma warning(disable: 4244)
+#pragma warning(disable: 4706)
+#pragma warning(disable: 4100)
+#pragma warning(disable: 4305)
 
 //===========================================================================================
 //some utility functions used across classes...
@@ -50,6 +54,12 @@ String str2Juce(std::string inStr)
 {
 	String str(inStr.c_str());
 	return str;
+}
+
+float cabbageABS(float in){
+	if(in<0)
+		return in*-1;
+	else return in;
 }
 
 //===========================================================================================
