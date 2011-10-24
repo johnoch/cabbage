@@ -1305,8 +1305,10 @@ for(int i=0;i<(int)getFilter()->getGUILayoutCtrlsSize();i++){
 }
 #endif
 for(int i=0;i<layoutComps.size();i++){
-	if(layoutComps[i]->getName().containsIgnoreCase("csoundoutput"))
-		((CabbageMessageConsole*)layoutComps[i])->editor->setText(getFilter()->csoundOutput);
+	if(layoutComps[i]->getName().containsIgnoreCase("csoundoutput")){
+		((CabbageMessageConsole*)layoutComps[i])->editor->setText(getFilter()->getCsoundOutput());
+		((CabbageMessageConsole*)layoutComps[i])->editor->setCaretPosition(getFilter()->getCsoundOutput().length());
+	}
 }
 
 

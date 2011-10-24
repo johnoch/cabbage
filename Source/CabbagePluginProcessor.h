@@ -171,6 +171,10 @@ public:
 		return changeMessageType;
 	}
 
+	inline String getCsoundOutput(){
+		return csoundOutput;
+	}
+
 	inline void setChangeMessageType(String text){
 		changeMessageType = text;
 	}
@@ -208,7 +212,7 @@ public:
 	MidiBuffer midiBuffer;		
 	MidiBuffer ccBuffer;
 	bool showMIDI;
-	String csoundOutput;
+	
 private:
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CabbagePluginAudioProcessor);
@@ -218,6 +222,7 @@ private:
 	bool csoundStatus;
 	int csCompileResult;
 	void timerCallback();
+	String csoundOutput;
 	void changeListenerCallback(ChangeBroadcaster *source);
 	String changeMessageType;
 	bool guiOnOff;

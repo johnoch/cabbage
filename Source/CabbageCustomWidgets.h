@@ -935,6 +935,7 @@ CabbageMessageConsole(String name, String caption, String text):
 	editor->setMultiLine(true);
 	editor->setScrollbarsShown(true);
 	editor->setReturnKeyStartsNewLine(true);
+	
 	editor->setColour(TextEditor::ColourIds::backgroundColourId, Colours::black);
 	editor->setColour(TextEditor::ColourIds::textColourId, Colours::green);
 	editor->setText(message);
@@ -974,7 +975,7 @@ void paint(Graphics &g){
 void resized()
 {
 groupbox->setBounds(0, 0, getWidth(), getHeight()); 
-editor->setBounds(offX+5, offY+25, (getWidth()+offWidth)-10, (getHeight()+offHeight)-50); 
+editor->setBounds(offX+5, offY+25, (getWidth()+offWidth)-10, (getHeight()+offHeight)-45); 
 }
 
 JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CabbageMessageConsole);
