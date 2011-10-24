@@ -12,14 +12,14 @@ nchnls = 2
 0dbfs = 1
 
 instr 1
-
-
+a1 oscil 1, 200, 99
+outs a1, a1
 endin
 
 </CsInstruments>
 <CsScore>
 f1 0 8 -2 1 1 0 2 0 3 0 2		;tables using GEN02 to hold a list of 8 notes. 
 f99 0 1024 10 1 1 1				;the shape of this composite waveform determines the filter cut-off 
-f0 3600
+i1 0 1000
 </CsScore>
 </CsoundSynthesizer>

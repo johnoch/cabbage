@@ -76,6 +76,7 @@ StandaloneFilterWindow::StandaloneFilterWindow (const String& title,
 
 
     player.setProcessor (filter);
+	
 
     ScopedPointer<XmlElement> savedState;
 
@@ -86,6 +87,8 @@ StandaloneFilterWindow::StandaloneFilterWindow (const String& title,
                                filter->getNumOutputChannels(),
                                savedState,
                                true);
+
+	deviceManager->closeAudioDevice();
 
     if (globalSettings != nullptr)
     {
@@ -239,7 +242,7 @@ void StandaloneFilterWindow::resetFilter()
 {
 //const MessageManagerLock mmLock; 
     deleteFilter();
-
+	deviceManager->closeAudioDevice();
 	filter = createCabbagePluginFilter(csdFile.getFullPathName(), isGuiEnabled());
 	filter->suspendProcessing(isGuiEnabled());
 	filter->addChangeListener(this);
@@ -249,11 +252,14 @@ void StandaloneFilterWindow::resetFilter()
 
     if (filter != nullptr)
     {
-        if (deviceManager != nullptr)
+        if (deviceManager != nullptr){
             player.setProcessor (filter);
+			deviceManager->restartLastAudioDevice();
+		}
 
         setContentOwned (filter->createEditorIfNeeded(), true);
     }
+
 
     PropertySet* const globalSettings = getGlobalSettings();
 
