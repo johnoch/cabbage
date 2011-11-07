@@ -24,7 +24,7 @@
 */
 
 #include "juce_IncludeCharacteristics.h"
-#include "../../juceTip/juce/juce_amalgamated.h"
+#include "../../juceTip/juce_amalgamated.h"
 
 #ifndef __JUCE_PLUGINHEADERS_JUCEHEADER__
 #define __JUCE_PLUGINHEADERS_JUCEHEADER__

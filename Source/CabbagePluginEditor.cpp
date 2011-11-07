@@ -253,6 +253,11 @@ if (e.mods.isRightButtonDown())
 
 }
 #endif
+
+for(int i=0;i<layoutComps.size();i++)
+	if(layoutComps[i]->getName().equalsIgnoreCase("midiKeyboard"))
+		layoutComps[i]->grabKeyboardFocus();
+
 }
 //==============================================================================
 void CabbagePluginAudioProcessorEditor::insertCabbageText(String text)
@@ -284,7 +289,13 @@ if(layoutEditor)layoutEditor->setBounds(0, 0, this->getWidth(), this->getHeight(
 //==============================================================================
 void CabbagePluginAudioProcessorEditor::paint (Graphics& g)
 {
-	
+	for(int i=0;i<getFilter()->getGUILayoutCtrlsSize();i++){
+		if(getFilter()->getGUILayoutCtrls(i).getStringProp("type").equalsIgnoreCase("keyboard")){
+			layoutComps[i]->setWantsKeyboardFocus(true);
+			layoutComps[i]->grabKeyboardFocus();
+			layoutComps[i]->toFront(true);
+		}
+	}
 /*
 
 	this needs attention!!
@@ -341,6 +352,9 @@ for(int i=0;i<getFilter()->getGUILayoutCtrlsSize();i++){
 	else if(getFilter()->getGUILayoutCtrls(i).getStringProp("type")==T("csoundoutput")){
 		InsertCsoundOutput(getFilter()->getGUILayoutCtrls(i));   
 		}
+	else if(getFilter()->getGUILayoutCtrls(i).getStringProp("type")==T("vumeter")){
+		InsertVUMeter(getFilter()->getGUILayoutCtrls(i));   
+		}
 }
 //add interactive controls
 for(int i=0;i<getFilter()->getGUICtrlsSize();i++){
@@ -362,6 +376,9 @@ for(int i=0;i<getFilter()->getGUICtrlsSize();i++){
 		InsertXYPad(getFilter()->getGUICtrls(i));       //insert xypad	
 		}
 	}
+
+
+
 }
 
 
@@ -489,12 +506,11 @@ try{
 	float top = cAttr.getNumProp("top");
 	float width = cAttr.getNumProp("width");
 	float height = cAttr.getNumProp("height");
-
 	int relY=0,relX=0;
 	for(int y=0;y<layoutComps.size();y++){
 	if(cAttr.getStringProp("reltoplant").length()>0){
 	if(layoutComps[y]->getProperties().getWithDefault(String("plant"), -99).toString().equalsIgnoreCase(cAttr.getStringProp("reltoplant")))
-		{
+	{
 		width = width*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
 		height = height*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
 		top = top*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
@@ -505,13 +521,13 @@ try{
 			{			
 			layoutComps[idx]->setBounds(left, top, width, height);
 			//if component is a member of a plant add it directly to the plant
-			layoutComps[y]->addAndMakeVisible(controls[idx]);
+			layoutComps[y]->addAndMakeVisible(layoutComps[idx]);
 			}
-		}
+	}
 	}
 	else{
-	    controls[idx]->setBounds(left+relX, top+relY, width, height);
-		componentPanel->addAndMakeVisible(controls[idx]);		
+	layoutComps[idx]->setBounds(left+relX, top+relY, width, height);
+	componentPanel->addAndMakeVisible(layoutComps[idx]);
 	}
 	}
 
@@ -569,15 +585,22 @@ try{
 		formPic = "";
 
 	this->resized();
+
+	//add a dummy control to our layoutComps vector so that our filters layout vector 
+	//is the same size as our editors one. 
+	layoutComps.add(new Component());
 }
 catch(...){
     Logger::writeToLog(T("Syntax error: 'form..."));
     }
+	
+
+
+
 }
 
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-//	MIDI keyboard, I've this listed as non-interactive
-// as it only sends MIDI, it doesn't communicate over the software bus
+//	Csound output widget. 
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 void CabbagePluginAudioProcessorEditor::InsertCsoundOutput(CabbageGUIClass cAttr)
 {
@@ -629,6 +652,61 @@ catch(...){
 }
 
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//	VU widget. 
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+void CabbagePluginAudioProcessorEditor::InsertVUMeter(CabbageGUIClass cAttr)
+{
+try{
+	float left = cAttr.getNumProp("left");
+	float top = cAttr.getNumProp("top");
+	float width = cAttr.getNumProp("width");
+	float height = cAttr.getNumProp("height");
+
+	float noOfMeters = cAttr.getNumProp("chans");
+
+	layoutComps.add(new CabbageVUMeter(cAttr.getStringProp("name"), 
+										 cAttr.getStringProp("text"),
+										 cAttr.getStringProp("caption"),
+										 noOfMeters,
+										 width,
+										 height));	
+	int idx = layoutComps.size()-1;
+
+	//check to see if widgets is anchored
+	//if it is offset it's position accordingly. 
+	int relY=0,relX=0;
+	for(int y=0;y<layoutComps.size();y++){
+	if(cAttr.getStringProp("reltoplant").length()>0){
+	if(layoutComps[y]->getProperties().getWithDefault(String("plant"), -99).toString().equalsIgnoreCase(cAttr.getStringProp("reltoplant")))
+	{
+		width = width*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
+		height = height*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
+		top = top*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
+		left = left*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
+
+		if(layoutComps[y]->getName().containsIgnoreCase("groupbox")||
+			layoutComps[y]->getName().containsIgnoreCase("image"))
+			{			
+			layoutComps[idx]->setBounds(left, top, width, height);
+			//if component is a member of a plant add it directly to the plant
+			layoutComps[y]->addAndMakeVisible(layoutComps[idx]);
+			}
+	}
+	}
+	else{
+	((CabbageVUMeter*)layoutComps[idx])->setBounds(left+relX, top+relY, width, height);
+	componentPanel->addAndMakeVisible(layoutComps[idx]);
+	}
+	}
+	layoutComps[idx]->setName("vumeter");
+	layoutComps[idx]->getProperties().set(String("plant"), var(cAttr.getStringProp("plant")));
+
+}
+catch(...){
+    Logger::writeToLog(T("Syntax error: 'vu meter..."));
+    }
+}
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //	MIDI keyboard, I've this listed as non-interactive
 // as it only sends MIDI, it doesn't communicate over the software bus
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -673,12 +751,16 @@ try{
 	}
 
 	layoutComps[idx]->getProperties().set(String("plant"), var(cAttr.getStringProp("plant")));
-
+	layoutComps[idx]->setWantsKeyboardFocus(true);
+	layoutComps[idx]->setAlwaysOnTop(true);
+	layoutComps[idx]->setExplicitFocusOrder(100);
+	layoutComps[idx]->setName("midiKeyboard");
 }
 catch(...){
     Logger::writeToLog(T("Syntax error: 'keyboard..."));
     }
 }
+
 //=======================================================================================
 //	interactive components - 'insert' methods followed by event methods
 //=======================================================================================
@@ -956,7 +1038,7 @@ if(!getFilter()->isGuiEnabled()){
 					button->setToggleState(false, false);
 					//Logger::writeToLog("pressed");
 				}
-				getFilter()->getCsound()->SetChannel(getFilter()->getGUICtrls(i).getStringProp("channel").toUTF8(), button->getToggleState());
+				getFilter()->getCsound()->SetChannel(getFilter()->getGUICtrls(i).getStringProp("channel").toUTF8(), button->getToggleStateValue().getValue());
 				getFilter()->setParameterNotifyingHost(i, button->getToggleStateValue().getValue());
      			}
  			}
@@ -1150,6 +1232,7 @@ try{
 	float valueY = cabbageABS(min-cAttr.getNumProp("valueY"))/cabbageABS(min-max);
 	//Logger::writeToLog(T("Y:")+String(valueY));
 	((CabbageXYController*)controls[idx])->xypad->setBallXY(valueX, valueY, true);
+	controls[idx]->setWantsKeyboardFocus(false);
 	((CabbageXYController*)controls[idx])->xypad->addActionListener(this);
 	if(!cAttr.getStringProp("name").containsIgnoreCase("dummy"))
 	actionListenerCallback(cAttr.getStringProp("name"));
@@ -1176,7 +1259,7 @@ for(int i=0;i<(int)getFilter()->getGUICtrlsSize();i++)//find correct control fro
 			getFilter()->getCsound()->SetChannel(getFilter()->getGUICtrls(i).getStringProp("xChannel").toUTF8(), ((CabbageXYController*)controls[i])->xypad->getBallX());
 			getFilter()->getCsound()->SetChannel(getFilter()->getGUICtrls(i).getStringProp("yChannel").toUTF8(), ((CabbageXYController*)controls[i])->xypad->getBallY());
 			}
-#ifndef Cabbage_Build_Standalone
+#ifndef Cabbage_Build_Standalone 
             if(getFilter()->getGUICtrls(i).getStringProp("xyChannel").equalsIgnoreCase("X")){
 						//normalising values to host 
 						float min = getFilter()->getGUICtrls(i).getNumProp("min");
@@ -1274,8 +1357,8 @@ for(int i=0;i<(int)getFilter()->getGUICtrlsSize();i++){
 
 	else if(getFilter()->getGUICtrls(i).getStringProp("type")==T("checkbox")){
 	if(controls[i]){
-			((CabbageCheckbox*)controls[i])->button->setToggleState((bool)inValue, false);
-			getFilter()->getCsound()->SetChannel(getFilter()->getGUICtrls(i).getStringProp("channel").toUTF8(), inValue);
+	//		((CabbageCheckbox*)controls[i])->button->setToggleState((bool)inValue, false);
+	//		getFilter()->getCsound()->SetChannel(getFilter()->getGUICtrls(i).getStringProp("channel").toUTF8(), inValue);
 			}
 		}
 }
@@ -1304,11 +1387,23 @@ for(int i=0;i<(int)getFilter()->getGUILayoutCtrlsSize();i++){
 	}
 }
 #endif
-for(int i=0;i<layoutComps.size();i++){
-	if(layoutComps[i]->getName().containsIgnoreCase("csoundoutput")){
+  
+for(int i=0;i<getFilter()->getGUILayoutCtrlsSize();i++){
+	//String test = getFilter()->getGUILayoutCtrls(i).getStringProp("type");
+	//Logger::writeToLog(test);
+	if(getFilter()->getGUILayoutCtrls(i).getStringProp("type").containsIgnoreCase("csoundoutput")){
 		((CabbageMessageConsole*)layoutComps[i])->editor->setText(getFilter()->getCsoundOutput());
 		((CabbageMessageConsole*)layoutComps[i])->editor->setCaretPosition(getFilter()->getCsoundOutput().length());
 	}
+	else if(getFilter()->getGUILayoutCtrls(i).getStringProp("type").containsIgnoreCase("vumeter")){
+		//Logger::writeToLog(layoutComps[i]->getName());
+		for(int y=0;y<((CabbageVUMeter*)layoutComps[i])->getNoMeters();y++){
+		//String chann = getFilter()->getGUILayoutCtrls(i).getStringProp("channel", y);
+		float val = getFilter()->getCsound()->GetChannel(getFilter()->getGUILayoutCtrls(i).getStringProp("channel", y).toUTF8());
+		((CabbageVUMeter*)layoutComps[i])->vuMeter->setVULevel(y, .5);
+		}
+	}
+	
 }
 
 

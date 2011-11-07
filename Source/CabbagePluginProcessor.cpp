@@ -48,8 +48,10 @@ csound->PreCompile();
 csound->SetHostData(this);
 //for host midi to get sent to Csound, don't need this for standalone
 //but might use it in the future foir midi mapping to controls
-csound->SetExternalMidiInOpenCallback(OpenMidiDevice);
+csound->SetExternalMidiInOpenCallback(OpenMidiInputDevice);
 csound->SetExternalMidiReadCallback(ReadMidiData); 
+//csound->SetExternalMidiOutOpenCallback(OpenMidiOutputDevice);
+//csound->SetExternalMidiWriteCallback(WriteMidiData);
 csoundChanList = NULL;
 numCsoundChannels = 0;
 csndIndex = 32;
@@ -108,8 +110,12 @@ csound->PreCompile();
 csound->SetHostData(this);
 //for host midi to get sent to Csound, don't need this for standalone
 //but might use it in the future foir midi mapping to controls
-csound->SetExternalMidiInOpenCallback(OpenMidiDevice);
+csound->SetExternalMidiInOpenCallback(OpenMidiInputDevice);
 csound->SetExternalMidiReadCallback(ReadMidiData); 
+csound->SetExternalMidiOutOpenCallback(OpenMidiOutputDevice);
+csound->SetExternalMidiWriteCallback(WriteMidiData);
+
+
 csoundChanList = NULL;
 numCsoundChannels = 0;
 csndIndex = 32;
@@ -205,6 +211,7 @@ void CabbagePluginAudioProcessor::createGUI(String source)
 								||tokes.getReference(0).equalsIgnoreCase(T("hosttime"))
 								||tokes.getReference(0).equalsIgnoreCase(T("hostplaying"))
 								||tokes.getReference(0).equalsIgnoreCase(T("hostppqpos"))
+								||tokes.getReference(0).equalsIgnoreCase(T("vumeter"))
 								||tokes.getReference(0).equalsIgnoreCase(T("hostrecording"))
 								||tokes.getReference(0).equalsIgnoreCase(T("groupbox"))){
 							CabbageGUIClass cAttr(csdText[i].trimEnd(), guiID);
@@ -283,6 +290,8 @@ void CabbagePluginAudioProcessor::createGUI(String source)
 
 			for(int i=0;i<guiCtrls.size();i++)
 				Logger::writeToLog(getGUICtrls(i).getStringProp("type"));
+			for(int i=0;i<guiLayoutCtrls.size();i++)
+				Logger::writeToLog(getGUILayoutCtrls(i).getStringProp("type"));
 }
 
 
@@ -292,7 +301,7 @@ void CabbagePluginAudioProcessor::createGUI(String source)
 #ifndef Cabbage_No_Csound
 void CabbagePluginAudioProcessor::messageCallback(CSOUND* csound, int /*attr*/,  const char* fmt, va_list args)
 {
-#ifdef Cabbage_Named_Pipe
+
   CabbagePluginAudioProcessor* ud = (CabbagePluginAudioProcessor *) csoundGetHostData(csound);
   char msg[MAX_BUFFER_SIZE];
   vsnprintf(msg, MAX_BUFFER_SIZE, fmt, args);
@@ -300,11 +309,12 @@ void CabbagePluginAudioProcessor::messageCallback(CSOUND* csound, int /*attr*/, 
   ud->debugMessage += String(msg); //We have to append the incoming msg
   ud->csoundOutput += ud->debugMessage;
   ud->debugMessageArray.add(ud->debugMessage);
+#ifdef Cabbage_Named_Pipe
   ud->sendChangeMessage();
-  ud->debugMessage = "";
-  ud = nullptr;
 // MOD - End
 #endif
+  ud->debugMessage = "";
+  ud = nullptr;
 }
 #endif
 
@@ -347,6 +357,8 @@ float CabbagePluginAudioProcessor::getParameter (int index)
 #ifndef Cabbage_No_Csound
 if(index<(int)guiCtrls.size()){//make sure index isn't out of range
         MYFLT* val=0;
+		//String test = guiCtrls.getReference(index).getStringProp("channel");
+		//Logger::writeToLog(("channel:")+test);
 		csoundGetChannelPtr(getCsoundStruct(), &val, guiCtrls.getReference(index).getStringProp("channel").toUTF8(),
                                 CSOUND_CONTROL_CHANNEL | CSOUND_OUTPUT_CHANNEL);
 		//Logger::writeToLog(guiCtrls.getReference(index).getStringProp("channel"));
@@ -378,10 +390,10 @@ if(index<(int)guiCtrls.size())//make sure index isn't out of range
 		min = getGUICtrls(index).getNumProp("min");
 		guiCtrls.getReference(index).setNumProp("value", (newValue*range)+min);
 		//Logger::writeToLog(T("setParamters():")+String((newValue*range)+min));
-		csound->SetChannel(guiCtrls.getReference(index).getStringProp("channel").toUTF8(), guiCtrls.getReference(index).getNumProp("value"));
+		csound->SetChannel(guiCtrls.getReference(index).getStringProp("channel").toUTF8(),  (newValue*range)+min);
 #else 
         guiCtrls.getReference(index).setNumProp("value", newValue);
-        csound->SetChannel(guiCtrls.getReference(index).getStringProp("channel").toUTF8(), guiCtrls.getReference(index).getNumProp("value"));		
+        csound->SetChannel(guiCtrls.getReference(index).getStringProp("channel").toUTF8(), newValue);		
 #endif
      }
    }
@@ -525,7 +537,7 @@ float* audioBuffer;
 if(csCompileResult==0){
 keyboardState.processNextMidiBuffer (midiMessages, 0, buffer.getNumSamples(), true);
 midiBuffer = midiMessages;
-ccBuffer = midiMessages;
+//ccBuffer = midiMessages;
 
                for(int i=0;i<buffer.getNumSamples();i++, csndIndex++)
 				{
@@ -574,17 +586,18 @@ else{
 // MIDI functions
 //==============================================================================
 #ifndef Cabbage_No_Csound
-int CabbagePluginAudioProcessor::OpenMidiDevice(CSOUND * csound, void **userData, const char* /*devName*/)
+int CabbagePluginAudioProcessor::OpenMidiInputDevice(CSOUND * csound, void **userData, const char* /*devName*/)
 {
 *userData = csoundGetHostData(csound); 
 if(!userData)
-cout << "\n\ncan't open midi\n\n";
+cout << "\n\ncan't open midi in\n\n";
 return 0;	
 }
 
 int CabbagePluginAudioProcessor::ReadMidiData(CSOUND* /*csound*/, void *userData,
 unsigned char *mbuf, int nbytes)
 {
+	
 CabbagePluginAudioProcessor *midiData = (CabbagePluginAudioProcessor *)userData;
 if(!userData){
 	cout << "\n\nInvalid";
@@ -623,7 +636,44 @@ if(!midiData->midiBuffer.isEmpty() && cnt <= (nbytes - 3)){
    }
    midiData->midiBuffer.clear();
 }
+
   return cnt;
+}
+
+
+int CabbagePluginAudioProcessor::OpenMidiOutputDevice(CSOUND * csound, void **userData, const char* /*devName*/)
+{
+*userData = csoundGetHostData(csound); 
+if(!userData)
+cout << "\n\ncan't open midi out\n\n";
+return 0;	
+}
+
+int CabbagePluginAudioProcessor::WriteMidiData(CSOUND* /*csound*/, void *userData,
+const unsigned char *mbuf, int nbytes)
+{
+	/*
+CabbagePluginAudioProcessor *midiData = (CabbagePluginAudioProcessor *)userData;
+if(!userData){
+	cout << "\n\nInvalid";
+	return 0;
+	}
+midiData->midiBuffer->clear();
+int cnt=0;
+	*mbuf++;
+	*mbuf++;
+	MidiMessage message(0xf4, 0, 0, 0);
+	message.setChannel(1);
+	message.setNoteNumber(60);
+	message.setVelocity(127);
+	cnt += 3;
+	
+	midiData->midiBuffer->addEvent(message, 0);
+	midiData->keyboardState.processNextMidiEvent(message);
+
+  return cnt;
+  */
+	return 0;
 }
 #endif
 //==============================================================================

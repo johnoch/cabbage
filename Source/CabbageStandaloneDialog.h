@@ -23,8 +23,7 @@
 
 #include "CabbageUtils.h"
 
-
-
+extern ApplicationProperties* appProperties;
 class CabbagePluginAudioProcessor;
 
 //==============================================================================

@@ -241,8 +241,10 @@ private:
 								const char *fmt, va_list args);  //message callback function
 	int pos;
 	//Csound API functions for deailing with midi input
-	static int OpenMidiDevice(CSOUND * csnd, void **userData, const char *devName);
+	static int OpenMidiInputDevice(CSOUND * csnd, void **userData, const char *devName);
+	static int OpenMidiOutputDevice(CSOUND * csnd, void **userData, const char *devName);
 	static int ReadMidiData(CSOUND *csound, void *userData, unsigned char *mbuf, int nbytes);
+	static int WriteMidiData(CSOUND *csound, void *userData, const unsigned char *mbuf, int nbytes);
 #endif
 	StringArray debugInfo;
 	Array<CabbageGUIClass, CriticalSection> guiLayoutCtrls;

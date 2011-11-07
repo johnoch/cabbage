@@ -42,6 +42,7 @@ class CabbageGUIClass : public CabbageUtils
         StringArray items;
         StringArray onoffcaptions;
 		StringArray key;
+		StringArray channels;
         String channel, name, sizeText, posText, boundsText, text, type, colour, plant, reltoplant, textcolour, bounds, range,
         fontcolour, outline, fill, shape, beveltype, caption, kind, topitem, yChannel, xChannel,
         exit, csstdout, cssetup, file, debugMessage, xyChannel;
@@ -55,6 +56,7 @@ public:
 	void setNumProp(String prop, float val);
 	void setStringProp(String prop, String val);
 	String getStringProp(String prop);
+	String getStringProp(String prop, int index);
 	String getPropsString();
 
 
@@ -84,6 +86,10 @@ public:
 
 	inline int getItemsSize(){
 		return items.size();
+	}
+
+	inline String getChannels(int index){
+		return channels[index];
 	}
 
 	inline int getKeySize(){

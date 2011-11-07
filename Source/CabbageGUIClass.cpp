@@ -109,6 +109,7 @@ CabbageGUIClass::CabbageGUIClass(String compStr, int ID):
           name = "checkbox";
 		  caption = "";
 		  items.add(T(""));
+		  sliderRange = 1;
 		  min = 0;
 		  max = 1;
 		  type = name;
@@ -179,6 +180,16 @@ CabbageGUIClass::CabbageGUIClass(String compStr, int ID):
           height = 200;
           colour = "";
           name = "csoundoutput";
+		  type = name;
+          name.append(String(ID), 1024);
+	}
+    else if(compStr.indexOfIgnoreCase("vumeter ")!=-1){
+          top = 10;
+          left = 10;
+          width = 400;
+          height = 200;
+          colour = "";
+          name = "vumeter";
 		  type = name;
           name.append(String(ID), 1024);
 	}
@@ -332,14 +343,18 @@ int CabbageGUIClass::parse(String str)
 			else if(identArray.getReference(indx).equalsIgnoreCase("caption(")) caption = strTokens[0].trim();
             else if(identArray.getReference(indx).equalsIgnoreCase("channel(")||
 				identArray.getReference(indx).equalsIgnoreCase("chan(")){
+					channel = strTokens[0].trim();
 					if(str.containsIgnoreCase("xypad")){
 					xChannel = strTokens[0].trim();
 					yChannel = strTokens[1].trim();
 					}
-					else
-					channel = strTokens[0].trim();
+					else if(str.containsIgnoreCase("vumeter")){
+						channels.clear();
+						for(int u=0;u<strTokens.size();u++)
+							channels.add(strTokens[u].trim());
 					//assign X and Y channels for xypad
-
+					}
+					else channels.add(strTokens[0].trim());
 			}
             else if(identArray.getReference(indx).equalsIgnoreCase(" colour(")||
 				identArray.getReference(indx).equalsIgnoreCase(",colour(")) colour = strTokens[0].trim();
@@ -506,6 +521,8 @@ float CabbageGUIClass::getNumProp(String prop)
 			return height;
 		else if(prop.equalsIgnoreCase(T("top")))
 			return top;
+		else if(prop.equalsIgnoreCase(T("chans")))
+			return channels.size();
 		else if(prop.equalsIgnoreCase(T("left")))
 			return left;
 		else if(prop.equalsIgnoreCase(T("min")))
@@ -620,6 +637,13 @@ String CabbageGUIClass::getPropsString()
 				<< T("), range(\"") << String(min) << T(", ") << String(max) << T(", ") << String(value) << T("\")");
 }
 
+String CabbageGUIClass::getStringProp(String prop, int index)
+{
+		if(prop.equalsIgnoreCase(T("channel")))
+			return channels[index].trim();
+		else 
+			return "";
+}
 String CabbageGUIClass::getStringProp(String prop)
 {
 		if(prop.equalsIgnoreCase(T("channel")))

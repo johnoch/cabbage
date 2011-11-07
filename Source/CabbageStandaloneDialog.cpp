@@ -26,6 +26,7 @@
 //  and make it create an instance of the filter subclass that you're building.
 extern CabbagePluginAudioProcessor* JUCE_CALLTYPE createCabbagePluginFilter(String inputfile, bool guiOnOff);
 
+
 //==============================================================================
 StandaloneFilterWindow::StandaloneFilterWindow (const String& title,
                                                 const Colour& backgroundColour)
@@ -334,7 +335,7 @@ PropertySet* StandaloneFilterWindow::getGlobalSettings()
        ApplicationProperties::setStorageParameters() in your plugin's constructor to
        tell it where to save the file.
     */
-    return ApplicationProperties::getInstance()->getUserSettings();
+	return appProperties->getUserSettings();
 }
 
 void StandaloneFilterWindow::showAudioSettingsDialog()

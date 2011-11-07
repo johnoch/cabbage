@@ -58,6 +58,7 @@ private:
 	void InsertSlider(CabbageGUIClass cAttr); 
     void sliderValueChanged (Slider*);
 	void InsertButton(CabbageGUIClass cAttr);
+	void InsertVUMeter(CabbageGUIClass cAttr);
 	void InsertCheckBox(CabbageGUIClass cAttr);
 	void InsertCsoundOutput(CabbageGUIClass cAttr);
 	void InsertMIDIKeyboard(CabbageGUIClass cAttr);
@@ -71,6 +72,8 @@ private:
 	void insertCabbageText(String text);
 	int lineNumber;
 	void actionListenerCallback (const String& message);
+
+
 	//CabbagePluginAudioProcessor* filter;
 	CabbagePluginAudioProcessor* getFilter() const
     {

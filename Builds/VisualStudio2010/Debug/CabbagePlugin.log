@@ -1,9 +1,16 @@
-﻿Build started 22/10/2011 18:32:14.
+﻿Build started 30/10/2011 18:48:10.
      1>Project "C:\MyDocuments\CabbageSVN\Builds\VisualStudio2010\CabbagePlugin.vcxproj" on node 2 (build target(s)).
      1>InitializeBuildStatus:
          Touching ".\Debug\CabbagePlugin.unsuccessfulbuild".
        ClCompile:
-         All outputs are up-to-date.
+         c:\Program Files\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /IC:\MyDocuments\SourceCode\Csound5\csound5\H /I"C:\MyDocuments\My Dropbox\vstsdk2.4" /I..\..\JuceLibraryCode /ZI /nologo /W4 /WX- /Od /Oy- /D WIN32 /D _WINDOWS /D MSVC /D DEBUG /D _DEBUG /D JUCER_VS2008_78A5006=1 /D USE_DOUBLE=0 /D useDouble=0 /D _WINDLL /D _MBCS /Gm- /EHsc /MTd /GS /fp:precise /Zc:wchar_t /Zc:forScope /GR /Fo".\Debug\\" /Fd".\Debug\vc100.pdb" /Gd /TP /analyze- /errorReport:prompt ..\..\Source\CabbagePluginProcessor.cpp
+         CabbagePluginProcessor.cpp
+     1>c:\mydocuments\cabbagesvn\source\cabbageplugineditor.h(43): warning C4584: 'CabbagePluginAudioProcessorEditor' : base-class 'juce::MouseListener' is already a base-class of 'juce::AudioProcessorEditor'
+                 c:\mydocuments\jucetip\juce\juce_amalgamated.h(23537) : see declaration of 'juce::MouseListener'
+                 c:\mydocuments\jucetip\juce\juce_amalgamated.h(45467) : see declaration of 'juce::AudioProcessorEditor'
+     1>c:\mydocuments\cabbagesvn\source\cabbagepluginprocessor.cpp(307): warning C4996: 'vsnprintf': This function or variable may be unsafe. Consider using vsnprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 c:\program files\microsoft visual studio 10.0\vc\include\stdio.h(354) : see declaration of 'vsnprintf'
+     1>c:\mydocuments\cabbagesvn\source\cabbagepluginprocessor.cpp(382): warning C4101: 'max' : unreferenced local variable
        Link:
          c:\Program Files\Microsoft Visual Studio 10.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:".\Debug\CabbagePlugin.dll" /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /NODEFAULTLIB:libcmt.lib /NODEFAULTLIB:msvcrt.lib /MANIFEST /ManifestFile:".\Debug\CabbagePlugin.dll.intermediate.manifest" /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /DEBUG /PDB:".\Debug\CabbagePlugin.pdb" /SUBSYSTEM:WINDOWS /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:".\Debug\CabbagePlugin.lib" /MACHINE:X86 /DLL .\Debug\juce_VST_Wrapper.obj
          .\Debug\JuceLibraryCode1.obj
@@ -15,6 +22,7 @@
          .\Debug\CabbagePluginEditor.obj
          .\Debug\CabbagePluginProcessor.obj
          .\Debug\imageBinaries.obj "C:\MyDocuments\SourceCode\Csound5\csound5\csound32.lib" 
+         LINK : .\Debug\CabbagePlugin.dll not found or not built by the last incremental link; performing full link
             Creating library .\Debug\CabbagePlugin.lib and object .\Debug\CabbagePlugin.exp
          CabbagePlugin.vcxproj -> C:\MyDocuments\CabbageSVN\Builds\VisualStudio2010\.\Debug\CabbagePlugin.dll
        Manifest:
@@ -26,4 +34,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:08.96
+Time Elapsed 00:00:07.26

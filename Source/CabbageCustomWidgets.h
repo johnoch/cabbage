@@ -147,6 +147,7 @@ CabbageSlider(String name, String caption, String kind, String colour): plantX(-
 	if(colour.length()>0){
 	slider->setColour(0x1001500, Colours::findColourForName(colour, Colours::whitesmoke));
 	}
+	this->setWantsKeyboardFocus(false);
 }//--- end of constructor ----
 
 //---------------------------------------------
@@ -159,6 +160,7 @@ void resized()
 {
 groupbox->setBounds(0, 0, getWidth(), getHeight()); 
 slider->setBounds(offX, offY, getWidth()+offWidth, getHeight()+offHeight); 
+this->setWantsKeyboardFocus(false);
 }
 
 JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CabbageSlider);
@@ -206,6 +208,7 @@ CabbageCheckbox(String name, String caption, String buttonText, String colour)
 	button->setColour(ToggleButton::textColourId,
 			Colours::findColourForName(colour, Colours::grey));
 	button->setButtonText(buttonText);
+	this->setWantsKeyboardFocus(false);
 }
 //---------------------------------------------
 ~CabbageCheckbox(){
@@ -217,6 +220,7 @@ void resized()
 {
 groupbox->setBounds(0, 0, getWidth(), getHeight()); 
 button->setBounds(offX, offY, getWidth()+offWidth, getHeight()+offHeight); 
+this->setWantsKeyboardFocus(false);
 }
 
 JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CabbageCheckbox);
@@ -267,6 +271,7 @@ CabbageComboBox(String name, String caption, String text, String colour)
 	combo->setEditableText (false);
     combo->setJustificationType (Justification::centredLeft);
 	combo->setTextWhenNothingSelected(text);
+	this->setWantsKeyboardFocus(false);
 
 }
 //---------------------------------------------
@@ -279,6 +284,7 @@ void resized()
 {
 groupbox->setBounds(0, 0, getWidth(), getHeight()); 
 combo->setBounds(offX, offY, getWidth()+offWidth, getHeight()+offHeight); 
+this->setWantsKeyboardFocus(false);
 }
 
 //JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CabbageComboBox);
@@ -296,6 +302,7 @@ public:
 		setName(name);
 		toBack();
 		img = ImageCache::getFromFile (File (file));
+		this->setWantsKeyboardFocus(false);
 	}
 	~CabbageImage(){
 	}
@@ -333,6 +340,7 @@ private:
 		}
 
 	}
+
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CabbageImage);
 };
 
@@ -356,6 +364,7 @@ CabbageGroupbox(String name, String caption, String text, String colour):GroupCo
                 Colours::findColourForName(colour, Colours::black));
         }
         this->setText(text);
+		this->setWantsKeyboardFocus(false);
 
 }
 //---------------------------------------------
@@ -373,7 +382,7 @@ void addComponent(Component* comp)
 //---------------------------------------------
 void resized()
 {
-
+this->setWantsKeyboardFocus(false);
 }
 
 JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CabbageGroupbox);
@@ -399,6 +408,7 @@ public:
 		for (int i=0; i<3; i++) {
 			textEditors.add(new TextEditor());
 			textEditors[i]->setReadOnly (true);
+			textEditors[i]->setWantsKeyboardFocus(false);
 			textEditors[i]->setColour(0x1000201, Colours::lime);	//text colour
 			addAndMakeVisible(textEditors[i]);
 		}
@@ -408,6 +418,7 @@ public:
 		autoCombo->addItem (T("Off"), 1);
 		autoCombo->addItem (T("On"), 2);
 		autoCombo->setSelectedId(1);
+		autoCombo->setWantsKeyboardFocus(false);
 		autoCombo->setColour (0x1000a00, Colours::whitesmoke); //text colour
 		addAndMakeVisible (autoCombo);
 
@@ -428,6 +439,7 @@ public:
 		is used instead. */
 		decimalPlaces = numDecPlaces;
 		if (decimalPlaces == 0) decimalPlaces = 1;
+		this->setWantsKeyboardFocus(false);
 	}
 
 
@@ -471,6 +483,7 @@ public:
 		x = availableWidth / 2;
 		y = availableHeight / 2;
 		writeText (x, y);
+		this->setWantsKeyboardFocus(false);
 	}
 
 
@@ -550,6 +563,7 @@ public:
 	//=========== Paint function ============================================================
 	void paint (Graphics& g)
 	{
+		this->setWantsKeyboardFocus(false);
 		//----- For drawing the border 
 		g.setColour (Colours::black);
 		g.setOpacity (0.4f);
@@ -597,6 +611,7 @@ public:
 			g.fillEllipse (x, y, ballSize, ballSize);
 			break;
 		}
+		this->setWantsKeyboardFocus(false);
 	}
 
 
@@ -766,15 +781,15 @@ public:
 		if ((y < borderTop) || (y > (borderBottom - ballSize))) {
 			incrementY *= -1;
 			y += incrementY;
-		}
-
-		repaint();
+		}	
 
 		//----- Writing output values
 		writeText (x, y);
-		sendActionMessage(name);
+		repaint();
+	//	sendActionMessage(name);
+		
 	}
-
+	  
 
 	//=========== Checking to make sure point is inside boundary ============================
 	void checkBoundary (float &x, float&y)
@@ -870,7 +885,9 @@ CabbageXYController(String name, String text, String caption, int minX, int maxX
 	offX=offY=offWidth=offHeight=0;
 	
 	groupbox = new GroupComponent(String("groupbox_")+name);
+	groupbox->setWantsKeyboardFocus(false);
 	xypad = new XYController(name, text, minX, maxX, minY, maxY, 2);
+	xypad->setWantsKeyboardFocus(false);
 	addAndMakeVisible(xypad);
 	addAndMakeVisible(groupbox);
 
@@ -889,7 +906,7 @@ CabbageXYController(String name, String text, String caption, int minX, int maxX
 		groupbox->setVisible(true);
 		groupbox->setText(caption);
 	}
-
+	this->setWantsKeyboardFocus(false);
 }
 //---------------------------------------------
 ~CabbageXYController(){
@@ -901,9 +918,10 @@ void resized()
 {
 groupbox->setBounds(0, 0, getWidth(), getHeight()); 
 xypad->setBounds(offX, offY, getWidth()+offWidth, getHeight()+offHeight); 
+this->setWantsKeyboardFocus(false);
 }
 
-//JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CabbageComboBox);
+JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CabbageXYController);
 };
 
 
@@ -935,6 +953,7 @@ CabbageMessageConsole(String name, String caption, String text):
 	editor->setMultiLine(true);
 	editor->setScrollbarsShown(true);
 	editor->setReturnKeyStartsNewLine(true);
+	editor->setReadOnly(true);
 	
 	editor->setColour(TextEditor::ColourIds::backgroundColourId, Colours::black);
 	editor->setColour(TextEditor::ColourIds::textColourId, Colours::green);
@@ -947,7 +966,7 @@ CabbageMessageConsole(String name, String caption, String text):
 		groupbox->setVisible(true);
 		groupbox->setText(caption);
 	}
-
+	this->setWantsKeyboardFocus(false);
 }
 //---------------------------------------------
 ~CabbageMessageConsole(){
@@ -976,9 +995,319 @@ void resized()
 {
 groupbox->setBounds(0, 0, getWidth(), getHeight()); 
 editor->setBounds(offX+5, offY+25, (getWidth()+offWidth)-10, (getHeight()+offHeight)-45); 
+this->setWantsKeyboardFocus(false);
 }
 
 JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CabbageMessageConsole);
+};
+
+//==============================================================================
+// custom VUComponent
+//==============================================================================
+class VUComponent	:	public Component
+{
+public:
+	//=================================================================================
+	//		 Nested class VU Meter
+	//=================================================================================
+	class VUMeter	:	public Component
+	{
+	public:
+		VUMeter()
+		{
+			clipMarker = 0;	//0 is off, 1 is on
+			this->setWantsKeyboardFocus(false);
+		}
+
+		~VUMeter(){}
+
+		//========= Paint Function ===================================================
+		void paint (Graphics &g)
+		{
+			//----- Painting the background of the component
+			g.setColour (Colours::black);
+			g.setOpacity (0.4);
+			g.fillRoundedRectangle (getWidth()*0.1, 0, getWidth()*.8, getHeight(), getWidth()/5);
+
+			//----- Declaring dimensional properties
+			int top = 5;
+			int clipZone = top + 3;								//Leaving a gap for the clip marker at the top
+			int bottom = getHeight() - 5;
+			int availableWidth = getWidth()/5;					//width of the actual vu is 1 fifth of total width
+			int availableHeight = bottom - clipZone;			//height available to the VU part
+			int xOffset = getWidth()/5;							// The vu be drawn in 1 fifth of totalWidth from left
+			
+			// 1-level inverts the y axis. It also has to be incremented by the clipZone height and top border
+			int yOffset = ((1 - level) * availableHeight) + clipZone;
+
+			/*----- Declarations for each db value. The range will go logarithmically from -infinity to +3db. Therefore 
+			the input level (between 0 and 1) will have to be divided up accordingly. */
+			float plus3DB = 1;
+			float zeroDB = 0.9;
+			float minus3DB = 0.71 * zeroDB; //0.639
+			float minus10DB = 0.3162 * zeroDB; //0.285
+			float minus20DB = 0.1 * zeroDB; //0.09
+			float minus40DB = 0.01 * zeroDB; //0.009
+
+			//----- Setting the location of the db markers
+			int plus3Mark = bottom - availableHeight;
+			int zeroMark = bottom - (0.9 * availableHeight);
+			int minus3Mark = bottom - (0.8 * availableHeight);
+			int minus10Mark = bottom - (0.5 * availableHeight);
+			int minus20Mark = bottom - (0.25 * availableHeight);
+			int minus40Mark = bottom - (0.1 * availableHeight);
+
+			//----- Colour fills
+			Colour clClip = (Colours::red);		//red for clip marker
+			/*Colour clRed = (Colours::orangered);
+			Colour clOrange = (Colours::orange);
+			Colour clYellow = (Colours::yellow);
+			Colour clGreen = (Colours::lime);*/
+			ColourGradient clRed = ColourGradient (Colours::orangered, 0, clipZone, Colours::orange, 0, zeroMark, false);
+			ColourGradient clOrange = ColourGradient (Colours::orange, 0, zeroMark, Colours::yellow, 0, minus3Mark, false);
+			ColourGradient clYellow = ColourGradient (Colours::yellow, 0, minus3Mark, Colours::lime, 0, minus10Mark, false);
+			ColourGradient clGreen = ColourGradient (Colours::lime, 0, minus10Mark, Colours::darkgreen, 0, bottom, false);
+
+			//----- Painting the VU background before any levels are painted.
+			g.setGradientFill (clGreen);
+			g.setOpacity (0.1);
+			g.fillRect (xOffset, minus10Mark, availableWidth, bottom-minus10Mark);
+			g.setGradientFill (clYellow);
+			g.setOpacity (0.1);
+			g.fillRect (xOffset, minus3Mark, availableWidth, minus10Mark-minus3Mark);
+			g.setGradientFill (clOrange);
+			g.setOpacity (0.1);
+			g.fillRect (xOffset, zeroMark, availableWidth, minus3Mark-zeroMark);
+			g.setGradientFill (clRed);
+			g.setOpacity (0.1);
+			g.fillRect (xOffset, plus3Mark, availableWidth, zeroMark-plus3Mark);
+
+			
+			//----- Painting the db level markers
+			g.setColour (Colours::white);
+			g.setFont (getWidth()*0.3, 0); //Font size is calculated using the total width
+			Justification just (4);			//Centered
+			g.drawText (T("+3"), getWidth()*.4, plus3Mark-5, getWidth()*.4, 10, just, false);
+			g.drawText (T("0"), getWidth()*.4, zeroMark-5, getWidth()*.4, 10, just, false);
+			g.drawText (T("-3"), getWidth()*.4, minus3Mark-5, getWidth()*.4, 10, just, false);
+			g.drawText (T("-10"), getWidth()*.4, minus10Mark-5, getWidth()*.4, 10, just, false);
+			g.drawText (T("-20"), getWidth()*.4, minus20Mark-5, getWidth()*.4, 10, just, false);
+			g.drawText (T("-40"), getWidth()*.4, minus40Mark-5, getWidth()*.4, 10, just, false);
+
+
+			/*----- The following if statements determine which colours should be used for the fill. Each
+			zone itself has to be treated independently to the rest of the level range.*/
+			if ((level >= 0) && (level < minus40DB)){
+				g.setGradientFill (clGreen);
+				g.setOpacity (0.8);
+				yOffset = (bottom - minus40Mark) * (level / minus40DB);
+				g.fillRect (xOffset, bottom-yOffset, availableWidth, yOffset);
+			}
+			//----- If level is between 0.009 and 0.09
+			else if ((level >= minus40DB) && (level < minus20DB)){
+				g.setGradientFill (clGreen);
+				g.setOpacity (0.8);
+				yOffset = (minus40Mark-minus20Mark) * ((level - minus40DB) / (minus20DB - minus40DB));
+				g.fillRect (xOffset, minus40Mark-yOffset, availableWidth, yOffset);
+				g.fillRect (xOffset, minus40Mark, availableWidth, bottom - minus40Mark);
+			}
+			//----- If level is between 0.285 and 0.09
+			else if ((level >= minus20DB) && (level < minus10DB)){
+				g.setGradientFill (clGreen);
+				g.setOpacity (0.8);
+				yOffset = (minus20Mark-minus10Mark) * ((level - minus20DB) / (minus10DB - minus20DB));
+				g.fillRect (xOffset, minus20Mark-yOffset, availableWidth, yOffset);
+				g.fillRect (xOffset, minus20Mark, availableWidth, bottom - minus20Mark);
+			}
+			//----- If level is between 0.285 and 0.639
+			else if ((level >= minus10DB) && (level < minus3DB)){
+				g.setGradientFill (clYellow);
+				g.setOpacity (0.8);
+				yOffset = (minus10Mark-minus3Mark) * ((level - minus10DB) / (minus3DB - minus10DB)); 
+				g.fillRect (xOffset, minus10Mark-yOffset, availableWidth, yOffset);
+				g.setGradientFill (clGreen);
+				g.setOpacity (0.8);
+				g.fillRect (xOffset, minus10Mark, availableWidth, bottom - minus10Mark);
+			}
+			//----- If level is between 0.639 and 0.9
+			else if ((level >= minus3DB) && (level < zeroDB)){
+				g.setGradientFill (clOrange);
+				g.setOpacity (0.8);
+				yOffset = (minus3Mark-zeroMark) * ((level - minus3DB) / (zeroDB - minus3DB));
+				g.fillRect (xOffset, minus3Mark-yOffset, availableWidth, yOffset);
+				g.setGradientFill (clYellow);
+				g.setOpacity (0.8);
+				g.fillRect (xOffset, minus3Mark, availableWidth, minus10Mark - minus3Mark);
+				g.setGradientFill (clGreen);
+				g.setOpacity (0.8);
+				g.fillRect (xOffset, minus10Mark, availableWidth, bottom - minus10Mark);
+			}
+			//----- If level is 0.9 or over
+			else if (level >= zeroDB) {
+				g.setGradientFill (clRed);
+				g.setOpacity (0.8);
+				yOffset = (zeroMark-plus3Mark) * ((level*10)-9);
+				g.fillRect (xOffset, zeroMark-yOffset, availableWidth, yOffset);
+				g.setGradientFill (clOrange);
+				g.setOpacity (0.8);
+				g.fillRect (xOffset, zeroMark, availableWidth, minus3Mark - zeroMark);
+				g.setGradientFill (clYellow);
+				g.setOpacity (0.8);
+				g.fillRect (xOffset, minus3Mark, availableWidth, minus10Mark - minus3Mark);
+				g.setGradientFill (clGreen);
+				g.setOpacity (0.8);
+				g.fillRect (xOffset, minus10Mark, availableWidth, bottom - minus10Mark);
+			}
+
+			//----- To check if clip marker should be displayed
+			switch (clipMarker)
+			{
+			case 0: //if off
+				g.setColour (clClip);
+				g.setOpacity (0.2);
+				g.fillRect (xOffset, top, availableWidth, 2);
+				break;
+			case 1: //if on
+				g.setColour (clClip);
+				g.setOpacity (1);
+				g.fillRect (xOffset, top, availableWidth, 2);
+				break;
+			}
+
+		}
+
+		
+		//========= Set Level ==========================================================
+		void setLevel (float value)
+		{
+			level = value;
+			if (level >= 1) clipMarker = 1;
+			
+			repaint();
+		}
+
+		//======== If mouse if clicked =================================================
+		void mouseDown (const MouseEvent& e)
+		{
+			int x = e.getPosition().getX();
+			int y = e.getPosition().getY();
+
+			/*----- Checking to see if the mouse click is within the correct bounds. 5 is 
+			added to clipZone to offer the user a bigger area */
+			if ((x >= getWidth()/5) && (x <= getWidth()*0.8) &&
+				(y >= 3) && (y <= 11)) { //clipZone lies within this area
+					clipMarker = 0;
+					repaint();
+			}
+
+		}
+
+	private:
+		int widthMeter, heightMeter;
+		float level;
+		int clipMarker;
+
+//		JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (VUMeter);
+
+	};
+	//------------------------------------------------------------
+
+
+	//===== VU Component Constructor ====================================
+	VUComponent (int numberOfMeters, int widthOfMeter, int heightOfMeter)
+	{
+		numMeters = numberOfMeters;
+		widthMeter = widthOfMeter;
+		heightMeter = heightOfMeter;
+
+		for (int i=0; i<numMeters; i++) {
+			meters.add (new VUMeter());
+			meters[i]->setBounds (i*widthMeter, 0, widthMeter, heightMeter);
+			meters[i]->setWantsKeyboardFocus(false);
+			addAndMakeVisible (meters[i]);
+		}
+	}
+
+	//===== Destructor ====================================================
+	~VUComponent()
+	{
+	}
+
+	//===== Set VU Level Function =========================================
+	void setVULevel (int VUIndex, float value)
+	{
+		meters[VUIndex]->setLevel (value);
+	}
+
+private:
+	OwnedArray<VUMeter> meters;
+	int numMeters;
+	int widthMeter, heightMeter;
+
+//	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (VUComponent);
+};
+
+
+//==============================================================================
+// custom CabbageVUMeter
+//==============================================================================
+class CabbageVUMeter : public Component
+{
+//ScopedPointer<LookAndFeel> lookFeel;
+int offX, offY, offWidth, offHeight, numMeters, width, height;
+String name;
+public:
+ScopedPointer<GroupComponent> groupbox;
+ScopedPointer<VUComponent> vuMeter;
+//---- constructor -----
+CabbageVUMeter(String name, String text, String caption, float meters, float width, int height):
+numMeters(meters)
+{
+	setName(name);
+	offX=offY=offWidth=offHeight=0;
+	
+	groupbox = new GroupComponent(String("groupbox_")+name);
+	
+
+	vuMeter = new VUComponent(meters, width/(meters*1.30), height*.92);
+	addAndMakeVisible(vuMeter);
+	addAndMakeVisible(groupbox);
+
+	groupbox->setVisible(false);
+
+	groupbox->setColour(GroupComponent::outlineColourId,
+		Colours::findColourForName("white", Colours::white));
+	groupbox->setColour(GroupComponent::textColourId,
+		Colours::findColourForName("white", Colours::white));
+	
+	if(caption.length()>0){
+		offX=10;
+		offY=15;
+		offWidth=-20;
+		offHeight=-25;
+		groupbox->setVisible(true);
+		groupbox->setText(caption);
+	}
+	this->setWantsKeyboardFocus(false);
+}
+//---------------------------------------------
+~CabbageVUMeter(){
+
+}
+
+int getNoMeters(){
+	return numMeters;
+}
+
+//---------------------------------------------
+void resized()
+{
+groupbox->setBounds(0, 0, getWidth(), getHeight()); 
+vuMeter->setBounds(offX, offY, getWidth()+offWidth, getHeight()+offHeight); 
+this->setWantsKeyboardFocus(false);
+}
+
+JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CabbageVUMeter);
 };
 
 #endif

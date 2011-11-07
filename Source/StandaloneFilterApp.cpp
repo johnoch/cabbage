@@ -1,7 +1,8 @@
 #include "CabbageStandaloneDialog.h"
 
+ApplicationProperties* appProperties = nullptr;
 
-    class CabbageStandalone : public JUCEApplication
+class CabbageStandalone : public JUCEApplication
     {
        public:
           CabbageStandalone()
@@ -10,7 +11,15 @@
 
           void initialise(const String& /*commandLineParameters*/)
           {
-             ApplicationProperties::getInstance()->setStorageParameters (T("Cabbage"), T("userSettings"), T("Cabbage"), 400, PropertiesFile::storeAsXML);
+			// initialise our settings file..
+
+			PropertiesFile::Options options;
+			options.applicationName     = "Cabbage Standalone host";
+			options.filenameSuffix      = "settings";
+			options.osxLibrarySubFolder = "Preferences";
+
+			appProperties = new ApplicationProperties();
+			appProperties->setStorageParameters (options);
 
 			 filterWindow = new StandaloneFilterWindow (T("Cabbage"), Colours::black);
              filterWindow->setTitleBarButtonsRequired (DocumentWindow::allButtons, false);
@@ -23,7 +32,8 @@
           void shutdown()
           {
 			filterWindow = 0;// = nullptr;
-			ApplicationProperties::getInstance()->closeFiles();
+			appProperties->closeFiles();
+			deleteAndZero(appProperties);
           }
 
           const String getApplicationName()
