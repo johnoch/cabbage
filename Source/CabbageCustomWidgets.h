@@ -392,6 +392,8 @@ JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CabbageGroupbox);
 // XYController, used in CabbageXYController class
 //==============================================================================
 class XYController	:	public Component,
+						public SliderListener,
+						public ButtonListener,
 						public ActionBroadcaster,
 						public Timer
 {
@@ -404,23 +406,31 @@ public:
 		outputY(0),
 		outputX(0)
 	{
+		basicLookAndFeel = new CabbageLookAndFeelBasic();
+
 		//----- Texteditor to display the output values for x and y
-		for (int i=0; i<3; i++) {
+		for (int i=0; i<2; i++) {
 			textEditors.add(new TextEditor());
 			textEditors[i]->setReadOnly (true);
-			textEditors[i]->setWantsKeyboardFocus(false);
 			textEditors[i]->setColour(0x1000201, Colours::lime);	//text colour
+			textEditors[i]->setColour(0x1000200, Colours::transparentBlack);	//background colour
 			addAndMakeVisible(textEditors[i]);
 		}
 
-		//----- ComboBox
-		autoCombo = new ComboBox (T("Auto"));
-		autoCombo->addItem (T("Off"), 1);
-		autoCombo->addItem (T("On"), 2);
-		autoCombo->setSelectedId(1);
-		autoCombo->setWantsKeyboardFocus(false);
-		autoCombo->setColour (0x1000a00, Colours::whitesmoke); //text colour
-		addAndMakeVisible (autoCombo);
+		//----- Slider
+		xySpeed = new Slider (T("speedXY"));
+		xySpeed->setSliderStyle (Slider::LinearHorizontal);
+		xySpeed->setRange(0, 2, 0.01);
+		xySpeed->setValue(1, true, false);
+		xySpeed->setLookAndFeel (basicLookAndFeel);
+		xySpeed->addListener (this);
+		addAndMakeVisible (xySpeed);
+
+		//----- ToggleButton
+		autoToggle = new ToggleButton (T("Off"));
+		autoToggle->setToggleState(false, true);
+		autoToggle->addListener (this);
+		addAndMakeVisible (autoToggle);
 
 		//----- Min and max output values
 		minX = minXValue;
@@ -431,6 +441,7 @@ public:
 		buttonDown = 0;	
 		flagX = 0;
 		flagY = 0;
+		speed = 0;
 
 		//----- The title is drawn in the paint() function
 		title.append (name, 100);
@@ -439,7 +450,6 @@ public:
 		is used instead. */
 		decimalPlaces = numDecPlaces;
 		if (decimalPlaces == 0) decimalPlaces = 1;
-		this->setWantsKeyboardFocus(false);
 	}
 
 
@@ -465,25 +475,30 @@ public:
 
 		//------- Defining the bounds that the ball can move in....
 		borderTop = 3;
-		borderBottom = totalHeight - 25;
+		borderBottom = totalHeight - 40;
 		borderLeft = 3;
 		borderRight = totalWidth - 3;
 		availableWidth = (borderRight - borderLeft);
 		availableHeight = (borderBottom - borderTop);
 
-		//------- Texteditor 
-		textEditors[0]->setBounds (totalWidth-120, (totalHeight-18), 100, 15);
-		textEditors[1]->setBounds (totalWidth-120, (totalHeight-18), 50, 15);
-		textEditors[2]->setBounds (totalWidth-70, (totalHeight-18), 50, 15);
+		//----- Slider
+		//xySpeed->setBounds (10, (totalHeight-25), 80, 30);
+		xySpeed->setBounds (10, (totalHeight-38), totalWidth-20, 20);
 
-		//----- ComboBox
-		autoCombo->setBounds (10, (totalHeight-18), 45, 15);
+		//----- Toggle
+		autoToggle->setBounds (10, (totalHeight-18), 40, 15);
 
 		//------ Initialising ball to be in the centre of the component 
 		x = availableWidth / 2;
 		y = availableHeight / 2;
 		writeText (x, y);
-		this->setWantsKeyboardFocus(false);
+
+		//----- Initialising background image
+		drawBackgroundImage();
+
+		//----- Gradient fill for green lines
+		cgGreen = ColourGradient (Colours::lime, totalWidth/2, totalHeight/2, 
+			Colours::transparentBlack, (totalWidth/2)-50, (totalHeight/2)-50, true); 
 	}
 
 
@@ -507,30 +522,16 @@ public:
 	xIn and yIn are not the actual slider values, they are normalised decimal fractions of 
 	the slider range. ballSize has to be subtracted from available width and height, as the 
 	ball is drawn from its top-left corner. Border sizes also have to be added on. */
-	void setBallXY(float xIn, float yIn, bool Normal) 
+	void setBallXY(float xIn, float yIn) 
 	{
-		if(Normal){
 		x = ((xIn * (availableWidth - ballSize)) + borderLeft);
+
 		yIn = 1 - yIn;  //inverting y values
 		y = ((yIn * (availableHeight - ballSize)) + borderTop);
-		writeText (x, y);
-		repaint();
-		}
-		else{
-		float max = getMaxX();
-		float min = getMinX();
-		xIn = (xIn-getMinX()) / (getMaxX()-getMinX());
-		x = ((xIn * (availableWidth - ballSize)) + borderLeft);
-		max = getMaxY();
-		min = getMinY();
-		yIn = (yIn-getMinY()) / (getMaxY()-getMinY());
-		yIn = 1 - yIn;
-		y = ((yIn * (availableHeight - ballSize)) + borderTop);
-		//writeText (x, y);
-		//repaint();
-		}
-	}
 
+		writeText (x, y);
+		repaint(borderLeft, borderTop, availableWidth, availableHeight);
+	}
 
 
 	//========== Returns Y Minimum =======================================================
@@ -559,93 +560,147 @@ public:
 		return maxX;
 	}
 
-
-	//=========== Paint function ============================================================
-	void paint (Graphics& g)
+	//====== Drawing the background ========================================================
+	void drawBackgroundImage()
 	{
-		this->setWantsKeyboardFocus(false);
+		/*----- This function draws the background onto a blank image and then loads it into cache. The 
+		cached image is then reused in the paint() method. This is a more efficient way to redrawing something
+		that is static. */
+
+		// Creating a blank canvas
+		img = Image::Image(Image::ARGB, totalWidth, totalHeight, true);
+			
+		Graphics g (img);
+
 		//----- For drawing the border 
 		g.setColour (Colours::black);
-		g.setOpacity (0.4f);
+		g.setOpacity (0.4);
 		g.fillRoundedRectangle (0, 0, totalWidth, totalHeight, (totalWidth/15));
 
 		//----- For drawing the actual area that the ball can move in
 		g.setColour (Colours::black);
-		g.setOpacity (0.9f);
-		g.fillRoundedRectangle (3, 3, totalWidth-6, totalHeight-25, (totalWidth/20));
+		g.setOpacity (0.7);
+		g.fillRoundedRectangle (borderLeft, borderTop, availableWidth, availableHeight, (totalWidth/20));
 
 		//----- For drawing the title
 		g.setColour (Colours::whitesmoke);
-		g.setOpacity (0.8);
+		g.setOpacity (0.3);
 		g.setFont (15, 0);
 		Justification just(1);
-		g.drawText (title, 10, 0, totalWidth-20, 30, just, false); 
+		g.drawText (title, borderLeft+3, borderTop+3, totalWidth-20, 25, just, false); 
 
+		//----- Adding image to cache and assigning it a hash code
+		ImageCache::addImageToCache (img, 13);
+	}
+
+
+	//=========== Paint function ============================================================
+	void paint (Graphics& g)
+	{
+		//----- Drawing the background from the imagecache
+		Image bg = ImageCache::getFromHashCode(13);
+		g.drawImage (bg, 0, 0, getWidth(), getHeight(), 0, 0, bg.getWidth(), bg.getHeight(), false);
+		
 		//----- Grid 
-		float thickness = 0.5; //for grid lines
-		ColourGradient cg = ColourGradient (Colours::grey, x+(ballSize)/2, y+(ballSize)/2, 
+		ColourGradient cgGrey = ColourGradient (Colours::grey, x+(ballSize)/2, y+(ballSize)/2, 
 			Colours::transparentBlack, (x+(ballSize)/2)-50, (y+(ballSize)/2)-50, true);
-		g.setGradientFill (cg);
+		g.setGradientFill (cgGrey);
 
+		float thickness = 0.5; //thickness of lines
 		for (int i=1; i<11; i++) {
-			g.drawLine ((totalWidth/10)*i, 3, (totalWidth/10)*i, availableHeight, thickness);//vertical lines
-			g.drawLine (3, (totalHeight/10)*i, availableWidth, (totalHeight/10)*i, thickness);//horizontal lines
+			g.drawLine ((totalWidth/10)*i, borderTop, (totalWidth/10)*i, availableHeight, thickness);//vertical lines
+			g.drawLine (borderLeft, (totalHeight/10)*i, availableWidth, (totalHeight/10)*i, thickness);//horizontal lines
 		}
   
-		//----- Switch statement to see if mouse button is up or down
+		/*----- Switch statement which determines what type of ball to draw. If the mouse is up the ball is 
+		hollow with grey cross lines running through it.  If the mouse is down then the ball is filled and 
+		the cross lines turn green. */
 		switch (buttonDown)
 		{
 		case 0: //button up
-			g.drawLine (x + (ballSize/2) - 0.5, 0, x + (ballSize/2) - 0.5, availableHeight, 1); //to emphasise the centre lines
-			g.drawLine (0, y + (ballSize/2) - 0.5, availableWidth, y + (ballSize/2) - 0.5, 1);
+			g.drawLine (x + (ballSize/2), 0, x + (ballSize/2), availableHeight, 1); 
+			g.drawLine (0, y + (ballSize/2), availableWidth, y + (ballSize/2), 1);
 			g.setColour (Colours::lime);
-			g.drawEllipse (x, y, ballSize-1, ballSize-1, 2); //width of 2
+			g.drawEllipse (x+1, y+1, ballSize-2, ballSize-2, 2); //width of 2
 			break;
 		case 1: //button down
-			cg = ColourGradient (Colours::lime, totalWidth/2, totalHeight/2, Colours::transparentBlack, 
-				(totalWidth/2)-50, (totalHeight/2)-50, true); //changing colour of lines
-			g.setGradientFill (cg);
-			g.drawLine (x + (ballSize/2) - 0.5, 0, x + (ballSize/2) - 0.5, availableHeight, 2); //to emphasise the centre lines
+			g.setGradientFill (cgGreen); //changing colour of lines
+			g.drawLine (x + (ballSize/2) - 0.5, 0, x + (ballSize/2) - 0.5, availableHeight, 2); 
 			g.drawLine (0, y + (ballSize/2) - 0.5, availableWidth, y + (ballSize/2) - 0.5, 1);
 			g.setColour (Colours::lime);
 			g.fillEllipse (x, y, ballSize, ballSize);
 			break;
 		}
-		this->setWantsKeyboardFocus(false);
 	}
 
+	//========== Slider Move ============================================================
+	void sliderValueChanged(Slider* slider)
+	{
+		//----- If ball is already being automated...
+		if (autoFlag == 1) {
+			incrementX = initIncX * xySpeed->getValue();
+			incrementY = initIncY * xySpeed->getValue();
+			this->startTimer(speed); //restarts timer if it had been stopped
+		}
+			
+
+		if (xySpeed->getValue() == 0) 
+			this->stopTimer();
+	}
+
+	//========== Button Click ===========================================================
+	void buttonClicked (Button* button)
+	{
+		if (autoToggle->getToggleState() == true) 
+			autoToggle->setButtonText (T("On"));
+		else if (autoToggle->getToggleState() == false) {
+			autoToggle->setButtonText (T("Off"));
+			autoFlag = 0;
+			this->stopTimer();
+		}
+	}
 
 	//================ Mouse Down =======================================================
 	void mouseDown (const MouseEvent& e)
 	{
-		this->stopTimer();
+		//----- Only do something if the mouse click is within the available ball area.....
+		if ((e.getPosition().getX() > borderLeft) && (e.getPosition().getX() < borderRight)
+			&& (e.getPosition().getY() > borderTop) && (e.getPosition().getY() < borderBottom))
+		{
+			this->stopTimer();
+			speed = 0;		//resetting speed
+			autoFlag = 0;	//setting autoFlag to "off"
 	
-		//----- Hiding cursor
-		setMouseCursor (MouseCursor::NoCursor); 
-		Desktop::getInstance().getMainMouseSource().forceMouseCursorUpdate(); 
+			//----- Hiding cursor
+			setMouseCursor (MouseCursor::NoCursor); 
+			Desktop::getInstance().getMainMouseSource().forceMouseCursorUpdate(); 
 
-		/*----- Getting current (x,y) position. Subtracting (ballSize/2) means the 
-		cursor should be in the middle of the ball */
-		x = (e.getPosition().getX()) - (ballSize/2); 
-		y = (e.getPosition().getY()) - (ballSize/2);
+			/*----- Getting current (x,y) position. Subtracting (ballSize/2) means the 
+			cursor should be in the middle of the ball */
+			x = (e.getPosition().getX()) - (ballSize/2); 
+			y = (e.getPosition().getY()) - (ballSize/2);
 
-		checkBoundary (x, y);
+			checkBoundary (x, y);
 
-		buttonDown = 1;
-		repaint();
+			buttonDown = 1;
+			repaint(borderLeft, borderTop, availableWidth, availableHeight);
 
-		//----- Clearing vectors and writing the first values, point (x, y). Resetting count.....
-		xValue.clear();
-		yValue.clear();
-		xValue.push_back(x);
-		yValue.push_back(y);
-		count = 0;
-		flagX = 0;
-		flagY = 0;
+			//----- Clearing vectors and writing the first values, point (x, y). Resetting count.....
+			xValue.clear();
+			yValue.clear();
+			xValue.push_back(x);
+			yValue.push_back(y);
+			count = 0;
+			flagX = 0;
+			flagY = 0;
 
-		//----- Writing ouput values
-		writeText (x, y);
-		sendActionMessage(name);
+			//----- Writing ouput values
+			writeText (x, y);
+
+			/*----- Setting slider to middle position 1, only if automation is already turned on. */
+			if (autoToggle->getToggleState() == true) 
+				xySpeed->setValue(1, true, false);
+		}
 	}
 
 
@@ -657,11 +712,10 @@ public:
 		Desktop::getInstance().getMainMouseSource().forceMouseCursorUpdate();
 
 		buttonDown = 0;
-		repaint();
+		repaint(borderLeft, borderTop, availableWidth, availableHeight);
 
-		//---- If Auto is set to "On"...........
-		if (autoCombo->getSelectedId() == 2) {
-		
+		//----- If automation is turned "on"....
+		if (autoToggle->getToggleState() == true) {
 			/*----- This block makes sure that the vectors have at least 2 elements. If 
 			they don't, then they are filled up with the first element + 1...*/
 			if (count < 1) {
@@ -695,7 +749,6 @@ public:
 			}
 			//----------------------------------
 
-			
 			/*----- The following block makes sure that the higest increment will be 10 and lowest will be -10. 
 			The corresponding x or y increment will still remain in proportion.  For instance, if incrementX
 			is 30 and incrementY is 15, incrementX will become 10 and incrementY will become 5 etc.....*/
@@ -722,47 +775,53 @@ public:
 			}
 			//-----------------------------
 
-	
-			/*----- The following code calculates the timeValue in miliseconds in relation to the highest
+			/*----- The following code calculates the speed in miliseconds in relation to the highest
 			increment value*/
-			int timeValue;
 			int tempX = incrementX;
 			int tempY = incrementY;
 
 			if (tempX < 0) tempX *= -1;
 			if (tempY < 0) tempY *= -1;
-			if (tempX > tempY) timeValue = tempX;
-			else timeValue = tempY;
+			if (tempX > tempY) speed = tempX;
+			else speed = tempY;
 
-			timeValue = (timeValue * -3) + 65;	//the biggest increment will have the fastest timeValue
-			//------------------------------
+			speed = (speed * -3) + 65;	//the biggest increment will produce the fastest speed
+		
+			/*----- Initial values are needed for sliderValueChanged(), which will adjust the speed of
+			the ball. */
+			initIncX = incrementX;
+			initIncY = incrementY;
 
 			buttonDown = 1;
-			this->startTimer(timeValue);
+			this->startTimer(speed);
+			autoFlag = 1;
 		}
-		//----- end of if Auto is set to "On"
 	}
 
 
 	//============= Mouse Drag =============================================================
 	void mouseDrag (const MouseEvent& e)
 	{
-		//----- Getting current (x,y) position
-		x = (e.getPosition().getX()) - (ballSize/2);
-		y = (e.getPosition().getY()) - (ballSize/2);
+		//----- Only do something if the mouse click is within the available ball area.....
+		if ((e.getPosition().getY() > borderBottom) && (e.getPosition().getY() < totalHeight))
+			return;
+		else {
+			//----- Getting current (x,y) position
+			x = (e.getPosition().getX()) - (ballSize/2);
+			y = (e.getPosition().getY()) - (ballSize/2);
 
-		checkBoundary (x, y);
+			checkBoundary (x, y);
 
-		repaint();
+			repaint(borderLeft, borderTop, availableWidth, availableHeight);
 
-		//----- Writing coordinates to vectors
-		xValue.push_back(x); 
-		yValue.push_back(y);
-		count ++;
+			//----- Writing coordinates to vectors
+			xValue.push_back(x); 
+			yValue.push_back(y);
+			count ++;
 	
-		//----- Writing output values
-		writeText (x, y);
-		sendActionMessage(name);
+			//----- Writing output values
+			writeText (x, y);
+		}
 	} 
 
 
@@ -773,23 +832,25 @@ public:
 		x += incrementX;
 		y += incrementY;
 	
-		//----- If the ball hits a border, its increment value should be reversed
+		/*----- If the ball hits a border, its increment value should be reversed. Initial values 
+		also need to be reversed for sliderValueChanged(). */
 		if ((x < borderLeft) || (x > (borderRight - ballSize))) {
 			incrementX *= -1;
+			initIncX *= -1; 
 			x += incrementX;
 		}
 		if ((y < borderTop) || (y > (borderBottom - ballSize))) {
 			incrementY *= -1;
+			initIncY *= -1;
 			y += incrementY;
-		}	
+		}
+
+		repaint(borderLeft, borderTop, availableWidth, availableHeight);
 
 		//----- Writing output values
 		writeText (x, y);
-		repaint();
-	//	sendActionMessage(name);
-		
 	}
-	  
+
 
 	//=========== Checking to make sure point is inside boundary ============================
 	void checkBoundary (float &x, float&y)
@@ -817,42 +878,43 @@ public:
 
 
 	//=========== Writing values to textbox =================================================
-	void writeText (float &x, float &y)
-	{
-		/*----- Putting together the textbox string. The values are first converted to lie between
-		0 and 1. Border size and ballSize are needed to make this accurate. These values can then 
-		be applied to the x and y ranges to output the correct value.*/
-		outputX = (float)(x - 3) / (float)(availableWidth - ballSize);	//left border is 3
-		outputY = (float)(y - 3) / (float)(availableHeight - ballSize);	//top border is 3
-		outputY = 1 - outputY;  //inverting the y values
+	 void writeText (float &x, float &y)
+       {
+       /*----- Putting together the textbox string. The values are first converted to lie between
+            0 and 1. Border size and ballSize are needed to make this accurate. These values can then
+            be applied to the x and y ranges to output the correct value.*/
+            outputX = (float)(x - 3) / (float)(availableWidth - ballSize);      //left border is 3
+            outputY = (float)(y - 3) / (float)(availableHeight - ballSize);      //top border is 3
+            outputY = 1 - outputY;  //inverting the y values
 
-		xRange = maxX - minX;
-		yRange = maxY - minY;
+            xRange = maxX - minX;
+            yRange = maxY - minY;
 
-		outputX = (outputX * xRange) + minX;
-		outputY = (outputY * yRange) + minY;
+            outputX = (outputX * xRange) + minX;
+            outputY = (outputY * yRange) + minY;
 
-		String str1(outputX, decimalPlaces);
-		String str2(outputY, decimalPlaces);
+            String str1(outputX, decimalPlaces);
+            String str2(outputY, decimalPlaces);
 
-		Font font(15, 0);
-		float xStrWidth = font.getStringWidthFloat(str1);
-		float yStrWidth = font.getStringWidthFloat(str2);
-		//------- Texteditor 
-		textEditors[0]->setBounds (totalWidth-(xStrWidth+yStrWidth+50), (totalHeight-18), xStrWidth+yStrWidth+10, 15);
-		textEditors[1]->setBounds (totalWidth-(xStrWidth+yStrWidth+40), (totalHeight-18), xStrWidth+15, 15);
-		textEditors[2]->setBounds (totalWidth-(yStrWidth+30), (totalHeight-18), yStrWidth+15, 15);
+            Font font(12, 0);
+            float xStrWidth = font.getStringWidthFloat(str1);
+            float yStrWidth = font.getStringWidthFloat(str2);
 
-		textEditors[1]->setText (str1, false);  
-		textEditors[2]->setText (str2, false); 
-	}
+            //------- Texteditor
+            textEditors[0]->setBounds (totalWidth - (xStrWidth+yStrWidth+43), (totalHeight-18), xStrWidth+15, 15);
+            textEditors[1]->setBounds (totalWidth - (yStrWidth+25), (totalHeight-18), yStrWidth+15, 15);
+
+            textEditors[0]->setText (str1, false);
+            textEditors[1]->setText (str2, false);
+            sendActionMessage(name);
+       }
 
 	juce_UseDebuggingNewOperator
 
 private:
 	float x, y, count;
 	vector<float> xValue, yValue;
-	float incrementX, incrementY, outputX, outputY, xRange, yRange;
+	float incrementX, incrementY, initIncX, initIncY, outputX, outputY, xRange, yRange;
 	int flagX, flagY;
 	int totalWidth, totalHeight, availableWidth, availableHeight;
 	int borderTop, borderBottom, borderLeft, borderRight;
@@ -861,11 +923,21 @@ private:
 	float minX, maxX, minY, maxY;
 	String title, name;
 	int decimalPlaces;
+	Image img;
+	ColourGradient cgGreen;
+	int speed;
+	int autoFlag;
 
-	ScopedPointer<ComboBox> autoCombo;
+	ScopedPointer<Slider> xySpeed;
+	ScopedPointer<ToggleButton> autoToggle;
 	OwnedArray<TextEditor> textEditors;
 
-JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (XYController);	
+	ScopedPointer<CabbageLookAndFeelBasic> basicLookAndFeel;
+	//void resized();	
+
+
+	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (XYController);
+
 };
 
 //==============================================================================
@@ -1007,230 +1079,371 @@ JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CabbageMessageConsole);
 class VUComponent	:	public Component
 {
 public:
+
+
 	//=================================================================================
 	//		 Nested class VU Meter
 	//=================================================================================
 	class VUMeter	:	public Component
 	{
 	public:
-		VUMeter()
+		//=============================================================================
+		VUMeter(int input1, bool input2)
 		{
-			clipMarker = 0;	//0 is off, 1 is on
-			this->setWantsKeyboardFocus(false);
+			//-----1 = Mono, 2 = Left Ch., 3 = Right Ch.
+			type = input1;	
+
+			//----- Horizontal or Vertical
+			style = input2;	
+
+			clipFlag = 0;	//0 is off, 1 is on
+
+			/*----- Declarations for each db value. The range will go logarithmically from -infinity to +3db. 
+			A level of 0.9 is being assigned to 0db. */
+			plus3DB = 1;
+			zeroDB = 0.9;
+			minus3DB = 0.71 * zeroDB; //0.639
+			minus10DB = 0.3162 * zeroDB; //0.285
+			minus20DB = 0.1 * zeroDB; //0.09
+			minus40DB = 0.01 * zeroDB; //0.009
 		}
 
+		//=======================================================================================
 		~VUMeter(){}
 
-		//========= Paint Function ===================================================
-		void paint (Graphics &g)
+		//========== Resizing method ============================================================
+		void resized ()
 		{
-			//----- Painting the background of the component
+			//----- Declaring dimensional properties
+			top = 5;
+			clipZone = 2;									//Leaving a gap for the clip marker at the top
+			bottom = getHeight() - 5;
+
+			if (type == 1)
+				levelWidth = getWidth()/5;					//width of mono level				
+			else if ((type == 2) || (type == 3))
+				levelWidth = (getWidth()/1.25) / 5;			//width of stereo level should be the same as if it were mono
+
+			levelHeight = bottom - (top + clipZone);		//height available to the VU part
+			xOffset = getWidth()/5;							//Mono and Left Ch. VU's will be drawn 1/5 of totalWidth from left
+			yOffset = 0;
+			prevLevel = bottom;
+			currentLevel = bottom;
+
+			//----- Setting the location of the db markers
+			plus3Mark = bottom - levelHeight;
+			zeroMark = bottom - (0.9 * levelHeight);
+			minus3Mark = bottom - (0.8 * levelHeight);
+			minus10Mark = bottom - (0.5 * levelHeight);
+			minus20Mark = bottom - (0.25 * levelHeight);
+			minus40Mark = bottom - (0.1 * levelHeight);
+
+			//----- Setting up the gradient fill for the meter level
+			cg = ColourGradient (Colours::transparentBlack, 0, bottom, 
+								Colours::transparentBlack, 0, top, false);
+			cg.addColour (0.07, Colours::aqua);
+			cg.addColour (0.2, Colours::lime);
+			cg.addColour (0.5, Colours::lime);
+			cg.addColour (0.6, Colours::yellow);
+			cg.addColour (0.75, Colours::yellow);
+			cg.addColour (0.85, Colours::orange);
+			cg.addColour (0.999, Colours::orangered);
+
+			clClip = (Colours::red);
+
+			/*----- Calling function to draw image background. This only applies if the VU is mono or the 
+			left channel of a stereo meter. Right channel meters will not use a background as they can just
+			draw over the left channel background image. */
+			if ((type == 1) || (type == 2))
+					verticalBackground();
+		}
+
+
+		//===== Vertical Background =======================================================================
+		void verticalBackground ()
+		{
+			/*----- This function draws the background onto a blank image and then loads it into cache. The 
+			cached image is then reused in the paint() method. This is a more efficient way to redrawing something
+			that is static. */
+
+			// Creating a blank canvas
+			img = Image::Image(Image::ARGB, getWidth(), getHeight(), true);
+			
+			Graphics g (img);
 			g.setColour (Colours::black);
 			g.setOpacity (0.4);
 			g.fillRoundedRectangle (getWidth()*0.1, 0, getWidth()*.8, getHeight(), getWidth()/5);
-
-			//----- Declaring dimensional properties
-			int top = 5;
-			int clipZone = top + 3;								//Leaving a gap for the clip marker at the top
-			int bottom = getHeight() - 5;
-			int availableWidth = getWidth()/5;					//width of the actual vu is 1 fifth of total width
-			int availableHeight = bottom - clipZone;			//height available to the VU part
-			int xOffset = getWidth()/5;							// The vu be drawn in 1 fifth of totalWidth from left
-			
-			// 1-level inverts the y axis. It also has to be incremented by the clipZone height and top border
-			int yOffset = ((1 - level) * availableHeight) + clipZone;
-
-			/*----- Declarations for each db value. The range will go logarithmically from -infinity to +3db. Therefore 
-			the input level (between 0 and 1) will have to be divided up accordingly. */
-			float plus3DB = 1;
-			float zeroDB = 0.9;
-			float minus3DB = 0.71 * zeroDB; //0.639
-			float minus10DB = 0.3162 * zeroDB; //0.285
-			float minus20DB = 0.1 * zeroDB; //0.09
-			float minus40DB = 0.01 * zeroDB; //0.009
-
-			//----- Setting the location of the db markers
-			int plus3Mark = bottom - availableHeight;
-			int zeroMark = bottom - (0.9 * availableHeight);
-			int minus3Mark = bottom - (0.8 * availableHeight);
-			int minus10Mark = bottom - (0.5 * availableHeight);
-			int minus20Mark = bottom - (0.25 * availableHeight);
-			int minus40Mark = bottom - (0.1 * availableHeight);
-
-			//----- Colour fills
-			Colour clClip = (Colours::red);		//red for clip marker
-			/*Colour clRed = (Colours::orangered);
-			Colour clOrange = (Colours::orange);
-			Colour clYellow = (Colours::yellow);
-			Colour clGreen = (Colours::lime);*/
-			ColourGradient clRed = ColourGradient (Colours::orangered, 0, clipZone, Colours::orange, 0, zeroMark, false);
-			ColourGradient clOrange = ColourGradient (Colours::orange, 0, zeroMark, Colours::yellow, 0, minus3Mark, false);
-			ColourGradient clYellow = ColourGradient (Colours::yellow, 0, minus3Mark, Colours::lime, 0, minus10Mark, false);
-			ColourGradient clGreen = ColourGradient (Colours::lime, 0, minus10Mark, Colours::darkgreen, 0, bottom, false);
-
-			//----- Painting the VU background before any levels are painted.
-			g.setGradientFill (clGreen);
-			g.setOpacity (0.1);
-			g.fillRect (xOffset, minus10Mark, availableWidth, bottom-minus10Mark);
-			g.setGradientFill (clYellow);
-			g.setOpacity (0.1);
-			g.fillRect (xOffset, minus3Mark, availableWidth, minus10Mark-minus3Mark);
-			g.setGradientFill (clOrange);
-			g.setOpacity (0.1);
-			g.fillRect (xOffset, zeroMark, availableWidth, minus3Mark-zeroMark);
-			g.setGradientFill (clRed);
-			g.setOpacity (0.1);
-			g.fillRect (xOffset, plus3Mark, availableWidth, zeroMark-plus3Mark);
-
-			
+		
 			//----- Painting the db level markers
 			g.setColour (Colours::white);
-			g.setFont (getWidth()*0.3, 0); //Font size is calculated using the total width
+
+			int fontSize = getHeight()*0.05;
+			if (fontSize > 15)
+				fontSize = 15;
+			g.setFont (fontSize, 0);
+
+			int startText;	//starting x value
+			if (type == 1)
+				startText = getWidth() * 0.4;
+			else if (type == 2)
+				startText = (getWidth() * 0.4) * 1.25; //stereo VU's are 1.25 times the size of a mono VU
+
 			Justification just (4);			//Centered
-			g.drawText (T("+3"), getWidth()*.4, plus3Mark-5, getWidth()*.4, 10, just, false);
-			g.drawText (T("0"), getWidth()*.4, zeroMark-5, getWidth()*.4, 10, just, false);
-			g.drawText (T("-3"), getWidth()*.4, minus3Mark-5, getWidth()*.4, 10, just, false);
-			g.drawText (T("-10"), getWidth()*.4, minus10Mark-5, getWidth()*.4, 10, just, false);
-			g.drawText (T("-20"), getWidth()*.4, minus20Mark-5, getWidth()*.4, 10, just, false);
-			g.drawText (T("-40"), getWidth()*.4, minus40Mark-5, getWidth()*.4, 10, just, false);
+			g.drawText (T("+3"), startText, plus3Mark-5, getWidth()*.4, 10, just, false);
+			g.drawText (T("0"), startText, zeroMark-5, getWidth()*.4, 10, just, false);
+			g.drawText (T("-3"), startText, minus3Mark-5, getWidth()*.4, 10, just, false);
+			g.drawText (T("-10"), startText, minus10Mark-5, getWidth()*.4, 10, just, false);
+			g.drawText (T("-20"), startText, minus20Mark-5, getWidth()*.4, 10, just, false);
+			g.drawText (T("-40"), startText, minus40Mark-5, getWidth()*.4, 10, just, false);
 
+			//----- Painting the level background
+			g.setGradientFill (cg);
+			g.setOpacity (0.1);
+			g.fillRect (xOffset, clipZone, levelWidth, levelHeight);
 
-			/*----- The following if statements determine which colours should be used for the fill. Each
-			zone itself has to be treated independently to the rest of the level range.*/
-			if ((level >= 0) && (level < minus40DB)){
-				g.setGradientFill (clGreen);
-				g.setOpacity (0.8);
-				yOffset = (bottom - minus40Mark) * (level / minus40DB);
-				g.fillRect (xOffset, bottom-yOffset, availableWidth, yOffset);
-			}
-			//----- If level is between 0.009 and 0.09
-			else if ((level >= minus40DB) && (level < minus20DB)){
-				g.setGradientFill (clGreen);
-				g.setOpacity (0.8);
-				yOffset = (minus40Mark-minus20Mark) * ((level - minus40DB) / (minus20DB - minus40DB));
-				g.fillRect (xOffset, minus40Mark-yOffset, availableWidth, yOffset);
-				g.fillRect (xOffset, minus40Mark, availableWidth, bottom - minus40Mark);
-			}
-			//----- If level is between 0.285 and 0.09
-			else if ((level >= minus20DB) && (level < minus10DB)){
-				g.setGradientFill (clGreen);
-				g.setOpacity (0.8);
-				yOffset = (minus20Mark-minus10Mark) * ((level - minus20DB) / (minus10DB - minus20DB));
-				g.fillRect (xOffset, minus20Mark-yOffset, availableWidth, yOffset);
-				g.fillRect (xOffset, minus20Mark, availableWidth, bottom - minus20Mark);
-			}
-			//----- If level is between 0.285 and 0.639
-			else if ((level >= minus10DB) && (level < minus3DB)){
-				g.setGradientFill (clYellow);
-				g.setOpacity (0.8);
-				yOffset = (minus10Mark-minus3Mark) * ((level - minus10DB) / (minus3DB - minus10DB)); 
-				g.fillRect (xOffset, minus10Mark-yOffset, availableWidth, yOffset);
-				g.setGradientFill (clGreen);
-				g.setOpacity (0.8);
-				g.fillRect (xOffset, minus10Mark, availableWidth, bottom - minus10Mark);
-			}
-			//----- If level is between 0.639 and 0.9
-			else if ((level >= minus3DB) && (level < zeroDB)){
-				g.setGradientFill (clOrange);
-				g.setOpacity (0.8);
-				yOffset = (minus3Mark-zeroMark) * ((level - minus3DB) / (zeroDB - minus3DB));
-				g.fillRect (xOffset, minus3Mark-yOffset, availableWidth, yOffset);
-				g.setGradientFill (clYellow);
-				g.setOpacity (0.8);
-				g.fillRect (xOffset, minus3Mark, availableWidth, minus10Mark - minus3Mark);
-				g.setGradientFill (clGreen);
-				g.setOpacity (0.8);
-				g.fillRect (xOffset, minus10Mark, availableWidth, bottom - minus10Mark);
-			}
-			//----- If level is 0.9 or over
-			else if (level >= zeroDB) {
-				g.setGradientFill (clRed);
-				g.setOpacity (0.8);
-				yOffset = (zeroMark-plus3Mark) * ((level*10)-9);
-				g.fillRect (xOffset, zeroMark-yOffset, availableWidth, yOffset);
-				g.setGradientFill (clOrange);
-				g.setOpacity (0.8);
-				g.fillRect (xOffset, zeroMark, availableWidth, minus3Mark - zeroMark);
-				g.setGradientFill (clYellow);
-				g.setOpacity (0.8);
-				g.fillRect (xOffset, minus3Mark, availableWidth, minus10Mark - minus3Mark);
-				g.setGradientFill (clGreen);
-				g.setOpacity (0.8);
-				g.fillRect (xOffset, minus10Mark, availableWidth, bottom - minus10Mark);
-			}
+			if (type == 2)   //if stereo we need another meter level
+				g.fillRect (xOffset+levelWidth+1, clipZone, levelWidth, levelHeight);
 
-			//----- To check if clip marker should be displayed
-			switch (clipMarker)
-			{
-			case 0: //if off
+			//---- For the clip zone
+			g.setColour (clClip);
+			g.setOpacity (0.2);
+			g.fillRect (xOffset, top, levelWidth, clipZone);
+
+			if (type == 2)   //if stereo we need another clip zone
+				g.fillRect (xOffset+levelWidth+1, top, levelWidth, clipZone);
+
+			//----- Loading image into cache
+			if (type == 1)
+				ImageCache::addImageToCache (img, 11);
+			else if (type == 2)
+				ImageCache::addImageToCache (img, 12);
+		}
+
+				
+		//========= Paint Method ====================================================================
+		void paint (Graphics &g)
+		{
+			Image bg;
+			//----- Drawing the background from the imagecache
+			if (type == 1)
+				bg = ImageCache::getFromHashCode(11);
+			if (type == 2)
+				bg = ImageCache::getFromHashCode(12);
+
+			g.drawImage (bg, 0, 0, getWidth(), getHeight(), 0, 0, bg.getWidth(), bg.getHeight(), false);
+			
+
+			/*----- Drawing the meter level. When paintFlag is 1 the meter level is to be increased. This
+			new bit of the level is painted using the gradient fill cg. If paintFlag is 0, the level is 
+			to be decreased. Because there is no colour or drawing tool used for paintFlag=0, this bit of 
+			the level is cleared. */
+			if (paintFlag == 1) {
+				g.setGradientFill (cg);
+				g.setOpacity (0.7);
+				if ((type == 1) || (type == 2))
+					g.fillRect (xOffset, currentLevel, levelWidth, diff);
+				else
+					g.fillRect ((xOffset+levelWidth+1), currentLevel, levelWidth, diff);
+			}
+			
+
+			/*----- Determining if the clipmarker should be shown. It is set back to 0 immediately as it
+			does not need to repainted over and over. If the clipFlag is 0, the marker will stay on if 
+			the repaint() bounds are not inclusive of the clipZone. When the user clicks on the VU meter
+			the clipFlag will be 0 and the repaint() bounds will include the clipZone (see mouseDown()), 
+			therefore turning off the clipmarker. This happens because there is no colour or draw function 
+			used for clipFlag = 0, and therefore this zone is cleared exposing the background again. */
+			if (clipFlag == 1) {
 				g.setColour (clClip);
-				g.setOpacity (0.2);
-				g.fillRect (xOffset, top, availableWidth, 2);
-				break;
-			case 1: //if on
-				g.setColour (clClip);
-				g.setOpacity (1);
-				g.fillRect (xOffset, top, availableWidth, 2);
-				break;
-			}
+				if (type == 1)
+					g.fillRect (xOffset, top, levelWidth, clipZone);
+				else
+					g.fillRect(xOffset, top, (levelWidth*2) + 1, clipZone);
 
+				clipFlag = 0;
+			}	
 		}
 
 		
-		//========= Set Level ==========================================================
+		//========= Set Level =========================================================================
 		void setLevel (float value)
 		{
 			level = value;
-			if (level >= 1) clipMarker = 1;
+
+			// If level is 1 or more...
+			if (level >= 1) {
+				clipFlag = 1;
+				level = 1;
+			}
+
+			/*----- The following if statements determine the offset on the y axis. Each zone 
+			itself has to be treated independently to the rest of the level range.*/
+			if ((level >= 0) && (level < minus40DB)){
+				currentLevel = (bottom - minus40Mark) * (level / minus40DB);
+				currentLevel = bottom - currentLevel;
+			}
+			//----- If level is between 0.009 and 0.09
+			else if ((level >= minus40DB) && (level < minus20DB)){
+				currentLevel = (minus40Mark-minus20Mark) * ((level - minus40DB) / (minus20DB - minus40DB));
+				currentLevel = minus40Mark - currentLevel;
+			}
+			//----- If level is between 0.285 and 0.09
+			else if ((level >= minus20DB) && (level < minus10DB)){
+				currentLevel = (minus20Mark-minus10Mark) * ((level - minus20DB) / (minus10DB - minus20DB));
+				currentLevel = minus20Mark - currentLevel;
+			}
+			//----- If level is between 0.285 and 0.639
+			else if ((level >= minus10DB) && (level < minus3DB)){
+				currentLevel = (minus10Mark-minus3Mark) * ((level - minus10DB) / (minus3DB - minus10DB)); 
+				currentLevel = minus10Mark - currentLevel;
+			}
+			//----- If level is between 0.639 and 0.9
+			else if ((level >= minus3DB) && (level < zeroDB)){
+				currentLevel = (minus3Mark-zeroMark) * ((level - minus3DB) / (zeroDB - minus3DB));
+				currentLevel = minus3Mark - currentLevel;
+			}
+			//----- If level is 0.9 or over
+			else if (level >= zeroDB) {
+				currentLevel = (zeroMark-plus3Mark) * ((level*10)-9);
+				currentLevel = zeroMark - currentLevel;
+			}
+
+			/*----- We only need to repaint the level difference between this value and the previous.
+			This is much more efficient than repainting the entire component each time. */
+			diff = prevLevel - currentLevel;
+
+			if (diff > 0) {
+				paintFlag = 1; // to indicate that we are adding to the current meter level
+				if ((type == 1) || (type == 2))
+					repaint(xOffset, currentLevel, levelWidth, diff);
+				else
+					repaint((xOffset+levelWidth+1), currentLevel, levelWidth, diff);
+			}
+			else if (diff < 0) {
+				diff *= -1;
+				paintFlag = 0;	//to  indicate that we are subtracting from the current meter level
+				if ((type == 1) || (type == 2))
+					repaint(xOffset, prevLevel, levelWidth, diff);
+				else
+					repaint((xOffset+levelWidth+1), prevLevel, levelWidth, diff);
+			}
+			//else if diff = 0 then do nothing!
+
+			//----- To see if clip marker should be shown.....
+			if (clipFlag == 1) {
+				if ((type == 1) || (type == 2))
+					repaint (xOffset, top, levelWidth, clipZone);
+				else
+					repaint((xOffset+levelWidth+1), top, levelWidth, clipZone);
+			}
 			
-			repaint();
+			
+			// Making the current level the previous level, for the next pass through....
+			prevLevel = currentLevel;
 		}
 
-		//======== If mouse if clicked =================================================
+
+		//======== If mouse is clicked ================================================================
 		void mouseDown (const MouseEvent& e)
 		{
+			//----- Getting (x,y) of the mouse click
 			int x = e.getPosition().getX();
 			int y = e.getPosition().getY();
 
-			/*----- Checking to see if the mouse click is within the correct bounds. 5 is 
-			added to clipZone to offer the user a bigger area */
+			/*----- If the mouse is clicked over the VU, then the clip marker will be
+			turned off. */
 			if ((x >= getWidth()/5) && (x <= getWidth()*0.8) &&
-				(y >= 3) && (y <= 11)) { //clipZone lies within this area
-					clipMarker = 0;
-					repaint();
+				(y >= 0) && (y <= getHeight())) { 
+					clipFlag = 0;
+					/* Only need to repaint the clipzone. Stereo VU's just repaint both
+					clip zones as it will not make much difference in terms of CPU usage.*/
+					
+					if (type == 1) //mono
+						repaint (xOffset, top, levelWidth, clipZone);
+					else	//stereo
+						repaint(xOffset, top, (levelWidth*2) + 1, clipZone);
 			}
-
 		}
 
 	private:
-		int widthMeter, heightMeter;
+		bool style;
+		int type, widthMeter, heightMeter;
 		float level;
-		int clipMarker;
+		int clipFlag, clipZone;
+		int top, bottom, xOffset, yOffset, levelWidth, levelHeight;
+		float plus3DB, zeroDB, minus3DB, minus10DB, minus20DB, minus40DB;
+		int plus3Mark, zeroMark, minus3Mark, minus10Mark, minus20Mark, minus40Mark;
+		Colour clClip;
+		ColourGradient cg;
+		Image img;
 
-//		JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (VUMeter);
+		int paintFlag;
+		int currentLevel, prevLevel;
+		int diff;
+
+		JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (VUMeter);
 
 	};
-	//------------------------------------------------------------
+	//====== End of VUMeter class ===========================================
 
 
-	//===== VU Component Constructor ====================================
-	VUComponent (int numberOfMeters, int widthOfMeter, int heightOfMeter)
+	//===== VU Component Constructor ========================================
+	VUComponent (Array<int> conArr, bool useVertical)
 	{
-		numMeters = numberOfMeters;
-		widthMeter = widthOfMeter;
-		heightMeter = heightOfMeter;
+		totalNumLevels = 0;
+		numArrElements = conArr.size();
 
-		for (int i=0; i<numMeters; i++) {
-			meters.add (new VUMeter());
-			meters[i]->setBounds (i*widthMeter, 0, widthMeter, heightMeter);
-			meters[i]->setWantsKeyboardFocus(false);
-			addAndMakeVisible (meters[i]);
+		/*----- We need to get the total number of levels so that the index of each
+		meter will be correct when setting the level. */
+		for (int i=0; i<numArrElements; i++) {
+			config.push_back (conArr[i]);
+			totalNumLevels += conArr[i];
 		}
+
+		style = useVertical;		
 	}
 
 	//===== Destructor ====================================================
 	~VUComponent()
 	{
+	}
+
+	//===== Resize ========================================================
+	void resized()
+	{
+		int arrElement = 0;
+		int xOffset = 0;
+		int widthMonoMeter = getWidth() / totalNumLevels;
+		int widthStereoMeter = widthMonoMeter * 1.25;
+		
+		for (int i=0; i<totalNumLevels; i++) {
+			//----- Adding a mono meter
+			if (config[arrElement] == 1 ) {
+				meters.add (new VUMeter(1, style));
+				meters[i]->setBounds (xOffset, 0, widthMonoMeter, getHeight());
+				addAndMakeVisible (meters[i]);
+				xOffset += widthMonoMeter;
+				arrElement++;
+			}
+			//----- Adding a stereo meter
+			else if (config[arrElement] == 2 ) {
+				//Left side
+				meters.add (new VUMeter(2, style));
+				meters[i]->setBounds (xOffset, 0, widthStereoMeter, getHeight());
+				addAndMakeVisible (meters[i]);
+
+				//Right side
+				i++; //i needs to be incremented again to make sure that the meter index numbers are correct
+				meters.add (new VUMeter(3, style));
+				meters[i]->setBounds (xOffset, 0, widthStereoMeter, getHeight());
+				addAndMakeVisible (meters[i]);
+
+				xOffset += widthStereoMeter;
+				arrElement++;
+			}
+			
+		}
+		
 	}
 
 	//===== Set VU Level Function =========================================
@@ -1241,10 +1454,13 @@ public:
 
 private:
 	OwnedArray<VUMeter> meters;
-	int numMeters;
+	bool style;
 	int widthMeter, heightMeter;
+	int totalNumLevels;
+	vector<int> config;
+	int numArrElements;
 
-//	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (VUComponent);
+	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (VUComponent);
 };
 
 
@@ -1268,8 +1484,11 @@ numMeters(meters)
 	
 	groupbox = new GroupComponent(String("groupbox_")+name);
 	
-
-	vuMeter = new VUComponent(meters, width/(meters*1.30), height*.92);
+	Array<int> test;
+	test.add(2);
+	test.add(2);
+	test.add(1);
+	vuMeter = new VUComponent(test, true);
 	addAndMakeVisible(vuMeter);
 	addAndMakeVisible(groupbox);
 

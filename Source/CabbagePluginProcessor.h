@@ -196,6 +196,10 @@ public:
 		return csound->GetCsound();
 	}
 
+	MYFLT getCSScale(){
+		return cs_scale;
+	}
+
 #endif
 
 	bool isGuiEnabled(){

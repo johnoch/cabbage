@@ -50,12 +50,12 @@ componentPanel = new Component();
 addAndMakeVisible(componentPanel);
 #endif
 
-
+zero_dbfs = getFilter()->getCsound()->Get0dBFS();
 componentPanel->addKeyListener(this);
 componentPanel->setInterceptsMouseClicks(false, true);	
 setSize (400, 400);
 InsertGUIControls();
-startTimer(15);
+startTimer(5);
 
 #ifdef Cabbage_GUI_Editor
 componentPanel->addChangeListener(this);
@@ -77,9 +77,9 @@ layoutEditor->updateFrames();
 }
 #else
 //only want to grab keyboard focus on standalone mode as DAW handle their own keystrokes
-componentPanel->setWantsKeyboardFocus(true);
+//componentPanel->setWantsKeyboardFocus(true);
 componentPanel->toFront(true);
-componentPanel->grabKeyboardFocus();
+//componentPanel->grabKeyboardFocus();
 #endif
 
 }
@@ -168,6 +168,7 @@ getFilter()->sendChangeMessage();
 // Users can create their own GUI abstraction at any time, save them to this folder, and
 // insert them to their instrument whenever they like
 //==============================================================================
+
 void CabbagePluginAudioProcessorEditor::mouseDown(const MouseEvent &e)
 {
 #ifdef Cabbage_GUI_Editor
@@ -253,12 +254,16 @@ if (e.mods.isRightButtonDown())
 
 }
 #endif
+}
 
-for(int i=0;i<layoutComps.size();i++)
-	if(layoutComps[i]->getName().equalsIgnoreCase("midiKeyboard"))
-		layoutComps[i]->grabKeyboardFocus();
+//==============================================================================
+// this function will any mouse up events on our editor
+//==============================================================================
+void CabbagePluginAudioProcessorEditor::mouseUp(const MouseEvent &e)
+{
 
 }
+
 //==============================================================================
 void CabbagePluginAudioProcessorEditor::insertCabbageText(String text)
 {
@@ -753,7 +758,7 @@ try{
 	layoutComps[idx]->getProperties().set(String("plant"), var(cAttr.getStringProp("plant")));
 	layoutComps[idx]->setWantsKeyboardFocus(true);
 	layoutComps[idx]->setAlwaysOnTop(true);
-	layoutComps[idx]->setExplicitFocusOrder(100);
+	layoutComps[idx]->addMouseListener(this, false);
 	layoutComps[idx]->setName("midiKeyboard");
 }
 catch(...){
@@ -921,6 +926,7 @@ try{
 	((CabbageButton*)controls[idx])->button->addListener(this);
 	if(cAttr.getItemsSize()>0)
 	((CabbageButton*)controls[idx])->button->setButtonText(cAttr.getItems(0));
+	((CabbageButton*)controls[idx])->button->setWantsKeyboardFocus(true);
 }
 catch(...){
     Logger::writeToLog(T("Syntax error: 'button..."));
@@ -979,6 +985,8 @@ try{
 	((CabbageCheckbox*)controls[idx])->button->addListener(this);
 	if(cAttr.getItemsSize()>0)
 	((CabbageCheckbox*)controls[idx])->button->setButtonText(cAttr.getItems(0));
+
+	((CabbageCheckbox*)controls[idx])->button->setWantsKeyboardFocus(true);
 
 	Logger::writeToLog(cAttr.getPropsString());
 }
@@ -1231,13 +1239,13 @@ try{
 	min = cAttr.getNumProp("minY");
 	float valueY = cabbageABS(min-cAttr.getNumProp("valueY"))/cabbageABS(min-max);
 	//Logger::writeToLog(T("Y:")+String(valueY));
-	((CabbageXYController*)controls[idx])->xypad->setBallXY(valueX, valueY, true);
+	((CabbageXYController*)controls[idx])->xypad->setBallXY(valueX, valueY);
 	controls[idx]->setWantsKeyboardFocus(false);
 	((CabbageXYController*)controls[idx])->xypad->addActionListener(this);
 	if(!cAttr.getStringProp("name").containsIgnoreCase("dummy"))
 	actionListenerCallback(cAttr.getStringProp("name"));
 
-}
+}  
 catch(...){
     Logger::writeToLog(T("Syntax error: 'xy pad..."));
     }
@@ -1341,7 +1349,7 @@ for(int i=0;i<(int)getFilter()->getGUICtrlsSize();i++){
 	else if(getFilter()->getGUICtrls(i).getStringProp("type")==T("xypad") &&
 		getFilter()->getGUICtrls(i).getStringProp("xyChannel").equalsIgnoreCase("X")){
 	if(controls[i]){
-		((CabbageXYController*)controls[i])->xypad->setBallXY(getFilter()->getParameter(i), getFilter()->getParameter(i+1), false);
+		((CabbageXYController*)controls[i])->xypad->setBallXY(getFilter()->getParameter(i), getFilter()->getParameter(i+1));
 		}
 	}
 
@@ -1400,7 +1408,7 @@ for(int i=0;i<getFilter()->getGUILayoutCtrlsSize();i++){
 		for(int y=0;y<((CabbageVUMeter*)layoutComps[i])->getNoMeters();y++){
 		//String chann = getFilter()->getGUILayoutCtrls(i).getStringProp("channel", y);
 		float val = getFilter()->getCsound()->GetChannel(getFilter()->getGUILayoutCtrls(i).getStringProp("channel", y).toUTF8());
-		((CabbageVUMeter*)layoutComps[i])->vuMeter->setVULevel(y, .5);
+		((CabbageVUMeter*)layoutComps[i])->vuMeter->setVULevel(y, val);
 		}
 	}
 	

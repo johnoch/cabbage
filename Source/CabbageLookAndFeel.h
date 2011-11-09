@@ -4,7 +4,7 @@
 /*
   ====================================================================================
 
-	Custom Rotary Slider Class
+	Custom Look and Feel Class
 
   ====================================================================================
 */
@@ -20,11 +20,20 @@ public:
 	~CabbageLookAndFeel();
 
 	virtual void drawRotarySlider (Graphics &g, int x, int y, int width, int height, float sliderPosProportional, 
-						float rotaryStartAngle, float endAngle, Slider &slider);
-	virtual void drawLinearSliderBackground (Graphics &g, int x, int y, int width, int height,
-						float sliderPos, float minSliderPos, float maxSliderPos, const Slider::SliderStyle style, Slider &slider);
+																					float rotaryStartAngle, 
+																					float rotaryEndAngle, 
+																					Slider &slider);
+	virtual void drawLinearSliderBackground (Graphics &g, int x, int y, int width, int height, 
+																					float sliderPos, 
+																					float minSliderPos, 
+																					float maxSliderPos, 
+																					const Slider::SliderStyle style, 
+																					Slider &slider);
 	virtual void drawLinearSliderThumb (Graphics &g, int x, int y, int width, int height, float sliderPos, 
-						float minSliderPos, float maxSliderPos, const Slider::SliderStyle style, Slider &slider);
+																						float minSliderPos, 
+																						float maxSliderPos, 
+																						const Slider::SliderStyle style, 
+																						Slider &slider);
 	virtual void drawButtonBackground (Graphics&, Button&, const Colour&, bool, bool);
 	virtual const Font getFontForTextButton (TextButton&);
 	virtual void drawLabel (Graphics &g, Label &label);
@@ -39,6 +48,39 @@ public:
 
 private:
 
+	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CabbageLookAndFeel);
 	
 };
 
+
+/*=============================================================================================================
+	
+	Basic Look And Feel Class
+
+=============================================================================================================*/
+class CabbageLookAndFeelBasic	:	public LookAndFeel
+{
+public:
+	CabbageLookAndFeelBasic();
+	~CabbageLookAndFeelBasic();
+
+	virtual void drawLinearSliderBackground (Graphics &g, int x, int y, int width, int height, 
+																					float sliderPos, 
+																					float minSliderPos, 
+																					float maxSliderPos, 
+																					const Slider::SliderStyle style, 
+																					Slider &slider);
+	virtual void drawLinearSliderThumb (Graphics &g, int x, int y, int width, int height, float sliderPos, 
+																						float minSliderPos, 
+																						float maxSliderPos, 
+																						const Slider::SliderStyle style, 
+																						Slider &slider);
+	
+	juce_UseDebuggingNewOperator
+
+
+private:
+
+	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CabbageLookAndFeelBasic);
+	
+};

@@ -20,6 +20,8 @@
 #include "CabbagePluginProcessor.h"   
 #include "CabbagePluginEditor.h"
 
+#define VERSION "Cabbage v0.01 Alpha\n"
+
 #define MAX_BUFFER_SIZE 1024
 //==============================================================================
 // There are two different CabbagePluginAudioProcessor constructors. One for the
@@ -66,7 +68,7 @@ if(csCompileResult==0){
 	csndIndex = csound->GetKsmps();
 	cs_scale = csound->Get0dBFS();
 	csoundStatus = true;
-	debugMessageArray.add("Cabbage v0.01 - Alpha  ");
+	debugMessageArray.add(VERSION);
 }
 else{
 	Logger::writeToLog("Csound couldn't compile your file");
@@ -288,10 +290,12 @@ void CabbagePluginAudioProcessor::createGUI(String source)
 		else break;
         }
 
-			for(int i=0;i<guiCtrls.size();i++)
-				Logger::writeToLog(getGUICtrls(i).getStringProp("type"));
-			for(int i=0;i<guiLayoutCtrls.size();i++)
-				Logger::writeToLog(getGUILayoutCtrls(i).getStringProp("type"));
+#ifdef Cabbage_Build_Standalone
+		//init all channels with their init val
+		for(int i=0;i<guiCtrls.size();i++)
+		csound->SetChannel( guiCtrls.getReference(i).getStringProp("channel").toUTF8(), 
+							guiCtrls.getReference(i).getNumProp("value"));
+#endif
 }
 
 

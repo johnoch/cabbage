@@ -72,8 +72,7 @@ void CabbageLookAndFeel::drawLinearSliderBackground (Graphics &g, int /*x*/, int
 	int len = str.length() * 7;
 
 	int textBoxGap = 15;  //space between textbox and slider
-
-
+	
 	//----- Frames
 	int frameWidth, frameHeight;
 	const int numFrames = 75;
@@ -205,21 +204,33 @@ void CabbageLookAndFeel::drawLinearSliderThumb (Graphics &g, int /*x*/, int /*y*
 void CabbageLookAndFeel::drawToggleButton (Graphics &g, ToggleButton &button, bool /*isMouseOverButton*/, bool /*isButtonDown*/)
 {
 	int yOffset= 0;
-	int frameWidth = 60;
+	int frameWidth = 20;
 	int frameHeight = 20; 
+	int destWidth = button.getHeight();
+	int destHeight = destWidth;
+	int destX = 0;
+	int destY = (button.getHeight() - destHeight) / 2;
 
 	Image newButton = ImageCache::getFromMemory (imageBinaries::togglebutton1_png, imageBinaries::togglebutton1_pngSize);
 	
 	//----- If button is switched on
-	if (button.getToggleState() == true) yOffset = 20;	//for changing frame
+	if (button.getToggleState() == true) 
+		yOffset = 20;	//for changing frame
 
 	//----- Drawing image
-	g.drawImage (newButton, 0, 0, frameWidth, frameHeight, 0, yOffset, frameWidth, frameHeight, false);
+	g.drawImage (newButton, destX, destY, destWidth, destHeight, 0, yOffset, frameWidth, frameHeight, false);
 
 	//----- Text
-	Justification just (36);
 	g.setColour (Colours::whitesmoke);
-	g.drawText (button.getButtonText(), 0, 0, button.getWidth(), button.getHeight(), just, false);
+	Justification just (1); //left
+	//g.setColour (Colours::whitesmoke);
+
+	if (button.getHeight() < 14) 
+		g.setFont(button.getHeight());
+	else
+		g.setFont (14); //Text height is 14 if the total height is 14 or more
+
+	g.drawText (button.getButtonText(), destWidth+1, destY, button.getWidth(), button.getHeight(), just, false);
 }
 
 
@@ -248,7 +259,7 @@ const Font CabbageLookAndFeel::getFontForTextButton (TextButton& /*button*/)
 {
 	Font font;
 	font.setTypefaceName (T("Verdana"));
-	font.setHeight (12);
+	font.setHeight (14);
 	return font;
 }
 
@@ -280,10 +291,11 @@ void CabbageLookAndFeel::drawComboBox(Graphics& g, int width, int height, bool /
 //============= TextEditor Outline ======================================================================
 void CabbageLookAndFeel::drawTextEditorOutline (Graphics &g, int width, int height, TextEditor &/*textEditor*/)
 {
-	g.setColour (Colours::black);
-	g.setOpacity (0.9);
+	g.setColour (Colours::transparentBlack);
+	//g.setOpacity (0.9);
 	g.drawRoundedRectangle (0, 0, width, height, height/3, 1);
 }
+
 
 
 //============= TextEditor Background ===================================================================
@@ -294,6 +306,7 @@ void CabbageLookAndFeel::fillTextEditorBackground (Graphics &g, int width, int h
 	g.setOpacity (0.9);
 	g.fillRoundedRectangle (0, 0, width, height, height/3);
 }
+
 
 
 //=========== Labels, slider textboxes are also labels ==================================================
@@ -332,6 +345,73 @@ void CabbageLookAndFeel::drawLabel (Graphics &g, Label &label)
 }
 
 
+//======= Basic Look And Feel Methods ===================================================================
+
+
+//========== Constructor ================================================================================
+CabbageLookAndFeelBasic::CabbageLookAndFeelBasic()
+{
+}
+
+
+//========= Destructor ====================================================================================
+CabbageLookAndFeelBasic::~CabbageLookAndFeelBasic()
+{
+}
+
+//=========== Linear Slider Background ====================================================================
+void CabbageLookAndFeelBasic::drawLinearSliderBackground (Graphics &g, int x, int y, int width, int height, 
+																					float sliderPos, 
+																					float minSliderPos, 
+																					float maxSliderPos, 
+																					const Slider::SliderStyle style, 
+																					Slider &slider)
+{
+	//----- Horizontal Sliders....
+	int backgroundHeight = height * 0.3;
+	int fillHeight = height * 0.05;
+	int destY = (height-backgroundHeight) / 2;
+	int destFillY = ((backgroundHeight-fillHeight) / 2) + destY;
+
+	slider.setTextBoxStyle (Slider::NoTextBox, true, 0, 0); //No text box
+	g.setColour(Colours::black);
+	g.setOpacity (0.7);
+	g.fillRoundedRectangle (0, destY, slider.getWidth(), backgroundHeight, backgroundHeight/3);
+
+	//----- For the fill
+	ColourGradient cg = ColourGradient (Colours::transparentBlack, 0, 0, 
+		Colours::grey, slider.getWidth()*0.5, 0, false);
+	g.setGradientFill (cg);
+	g.setOpacity (0.9);
+	g.fillRoundedRectangle (0, destFillY, sliderPos, fillHeight, backgroundHeight/3);
+}
+
+//=========== Linear Thumb =================================================================================
+void CabbageLookAndFeelBasic::drawLinearSliderThumb (Graphics &g, int x, int y, int width, int height, 
+																						float sliderPos, 
+																						float minSliderPos, 
+																						float maxSliderPos, 
+																						const Slider::SliderStyle style, 
+																						Slider &slider)
+{
+	//----- Horizontal Sliders.....
+	int rectWidth = (height*0.4);
+	int rectHeight = (height*0.75);
+	int destY = ((height-rectHeight)/2);
+	maxSliderPos = width-(rectWidth/2);
+	int availableWidth = slider.getWidth() - rectWidth;
+
+	float div = (slider.getValue()-slider.getMinimum()) / (slider.getMaximum()-slider.getMinimum());
+	sliderPos = (div*availableWidth);
+	
+	//g.setColour (Colours::lightgrey);
+	ColourGradient cg = ColourGradient (Colours::whitesmoke, sliderPos, destY, Colours::grey, sliderPos+rectWidth, rectHeight, false);
+	g.setGradientFill (cg);
+	g.fillRoundedRectangle (sliderPos, destY, rectWidth, rectHeight, rectWidth/3);
+
+	g.setColour (Colours::black);
+	g.drawRoundedRectangle (sliderPos, destY, rectWidth, rectHeight, rectWidth/3, 1);
+}
 
 
 

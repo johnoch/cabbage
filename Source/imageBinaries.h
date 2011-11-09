@@ -24,7 +24,7 @@ namespace imageBinaries
     const int           skin1_pngSize = 237;
 
     extern const char*  togglebutton1_png;
-    const int           togglebutton1_pngSize = 1791;
+    const int           togglebutton1_pngSize = 1602;
 
     extern const char*  verticalbackground_png;
     const int           verticalbackground_pngSize = 60098;
