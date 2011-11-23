@@ -63,19 +63,19 @@ float cabbageABS(float in){
 }
 
 //===========================================================================================
-void showMessage(String message){
+static void showMessage(String message){
 	AlertWindow alert("Cabbage Message" , message, AlertWindow::NoIcon);
 	alert.showMessageBox(AlertWindow::NoIcon, "Cabbage Message" , message, "Ok");
 }
 
 //===========================================================================================
-void showMessageWithLocation(String message){
+static void showMessageWithLocation(String message){
 File thisFile(File::getSpecialLocation(File::currentApplicationFile));
 	AlertWindow alert(thisFile.getFullPathName() , message, AlertWindow::NoIcon);
 	alert.showMessageBox(AlertWindow::NoIcon, thisFile.getFullPathName() , message, "Ok");
 }
 //===========================================================================================
-void showMessage(float num){
+static void showMessage(float num){
 	String str(num);
 	File thisFile(File::getSpecialLocation(File::currentApplicationFile));
 

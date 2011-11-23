@@ -1529,4 +1529,51 @@ this->setWantsKeyboardFocus(false);
 JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CabbageVUMeter);
 };
 
+
+
+class CabbageTable : public Component
+{
+public:
+	CabbageTable(String name, int top, int left, int width, int height):
+	width(width), left(left), top(top), height(height), line(2){
+	
+	}
+
+	~CabbageTable(){
+	}
+
+	void fillTable(Array<float> points){
+		yPoints= points;
+	}
+
+private:
+	Image img;
+	int top, left, width, height, line;
+	Array<float> yPoints;
+
+	void paint (Graphics& g){
+				//g.setColour(Colours::findColourForName("whitesmoke", Colours::whitesmoke));
+				//g.drawRoundedRectangle(0,0, width, height, width*.04, 1);
+				g.setColour(Colours::findColourForName("black", Colours::black));
+				g.setOpacity (0.7f);
+				g.fillRoundedRectangle(line,line, width-(line*2), height-(line*2), width*.04);
+				
+
+				float index=0, y=0, oldX=0, oldY=0;
+				for(int x=0;x<width;x++)//int(yPoints.size()/width))
+				{
+					g.setColour(Colours::findColourForName("lime", Colours::lime));
+					//need to offset Y axes to view waveform
+					//coordinate size / component width will give us our sampling increment
+					g.drawLine(oldX,oldY, x, y, 2);
+					oldY = y;
+					oldX = x;
+					y = ((yPoints[int(index)])+1)/2*height;
+					index = index+(yPoints.size()/width);
+		}
+	}
+
+JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CabbageTable);
+};
+
 #endif

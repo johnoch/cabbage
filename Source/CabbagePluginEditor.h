@@ -65,6 +65,7 @@ private:
 	void InsertXYPad(CabbageGUIClass cAttr);
 	void InsertImage(CabbageGUIClass cAttr);
 	void InsertLabel(CabbageGUIClass cAttr);
+	void InsertTable(CabbageGUIClass cAttr);
 	void buttonClicked (Button*);
 	void timerCallback();
 	void mouseDown(const MouseEvent &e);

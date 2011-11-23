@@ -33,7 +33,7 @@ StandaloneFilterWindow::StandaloneFilterWindow (const String& title,
     : DocumentWindow (title, backgroundColour,
                       DocumentWindow::minimiseButton
                        | DocumentWindow::closeButton),
-      optionsButton ("options"), isGUIOn(false)
+      optionsButton ("options"), isGUIOn(false), pipeOpenedOk(false)
 {
 	setTitleBarButtonsRequired (DocumentWindow::minimiseButton | DocumentWindow::closeButton, false);
     Component::addAndMakeVisible (&optionsButton);
@@ -44,8 +44,9 @@ StandaloneFilterWindow::StandaloneFilterWindow (const String& title,
 // MOD - Stefano Bonetti 
 #ifdef Cabbage_Named_Pipe 
 	ipConnection = new socketConnection(*this);
-	bool openedOk = ipConnection->createPipe(T("cabbage"));
-	if(openedOk) Logger::writeToLog(T("Namedpipe created ..."));
+	pipeOpenedOk = ipConnection->createPipe(T("cabbage"));
+	if(pipeOpenedOk) Logger::writeToLog(T("Namedpipe created ..."));
+
 #endif 
 // MOD - End
 
@@ -120,8 +121,9 @@ StandaloneFilterWindow::~StandaloneFilterWindow()
 
 #ifdef Cabbage_Named_Pipe 
 // MOD - Stefano Bonetti
-	if(ipConnection) 
-		ipConnection->disconnect();
+	if(ipConnection){ 
+	ipConnection->disconnect();
+	}
 // MOD - End
 #endif
 
@@ -159,16 +161,20 @@ StandaloneFilterWindow::~StandaloneFilterWindow()
 //==============================================================================
 void StandaloneFilterWindow::sendMessageToWinXound(String messageType, String message)
 {
+if(pipeOpenedOk){
 String text = messageType+T("|")+message;
 MemoryBlock messageData (text.toUTF8(), text.getNumBytesAsUTF8());
-ipConnection->sendMessage(messageData);
+pipeOpenedOk = ipConnection->sendMessage(messageData);
+}
 }
 
 void StandaloneFilterWindow::sendMessageToWinXound(String messageType, int value)
 {
+if(pipeOpenedOk){
 String text = messageType+T("|")+String(value);
 MemoryBlock messageData (text.toUTF8(), text.getNumBytesAsUTF8());
-ipConnection->sendMessage(messageData);
+pipeOpenedOk = ipConnection->sendMessage(messageData);
+}
 }
 //==============================================================================
 // listener Callback - updates WinXound compiler output with Cabbage messages
@@ -374,11 +380,14 @@ void StandaloneFilterWindow::buttonClicked (Button*)
         return;
 
     PopupMenu m;
+	PopupMenu subExport;
+	PopupMenu batchProc;
 	m.addItem(1, T("Open Cabbage patch"));
     m.addItem(4, TRANS("Audio Settings..."));
     m.addSeparator();
-    m.addItem(5, TRANS("Export Plugin Synth"));
-    m.addItem(6, TRANS("Export Plugin Effect"));
+	subExport.addItem(5, TRANS("Plugin Effect"));
+	subExport.addItem(6, TRANS("Plugin Effect"));
+	m.addSubMenu(TRANS("Export"), subExport);
     m.addSeparator();
 	if(isAlwaysOnTop())
 	m.addItem(7, T("Always on Top"), true, true);
@@ -390,10 +399,13 @@ void StandaloneFilterWindow::buttonClicked (Button*)
 	else
 	m.addItem(9, TRANS("Show MIDI Debug Information"));
     m.addSeparator();
-    m.addItem(10, TRANS("Select line"));
+	batchProc.addItem(11, TRANS("Effects"));
+	batchProc.addItem(12, TRANS("Synths"));
+	m.addSubMenu(TRANS("Batch Convert"), batchProc);
 
 
 	FileChooser openFC(T("Open a Cabbage .csd file..."), File::nonexistent, T("*.csd"));
+	
 
     switch (m.showAt (&optionsButton))
     {
@@ -409,11 +421,11 @@ void StandaloneFilterWindow::buttonClicked (Button*)
         break;
 
 	case 5: 
-		exportPlugin("VSTi");
+		exportPlugin(T("VSTi"));
 		break;
 
 	case 6:
-		exportPlugin("VST");
+		exportPlugin(T("VST"));
 		break;
 
 	case 7:
@@ -434,13 +446,22 @@ void StandaloneFilterWindow::buttonClicked (Button*)
 			filter->setMidiDebug(true);
         break;
 
-	case 10:
-		
+	case 10:		
+		break;
+
+	case 11:
+		BatchProcess(T("VST"));
+		break;
+
+	case 12:
+		BatchProcess(T("VSTi"));
 		break;
 
     default:
         break;
     }
+		
+	repaint();
 }
 
 //==============================================================================
@@ -462,11 +483,13 @@ String VST;
 	showMessage(VST);
 	File VSTData(VST);
 	if(VSTData.exists())showMessage("lib exists");
+	else{
 	File dll(saveFC.getResult().withFileExtension(".so").getFullPathName());
 	showMessage(dll.getFullPathName());
 	if(VSTData.copyFileTo(dll))	showMessage("moved");
 	File loc_csdFile(saveFC.getResult().withFileExtension(".csd").getFullPathName());
 	loc_csdFile.replaceWithText(csdFile.loadFileAsString());
+	}
 	}
 #elif WIN32
 FileChooser saveFC(T("Save as..."), File::nonexistent, T(""));
@@ -482,27 +505,59 @@ String VST;
 	//showMessage(VST);
 	File VSTData(VST);
 	if(!VSTData.exists())showMessage("problem with plugin lib");
+	else{
 	File dll(saveFC.getResult().withFileExtension(".dll").getFullPathName());
 	//showMessage(dll.getFullPathName());
 	if(!VSTData.copyFileTo(dll))	showMessage("problem moving plugin lib");
 	File loc_csdFile(saveFC.getResult().withFileExtension(".csd").getFullPathName());
 	loc_csdFile.replaceWithText(csdFile.loadFileAsString());
 	
-	
 #ifdef Cabbage_Named_Pipe
 	sendMessageToWinXound("CABBAGE_PLUGIN_FILE_UPDATE", csdFile.getFullPathName()+T("|")+loc_csdFile.getFullPathName());
-	//sendMessageToWinXound("CABBAGE_PLUGIN_FILE_UPDATE", "C:\Documents and Settings\Rory\Desktop\WinXound_3.4.0_Beta\WinXound\Cabbage\Examples\Subtractive.csd|C:\Documents and Settings\Rory\Desktop\Subtractive.csd");
-	/*String text;
-	text << T("CABBAGE_PLUGIN_FILE_UPDATE") << "|" << csdFile.getFullPathName()+T("|")+loc_csdFile.getFullPathName();
-	showMessage(text);
-	MemoryBlock messageData (text.toUTF8(), text.getNumBytesAsUTF8());
-	ipConnection->sendMessage(messageData);*/
 	csdFile = loc_csdFile;	
 	sendMessageToWinXound("CABBAGE_SHOW_MESSAGE|Info", "WinXound has been updated\nyour .csd file");
 #endif
 	}
+	}//end of open save dialog
 #endif
 
 
 return 0;	
+}
+
+//==============================================================================
+// Batch process multiple csd files to convert them to plugins libs. 
+//==============================================================================
+void StandaloneFilterWindow::BatchProcess(String type){
+File thisFile(File::getSpecialLocation(File::currentApplicationFile));
+#ifdef WIN32
+FileChooser saveFC(T("Select files..."), File::nonexistent, T(""));
+String VST;
+	if (saveFC.browseForMultipleFilesToOpen()){
+		if(type.contains("VSTi"))
+			VST = thisFile.getParentDirectory().getFullPathName() + T("\\CabbagePluginSynth.dat");
+		else if(type.contains(T("VST")))
+			VST = thisFile.getParentDirectory().getFullPathName() + T("\\CabbagePluginEffect.dat");
+		else if(type.contains(T("AU"))){
+			showMessage("This feature only works on computers running OSX");
+			}
+	//showMessage(VST);
+	File VSTData(VST);
+	if(!VSTData.exists())
+		showMessage("problem with plugin lib");
+	else{
+		for(int i=0;i<saveFC.getResults().size();i++){
+			File dll(saveFC.getResults().getReference(i).withFileExtension(".dll").getFullPathName());
+		//showMessage(dll.getFullPathName());
+		if(!VSTData.copyFileTo(dll))	
+			showMessage("problem moving plugin lib");
+		else{
+		//File loc_csdFile(saveFC.getResults().getReference(i).withFileExtension(".csd").getFullPathName());
+		//loc_csdFile.replaceWithText(csdFile.loadFileAsString());
+		}
+		}
+		showMessage("Batch Convertion Complete");
+	}
+	}
+#endif
 }

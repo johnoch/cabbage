@@ -305,7 +305,7 @@ void CabbagePluginAudioProcessor::createGUI(String source)
 #ifndef Cabbage_No_Csound
 void CabbagePluginAudioProcessor::messageCallback(CSOUND* csound, int /*attr*/,  const char* fmt, va_list args)
 {
-
+try{
   CabbagePluginAudioProcessor* ud = (CabbagePluginAudioProcessor *) csoundGetHostData(csound);
   char msg[MAX_BUFFER_SIZE];
   vsnprintf(msg, MAX_BUFFER_SIZE, fmt, args);
@@ -319,6 +319,13 @@ void CabbagePluginAudioProcessor::messageCallback(CSOUND* csound, int /*attr*/, 
 #endif
   ud->debugMessage = "";
   ud = nullptr;
+}
+catch(...){
+		CabbageUtils::showMessage(T("If you insist on playing the keyboard\n \
+				like a nutter please run Cabbage in standalone\n \
+				mode, outside of WinXound, i.e., launch it on its\n \
+				own and then load the csd file you wish to use."));
+}
 }
 #endif
 
@@ -535,9 +542,9 @@ if(!isGuiEnabled()){
 void CabbagePluginAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
 {
 float* audioBuffer;
-
 #ifndef Cabbage_No_Csound
 
+try{
 if(csCompileResult==0){
 keyboardState.processNextMidiBuffer (midiMessages, 0, buffer.getNumSamples(), true);
 midiBuffer = midiMessages;
@@ -580,7 +587,13 @@ else{
     {
         buffer.clear (i, 0, buffer.getNumSamples());
     }
-
+}
+catch(...){
+	CabbageUtils::showMessage(T("If you insist on playing the keyboard\n \
+				like a nutter please run Cabbage in standalone\n \
+				mode, outside of WinXound, i.e., launch it on its\n \
+				own and then load the csd file you wish to use."));
+}
 #endif
 
 }
@@ -601,47 +614,54 @@ return 0;
 int CabbagePluginAudioProcessor::ReadMidiData(CSOUND* /*csound*/, void *userData,
 unsigned char *mbuf, int nbytes)
 {
-	
-CabbagePluginAudioProcessor *midiData = (CabbagePluginAudioProcessor *)userData;
-if(!userData){
-	cout << "\n\nInvalid";
-	return 0;
-	}
-int cnt=0;
+try{	
+	CabbagePluginAudioProcessor *midiData = (CabbagePluginAudioProcessor *)userData;
+	if(!userData){
+		cout << "\n\nInvalid";
+		return 0;
+		}
+	int cnt=0;
 
-if(!midiData->midiBuffer.isEmpty() && cnt <= (nbytes - 3)){
-   MidiMessage message(0xf4, 0, 0, 0);
-   MidiBuffer::Iterator i (midiData->midiBuffer);
-   int messageFrameRelativeTothisProcess;
-   while (i.getNextEvent (message, messageFrameRelativeTothisProcess))
-   {
-	   if(message.isNoteOn()){
-		*mbuf++ = (unsigned char)0x90 + message.getChannel();
-	   *mbuf++ = (unsigned char)message.getNoteNumber();
-	   *mbuf++ = (unsigned char)message.getVelocity();
-	   cnt += 3;
-	   }
-	   else if(message.isNoteOff()){
-		*mbuf++ = (unsigned char)0x80 + message.getChannel();
-	   *mbuf++ = (unsigned char)message.getNoteNumber();
-	   *mbuf++ = (unsigned char)message.getVelocity();
-	   cnt += 3;
-	   }
-	   else if(message.isAllNotesOff()){
-		*mbuf++ = (unsigned char)0x7B + message.getChannel();
-	   *mbuf++ = (unsigned char)message.getNoteNumber();
-	   *mbuf++ = (unsigned char)message.getVelocity();
-	   cnt += 3;
-	   }
-	   else if(message.isController()){
+	if(!midiData->midiBuffer.isEmpty() && cnt <= (nbytes - 3)){
+	   MidiMessage message(0xf4, 0, 0, 0);
+	   MidiBuffer::Iterator i (midiData->midiBuffer);
+	   int messageFrameRelativeTothisProcess;
+	   while (i.getNextEvent (message, messageFrameRelativeTothisProcess))
+	   {
+		   if(message.isNoteOn()){
+			*mbuf++ = (unsigned char)0x90 + message.getChannel();
+		   *mbuf++ = (unsigned char)message.getNoteNumber();
+		   *mbuf++ = (unsigned char)message.getVelocity();
+		   cnt += 3;
+		   }
+		   else if(message.isNoteOff()){
+			*mbuf++ = (unsigned char)0x80 + message.getChannel();
+		   *mbuf++ = (unsigned char)message.getNoteNumber();
+		   *mbuf++ = (unsigned char)message.getVelocity();
+		   cnt += 3;
+		   }
+		   else if(message.isAllNotesOff()){
+			*mbuf++ = (unsigned char)0x7B + message.getChannel();
+		   *mbuf++ = (unsigned char)message.getNoteNumber();
+		   *mbuf++ = (unsigned char)message.getVelocity();
+		   cnt += 3;
+		   }
+		   else if(message.isController()){
 	  
-	  }
+		  }
             
-   }
-   midiData->midiBuffer.clear();
-}
+	   }
+	   midiData->midiBuffer.clear();
+	}
 
-  return cnt;
+	  return cnt;
+}
+catch(...){
+	CabbageUtils::showMessage(T("If you insist on playing the keyboard\n \
+				like a nutter please run Cabbage in standalone\n \
+				mode, outside of WinXound, i.e., launch it on its\n \
+				own and then load the csd file you wish to use."));
+	}
 }
 
 

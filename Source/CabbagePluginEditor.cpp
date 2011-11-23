@@ -823,7 +823,7 @@ try{
 	else if(cAttr.getStringProp("kind").equalsIgnoreCase("horizontal"))
 	((CabbageSlider*)controls[idx])->setBounds(left+relX, top+relY, width, height);
 	
-	((CabbageSlider*)controls[idx])->slider->setRange(cAttr.getNumProp("min"), cAttr.getNumProp("max"), 0.01);
+	((CabbageSlider*)controls[idx])->slider->setRange(cAttr.getNumProp("min"), cAttr.getNumProp("max"), 0.001);
 	((CabbageSlider*)controls[idx])->slider->setValue(cAttr.getNumProp("value"));
 	((CabbageSlider*)controls[idx])->slider->repaint();
 	((CabbageSlider*)controls[idx])->slider->addListener(this);

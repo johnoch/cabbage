@@ -147,12 +147,14 @@ private:
     ScopedPointer<AudioDeviceManager> deviceManager;
 	void sendMessageToWinXound(String messageType, String message);
 	void sendMessageToWinXound(String messageType, int value);
+	void BatchProcess(String pluginType);
 	AudioProcessorPlayer player;
     TextButton optionsButton;
     void deleteFilter();
 	File csdFile; 
 	bool isGUIOn;
 	int currentLine;
+	bool pipeOpenedOk;
 	
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (StandaloneFilterWindow);
 };
