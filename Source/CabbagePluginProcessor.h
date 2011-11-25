@@ -115,6 +115,10 @@ public:
 		debugMessageArray.clear();
 	}
 
+	int getCompileStatus(){ 
+		return csCompileResult;
+	}
+
 	void clearDebugMessage(){
 		debugMessage="";
 	}

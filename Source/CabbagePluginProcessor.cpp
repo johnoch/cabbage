@@ -20,7 +20,7 @@
 #include "CabbagePluginProcessor.h"   
 #include "CabbagePluginEditor.h"
 
-#define VERSION "Cabbage v0.01 Alpha\n"
+#define VERSION "Cabbage v0.01.1 BETA"
 
 #define MAX_BUFFER_SIZE 1024
 //==============================================================================
@@ -62,6 +62,10 @@ csound->SetMessageCallback(CabbagePluginAudioProcessor::messageCallback);
 if(!inputfile.isEmpty()){
 csCompileResult = csound->Compile( const_cast<char*>(inputfile.toUTF8().getAddress()));
 if(csCompileResult==0){
+	//simple hack to allow tables to be set up correctly. 
+	csound->PerformKsmps();
+	csound->SetScoreOffsetSeconds(0);
+	csound->RewindScore();
 	CSspout = csound->GetSpout();
 	CSspin  = csound->GetSpin();
 	numCsoundChannels = csoundListChannels(csound->GetCsound(), &csoundChanList);
@@ -69,6 +73,7 @@ if(csCompileResult==0){
 	cs_scale = csound->Get0dBFS();
 	csoundStatus = true;
 	debugMessageArray.add(VERSION);
+	debugMessageArray.add(T("\n"));
 }
 else{
 	Logger::writeToLog("Csound couldn't compile your file");
@@ -135,7 +140,8 @@ if(csCompileResult==0){
 
 	csndIndex = csound->GetKsmps();
 	csoundStatus = true;
-	debugMessageArray.add("Cabbage v0.01 - Alpha  ");
+	debugMessageArray.add(VERSION);
+	debugMessageArray.add(T("\n"));
 }
 else{
 	Logger::writeToLog("Csound couldn't compile your file");
@@ -248,6 +254,7 @@ void CabbagePluginAudioProcessor::createGUI(String source)
 								||tokes.getReference(0).equalsIgnoreCase(T("vslider"))
 								||tokes.getReference(0).equalsIgnoreCase(T("rslider"))
 								||tokes.getReference(0).equalsIgnoreCase(T("combobox"))
+								||tokes.getReference(0).equalsIgnoreCase(T("table"))
 								||tokes.getReference(0).equalsIgnoreCase(T("checkbox"))
 								||tokes.getReference(0).equalsIgnoreCase(T("xypad"))
 								||tokes.getReference(0).equalsIgnoreCase(T("button"))){

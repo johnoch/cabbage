@@ -251,7 +251,7 @@ void StandaloneFilterWindow::resetFilter()
     deleteFilter();
 	deviceManager->closeAudioDevice();
 	filter = createCabbagePluginFilter(csdFile.getFullPathName(), isGuiEnabled());
-	filter->suspendProcessing(isGuiEnabled());
+	//filter->suspendProcessing(isGuiEnabled());
 	filter->addChangeListener(this);
 	filter->sendChangeMessage();
 	filter->createGUI(csdFile.loadFileAsString());

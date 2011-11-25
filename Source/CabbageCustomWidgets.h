@@ -1529,49 +1529,279 @@ this->setWantsKeyboardFocus(false);
 JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CabbageVUMeter);
 };
 
-
-
-class CabbageTable : public Component
+//==============================================================================
+// custom Table
+//==============================================================================
+class Table : public Component
 {
 public:
-	CabbageTable(String name, int top, int left, int width, int height):
-	width(width), left(left), top(top), height(height), line(2){
-	
+	//===== Constructor =========================================================================
+	Table(String name, int GEN, int tableSize, int minAmp, int maxAmp) :
+	  thickness(2), tblSize(tableSize), gen(GEN), prevIndx(0), minAmp(minAmp), maxAmp(maxAmp)
+	{	
 	}
 
-	~CabbageTable(){
+	//===== Destructor ==========================================================================
+	~Table()
+	{
 	}
 
-	void fillTable(Array<float> points){
-		yPoints= points;
+	//----- Resize ==============================================================================
+	void resized()
+	{
+		totalWidth = getWidth();
+		totalHeight = getHeight();
+		canvasTop = 3;
+		canvasLeft = 3;
+		canvasRight = totalWidth - 3;
+		canvasBottom = totalHeight - 25;
+		canvasWidth = canvasRight - canvasLeft;
+		canvasHeight = canvasBottom - canvasTop;
+
+		tableTop = canvasTop + 10;
+		tableBottom = canvasBottom - 20;
+		tableLeft = canvasLeft + 10;
+		tableRight = canvasRight - 10;
+		tableWidth = tableRight - tableLeft;
+		tableHeight = tableBottom - tableTop;
+
+		prevY = tableBottom; //first yPoints point should be the bottom of the table
+
+		//----- Resolution for painting. This represents the physical space between points.
+		res = (float)tableWidth / (float)tblSize;
+
+		for (int i=0; i<tblSize; i++) {
+			yPoints.add(tableBottom); //tableBottom is the physical equivalent of 0
+
+			float xValue = (i*res) + tableLeft; //tableLeft is the starting point
+			indx.add(xValue);
+		}
+
+		//----- Drawing background image
+		drawBackgroundImage();
 	}
 
+	//====== Fill Table =========================================================================
+	void fillTable (Array<float> yValues)
+	{
+		yPoints.clear();
+
+		for (int i=0; i<tblSize; i++) {
+			float yInvert = 1-yValues[i];	//inverting the y axis
+			yPoints.add((yInvert*tableHeight) + tableTop);
+		}
+		
+		//----- Repainting
+		repaint (canvasLeft, canvasTop, canvasWidth, canvasHeight);
+	}
+
+	//====== Output Values =====================================================================
+	float outputTable (float index)
+	{
+		/*----- Normalising yPoints to begin with. This is then inverted as the y axis is upside-
+		down in Juce. This decimal can then be multiplied by the maxAmp to get our value. minAmp
+		is added incase the minimum amp value is not 0. */
+
+		float normValue = ((yPoints[index]-tableTop) / tableHeight); //normalising
+		normValue = 1-normValue; //inverting
+
+		float outputValue = (normValue*maxAmp) + minAmp;
+		return outputValue;
+	}
+
+	//======= Background Image =================================================================
+	void drawBackgroundImage()
+	{
+		/*----- This function draws the background onto a blank image and then loads it into cache. 
+		The cached image is then reused in the paint() method. This is a more efficient way to 
+		redrawing something	that is static. */
+
+		// Creating a blank canvas
+		img = Image::Image(Image::ARGB, totalWidth, totalHeight, true);
+			
+		Graphics g (img);
+
+		//----- For drawing the border 
+		g.setColour (Colours::black);
+		g.setOpacity (0.4);
+		g.fillRoundedRectangle (0, 0, totalWidth, totalHeight, (totalWidth/15));
+
+		//----- For drawing the actual canvas area
+		g.setColour (Colours::black);
+		g.setOpacity (0.7);
+		g.fillRoundedRectangle (canvasLeft, canvasTop, canvasWidth, canvasHeight, (totalWidth/20));
+
+		//----- Table border
+		g.setColour (Colours::white);
+		//g.setOpacity (0.7);
+		g.drawLine (tableLeft, tableTop, tableLeft, tableBottom, 1);
+		g.drawLine (tableLeft, tableBottom, tableRight, tableBottom, 1);
+
+		//----- Adding image to cache and assigning it a hash code
+		ImageCache::addImageToCache (img, 15);
+	}
+
+
+	//====== Paint method =======================================================================
+	void paint (Graphics& g)
+	{
+		Image bg = ImageCache::getFromHashCode(15);
+		g.drawImage (bg, 0, 0, getWidth(), getHeight(), 0, 0, bg.getWidth(), bg.getHeight(), false);
+				
+		float prevIndx = indx[0];
+		float prevY = yPoints[0];
+
+		/*----- Drawing the horizontal lines from the previous point to the current one. The 
+		last line is drawn after the for loop from the last point to the end of the canvas....*/
+		for (int i=0; i<tblSize; i++) {
+			//If the table is more than likely an envelope / waveform etc.....
+			if (tblSize > 32) {
+				g.drawLine (indx[i], prevY, indx[i], yPoints[i], thickness);
+				g.setColour (Colours::limegreen);
+				g.setOpacity (0.1);
+				g.fillRect (prevIndx, yPoints[i], res, (float)tableBottom-yPoints[i]);
+			}
+			g.setColour (Colours::lime);
+			g.setOpacity (1);
+			g.drawLine (prevIndx, prevY, indx[i], prevY, thickness);
+		
+			prevIndx = indx[i];
+			prevY = yPoints[i];
+		}
+		g.drawLine (indx.getLast(), prevY, tableRight, prevY, thickness); //last horizontal line
+	}
+
+	//====== mouseDrag =========================================================================
+	void mouseDrag(const MouseEvent& e)
+	{
+		float x = e.getPosition().getX();
+		float y = e.getPosition().getY();
+
+		//----- Staying within bounds...
+		if (y < tableTop)
+			y = tableTop;
+		if (y > tableBottom)
+			y = tableBottom;
+		
+		//----- Getting the table index of where the new point is located
+		int currIndx = ((x-tableLeft) / tableWidth) * tblSize;
+		
+		//----- Getting index difference and y-axis difference between this point and the last
+		int indxDiff = currIndx-prevIndx;
+		float yDiff = y-prevY;
+
+		/*----- If indxDiff > 1 means that the mouseDrag was not sampled fast enough by the OS. 
+		We therefore need to fabricate the y values in between prevIndx and currIndx. */
+		if (indxDiff > 1)
+			for (int i=0; i<indxDiff; i++)
+				yPoints.set(i+prevIndx, (((i/(float)indxDiff) * yDiff) + prevY));
+		//----- If the mouse is being dragged backwards and the mouseDrag was not sampled fast enough...
+		else if (indxDiff < -1)
+			for (int i=indxDiff; i<0; i++)
+				yPoints.set(i+prevIndx, (((i/(float)indxDiff) * yDiff) + prevY));
+		//----- Normal
+		else 
+			yPoints.set(currIndx, y);
+		
+		//----- Repainting
+		repaint (canvasLeft, canvasTop, canvasWidth, canvasHeight);
+
+		prevIndx = currIndx;
+		prevY = y;
+	}
+
+	//======== Mouse Up ======================================================================
+	void mouseUp (const MouseEvent& e)
+	{
+	}
+
+	//======== Mouse Down ====================================================================
+	void mouseDown (const MouseEvent& e)
+	{
+		float x = e.getPosition().getX();
+		float y = e.getPosition().getY();
+		//----- Getting the table index of where the new point is located
+		int currIndx = ((x-tableLeft) / tableWidth) * tblSize;
+
+		yPoints.set (currIndx, y);
+
+		//----- Repainting
+		repaint (canvasLeft, canvasTop, canvasWidth, canvasHeight);
+
+		prevIndx = currIndx;
+		prevY = y;
+	}
+
+
+//====================================================================================
 private:
 	Image img;
-	int top, left, width, height, line;
-	Array<float> yPoints;
+	int gen, tblSize, minY, maxY;
+	int canvasTop, canvasLeft, canvasRight, canvasBottom, canvasWidth, canvasHeight;
+	int tableTop, tableBottom, tableLeft, tableRight, tableWidth, tableHeight;
+	int totalWidth, totalHeight;
+	int thickness;
+	int tableSize;
+	float res;
+	int prevIndx;
+	float prevY;
+	Array<float> indx, yPoints;
+	int maxAmp, minAmp;
 
-	void paint (Graphics& g){
-				//g.setColour(Colours::findColourForName("whitesmoke", Colours::whitesmoke));
-				//g.drawRoundedRectangle(0,0, width, height, width*.04, 1);
-				g.setColour(Colours::findColourForName("black", Colours::black));
-				g.setOpacity (0.7f);
-				g.fillRoundedRectangle(line,line, width-(line*2), height-(line*2), width*.04);
-				
+JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Table);
+};
 
-				float index=0, y=0, oldX=0, oldY=0;
-				for(int x=0;x<width;x++)//int(yPoints.size()/width))
-				{
-					g.setColour(Colours::findColourForName("lime", Colours::lime));
-					//need to offset Y axes to view waveform
-					//coordinate size / component width will give us our sampling increment
-					g.drawLine(oldX,oldY, x, y, 2);
-					oldY = y;
-					oldX = x;
-					y = ((yPoints[int(index)])+1)/2*height;
-					index = index+(yPoints.size()/width);
-		}
+//==============================================================================
+// custom CabbageTable, uses the Table class
+//==============================================================================
+class CabbageTable : public Component
+{
+//ScopedPointer<LookAndFeel> lookFeel;
+int offX, offY, offWidth, offHeight;
+public:
+ScopedPointer<GroupComponent> groupbox;
+ScopedPointer<Table> table;
+//---- constructor -----
+CabbageTable(String name, String text, String caption, int tableSize)
+{
+	setName(name);
+	offX=offY=offWidth=offHeight=0;
+	
+	groupbox = new GroupComponent(String("groupbox_")+name);
+	groupbox->setWantsKeyboardFocus(false);
+	table = new Table(name, 0, tableSize, 0, 0);
+	addAndMakeVisible(table);
+	addAndMakeVisible(groupbox);
+
+	groupbox->setVisible(false);
+
+	groupbox->setColour(GroupComponent::outlineColourId,
+		Colours::findColourForName("white", Colours::white));
+	groupbox->setColour(GroupComponent::textColourId,
+		Colours::findColourForName("white", Colours::white));
+	
+	if(caption.length()>0){
+		offX=10;
+		offY=15;
+		offWidth=-20;
+		offHeight=-25;
+		groupbox->setVisible(true);
+		groupbox->setText(caption);
 	}
+	this->setWantsKeyboardFocus(false);
+}
+//---------------------------------------------
+~CabbageTable(){
+
+}
+
+//---------------------------------------------
+void resized()
+{
+groupbox->setBounds(0, 0, getWidth(), getHeight()); 
+table->setBounds(offX, offY, getWidth()+offWidth, getHeight()+offHeight); 
+this->setWantsKeyboardFocus(false);
+}
 
 JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CabbageTable);
 };

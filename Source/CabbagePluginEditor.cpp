@@ -380,6 +380,9 @@ for(int i=0;i<getFilter()->getGUICtrlsSize();i++){
 	else if(getFilter()->getGUICtrls(i).getStringProp("type")==T("xypad")){	
 		InsertXYPad(getFilter()->getGUICtrls(i));       //insert xypad	
 		}
+	else if(getFilter()->getGUICtrls(i).getStringProp("type")==T("table")){	
+		InsertTable(getFilter()->getGUICtrls(i));       //insert xypad	
+		}
 	}
 
 
@@ -1252,8 +1255,82 @@ catch(...){
 	
 }
 
+//+++++++++++++++++++++++++++++++++++++++++++
+//					table
+//+++++++++++++++++++++++++++++++++++++++++++
+void CabbagePluginAudioProcessorEditor::InsertTable(CabbageGUIClass cAttr)
+{
+int tableSize=0;
+Array <float> tableValues;
+try{
+	//fill array with points from table, is table is valid
+	if(getFilter()->getCompileStatus()==0){
+	tableSize = getFilter()->getCsound()->TableLength(cAttr.getNumProp("tableNum"));
+	for (int i=0; i<(tableSize); i++)
+	tableValues.add(getFilter()->getCsound()->TableGet(cAttr.getNumProp("tableNum"), i));
+	}
+	else{
+		//if table is not valid fill our array with at least one dummy point
+		tableValues.add(0); 
+	}
+
+	controls.add(new CabbageTable(cAttr.getStringProp("name"),
+		cAttr.getStringProp("caption"),
+		cAttr.getItems(0),
+		tableSize));	
+	int idx = controls.size()-1;
+	float left = cAttr.getNumProp("left");
+	float top = cAttr.getNumProp("top");
+	float width = cAttr.getNumProp("width");
+	float height = cAttr.getNumProp("height");
+
+
+	int relY=0,relX=0;
+	if(layoutComps.size()>0){
+	for(int y=0;y<layoutComps.size();y++){
+	if(cAttr.getStringProp("reltoplant").length()>0){
+	if(layoutComps[y]->getProperties().getWithDefault(String("plant"), -99).toString().equalsIgnoreCase(cAttr.getStringProp("reltoplant")))
+		{
+		width = width*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
+		height = height*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
+		top = top*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
+		left = left*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
+
+		if(layoutComps[y]->getName().containsIgnoreCase("groupbox")||
+			layoutComps[y]->getName().containsIgnoreCase("image"))
+			{			
+			controls[idx]->setBounds(left, top, width, height);
+			//if component is a member of a plant add it directly to the plant
+			layoutComps[y]->addAndMakeVisible(controls[idx]);
+			}
+		}
+	}
+		else{
+	    controls[idx]->setBounds(left+relX, top+relY, width, height);
+		componentPanel->addAndMakeVisible(controls[idx]);		
+		}
+	}
+	}
+	else{
+	    controls[idx]->setBounds(left+relX, top+relY, width, height);
+		componentPanel->addAndMakeVisible(controls[idx]);		
+	}
+	
+	//((CabbageCheckbox*)controls[idx])->button->addListener(this);
+
+
+	((CabbageTable*)controls[idx])->table->fillTable(tableValues);
+
+	Logger::writeToLog(cAttr.getPropsString());
+}
+catch(...){
+    Logger::writeToLog(T("Syntax error: 'table..."));
+    }
+	
+}
+
 					/******************************************/
-					/*     actionlistener method (xypad)      */
+					/*     actionlistener method (xypad/table)      */
 					/******************************************/
 void CabbagePluginAudioProcessorEditor::actionListenerCallback (const String& message){
 //this event recieves action messages from custom components. For now it's only

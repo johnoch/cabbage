@@ -193,6 +193,17 @@ CabbageGUIClass::CabbageGUIClass(String compStr, int ID):
 		  type = name;
           name.append(String(ID), 1024);
 	}
+    else if(compStr.indexOfIgnoreCase("table ")!=-1){
+          top = 10;
+          left = 10;
+          width = 400;
+          height = 200;
+          colour = "";
+          name = "table";
+		  type = name;
+		  tableNum = 1;
+          name.append(String(ID), 1024);
+	}
     else if(compStr.indexOfIgnoreCase("xypad ")!=-1){
           top = 10;
           left = 10;
@@ -314,6 +325,7 @@ int CabbageGUIClass::parse(String str)
 	identArray.add("text(");
     identArray.add("runcsound(");
 	identArray.add("tabs(");
+	identArray.add("tablenumber(");
 	identArray.add("fill(");
 	identArray.add("file(");
 	identArray.add("outline(");
@@ -489,6 +501,9 @@ int CabbageGUIClass::parse(String str)
             else if(identArray.getReference(indx).equalsIgnoreCase("max(")){
 				max = strTokens[0].trim().getFloatValue();  
 			}
+            else if(identArray.getReference(indx).equalsIgnoreCase("tablenumber(")){
+				tableNum = strTokens[0].trim().getFloatValue();  
+			}
 			else if(identArray.getReference(indx).equalsIgnoreCase(",line(")||
 					identArray.getReference(indx).equalsIgnoreCase(" line(")) line = strTokens[0].trim().getFloatValue();  
             else if(identArray.getReference(indx).equalsIgnoreCase("value(")) value = strTokens[0].trim().getFloatValue();  
@@ -571,6 +586,8 @@ float CabbageGUIClass::getNumProp(String prop)
 			return maxItems;
 		else if(prop.equalsIgnoreCase(T("linkTo")))
 			return linkTo;
+		else if(prop.equalsIgnoreCase(T("tableNum")))
+			return tableNum;
 		else return -9999;
 }
 
