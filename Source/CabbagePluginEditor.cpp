@@ -543,7 +543,8 @@ try{
 	((Label*)layoutComps[idx])->setFont(Font(height));
 
 if(cAttr.getStringProp("colour").length()>0){
-	((GroupComponent*)layoutComps[idx])->setColour(Label::textColourId,
+	//text colour
+	((GroupComponent*)layoutComps[idx])->setColour(0x1000281,
 		Colours::findColourForName(cAttr.getStringProp("colour"), Colours::black));
 	}
 	layoutComps[idx]->getProperties().set(String("plant"), var(cAttr.getStringProp("plant")));
@@ -670,14 +671,31 @@ try{
 	float width = cAttr.getNumProp("width");
 	float height = cAttr.getNumProp("height");
 
-	float noOfMeters = cAttr.getNumProp("chans");
+	//set up meters. If config() is not used then the number of channels
+	//is used to determine the layout. 1 = Mono, 2 = Stereo, and anything
+	//above that will be an array of N mono channels. 
+
+	float noOfMeters = cAttr.getNumProp("channels");
+	Array<int> config;
+	if(noOfMeters==1)
+		config.add(1);
+	else if(noOfMeters==2)
+		config.add(2);
+	else{
+		int size = cAttr.getVUConfig().size();
+		if(size>0)
+			for(int i=0;i<size;i++){
+			config.add(cAttr.getNumProp("configArray", i));
+			}
+		else
+			for(int y=0;y<noOfMeters;y++)
+			config.add(1);
+	}
 
 	layoutComps.add(new CabbageVUMeter(cAttr.getStringProp("name"), 
 										 cAttr.getStringProp("text"),
-										 cAttr.getStringProp("caption"),
-										 noOfMeters,
-										 width,
-										 height));	
+										 cAttr.getStringProp("caption"), 
+										 config));	
 	int idx = layoutComps.size()-1;
 
 	//check to see if widgets is anchored
@@ -829,6 +847,8 @@ try{
 	((CabbageSlider*)controls[idx])->slider->setRange(cAttr.getNumProp("min"), cAttr.getNumProp("max"), 0.001);
 	((CabbageSlider*)controls[idx])->slider->setValue(cAttr.getNumProp("value"));
 	((CabbageSlider*)controls[idx])->slider->repaint();
+	((CabbageSlider*)controls[idx])->slider->setPopupDisplayEnabled(true, controls[idx]->getParentComponent());
+	((CabbageSlider*)controls[idx])->slider->setPopupMenuEnabled(true);
 	((CabbageSlider*)controls[idx])->slider->addListener(this);
 
 
@@ -1266,8 +1286,11 @@ try{
 	//fill array with points from table, is table is valid
 	if(getFilter()->getCompileStatus()==0){
 	tableSize = getFilter()->getCsound()->TableLength(cAttr.getNumProp("tableNum"));
-	for (int i=0; i<(tableSize); i++)
+	for (int i=0; i<(tableSize); i++){
+	float value = getFilter()->getCsound()->TableGet(cAttr.getNumProp("tableNum"), i);
+	Logger::writeToLog(String(value));
 	tableValues.add(getFilter()->getCsound()->TableGet(cAttr.getNumProp("tableNum"), i));
+	}
 	}
 	else{
 		//if table is not valid fill our array with at least one dummy point
@@ -1316,10 +1339,8 @@ try{
 		componentPanel->addAndMakeVisible(controls[idx]);		
 	}
 	
-	//((CabbageCheckbox*)controls[idx])->button->addListener(this);
-
-
 	((CabbageTable*)controls[idx])->table->fillTable(tableValues);
+	((CabbageTable*)controls[idx])->table->addActionListener(this);
 
 	Logger::writeToLog(cAttr.getPropsString());
 }
@@ -1335,9 +1356,12 @@ catch(...){
 void CabbagePluginAudioProcessorEditor::actionListenerCallback (const String& message){
 //this event recieves action messages from custom components. For now it's only
 //needed for the xypad but could potentially be used later for other custom controls
-String name = message;
+String type = message.substring(message.indexOf(T("|"))+1, 100);
+String name = message.substring(0, message.indexOf(T("|"))); 
 
 for(int i=0;i<(int)getFilter()->getGUICtrlsSize();i++)//find correct control from vector
+	//if message came from an XY pad...
+	if(type.equalsIgnoreCase(T("xycontroller"))){
 		if(getFilter()->getGUICtrls(i).getStringProp("name")==name)
 		{
 			if(getFilter()->getGUICtrls(i).getStringProp("xyChannel").equalsIgnoreCase("X")){	
@@ -1366,7 +1390,24 @@ for(int i=0;i<(int)getFilter()->getGUICtrlsSize();i++)//find correct control fro
 			getFilter()->setParameterNotifyingHost(i+1, (float)(((CabbageXYController*)controls[i])->xypad->getBallY()));
 			}
 #endif
-     	}
+		}
+	}
+	//if message comes from a table
+	else if(type.equalsIgnoreCase(T("table"))){
+	//now we know it's a table, just check teh channel and away we go...
+		int tableNum = getFilter()->getGUICtrls(i).getNumProp("tableNum");
+		Array<float> table = ((CabbageTable*)controls[i])->table->outputTable();
+		if(getFilter()->getGUICtrls(i).getStringProp("name")==name)
+		{	
+			getFilter()->setParameterNotifyingHost(i, 0);
+			for(int y=0;y<table.size();y++){
+			getFilter()->getCsound()->TableSet(tableNum, y, table[y]);
+			//Logger::writeToLog(String(table[y]));
+			}
+			getFilter()->setParameterNotifyingHost(i, 1);
+
+		}
+	}
 }
 
 //=============================================================================

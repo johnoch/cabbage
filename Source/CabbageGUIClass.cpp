@@ -188,6 +188,7 @@ CabbageGUIClass::CabbageGUIClass(String compStr, int ID):
           left = 10;
           width = 400;
           height = 200;
+		  vuConfig.clear();
           colour = "";
           name = "vumeter";
 		  type = name;
@@ -201,6 +202,7 @@ CabbageGUIClass::CabbageGUIClass(String compStr, int ID):
           colour = "";
           name = "table";
 		  type = name;
+		  value = 1;
 		  tableNum = 1;
           name.append(String(ID), 1024);
 	}
@@ -319,6 +321,7 @@ int CabbageGUIClass::parse(String str)
     identArray.add("exit(");
     identArray.add("cssetup(");
     identArray.add("kind(");
+	identArray.add("config(");
     identArray.add("fontcolour(");
     identArray.add("beveltype(");
     identArray.add("items(");
@@ -362,9 +365,9 @@ int CabbageGUIClass::parse(String str)
 					}
 					else if(str.containsIgnoreCase("vumeter")){
 						channels.clear();
-						for(int u=0;u<strTokens.size();u++)
+						for(int u=0;u<strTokens.size();u++){
 							channels.add(strTokens[u].trim());
-					//assign X and Y channels for xypad
+						}
 					}
 					else channels.add(strTokens[0].trim());
 			}
@@ -408,6 +411,7 @@ int CabbageGUIClass::parse(String str)
 			}
 
 			//numeric paramters
+
 			else if(identArray.getReference(indx).equalsIgnoreCase("size(")){
 				if(strTokens.size()<2){
 					debugMessage =T("WARNING: Not enough paramters passed to size(): usage pos(width, height\")");
@@ -443,6 +447,13 @@ int CabbageGUIClass::parse(String str)
 				  boundsText = identArray.getReference(indx)+tstr+T(")");
 				}
             }
+            else if(identArray.getReference(indx).equalsIgnoreCase("config(")){
+				vuConfig.clear();
+				 for(int i= 0;i<(int)strTokens.size();i++){
+					 vuConfig.add(strTokens[i].trim().getFloatValue());
+				 }
+				}
+
             else if(identArray.getReference(indx).equalsIgnoreCase("pos(")){
 				if(strTokens.size()<2){
 					debugMessage =T("WARNING: Not enough paramters passed to pos(): usage pos(top, left\")");
@@ -536,7 +547,7 @@ float CabbageGUIClass::getNumProp(String prop)
 			return height;
 		else if(prop.equalsIgnoreCase(T("top")))
 			return top;
-		else if(prop.equalsIgnoreCase(T("chans")))
+		else if(prop.equalsIgnoreCase(T("channels")))
 			return channels.size();
 		else if(prop.equalsIgnoreCase(T("left")))
 			return left;
@@ -589,6 +600,14 @@ float CabbageGUIClass::getNumProp(String prop)
 		else if(prop.equalsIgnoreCase(T("tableNum")))
 			return tableNum;
 		else return -9999;
+}
+
+float CabbageGUIClass::getNumProp(String prop, int index)
+{
+		if(prop.equalsIgnoreCase(T("configArray")))
+			return vuConfig[index];
+		else 
+			return 0;
 }
 
 //set numerical attributes

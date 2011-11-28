@@ -56,7 +56,8 @@ CabbageButton(String name, String caption, String buttonText, String colour)
 	}
 
 	if(colour.length()>0)
-	button->setColour(TextButton::buttonColourId,
+		//button colour ID
+	button->setColour(0x1000100,
 			Colours::findColourForName(colour, Colours::grey));
 }
 //---------------------------------------------
@@ -95,10 +96,11 @@ CabbageSlider(String name, String caption, String kind, String colour): plantX(-
 	addAndMakeVisible(groupbox);
 	groupbox->setVisible(false);
 	sliderType = kind; 
-	
-	groupbox->setColour(GroupComponent::outlineColourId,
+	//outline colour ID
+	groupbox->setColour(0x1005400,
 		Colours::findColourForName(colour, Colours::whitesmoke));
-	groupbox->setColour(GroupComponent::textColourId,
+	//text colour ID
+	groupbox->setColour(0x1005410,
 		Colours::findColourForName(colour, Colours::whitesmoke));
 
 
@@ -186,10 +188,11 @@ CabbageCheckbox(String name, String caption, String buttonText, String colour)
 	addAndMakeVisible(button);
 	addAndMakeVisible(groupbox);
 	groupbox->setVisible(false);
-
-	groupbox->setColour(GroupComponent::outlineColourId,
+	//outline colour ID
+	groupbox->setColour(0x1005400,
 		Colours::findColourForName(colour, Colours::black));
-	groupbox->setColour(GroupComponent::textColourId,
+	//text colour ID
+	groupbox->setColour(0x1005410,
 		Colours::findColourForName(colour, Colours::black));
 
 	button->setButtonText(buttonText);
@@ -203,9 +206,11 @@ CabbageCheckbox(String name, String caption, String buttonText, String colour)
 	}
 
 	if(colour.length()>0)
-	button->setColour(TextButton::buttonColourId,
+	//button colour ID
+	button->setColour(0x1000100,
 			Colours::findColourForName(colour, Colours::grey));
-	button->setColour(ToggleButton::textColourId,
+	//text colour id
+	button->setColour(0x1006501,
 			Colours::findColourForName(colour, Colours::grey));
 	button->setButtonText(buttonText);
 	this->setWantsKeyboardFocus(false);
@@ -249,10 +254,11 @@ CabbageComboBox(String name, String caption, String text, String colour)
 	addAndMakeVisible(groupbox);
 
 	groupbox->setVisible(false);
-
-	groupbox->setColour(GroupComponent::outlineColourId,
+	//outline colour IDE
+	groupbox->setColour(0x1005400,
 		Colours::findColourForName(colour, Colours::black));
-	groupbox->setColour(GroupComponent::textColourId,
+	//text colour ID
+	groupbox->setColour(0x1005410,
 		Colours::findColourForName(colour, Colours::black));
 	
 	if(caption.length()>0){
@@ -263,8 +269,8 @@ CabbageComboBox(String name, String caption, String text, String colour)
 		groupbox->setVisible(true);
 		groupbox->setText(caption);
 	}
-
-	combo->setColour(ComboBox::ColourIds::textColourId,
+	//text colour ID
+	combo->setColour(0x1000a00,
 			Colours::findColourForName("white", Colours::grey));
 
 
@@ -358,9 +364,11 @@ CabbageGroupbox(String name, String caption, String text, String colour):GroupCo
         toBack();
         offX=offY=offWidth=offHeight=0;
         if(colour.length()>0){
-        setColour(GroupComponent::outlineColourId,
+		//outline colour iD
+        setColour(0x1005400,
                 Colours::findColourForName(colour, Colours::black));
-        setColour(GroupComponent::textColourId,
+		//text colour iD
+        setColour(0x1005410,
                 Colours::findColourForName(colour, Colours::black));
         }
         this->setText(text);
@@ -407,7 +415,7 @@ public:
 		outputX(0)
 	{
 		basicLookAndFeel = new CabbageLookAndFeelBasic();
-
+		name << T("|xycontroller");
 		//----- Texteditor to display the output values for x and y
 		for (int i=0; i<2; i++) {
 			textEditors.add(new TextEditor());
@@ -964,10 +972,11 @@ CabbageXYController(String name, String text, String caption, int minX, int maxX
 	addAndMakeVisible(groupbox);
 
 	groupbox->setVisible(false);
-
-	groupbox->setColour(GroupComponent::outlineColourId,
+	//outline colour ID
+	groupbox->setColour(0x1005400,
 		Colours::findColourForName("white", Colours::white));
-	groupbox->setColour(GroupComponent::textColourId,
+	//outline text ID
+	groupbox->setColour(0x1005410,
 		Colours::findColourForName("white", Colours::white));
 	
 	if(caption.length()>0){
@@ -1026,9 +1035,10 @@ CabbageMessageConsole(String name, String caption, String text):
 	editor->setScrollbarsShown(true);
 	editor->setReturnKeyStartsNewLine(true);
 	editor->setReadOnly(true);
-	
-	editor->setColour(TextEditor::ColourIds::backgroundColourId, Colours::black);
-	editor->setColour(TextEditor::ColourIds::textColourId, Colours::green);
+	//background colour ID
+	editor->setColour(0x1000200, Colours::black);
+	//text colour ID
+	editor->setColour(0x1000201, Colours::green);
 	editor->setText(message);
 	if(caption.length()>0){
 		offX=10;
@@ -1476,27 +1486,27 @@ public:
 ScopedPointer<GroupComponent> groupbox;
 ScopedPointer<VUComponent> vuMeter;
 //---- constructor -----
-CabbageVUMeter(String name, String text, String caption, float meters, float width, int height):
-numMeters(meters)
+CabbageVUMeter(String name, String text, String caption, Array<int> config):
+numMeters(0)
 {
 	setName(name);
 	offX=offY=offWidth=offHeight=0;
 	
 	groupbox = new GroupComponent(String("groupbox_")+name);
-	
-	Array<int> test;
-	test.add(2);
-	test.add(2);
-	test.add(1);
-	vuMeter = new VUComponent(test, true);
+	numMeters = 0;
+	for(int i =0;i<config.size();i++)
+		numMeters = numMeters+config[i];
+
+	vuMeter = new VUComponent(config, true);
 	addAndMakeVisible(vuMeter);
 	addAndMakeVisible(groupbox);
 
 	groupbox->setVisible(false);
-
-	groupbox->setColour(GroupComponent::outlineColourId,
+	//outline colour ID
+	groupbox->setColour(0x1005400,
 		Colours::findColourForName("white", Colours::white));
-	groupbox->setColour(GroupComponent::textColourId,
+	//text colour ID
+	groupbox->setColour(0x1005410,
 		Colours::findColourForName("white", Colours::white));
 	
 	if(caption.length()>0){
@@ -1532,13 +1542,15 @@ JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CabbageVUMeter);
 //==============================================================================
 // custom Table
 //==============================================================================
-class Table : public Component
+class Table : public Component,
+			  public ActionBroadcaster
 {
 public:
 	//===== Constructor =========================================================================
-	Table(String name, int GEN, int tableSize, int minAmp, int maxAmp) :
-	  thickness(2), tblSize(tableSize), gen(GEN), prevIndx(0), minAmp(minAmp), maxAmp(maxAmp)
+	Table(String inName, int GEN, int tableSize, int minAmp, int maxAmp) :
+	  name(inName), thickness(2), tblSize(tableSize), gen(GEN), prevIndx(0), minAmp(minAmp), maxAmp(maxAmp)
 	{	
+		name.append(T("|table"), 100);
 	}
 
 	//===== Destructor ==========================================================================
@@ -1586,8 +1598,13 @@ public:
 	{
 		yPoints.clear();
 
+
 		for (int i=0; i<tblSize; i++) {
 			float yInvert = 1-yValues[i];	//inverting the y axis
+			maxAmp = yValues[i] > maxAmp ? yValues[i] : maxAmp;
+			minAmp = yValues[i] < minAmp ? yValues[i] : minAmp;
+			Logger::writeToLog(String(maxAmp));
+			Logger::writeToLog(String(minAmp));
 			yPoints.add((yInvert*tableHeight) + tableTop);
 		}
 		
@@ -1596,17 +1613,19 @@ public:
 	}
 
 	//====== Output Values =====================================================================
-	float outputTable (float index)
+	Array<float> outputTable()
 	{
 		/*----- Normalising yPoints to begin with. This is then inverted as the y axis is upside-
 		down in Juce. This decimal can then be multiplied by the maxAmp to get our value. minAmp
 		is added incase the minimum amp value is not 0. */
-
-		float normValue = ((yPoints[index]-tableTop) / tableHeight); //normalising
+		Array<float> points;
+		for(int i=0;i<tblSize;i++){
+		float normValue = ((yPoints[i]-tableTop) / tableHeight); //normalising
 		normValue = 1-normValue; //inverting
-
 		float outputValue = (normValue*maxAmp) + minAmp;
-		return outputValue;
+		points.add(outputValue);
+		}
+		return points;
 	}
 
 	//======= Background Image =================================================================
@@ -1713,6 +1732,7 @@ public:
 	//======== Mouse Up ======================================================================
 	void mouseUp (const MouseEvent& e)
 	{
+		sendActionMessage(name);
 	}
 
 	//======== Mouse Down ====================================================================
@@ -1747,6 +1767,7 @@ private:
 	float prevY;
 	Array<float> indx, yPoints;
 	int maxAmp, minAmp;
+	String name;
 
 JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Table);
 };
@@ -1774,10 +1795,11 @@ CabbageTable(String name, String text, String caption, int tableSize)
 	addAndMakeVisible(groupbox);
 
 	groupbox->setVisible(false);
-
-	groupbox->setColour(GroupComponent::outlineColourId,
+	//outline colour ID
+	groupbox->setColour(0x1005400,
 		Colours::findColourForName("white", Colours::white));
-	groupbox->setColour(GroupComponent::textColourId,
+	//text colour ID
+	groupbox->setColour(0x1005410,
 		Colours::findColourForName("white", Colours::white));
 	
 	if(caption.length()>0){

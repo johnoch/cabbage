@@ -47,6 +47,7 @@ class CabbageGUIClass : public CabbageUtils
         fontcolour, outline, fill, shape, beveltype, caption, kind, topitem, yChannel, xChannel,
         exit, csstdout, cssetup, file, debugMessage, xyChannel;
 		int tableNum;
+		Array<int> vuConfig;
 
 public:
 	//constructor
@@ -54,6 +55,7 @@ public:
     ~CabbageGUIClass();
 	int parse(String str);
 	float getNumProp(String prop);
+	float getNumProp(String prop, int index);
 	void setNumProp(String prop, float val);
 	void setStringProp(String prop, String val);
 	String getStringProp(String prop);
@@ -87,6 +89,10 @@ public:
 
 	inline int getItemsSize(){
 		return items.size();
+	}
+
+	inline Array<int> getVUConfig(){
+		return vuConfig;
 	}
 
 	inline String getChannels(int index){
