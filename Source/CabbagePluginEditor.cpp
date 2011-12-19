@@ -320,12 +320,16 @@ void CabbagePluginAudioProcessorEditor::paint (Graphics& g)
 componentPanel->grabKeyboardFocus();
 #endif
 
-	Image newSkin = ImageCache::getFromMemory (imageBinaries::skin1_png, imageBinaries::skin1_pngSize);
+	//Image newSkin = ImageCache::getFromMemory (imageBinaries::skin1_png, imageBinaries::skin1_pngSize);
 
 	//for tiling the image to fit the component window
-	g.setTiledImageFill (newSkin, 0, 0, 1.0f);
-	g.fillRect (0, 0, this->getWidth(), this->getHeight());
-	
+	//g.setTiledImageFill (newSkin, 0, 0, 1.0f);
+	//g.fillRect (0, 0, this->getWidth(), this->getHeight());
+	g.setColour (Colours::black);
+	g.fillAll();
+	g.setColour (Colours::grey);
+	g.setOpacity (0.1);
+	g.fillAll();
 }
 
 //==============================================================================
@@ -791,70 +795,83 @@ catch(...){
 //	interactive components - 'insert' methods followed by event methods
 //=======================================================================================
 //+++++++++++++++++++++++++++++++++++++++++++
-//					slider
+//                                      slider
 //+++++++++++++++++++++++++++++++++++++++++++
 void CabbagePluginAudioProcessorEditor::InsertSlider(CabbageGUIClass cAttr)
 {
 try{
-	float left = cAttr.getNumProp("left");
-	float top = cAttr.getNumProp("top");
-	float width = cAttr.getNumProp("width");
-	float height = cAttr.getNumProp("height");	
-	controls.add(new CabbageSlider(cAttr.getStringProp("name"), 
-										 cAttr.getStringProp("caption"), 
-										 cAttr.getStringProp("kind"), 
-										 cAttr.getStringProp("colour")
-										 ));	
-	int idx = controls.size()-1;
+        float left = cAttr.getNumProp("left");
+        float top = cAttr.getNumProp("top");
+        float width = cAttr.getNumProp("width");
+        float height = cAttr.getNumProp("height");     
+        controls.add(new CabbageSlider(cAttr.getStringProp("name"),
+                                                                                 cAttr.getStringProp("text"),
+                                                                                 cAttr.getStringProp("caption"),
+                                                                                 cAttr.getStringProp("kind"),
+                                                                                 cAttr.getStringProp("colour"),
+                                                                                 cAttr.getNumProp("textbox")
+                                                                                 ));   
+        int idx = controls.size()-1;
+ 
+ 
+        int relY=0,relX=0;
+        if(layoutComps.size()>0){
+        for(int y=0;y<layoutComps.size();y++){
+        if(cAttr.getStringProp("reltoplant").length()>0){
+        if(layoutComps[y]->getProperties().getWithDefault(String("plant"), -99).toString().equalsIgnoreCase(cAttr.getStringProp("reltoplant")))
+                {
+                width = width*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
+                height = height*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
+                top = top*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
+                left = left*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
+ 
+                if(layoutComps[y]->getName().containsIgnoreCase("groupbox")||
+                        layoutComps[y]->getName().containsIgnoreCase("image"))
+                        {                      
+                        controls[idx]->setBounds(left, top, width, height);
+                        //if component is a member of a plant add it directly to the plant
+                        layoutComps[y]->addAndMakeVisible(controls[idx]);
+                        }
+                }
+        }
+                else{
+            controls[idx]->setBounds(left+relX, top+relY, width, height);
+                componentPanel->addAndMakeVisible(controls[idx]);              
+                }
+        }
+        }
+        else{
+            controls[idx]->setBounds(left+relX, top+relY, width, height);
+                componentPanel->addAndMakeVisible(controls[idx]);              
+        }
+ 
+        if(cAttr.getStringProp("kind").equalsIgnoreCase("vertical"))
+        ((CabbageSlider*)controls[idx])->setBounds(left+relX, top+relY, width, height);
+        else if(cAttr.getStringProp("kind").equalsIgnoreCase("horizontal"))
+        ((CabbageSlider*)controls[idx])->setBounds(left+relX, top+relY, width, height);
+       
+        ((CabbageSlider*)controls[idx])->slider->setRange(cAttr.getNumProp("min"), cAttr.getNumProp("max"), 0.001);
+        ((CabbageSlider*)controls[idx])->slider->setValue(cAttr.getNumProp("value"));
+        ((CabbageSlider*)controls[idx])->slider->addListener(this);
+ 
+ 
+        controls[idx]->getProperties().set(String("midiChan"), cAttr.getNumProp("midiChan"));
+        controls[idx]->getProperties().set(String("midiCtrl"), cAttr.getNumProp("midiCtrl"));
+ 
+        /*
+		((CabbageSlider*)controls[idx])->slider->getProperties().set(String("origHeight"),
+																cAttr.getNumProp("height"));
+       ((CabbageSlider*)controls[idx])->slider->getProperties().set(String("origWidth"),
+																cAttr.getNumProp("width"));
+       ((CabbageSlider*)controls[idx])->slider->getProperties().set(String("origX"),
+																cAttr.getNumProp("left"));
+       ((CabbageSlider*)controls[idx])->slider->getProperties().set(String("origY"),
+																cAttr.getNumProp("top"));
+																
+	   */
 
-
-	int relY=0,relX=0;
-	if(layoutComps.size()>0){
-	for(int y=0;y<layoutComps.size();y++){
-	if(cAttr.getStringProp("reltoplant").length()>0){
-	if(layoutComps[y]->getProperties().getWithDefault(String("plant"), -99).toString().equalsIgnoreCase(cAttr.getStringProp("reltoplant")))
-		{
-		width = width*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
-		height = height*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
-		top = top*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
-		left = left*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
-
-		if(layoutComps[y]->getName().containsIgnoreCase("groupbox")||
-			layoutComps[y]->getName().containsIgnoreCase("image"))
-			{			
-			controls[idx]->setBounds(left, top, width, height);
-			//if component is a member of a plant add it directly to the plant
-			layoutComps[y]->addAndMakeVisible(controls[idx]);
-			}
-		}
-	}
-		else{
-	    controls[idx]->setBounds(left+relX, top+relY, width, height);
-		componentPanel->addAndMakeVisible(controls[idx]);		
-		}
-	}
-	}
-	else{
-	    controls[idx]->setBounds(left+relX, top+relY, width, height);
-		componentPanel->addAndMakeVisible(controls[idx]);		
-	}
-
-	if(cAttr.getStringProp("kind").equalsIgnoreCase("vertical"))
-	((CabbageSlider*)controls[idx])->setBounds(left+relX, top+relY, width, height);
-	else if(cAttr.getStringProp("kind").equalsIgnoreCase("horizontal"))
-	((CabbageSlider*)controls[idx])->setBounds(left+relX, top+relY, width, height);
-	
-	((CabbageSlider*)controls[idx])->slider->setRange(cAttr.getNumProp("min"), cAttr.getNumProp("max"), 0.001);
-	((CabbageSlider*)controls[idx])->slider->setValue(cAttr.getNumProp("value"));
-	((CabbageSlider*)controls[idx])->slider->repaint();
-	((CabbageSlider*)controls[idx])->slider->setPopupDisplayEnabled(true, controls[idx]->getParentComponent());
-	((CabbageSlider*)controls[idx])->slider->setPopupMenuEnabled(true);
-	((CabbageSlider*)controls[idx])->slider->addListener(this);
-
-
-	controls[idx]->getProperties().set(String("midiChan"), cAttr.getNumProp("midiChan"));
-	controls[idx]->getProperties().set(String("midiCtrl"), cAttr.getNumProp("midiCtrl"));
-
+ 
+ 
 }
 catch(...){
     Logger::writeToLog(T("Syntax error: 'slider..."));
@@ -867,11 +884,15 @@ catch(...){
 void CabbagePluginAudioProcessorEditor::sliderValueChanged (Slider* sliderThatWasMoved)
 {
 #ifndef Cabbage_No_Csound
+
+//check for parent name rather than slider name which is used as a place holder for a label
+//Logger::writeToLog(sliderThatWasMoved->getParentComponent()->getName());
+
 if(sliderThatWasMoved->isEnabled()) // before sending data to on named channel
     {
     //if(RUNNING){make sure Csound is playing before calling SetChannel()
                 for(int i=0;i<(int)getFilter()->getGUICtrlsSize();i++)//find correct control from vector
-                        if(getFilter()->getGUICtrls(i).getStringProp("name")==sliderThatWasMoved->getName()){
+                        if(getFilter()->getGUICtrls(i).getStringProp("name")==sliderThatWasMoved->getParentComponent()->getName()){
 						//getFilter()->getCsound()->SetChannel(getFilter()->getGUICtrls(i).getStringProp("channel").toUTF8(), sliderThatWasMoved->getValue());
                             //getFilter()->guiCtrls[i].value = (float)sliderThatWasMoved->getValue();
 #ifndef Cabbage_Build_Standalone
@@ -889,7 +910,7 @@ if(sliderThatWasMoved->isEnabled()) // before sending data to on named channel
                         }
      else{// The next bit of code lets us change channel data even if Csound is not running
         for(int i=0;i<(int)getFilter()->getGUICtrlsSize();i++)//find correct control from vector
-                if(getFilter()->getGUICtrls(i).getStringProp("name")==sliderThatWasMoved->getName()){
+                if(getFilter()->getGUICtrls(i).getStringProp("name")==sliderThatWasMoved->getParentComponent()->getName()){
                                 getFilter()->getGUICtrls(i).setNumProp("value", (float)sliderThatWasMoved->getValue());
                         getFilter()->getCsound()->SetChannel(getFilter()->getGUICtrls(i).getStringProp("channel").toUTF8(), sliderThatWasMoved->getValue());
                         }
@@ -1262,7 +1283,7 @@ try{
 	min = cAttr.getNumProp("minY");
 	float valueY = cabbageABS(min-cAttr.getNumProp("valueY"))/cabbageABS(min-max);
 	//Logger::writeToLog(T("Y:")+String(valueY));
-	((CabbageXYController*)controls[idx])->xypad->setBallXY(valueX, valueY);
+	((CabbageXYController*)controls[idx])->xypad->setBallXY(valueX, valueY, true);
 	controls[idx]->setWantsKeyboardFocus(false);
 	((CabbageXYController*)controls[idx])->xypad->addActionListener(this);
 	if(!cAttr.getStringProp("name").containsIgnoreCase("dummy"))
@@ -1467,7 +1488,7 @@ for(int i=0;i<(int)getFilter()->getGUICtrlsSize();i++){
 	else if(getFilter()->getGUICtrls(i).getStringProp("type")==T("xypad") &&
 		getFilter()->getGUICtrls(i).getStringProp("xyChannel").equalsIgnoreCase("X")){
 	if(controls[i]){
-		((CabbageXYController*)controls[i])->xypad->setBallXY(getFilter()->getParameter(i), getFilter()->getParameter(i+1));
+		((CabbageXYController*)controls[i])->xypad->setBallXY(getFilter()->getParameter(i), getFilter()->getParameter(i+1), false);
 		}
 	}
 

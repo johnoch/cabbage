@@ -82,27 +82,29 @@ class CabbageSlider : public Component
 {
 int offX, offY, offWidth, offHeight, plantX, plantY;
 String sliderType;
+int resizeCount;
+
 public:
 ScopedPointer<GroupComponent> groupbox;
 ScopedPointer<Slider> slider;
 //---- constructor -----
-CabbageSlider(String name, String caption, String kind, String colour): plantX(-99), plantY(-99)
+CabbageSlider(String name, String text, String caption, String kind, String colour, int textBox): plantX(-99), plantY(-99)
 {
 	setName(name);
 	offX=offY=offWidth=offHeight=0;
 	groupbox = new GroupComponent(String("groupbox_")+name);
-	slider = new Slider(name);
+	slider = new Slider(text);
+	slider->toFront(true);
 	addAndMakeVisible(slider);
 	addAndMakeVisible(groupbox);
 	groupbox->setVisible(false);
 	sliderType = kind; 
 	//outline colour ID
-	groupbox->setColour(0x1005400,
-		Colours::findColourForName(colour, Colours::whitesmoke));
+	//groupbox->setColour(0x1005400,
+		//Colours::findColourForName(colour, Colours::whitesmoke));
 	//text colour ID
-	groupbox->setColour(0x1005410,
-		Colours::findColourForName(colour, Colours::whitesmoke));
-
+	//groupbox->setColour(0x1005410,
+		//Colours::findColourForName(colour, Colours::whitesmoke));
 
 	if(kind.contains(T("vertical"))){
 	slider->setSliderStyle(Slider::LinearVertical);
@@ -114,10 +116,14 @@ CabbageSlider(String name, String caption, String kind, String colour): plantX(-
 		offHeight=-25;
 		groupbox->setVisible(true);
 		groupbox->setText(caption);
+		slider->toFront(true);
 	}
 	}
 
 	else if(kind.contains(T("rotary"))){
+		if(colour.length()>0){
+			slider->setColour(0x1001200, Colours::findColourForName(colour, Colours::whitesmoke));
+			}
 		slider->setSliderStyle(Slider::Rotary);
 		getProperties().set("type", var("rslider"));
 		slider->setSliderStyle(Slider::RotaryVerticalDrag);
@@ -125,31 +131,35 @@ CabbageSlider(String name, String caption, String kind, String colour): plantX(-
 		slider->setTextBoxStyle (Slider::TextBoxBelow, true, 60, 20);
 	
 		if(caption.length()>0){
-			offX=0;
-			offY=20;
-			offWidth=0;
-			offHeight=-30;
+			offX=10;
+			offY=25;
+			//offY=20;
+			offWidth=-20;
+			offHeight = (textBox<1 ? -30 : -30);
 			groupbox->setText(caption);
 			groupbox->setVisible(true);
+			slider->toFront(true);
 		}
 	}
 
 	else{ ///horizontal
 	if(caption.length()>0){
 		offX=15;
-		offY=15;
+		offY=20;
 		offWidth=-25;
 		offHeight=-22;
 		groupbox->setText(caption);
 		groupbox->setVisible(true);
+		slider->toFront(true);
 		}
 	}
 
+	if(textBox<1) 
+		slider->setTextBoxStyle (Slider::NoTextBox, true, 0, 0);
 
-	if(colour.length()>0){
-	slider->setColour(0x1001500, Colours::findColourForName(colour, Colours::whitesmoke));
-	}
 	this->setWantsKeyboardFocus(false);
+
+	resizeCount = 0;
 }//--- end of constructor ----
 
 //---------------------------------------------
@@ -160,9 +170,24 @@ CabbageSlider(String name, String caption, String kind, String colour): plantX(-
 //---------------------------------------------
 void resized()
 {
-groupbox->setBounds(0, 0, getWidth(), getHeight()); 
-slider->setBounds(offX, offY, getWidth()+offWidth, getHeight()+offHeight); 
-this->setWantsKeyboardFocus(false);
+	
+	groupbox->setBounds(0, 0, getWidth(), getHeight()); 
+	slider->setBounds(offX, offY, getWidth()+offWidth, getHeight()+offHeight); 
+	this->setWantsKeyboardFocus(false);
+	
+	if (resizeCount == 0) {
+		slider->getProperties().set(String("origHeight"), getHeight()+offHeight);
+		slider->getProperties().set(String("origWidth"), getWidth()+offWidth);
+		slider->getProperties().set(String("origX"), offX);
+		slider->getProperties().set(String("origY"), offY);
+		slider->getProperties().set(String("origParentHeight"), getHeight());
+		slider->getProperties().set(String("origParentWidth"), getWidth());
+		slider->getProperties().set(String("origParentX"), getX());
+		slider->getProperties().set(String("origParentY"), getY());
+	}
+
+	resizeCount++;
+	
 }
 
 JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CabbageSlider);
@@ -530,16 +555,30 @@ public:
 	xIn and yIn are not the actual slider values, they are normalised decimal fractions of 
 	the slider range. ballSize has to be subtracted from available width and height, as the 
 	ball is drawn from its top-left corner. Border sizes also have to be added on. */
-	void setBallXY(float xIn, float yIn) 
-	{
-		x = ((xIn * (availableWidth - ballSize)) + borderLeft);
+	 void setBallXY(float xIn, float yIn, bool Normal) 
+        {
+            if(Normal){ //if input is a normalised value
+				x = ((xIn * (availableWidth - ballSize)) + borderLeft);
+				yIn = 1 - yIn;  //inverting y values
+				y = ((yIn * (availableHeight - ballSize)) + borderTop);
+				writeText (x, y);
+				repaint();
+            }
+            else{
+				float max = getMaxX();
+				float min = getMinX();
+				xIn = (xIn-getMinX()) / (getMaxX()-getMinX());
+				x = ((xIn * (availableWidth - ballSize)) + borderLeft);
+				max = getMaxY();
+				min = getMinY();
+				yIn = (yIn-getMinY()) / (getMaxY()-getMinY());
+				yIn = 1 - yIn;
+				y = ((yIn * (availableHeight - ballSize)) + borderTop);
+				//writeText (x, y);
+				//repaint();
+            }
+        }
 
-		yIn = 1 - yIn;  //inverting y values
-		y = ((yIn * (availableHeight - ballSize)) + borderTop);
-
-		writeText (x, y);
-		repaint(borderLeft, borderTop, availableWidth, availableHeight);
-	}
 
 
 	//========== Returns Y Minimum =======================================================
@@ -582,7 +621,9 @@ public:
 
 		//----- For drawing the border 
 		g.setColour (Colours::black);
-		g.setOpacity (0.4);
+		g.fillRoundedRectangle (0, 0, totalWidth, totalHeight, (totalWidth/15));
+		g.setColour (Colours::grey);
+		g.setOpacity (0.2);
 		g.fillRoundedRectangle (0, 0, totalWidth, totalHeight, (totalWidth/15));
 
 		//----- For drawing the actual area that the ball can move in
@@ -592,8 +633,9 @@ public:
 
 		//----- For drawing the title
 		g.setColour (Colours::whitesmoke);
-		g.setOpacity (0.3);
-		g.setFont (15, 0);
+		g.setOpacity (0.4);
+		Font font (T("Verdana"), 13, 1);
+		g.setFont (font);
 		Justification just(1);
 		g.drawText (title, borderLeft+3, borderTop+3, totalWidth-20, 25, just, false); 
 

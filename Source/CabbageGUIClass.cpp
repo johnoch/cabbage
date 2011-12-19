@@ -54,6 +54,7 @@ CabbageGUIClass::CabbageGUIClass(String compStr, int ID):
           name = "hslider";
 		  type = name;
           name.append(String(ID), 1024);
+		  textBox = 0;
 	}
     else if(compStr.indexOfIgnoreCase("vslider ")!=-1){
           top = 10;
@@ -68,6 +69,7 @@ CabbageGUIClass::CabbageGUIClass(String compStr, int ID):
           name = "vslider";
 		  type = name;
           name.append(String(ID), 1024);
+		  textBox = 0;
 	}
     else if(compStr.indexOfIgnoreCase("rslider ")!=-1){
           top = 10;
@@ -82,6 +84,7 @@ CabbageGUIClass::CabbageGUIClass(String compStr, int ID):
           name = "rslider";
 		  type = name;
           name.append(String(ID), 1024);
+		  textBox = 0;
 	}
 
     else if(compStr.indexOfIgnoreCase("button ")!=-1){
@@ -312,6 +315,7 @@ int CabbageGUIClass::parse(String str)
 	identArray.add("plant(");
     identArray.add("channel(");
     identArray.add("name(");
+    identArray.add("textbox(");
     identArray.add("caption(");
     identArray.add(",colour(");
 	identArray.add(" colour(");
@@ -512,6 +516,9 @@ int CabbageGUIClass::parse(String str)
             else if(identArray.getReference(indx).equalsIgnoreCase("max(")){
 				max = strTokens[0].trim().getFloatValue();  
 			}
+            else if(identArray.getReference(indx).equalsIgnoreCase("textbox(")){
+				textBox = strTokens[0].trim().getFloatValue();  
+			}
             else if(identArray.getReference(indx).equalsIgnoreCase("tablenumber(")){
 				tableNum = strTokens[0].trim().getFloatValue();  
 			}
@@ -545,6 +552,8 @@ float CabbageGUIClass::getNumProp(String prop)
 			return width;
 		else if(prop.equalsIgnoreCase(T("height")))
 			return height;
+		else if(prop.equalsIgnoreCase(T("textbox")))
+			return textBox;
 		else if(prop.equalsIgnoreCase(T("top")))
 			return top;
 		else if(prop.equalsIgnoreCase(T("channels")))

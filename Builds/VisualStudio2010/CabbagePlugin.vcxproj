@@ -19,6 +19,9 @@
     <UseOfMfc>false</UseOfMfc>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
+  <PropertyGroup>
+  <DefineConst></DefineConst>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseOfMfc>false</UseOfMfc>
@@ -52,7 +55,7 @@
       <Optimization>Disabled</Optimization>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <AdditionalIncludeDirectories>C:\MyDocuments\SourceCode\Csound5\csound5\H;C:\MyDocuments\My Dropbox\vstsdk2.4;..\..\JuceLibraryCode;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;_WINDOWS;MSVC;DEBUG;_DEBUG;JUCER_VS2008_78A5006=1;USE_DOUBLE=0;useDouble=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;MSVC;DEBUG;_DEBUG;JUCER_VS2008_78A5006=1;USE_DOUBLE=0;useDouble=0;$(DefineConst);%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <PrecompiledHeader />
@@ -121,7 +124,7 @@
     </Bscmake>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\juceTip\juce\src\audio\plugin_client\VST\juce_VST_Wrapper.cpp" />
+    <ClCompile Include="..\..\..\juceTip\src\audio\plugin_client\VST\juce_VST_Wrapper.cpp" />
     <ClCompile Include="..\..\JuceLibraryCode\JuceLibraryCode1.cpp" />
     <ClCompile Include="..\..\JuceLibraryCode\JuceLibraryCode2.cpp" />
     <ClCompile Include="..\..\JuceLibraryCode\JuceLibraryCode3.cpp" />

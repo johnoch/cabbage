@@ -385,7 +385,7 @@ void StandaloneFilterWindow::buttonClicked (Button*)
 	m.addItem(1, T("Open Cabbage patch"));
     m.addItem(4, TRANS("Audio Settings..."));
     m.addSeparator();
-	subExport.addItem(5, TRANS("Plugin Effect"));
+	subExport.addItem(5, TRANS("Plugin Synth"));
 	subExport.addItem(6, TRANS("Plugin Effect"));
 	m.addSubMenu(TRANS("Export"), subExport);
     m.addSeparator();
