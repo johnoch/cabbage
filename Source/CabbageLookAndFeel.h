@@ -8,7 +8,8 @@
 */
 
 #include "../JuceLibraryCode/JuceHeader.h"
-#include "imageBinaries.h"
+#include "CabbageUtils.h"
+
 
 class CabbageLookAndFeel	:	public LookAndFeel
 {
@@ -16,8 +17,11 @@ public:
 	CabbageLookAndFeel();
 	~CabbageLookAndFeel();
 
-	Image drawRotaryImage(int diameter, const Colour circleFill, float sliderPosProportional);
-
+	Image drawRotaryImage(int diameter, const Colour circleFill, float sliderPosProportional, bool useBigImage);
+	Image drawLinearBgImage (float width, float height, float sliderPosProportional, bool isVertical);
+	Image drawLinearThumbImage (float width, float height, const Colour thumbFill, bool isVertical);
+	Image drawToggleImage (float width, float height, bool isToggleOn);
+	Image drawTextButtonImage (float width, float height, bool isButtonDown);
 	virtual void drawRotarySlider (Graphics &g, int x, int y, int width, int height, float sliderPosProportional, 
 																					float rotaryStartAngle, 
 																					float rotaryEndAngle, 
@@ -34,7 +38,7 @@ public:
 																						const Slider::SliderStyle style, 
 																						Slider &slider);
 	virtual void drawButtonBackground (Graphics&, Button&, const Colour&, bool, bool);
-	//virtual const Font getFontForTextButton (TextButton&);
+	virtual void drawButtonText (Graphics &g, TextButton &button, bool isMouseOverButton, bool isButtonDown);
 	virtual void drawLabel (Graphics &g, Label &label);
 	virtual void drawComboBox (Graphics&, int, int, bool, int, int, int, int, ComboBox&);
 	virtual void drawToggleButton (Graphics &g, ToggleButton &button, bool isMouseOverButton, bool isButtonDown);
@@ -49,7 +53,6 @@ public:
 
 
 private:
-
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CabbageLookAndFeel);
 	
 };

@@ -856,22 +856,7 @@ try{
  
  
         controls[idx]->getProperties().set(String("midiChan"), cAttr.getNumProp("midiChan"));
-        controls[idx]->getProperties().set(String("midiCtrl"), cAttr.getNumProp("midiCtrl"));
- 
-        /*
-		((CabbageSlider*)controls[idx])->slider->getProperties().set(String("origHeight"),
-																cAttr.getNumProp("height"));
-       ((CabbageSlider*)controls[idx])->slider->getProperties().set(String("origWidth"),
-																cAttr.getNumProp("width"));
-       ((CabbageSlider*)controls[idx])->slider->getProperties().set(String("origX"),
-																cAttr.getNumProp("left"));
-       ((CabbageSlider*)controls[idx])->slider->getProperties().set(String("origY"),
-																cAttr.getNumProp("top"));
-																
-	   */
-
- 
- 
+        controls[idx]->getProperties().set(String("midiCtrl"), cAttr.getNumProp("midiCtrl")); 
 }
 catch(...){
     Logger::writeToLog(T("Syntax error: 'slider..."));

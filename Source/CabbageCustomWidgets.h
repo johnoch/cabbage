@@ -610,39 +610,38 @@ public:
 	//====== Drawing the background ========================================================
 	void drawBackgroundImage()
 	{
-		/*----- This function draws the background onto a blank image and then loads it into cache. The 
-		cached image is then reused in the paint() method. This is a more efficient way to redrawing something
-		that is static. */
+		//----- This function draws the background onto a blank image and then loads it into cache. The 
+		//cached image is then reused in the paint() method. This is a more efficient way to redrawing something
+		//that is static. 
 
 		// Creating a blank canvas
 		img = Image::Image(Image::ARGB, totalWidth, totalHeight, true);
 			
 		Graphics g (img);
 
-		//----- For drawing the border 
-		g.setColour (Colours::black);
-		g.fillRoundedRectangle (0, 0, totalWidth, totalHeight, (totalWidth/15));
-		g.setColour (Colours::grey);
-		g.setOpacity (0.2);
-		g.fillRoundedRectangle (0, 0, totalWidth, totalHeight, (totalWidth/15));
+		//----- For drawing the background
+		Colour bg = CabbageUtils::componentSkin();
+		g.setColour (bg);
+		g.fillRoundedRectangle (0, 0, totalWidth, totalHeight, 5);
 
 		//----- For drawing the actual area that the ball can move in
 		g.setColour (Colours::black);
-		g.setOpacity (0.7);
-		g.fillRoundedRectangle (borderLeft, borderTop, availableWidth, availableHeight, (totalWidth/20));
+		g.setOpacity (0.9);
+		//g.fillRoundedRectangle (borderLeft, borderTop, availableWidth, availableHeight, (totalWidth/20));
+		g.fillRoundedRectangle (borderLeft, borderTop, availableWidth, availableHeight, 5);
 
 		//----- For drawing the title
 		g.setColour (Colours::whitesmoke);
 		g.setOpacity (0.4);
-		Font font (T("Verdana"), 13, 1);
+		Font font = CabbageUtils::widgetText();
 		g.setFont (font);
 		Justification just(1);
+		title = CabbageUtils::cabbageString (title, font, availableWidth-10);
 		g.drawText (title, borderLeft+3, borderTop+3, totalWidth-20, 25, just, false); 
 
 		//----- Adding image to cache and assigning it a hash code
 		ImageCache::addImageToCache (img, 13);
 	}
-
 
 	//=========== Paint function ============================================================
 	void paint (Graphics& g)
@@ -655,28 +654,34 @@ public:
 		ColourGradient cgGrey = ColourGradient (Colours::grey, x+(ballSize)/2, y+(ballSize)/2, 
 			Colours::transparentBlack, (x+(ballSize)/2)-50, (y+(ballSize)/2)-50, true);
 		g.setGradientFill (cgGrey);
+		g.setOpacity (0.4);
 
 		float thickness = 0.5; //thickness of lines
-		for (int i=1; i<11; i++) {
-			g.drawLine ((totalWidth/10)*i, borderTop, (totalWidth/10)*i, availableHeight, thickness);//vertical lines
-			g.drawLine (borderLeft, (totalHeight/10)*i, availableWidth, (totalHeight/10)*i, thickness);//horizontal lines
+		int numSlots = 6;
+		for (int i=1; i<numSlots; i++) {
+			g.drawLine (((availableWidth/numSlots)*i) + borderLeft, borderTop, 
+				((availableWidth/numSlots)*i) + borderLeft, borderBottom, thickness);//vertical lines
+
+			g.drawLine (borderLeft, ((availableHeight/numSlots)*i) + borderTop, borderRight, 
+				((availableHeight/numSlots)*i) + borderTop, thickness);//horizontal lines
 		}
   
-		/*----- Switch statement which determines what type of ball to draw. If the mouse is up the ball is 
-		hollow with grey cross lines running through it.  If the mouse is down then the ball is filled and 
-		the cross lines turn green. */
+		//----- Switch statement which determines what type of ball to draw. If the mouse is up the ball is 
+		//hollow with grey cross lines running through it.  If the mouse is down then the ball is filled and 
+		//the cross lines turn green. 
 		switch (buttonDown)
 		{
 		case 0: //button up
-			g.drawLine (x + (ballSize/2), 0, x + (ballSize/2), availableHeight, 1); 
-			g.drawLine (0, y + (ballSize/2), availableWidth, y + (ballSize/2), 1);
+			g.setOpacity (0.9);
+			g.drawLine (x + (ballSize/2), borderTop, x + (ballSize/2), borderBottom, 1); 
+			g.drawLine (borderLeft, y + (ballSize/2), borderRight, y + (ballSize/2), 1);
 			g.setColour (Colours::lime);
 			g.drawEllipse (x+1, y+1, ballSize-2, ballSize-2, 2); //width of 2
 			break;
 		case 1: //button down
 			g.setGradientFill (cgGreen); //changing colour of lines
-			g.drawLine (x + (ballSize/2) - 0.5, 0, x + (ballSize/2) - 0.5, availableHeight, 2); 
-			g.drawLine (0, y + (ballSize/2) - 0.5, availableWidth, y + (ballSize/2) - 0.5, 1);
+			g.drawLine (x + (ballSize/2) - 0.5, borderTop, x + (ballSize/2) - 0.5, borderBottom, 2); 
+			g.drawLine (borderLeft, y + (ballSize/2) - 0.5, borderRight, y + (ballSize/2) - 0.5, 1);
 			g.setColour (Colours::lime);
 			g.fillEllipse (x, y, ballSize, ballSize);
 			break;
@@ -1150,8 +1155,8 @@ public:
 
 			clipFlag = 0;	//0 is off, 1 is on
 
-			/*----- Declarations for each db value. The range will go logarithmically from -infinity to +3db. 
-			A level of 0.9 is being assigned to 0db. */
+			//----- Declarations for each db value. The range will go logarithmically from -infinity to +3db. 
+			//A level of 0.9 is being assigned to 0db. 
 			plus3DB = 1;
 			zeroDB = 0.9;
 			minus3DB = 0.71 * zeroDB; //0.639
@@ -1160,10 +1165,10 @@ public:
 			minus40DB = 0.01 * zeroDB; //0.009
 		}
 
-		//=======================================================================================
+		//====================================================================================
 		~VUMeter(){}
 
-		//========== Resizing method ============================================================
+		//========== Resizing method =========================================================
 		void resized ()
 		{
 			//----- Declaring dimensional properties
@@ -1203,9 +1208,9 @@ public:
 
 			clClip = (Colours::red);
 
-			/*----- Calling function to draw image background. This only applies if the VU is mono or the 
-			left channel of a stereo meter. Right channel meters will not use a background as they can just
-			draw over the left channel background image. */
+			//----- Calling function to draw image background. This only applies if the VU is mono or the 
+			//left channel of a stereo meter. Right channel meters will not use a background as they can just
+			//draw over the left channel background image. 
 			if ((type == 1) || (type == 2))
 					verticalBackground();
 		}
@@ -1214,17 +1219,16 @@ public:
 		//===== Vertical Background =======================================================================
 		void verticalBackground ()
 		{
-			/*----- This function draws the background onto a blank image and then loads it into cache. The 
-			cached image is then reused in the paint() method. This is a more efficient way to redrawing something
-			that is static. */
+			//----- This function draws the background onto a blank image and then loads it into cache. The 
+			//cached image is then reused in the paint() method. This is a more efficient way to redrawing something
+			//that is static. 
 
 			// Creating a blank canvas
 			img = Image::Image(Image::ARGB, getWidth(), getHeight(), true);
 			
 			Graphics g (img);
-			g.setColour (Colours::black);
-			g.setOpacity (0.4);
-			g.fillRoundedRectangle (getWidth()*0.1, 0, getWidth()*.8, getHeight(), getWidth()/5);
+			Colour bg = Colour::fromRGBA (10, 10, 15, 255);
+			g.fillRoundedRectangle (0, 0, getWidth(), getHeight(), 2);
 		
 			//----- Painting the db level markers
 			g.setColour (Colours::white);
@@ -1285,10 +1289,10 @@ public:
 			g.drawImage (bg, 0, 0, getWidth(), getHeight(), 0, 0, bg.getWidth(), bg.getHeight(), false);
 			
 
-			/*----- Drawing the meter level. When paintFlag is 1 the meter level is to be increased. This
-			new bit of the level is painted using the gradient fill cg. If paintFlag is 0, the level is 
-			to be decreased. Because there is no colour or drawing tool used for paintFlag=0, this bit of 
-			the level is cleared. */
+			//----- Drawing the meter level. When paintFlag is 1 the meter level is to be increased. This
+			//new bit of the level is painted using the gradient fill cg. If paintFlag is 0, the level is 
+			//to be decreased. Because there is no colour or drawing tool used for paintFlag=0, this bit of 
+			//the level is cleared. 
 			if (paintFlag == 1) {
 				g.setGradientFill (cg);
 				g.setOpacity (0.7);
@@ -1299,12 +1303,12 @@ public:
 			}
 			
 
-			/*----- Determining if the clipmarker should be shown. It is set back to 0 immediately as it
-			does not need to repainted over and over. If the clipFlag is 0, the marker will stay on if 
-			the repaint() bounds are not inclusive of the clipZone. When the user clicks on the VU meter
-			the clipFlag will be 0 and the repaint() bounds will include the clipZone (see mouseDown()), 
-			therefore turning off the clipmarker. This happens because there is no colour or draw function 
-			used for clipFlag = 0, and therefore this zone is cleared exposing the background again. */
+			//----- Determining if the clipmarker should be shown. It is set back to 0 immediately as it
+			//does not need to repainted over and over. If the clipFlag is 0, the marker will stay on if 
+			//the repaint() bounds are not inclusive of the clipZone. When the user clicks on the VU meter
+			//the clipFlag will be 0 and the repaint() bounds will include the clipZone (see mouseDown()), 
+			//therefore turning off the clipmarker. This happens because there is no colour or draw function 
+			//used for clipFlag = 0, and therefore this zone is cleared exposing the background again. 
 			if (clipFlag == 1) {
 				g.setColour (clClip);
 				if (type == 1)
@@ -1328,8 +1332,8 @@ public:
 				level = 1;
 			}
 
-			/*----- The following if statements determine the offset on the y axis. Each zone 
-			itself has to be treated independently to the rest of the level range.*/
+			//----- The following if statements determine the offset on the y axis. Each zone 
+			//itself has to be treated independently to the rest of the level range.
 			if ((level >= 0) && (level < minus40DB)){
 				currentLevel = (bottom - minus40Mark) * (level / minus40DB);
 				currentLevel = bottom - currentLevel;
@@ -1360,8 +1364,8 @@ public:
 				currentLevel = zeroMark - currentLevel;
 			}
 
-			/*----- We only need to repaint the level difference between this value and the previous.
-			This is much more efficient than repainting the entire component each time. */
+			//----- We only need to repaint the level difference between this value and the previous.
+			//This is much more efficient than repainting the entire component each time. 
 			diff = prevLevel - currentLevel;
 
 			if (diff > 0) {
@@ -1402,13 +1406,13 @@ public:
 			int x = e.getPosition().getX();
 			int y = e.getPosition().getY();
 
-			/*----- If the mouse is clicked over the VU, then the clip marker will be
-			turned off. */
+			//----- If the mouse is clicked over the VU, then the clip marker will be
+			//turned off. 
 			if ((x >= getWidth()/5) && (x <= getWidth()*0.8) &&
 				(y >= 0) && (y <= getHeight())) { 
 					clipFlag = 0;
-					/* Only need to repaint the clipzone. Stereo VU's just repaint both
-					clip zones as it will not make much difference in terms of CPU usage.*/
+					// Only need to repaint the clipzone. Stereo VU's just repaint both
+					//clip zones as it will not make much difference in terms of CPU usage.
 					
 					if (type == 1) //mono
 						repaint (xOffset, top, levelWidth, clipZone);
@@ -1442,17 +1446,25 @@ public:
 	//===== VU Component Constructor ========================================
 	VUComponent (Array<int> conArr, bool useVertical)
 	{
+		style = useVertical;
+		numArrElements = 0;
 		totalNumLevels = 0;
-		numArrElements = conArr.size();
+		numMeters = 0;
 
-		/*----- We need to get the total number of levels so that the index of each
-		meter will be correct when setting the level. */
-		for (int i=0; i<numArrElements; i++) {
-			config.push_back (conArr[i]);
-			totalNumLevels += conArr[i];
-		}
-
-		style = useVertical;		
+		for (int i=0; i<conArr.size(); i++) {
+			//Ignoring anything that is not either 1 or 2...
+			if ((conArr[i] == 1) || (conArr[i] == 2)) {
+				config.add (conArr[i]);
+				numArrElements++;
+				totalNumLevels += conArr[i]; //needed for indexing
+				//numMeters allows us to get the correct width of each meter, as stereo
+				//meters are 1.25 times as wide as mono ones...
+				if (conArr[i] == 1)
+					numMeters += 1;
+				else
+					numMeters += 1.25;
+			}
+		}	
 	}
 
 	//===== Destructor ====================================================
@@ -1463,11 +1475,22 @@ public:
 	//===== Resize ========================================================
 	void resized()
 	{
-		int arrElement = 0;
-		int xOffset = 0;
-		int widthMonoMeter = getWidth() / totalNumLevels;
-		int widthStereoMeter = widthMonoMeter * 1.25;
+		float gap = getWidth() * 0.07; //gap between meters
+		float totalGap = gap * (numArrElements-1);	//all gaps added up
+		float availableWidth = getWidth() - totalGap;
+		float widthMonoMeter = availableWidth / numMeters;
+		float widthStereoMeter;
 		
+		//If there is only 1 element in the array it should take up the whole width
+		if ((numArrElements == 1) && (totalNumLevels ==2))
+			widthStereoMeter = availableWidth;
+		else
+			widthStereoMeter = widthMonoMeter * 1.25;
+
+		//----- The following for loop adds each level with a unique index. xOffset is the 
+		//x coordinate at which they are drawn. 
+		int arrElement = 0;
+		float xOffset = 0;
 		for (int i=0; i<totalNumLevels; i++) {
 			//----- Adding a mono meter
 			if (config[arrElement] == 1 ) {
@@ -1475,6 +1498,8 @@ public:
 				meters[i]->setBounds (xOffset, 0, widthMonoMeter, getHeight());
 				addAndMakeVisible (meters[i]);
 				xOffset += widthMonoMeter;
+				if (arrElement != numArrElements) //if not the last element then add a gap
+					xOffset += gap;
 				arrElement++;
 			}
 			//----- Adding a stereo meter
@@ -1485,15 +1510,16 @@ public:
 				addAndMakeVisible (meters[i]);
 
 				//Right side
-				i++; //i needs to be incremented again to make sure that the meter index numbers are correct
+				i++; //i needs to be incremented again to make sure that the index numbers are correct
 				meters.add (new VUMeter(3, style));
 				meters[i]->setBounds (xOffset, 0, widthStereoMeter, getHeight());
 				addAndMakeVisible (meters[i]);
 
 				xOffset += widthStereoMeter;
+				if (arrElement != numArrElements) //if not the last element then add a gap
+					xOffset += gap;
 				arrElement++;
-			}
-			
+			}			
 		}
 		
 	}
@@ -1509,11 +1535,13 @@ private:
 	bool style;
 	int widthMeter, heightMeter;
 	int totalNumLevels;
-	vector<int> config;
+	float numMeters;
+	Array<int> config;
 	int numArrElements;
 
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (VUComponent);
 };
+
 
 
 //==============================================================================

@@ -5,11 +5,11 @@ IF "%1"=="plugins" goto PLUGINS
 
 :ALL
 echo Building All 
-msbuild CabbagePlugin.sln /t:Build /p:Configuration=Debug /p:DefineConst="Cabbage_Plugin_Synth"
+msbuild CabbagePlugin.sln /t:REBuild /p:Configuration=Debug /p:DefineConst="Cabbage_Plugin_Synth"
 COPY Debug\CabbagePlugin.dll CabbagePluginSynth.dat
-msbuild CabbagePlugin.sln /t:Build /p:Configuration=Debug
+msbuild CabbagePlugin.sln /t:ReBuild /p:Configuration=Debug
 COPY Debug\CabbagePlugin.dll CabbagePluginEffect.dat
-msbuild Cabbage.sln /t:Build /p:Configuration=Debug /p:DefineConst="Cabbage_Plugin_Synth"
+msbuild Cabbage.sln /t:ReBuild /p:Configuration=Debug /p:DefineConst="Cabbage_Plugin_Synth"
 COPY Debug\Cabbage.exe Cabbage.exe
 echo Pleae check current directory for Cabbage.exe, CabbagePluginSynth.dat and CabbagePluginEffect.dat. If any files are missing seomthing went wrong in the build process!  
 goto END
@@ -28,4 +28,3 @@ goto END
 
 :END
 echo Build complete
-:REM C:\MyDocuments\CabbageSVN\Builds\VisualStudio2010>msbuild CabbagePlugin.sln /t:ReBuild /p:Configuration=Debug /p:DefineConstants="JucePlugin_IsSynth=1"

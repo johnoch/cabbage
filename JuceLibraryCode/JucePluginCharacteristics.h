@@ -29,7 +29,7 @@
 #define JucePlugin_Desc                 "Cabbage"
 #define JucePlugin_Manufacturer         "Cabbage"
 #define JucePlugin_ManufacturerCode     'Cabbu'
-#define JucePlugin_PluginCode           'Plug'
+#define JucePlugin_PluginCode           'RORY'
 #define JucePlugin_MaxNumInputChannels  2
 #define JucePlugin_MaxNumOutputChannels 2
 #define JucePlugin_PreferredChannelConfigurations   {1, 1}, {2, 2}

@@ -38,9 +38,12 @@ StandaloneFilterWindow::StandaloneFilterWindow (const String& title,
 	setTitleBarButtonsRequired (DocumentWindow::minimiseButton | DocumentWindow::closeButton, false);
     Component::addAndMakeVisible (&optionsButton);
     optionsButton.addListener (this);
+	timerRunning = false;
+	yAxis = 0;
     optionsButton.setTriggeredOnMouseDown (true);
 	setAlwaysOnTop(true);
 	this->setResizable(false, false);
+
 // MOD - Stefano Bonetti 
 #ifdef Cabbage_Named_Pipe 
 	ipConnection = new socketConnection(*this);
@@ -175,6 +178,17 @@ String text = messageType+T("|")+String(value);
 MemoryBlock messageData (text.toUTF8(), text.getNumBytesAsUTF8());
 pipeOpenedOk = ipConnection->sendMessage(messageData);
 }
+}
+
+//==============================================================================
+// insane Cabbage dancing....
+//==============================================================================
+void StandaloneFilterWindow::timerCallback()
+{   
+	float moveY = sin(yAxis*2*3.14*20/100); 
+	float moveX = sin(yAxis*2*3.14*10/100); 
+	yAxis+=1;
+	this->setTopLeftPosition(this->getScreenX()+(moveX*5), this->getScreenY()+(moveY*10));
 }
 //==============================================================================
 // listener Callback - updates WinXound compiler output with Cabbage messages
@@ -402,6 +416,10 @@ void StandaloneFilterWindow::buttonClicked (Button*)
 	batchProc.addItem(11, TRANS("Effects"));
 	batchProc.addItem(12, TRANS("Synths"));
 	m.addSubMenu(TRANS("Batch Convert"), batchProc);
+	if(timerRunning)
+	m.addItem(99, T("Cabbage Dance"), true, true);
+	else
+	m.addItem(99, T("Cabbage Dance"));
 
 
 	FileChooser openFC(T("Open a Cabbage .csd file..."), File::nonexistent, T("*.csd"));
@@ -457,6 +475,17 @@ void StandaloneFilterWindow::buttonClicked (Button*)
 		BatchProcess(T("VSTi"));
 		break;
 
+	case 99:
+		if(!timerRunning){
+		startTimer(20);
+		timerRunning = true;
+		}
+		else{
+		stopTimer();
+		timerRunning = false;
+		}
+		break;
+
     default:
         break;
     }
@@ -509,6 +538,18 @@ String VST;
 	File dll(saveFC.getResult().withFileExtension(".dll").getFullPathName());
 	//showMessage(dll.getFullPathName());
 	if(!VSTData.copyFileTo(dll))	showMessage("problem moving plugin lib");
+
+	MemoryBlock mem;
+	if(dll.loadFileAsData(mem))
+		showMessage("ok");
+	String inputFile = mem.toString();
+	showMessage(inputFile);
+	if(inputFile.contains("RORY"))
+		showMessage("ID Found");
+
+
+
+	setUniquePluginID(dll, "test");
 	File loc_csdFile(saveFC.getResult().withFileExtension(".csd").getFullPathName());
 	loc_csdFile.replaceWithText(csdFile.loadFileAsString());
 	
@@ -523,6 +564,14 @@ String VST;
 
 
 return 0;	
+}
+
+//==============================================================================
+// Set unique plugin ID for each plugin based on the file name 
+//==============================================================================
+void StandaloneFilterWindow::setUniquePluginID(File inFile, String ID){
+	//inputFile.replaceCharacters("RORY", "MEME");
+	//inFile.replaceWithData(inputFile.toUTF8(), inputFile.getNumBytesAsUTF8());
 }
 
 //==============================================================================

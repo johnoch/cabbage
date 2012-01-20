@@ -102,6 +102,43 @@ StringArray CreateStringArray(std::string str)
 	return strArray;
 }
 
+//==========================================================================================
+static String cabbageString (String input, Font font, float availableWidth)
+{
+	//This method returns a truncated string if it is too big to fit into its available
+	//space.  Dots are added at the end to signify that it has been truncated.  
+
+	String newStr;
+	float stringWidth = font.getStringWidthFloat (input);
+	int numChars = input.length();
+	float charWidth = stringWidth / numChars;
+
+	if (stringWidth > availableWidth) {
+		float includeChars = (availableWidth / charWidth) - 3;
+		newStr = input.substring (0, includeChars);
+		newStr << "...";
+		return newStr;
+	}
+	else
+		return input;
+}
+
+//==========================================================================================
+static Font widgetText()
+{
+	Font font = Font (T("Verdana"), 12, 1);
+	return font;
+}
+
+//==========================================================================================
+static Colour componentSkin()
+{
+	Colour skin = Colour::fromRGBA (45, 45, 50, 255);
+	return skin;
+}
+
+//==========================================================================================
+
 void cabbageSleep(unsigned int mseconds)
 {
     clock_t goal = mseconds + clock();

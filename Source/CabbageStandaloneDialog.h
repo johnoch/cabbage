@@ -32,7 +32,8 @@ class CabbagePluginAudioProcessor;
 class StandaloneFilterWindow    : public DocumentWindow,
 									public Button::Listener,
 									public ChangeListener,
-									public CabbageUtils
+									public CabbageUtils,
+									public Timer
 {
 public:
     //==============================================================================
@@ -140,6 +141,10 @@ public:
 	}
 
 private:
+	bool timerRunning;
+	void setUniquePluginID(File inFile, String ID);
+	float yAxis;
+	void timerCallback();
 	ScopedPointer<socketServer> server;
 	ScopedPointer<socketConnection> ipConnection;  //*** MOD:STEFANO - ADDED
 	OwnedArray <socketConnection, CriticalSection> activeConnections;
