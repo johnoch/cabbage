@@ -295,6 +295,7 @@ int CabbageGUIClass::parse(String str)
 		str = str.substring(0, str.indexOf(0, T(";")));
 
 	try{
+
 	StringArray identArray;
 	identArray.clear();
 	identArray.add("size(");
@@ -338,10 +339,11 @@ int CabbageGUIClass::parse(String str)
 	identArray.add("outline(");
 	identArray.add("shape("); 
 	identArray.add("textcolour("); 
-	//add a few dummy identifiers so we can catch bogus one in the Cabbage code
 	identArray.add("scale(");
 	identArray.add("chan(");
 	identArray.add("key(");
+	identArray.add("pluginid(");
+	//add a few dummy identifiers so we can catch bogus one in the Cabbage code
 	identArray.add("");
 	identArray.add("");
 	identArray.add("");
@@ -349,7 +351,8 @@ int CabbageGUIClass::parse(String str)
 	//retrieve paramters consisting of strings
 	for(int indx=0;indx<identArray.size();indx++)
 	{		
-		int identPos = str.indexOf(identArray.getReference(indx));
+		//check to see if identifier is part of input string..turn to lowercase first..
+		int identPos = str.toLowerCase().indexOf(identArray.getReference(indx));
           if(identPos!=-1){
 			String newString = str.substring(identPos+identArray.getReference(indx).length());
 			String tstr = newString.substring(0, newString.indexOf(0, ")"));
@@ -357,11 +360,11 @@ int CabbageGUIClass::parse(String str)
 			StringArray strTokens;
 			strTokens.addTokens(tstr.removeCharacters(")\""), ",", "\"");
 
-			if(identArray.getReference(indx).equalsIgnoreCase("name(")) name = strTokens[0].trim();
-			else if(identArray.getReference(indx).equalsIgnoreCase("plant(")) plant = strTokens[0].trim();
-			else if(identArray.getReference(indx).equalsIgnoreCase("caption(")) caption = strTokens[0].trim();
-            else if(identArray.getReference(indx).equalsIgnoreCase("channel(")||
-				identArray.getReference(indx).equalsIgnoreCase("chan(")){
+			if(identArray.getReference(indx).toLowerCase().equalsIgnoreCase("name(")) name = strTokens[0].trim();
+			else if(identArray.getReference(indx).toLowerCase().equalsIgnoreCase("plant(")) plant = strTokens[0].trim();
+			else if(identArray.getReference(indx).toLowerCase().equalsIgnoreCase("caption(")) caption = strTokens[0].trim();
+            else if(identArray.getReference(indx).toLowerCase().equalsIgnoreCase("channel(")||
+				identArray.getReference(indx).toLowerCase().equalsIgnoreCase("chan(")){
 					channel = strTokens[0].trim();
 					if(str.containsIgnoreCase("xypad")){
 					xChannel = strTokens[0].trim();
@@ -375,16 +378,16 @@ int CabbageGUIClass::parse(String str)
 					}
 					else channels.add(strTokens[0].trim());
 			}
-            else if(identArray.getReference(indx).equalsIgnoreCase(" colour(")||
-				identArray.getReference(indx).equalsIgnoreCase(",colour(")) colour = strTokens[0].trim();
-			else if(identArray.getReference(indx).equalsIgnoreCase("kind(")) kind = strTokens[0].trim();
-			else if(identArray.getReference(indx).equalsIgnoreCase("file(")) file = strTokens[0].trim();
-			else if(identArray.getReference(indx).equalsIgnoreCase("fill(")) fill = strTokens[0].trim();
-			else if(identArray.getReference(indx).equalsIgnoreCase("shape(")) shape = strTokens[0].trim();
-			else if(identArray.getReference(indx).equalsIgnoreCase("outline(")) outline = strTokens[0].trim();
-			else if(identArray.getReference(indx).equalsIgnoreCase("textcolour(")) textcolour = strTokens[0].trim();
+            else if(identArray.getReference(indx).toLowerCase().equalsIgnoreCase(" colour(")||
+				identArray.getReference(indx).toLowerCase().equalsIgnoreCase(",colour(")) colour = strTokens[0].trim();
+			else if(identArray.getReference(indx).toLowerCase().equalsIgnoreCase("kind(")) kind = strTokens[0].trim();
+			else if(identArray.getReference(indx).toLowerCase().equalsIgnoreCase("file(")) file = strTokens[0].trim();
+			else if(identArray.getReference(indx).toLowerCase().equalsIgnoreCase("fill(")) fill = strTokens[0].trim();
+			else if(identArray.getReference(indx).toLowerCase().equalsIgnoreCase("shape(")) shape = strTokens[0].trim();
+			else if(identArray.getReference(indx).toLowerCase().equalsIgnoreCase("outline(")) outline = strTokens[0].trim();
+			else if(identArray.getReference(indx).toLowerCase().equalsIgnoreCase("textcolour(")) textcolour = strTokens[0].trim();
 
-            else if(identArray.getReference(indx).equalsIgnoreCase("key(")){
+            else if(identArray.getReference(indx).toLowerCase().equalsIgnoreCase("key(")){
 				key.clear();
 				if(strTokens.size()==1){
 					key.add(strTokens[0].trim());
@@ -398,8 +401,12 @@ int CabbageGUIClass::parse(String str)
 
 			}
 
-            else if(identArray.getReference(indx).equalsIgnoreCase("items(")||
-					identArray.getReference(indx).equalsIgnoreCase("text(")){
+			else if(identArray.getReference(indx).toLowerCase().equalsIgnoreCase("pluginid(")){
+				pluginID = strTokens[0].trim();
+			}
+
+            else if(identArray.getReference(indx).toLowerCase().equalsIgnoreCase("items(")||
+					identArray.getReference(indx).toLowerCase().equalsIgnoreCase("text(")){
               items.clear();//clear any unwanted items
 			  text = strTokens[0];
 			  for(int i= 0;i<(int)strTokens.size();i++){
@@ -416,7 +423,7 @@ int CabbageGUIClass::parse(String str)
 
 			//numeric paramters
 
-			else if(identArray.getReference(indx).equalsIgnoreCase("size(")){
+			else if(identArray.getReference(indx).toLowerCase().equalsIgnoreCase("size(")){
 				if(strTokens.size()<2){
 					debugMessage =T("WARNING: Not enough paramters passed to size(): usage pos(width, height\")");
 				}
@@ -426,7 +433,7 @@ int CabbageGUIClass::parse(String str)
 					height = strTokens[1].trim().getFloatValue();  
 				}
             }
-			else if(identArray.getReference(indx).equalsIgnoreCase("scale(")){
+			else if(identArray.getReference(indx).toLowerCase().equalsIgnoreCase("scale(")){
 				if(strTokens.size()<2){
 					debugMessage =T("WARNING: Not enough paramters passed to scale(): usage scale(width, height\")");
 				}
@@ -439,7 +446,7 @@ int CabbageGUIClass::parse(String str)
 			  Logger::writeToLog(T("ScaleY:")+String(scaleY));
 				}
             }
-			else if(identArray.getReference(indx).equalsIgnoreCase("bounds(")){
+			else if(identArray.getReference(indx).toLowerCase().equalsIgnoreCase("bounds(")){
 				if(strTokens.size()<4){
 					debugMessage = T("WARNING: Not enough paramters passed to bounds(): usage pos(top, left width, height\")");
 				}
@@ -451,14 +458,14 @@ int CabbageGUIClass::parse(String str)
 				  boundsText = identArray.getReference(indx)+tstr+T(")");
 				}
             }
-            else if(identArray.getReference(indx).equalsIgnoreCase("config(")){
+            else if(identArray.getReference(indx).toLowerCase().equalsIgnoreCase("config(")){
 				vuConfig.clear();
 				 for(int i= 0;i<(int)strTokens.size();i++){
 					 vuConfig.add(strTokens[i].trim().getFloatValue());
 				 }
 				}
 
-            else if(identArray.getReference(indx).equalsIgnoreCase("pos(")){
+            else if(identArray.getReference(indx).toLowerCase().equalsIgnoreCase("pos(")){
 				if(strTokens.size()<2){
 					debugMessage =T("WARNING: Not enough paramters passed to pos(): usage pos(top, left\")");
 				}
@@ -468,7 +475,7 @@ int CabbageGUIClass::parse(String str)
 				  posText = identArray.getReference(indx)+tstr+T(")");
 				}
             }
-			else if(identArray.getReference(indx).equalsIgnoreCase("range(")){
+			else if(identArray.getReference(indx).toLowerCase().equalsIgnoreCase("range(")){
 				if(strTokens.size()<3){
 					debugMessage =T("WARNING: Not enough paramters passed to range(): usage range(minx, max, value\")");
 				}
@@ -479,7 +486,7 @@ int CabbageGUIClass::parse(String str)
 				sliderRange = max-min;
 				}
 			}
-			else if(identArray.getReference(indx).equalsIgnoreCase("rangex(")){
+			else if(identArray.getReference(indx).toLowerCase().equalsIgnoreCase("rangex(")){
 				if(strTokens.size()<3){
 					debugMessage =T("WARNING: Not enough paramters passed to range(): usage range(minx, max, value\")");
 				}
@@ -490,7 +497,7 @@ int CabbageGUIClass::parse(String str)
 				xypadRangeX = maxX-minX;
 				}
 			}
-			else if(identArray.getReference(indx).equalsIgnoreCase("rangey(")){
+			else if(identArray.getReference(indx).toLowerCase().equalsIgnoreCase("rangey(")){
 				if(strTokens.size()<3){
 					debugMessage =T("WARNING: Not enough paramters passed to range(): usage range(minx, max, value\")");
 				}
@@ -501,10 +508,10 @@ int CabbageGUIClass::parse(String str)
 				xypadRangeY = maxY-minY;
 				}
 			}
-			else if(identArray.getReference(indx).equalsIgnoreCase("min(")){
+			else if(identArray.getReference(indx).toLowerCase().equalsIgnoreCase("min(")){
 				min = strTokens[0].trim().getFloatValue();  
 			}
-			else if(identArray.getReference(indx).equalsIgnoreCase("midiCtrl(")){
+			else if(identArray.getReference(indx).toLowerCase().equalsIgnoreCase("midiCtrl(")){
 				if(strTokens.size()<2){
 					debugMessage =T("WARNING: Not enough paramters passed to midiCtrl(): usage midiCtrl(midiChan, midiCtrl\")");
 				}
@@ -513,19 +520,19 @@ int CabbageGUIClass::parse(String str)
 				midiCtrl = strTokens[1].trim().getFloatValue();  
 			}
 			}
-            else if(identArray.getReference(indx).equalsIgnoreCase("max(")){
+            else if(identArray.getReference(indx).toLowerCase().equalsIgnoreCase("max(")){
 				max = strTokens[0].trim().getFloatValue();  
 			}
-            else if(identArray.getReference(indx).equalsIgnoreCase("textbox(")){
+            else if(identArray.getReference(indx).toLowerCase().equalsIgnoreCase("textbox(")){
 				textBox = strTokens[0].trim().getFloatValue();  
 			}
-            else if(identArray.getReference(indx).equalsIgnoreCase("tablenumber(")){
+            else if(identArray.getReference(indx).toLowerCase().equalsIgnoreCase("tablenumber(")){
 				tableNum = strTokens[0].trim().getFloatValue();  
 			}
-			else if(identArray.getReference(indx).equalsIgnoreCase(",line(")||
-					identArray.getReference(indx).equalsIgnoreCase(" line(")) line = strTokens[0].trim().getFloatValue();  
-            else if(identArray.getReference(indx).equalsIgnoreCase("value(")) value = strTokens[0].trim().getFloatValue();  
-			else if(identArray.getReference(indx).equalsIgnoreCase("tabpage(")) tabpage = strTokens[0].trim().getFloatValue();  
+			else if(identArray.getReference(indx).toLowerCase().equalsIgnoreCase(",line(")||
+					identArray.getReference(indx).toLowerCase().equalsIgnoreCase(" line(")) line = strTokens[0].trim().getFloatValue();  
+            else if(identArray.getReference(indx).toLowerCase().equalsIgnoreCase("value(")) value = strTokens[0].trim().getFloatValue();  
+			else if(identArray.getReference(indx).toLowerCase().equalsIgnoreCase("tabpage(")) tabpage = strTokens[0].trim().getFloatValue();  
 			else {
 			}
 			strTokens.clear();
@@ -745,6 +752,8 @@ String CabbageGUIClass::getStringProp(String prop)
 			return textcolour.trim();
 		else if(prop.equalsIgnoreCase(T("debugmessage")))
 			return debugMessage;
+		else if(prop.equalsIgnoreCase(T("pluginID")))
+			return pluginID;
 		else return "";
 }
 

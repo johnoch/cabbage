@@ -20,6 +20,7 @@
 #ifndef __JUCE_STANDALONEFILTERWINDOW_JUCEHEADER__
 #define __JUCE_STANDALONEFILTERWINDOW_JUCEHEADER__
 
+using namespace std; 
 
 #include "CabbageUtils.h"
 
@@ -142,7 +143,7 @@ public:
 
 private:
 	bool timerRunning;
-	void setUniquePluginID(File inFile, String ID);
+	int setUniquePluginID(File inFile, File csdFile);
 	float yAxis;
 	void timerCallback();
 	ScopedPointer<socketServer> server;

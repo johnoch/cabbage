@@ -45,7 +45,7 @@ class CabbageGUIClass : public CabbageUtils
 		StringArray channels;
         String channel, name, sizeText, posText, boundsText, text, type, colour, plant, reltoplant, textcolour, bounds, range,
         fontcolour, outline, fill, shape, beveltype, caption, kind, topitem, yChannel, xChannel,
-        exit, csstdout, cssetup, file, debugMessage, xyChannel;
+        exit, csstdout, cssetup, file, debugMessage, xyChannel, pluginID;
 		int tableNum, textBox;
 		Array<int> vuConfig;
 

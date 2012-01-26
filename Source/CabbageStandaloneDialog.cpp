@@ -393,6 +393,7 @@ void StandaloneFilterWindow::buttonClicked (Button*)
     if (filter == nullptr)
         return;
 
+	String test;
     PopupMenu m;
 	PopupMenu subExport;
 	PopupMenu batchProc;
@@ -420,6 +421,7 @@ void StandaloneFilterWindow::buttonClicked (Button*)
 	m.addItem(99, T("Cabbage Dance"), true, true);
 	else
 	m.addItem(99, T("Cabbage Dance"));
+
 
 
 	FileChooser openFC(T("Open a Cabbage .csd file..."), File::nonexistent, T("*.csd"));
@@ -539,19 +541,11 @@ String VST;
 	//showMessage(dll.getFullPathName());
 	if(!VSTData.copyFileTo(dll))	showMessage("problem moving plugin lib");
 
-	MemoryBlock mem;
-	if(dll.loadFileAsData(mem))
-		showMessage("ok");
-	String inputFile = mem.toString();
-	showMessage(inputFile);
-	if(inputFile.contains("RORY"))
-		showMessage("ID Found");
 
-
-
-	setUniquePluginID(dll, "test");
+	
 	File loc_csdFile(saveFC.getResult().withFileExtension(".csd").getFullPathName());
 	loc_csdFile.replaceWithText(csdFile.loadFileAsString());
+	setUniquePluginID(dll, loc_csdFile);
 	
 #ifdef Cabbage_Named_Pipe
 	sendMessageToWinXound("CABBAGE_PLUGIN_FILE_UPDATE", csdFile.getFullPathName()+T("|")+loc_csdFile.getFullPathName());
@@ -562,16 +556,58 @@ String VST;
 	}//end of open save dialog
 #endif
 
-
 return 0;	
 }
 
 //==============================================================================
 // Set unique plugin ID for each plugin based on the file name 
 //==============================================================================
-void StandaloneFilterWindow::setUniquePluginID(File inFile, String ID){
-	//inputFile.replaceCharacters("RORY", "MEME");
-	//inFile.replaceWithData(inputFile.toUTF8(), inputFile.getNumBytesAsUTF8());
+int StandaloneFilterWindow::setUniquePluginID(File binFile, File csdFile){
+String newID;
+StringArray csdText;
+csdText.addLines(csdFile.loadFileAsString());
+//read contents of csd file to find pluginID
+for(int i=0;i<csdText.size();i++)
+    {
+	StringArray tokes;
+	tokes.addTokens(csdText[i].trimEnd(), ", ", "\"");
+	if(tokes.getReference(0).equalsIgnoreCase(T("form"))){
+			CabbageGUIClass cAttr(csdText[i].trimEnd(), 0);		
+			if(cAttr.getStringProp("pluginID").length()!=4){
+			showMessage(T("Your plugin ID is not the right size. It should be 4 characters. Some hosts may not be able to load your plugin"));
+			return 0;
+			}
+			else{
+				newID = cAttr.getStringProp("pluginID");
+				i = csdText.size();
+				showMessage(cAttr.getStringProp("pluginID"));
+			}
+			
+		}
+	}
+
+size_t file_size;
+const char *pluginID = "YROR";
+long loc;
+fstream mFile(binFile.getFullPathName().toUTF8(), ios_base::in | ios_base::out | ios_base::binary);
+if(mFile.is_open())
+  {
+	mFile.seekg (0, ios::end);
+	file_size = mFile.tellg();
+	mFile.seekg (0, ios::beg);
+	unsigned char* buffer = (unsigned char*)malloc(sizeof(unsigned char)*file_size);
+  	mFile.read((char*)&buffer[0], file_size);
+	loc = cabbageFindPluginID(buffer, file_size, pluginID);
+	if (loc < 0)
+		showMessage(T("Internel Cabbage Error: The pluginID was not found"));
+	else {
+		showMessage(T("The pluginID was found"));
+		mFile.seekg (loc, ios::beg);	
+		mFile.write(newID.toUTF8(), 4);	
+	}
+}
+mFile.close();
+return 1;
 }
 
 //==============================================================================
