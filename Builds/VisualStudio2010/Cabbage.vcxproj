@@ -125,16 +125,18 @@
     <ClCompile Include="..\..\Source\CabbageGUIClass.cpp" />
     <ClCompile Include="..\..\Source\CabbageLookAndFeel.cpp" />
     <ClCompile Include="..\..\Source\CabbageMainPanel.cpp" />
-    <ClCompile Include="..\..\Source\CabbagePluginEditor.cpp" />
-    <ClCompile Include="..\..\Source\CabbagePluginProcessor.cpp" />
-    <ClCompile Include="..\..\Source\CabbageStandaloneDialog.cpp" />
     <ClCompile Include="..\..\Source\ComponentLayoutEditor.cpp" />
-    <ClCompile Include="..\..\Source\imageBinaries.cpp" />
-    <ClCompile Include="..\..\Source\StandaloneFilterApp.cpp" />
+    <ClCompile Include="..\..\Source\Editor\CabbageCsoundEditor.cpp" />
+    <ClCompile Include="..\..\Source\Editor\CabbageEditorCommandManager.cpp" />
+    <ClCompile Include="..\..\Source\Editor\CabbageEditorWindow.cpp" />
+    <ClCompile Include="..\..\Source\Plugin\CabbagePluginEditor.cpp" />
+    <ClCompile Include="..\..\Source\Plugin\CabbagePluginProcessor.cpp" />
     <ClCompile Include="..\..\JuceLibraryCode\JuceLibraryCode1.cpp" />
     <ClCompile Include="..\..\JuceLibraryCode\JuceLibraryCode2.cpp" />
     <ClCompile Include="..\..\JuceLibraryCode\JuceLibraryCode3.cpp" />
     <ClCompile Include="..\..\JuceLibraryCode\JuceLibraryCode4.cpp" />
+    <ClCompile Include="..\..\Source\Standalone\CabbageStandaloneDialog.cpp" />
+    <ClCompile Include="..\..\Source\Standalone\StandaloneFilterApp.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\JuceLibraryCode\JucePluginCharacteristics.h" />
@@ -143,14 +145,16 @@
     <ClInclude Include="..\..\Source\CabbageGUIClass.h" />
     <ClInclude Include="..\..\Source\CabbageLookAndFeel.h" />
     <ClInclude Include="..\..\Source\CabbageMainPanel.h" />
-    <ClInclude Include="..\..\Source\CabbagePluginEditor.h" />
-    <ClInclude Include="..\..\Source\CabbagePluginProcessor.h" />
-    <ClInclude Include="..\..\Source\CabbageStandaloneDialog.h" />
     <ClInclude Include="..\..\Source\CabbageUtils.h" />
     <ClInclude Include="..\..\JuceLibraryCode\AppConfig.h" />
     <ClInclude Include="..\..\JuceLibraryCode\JuceHeader.h" />
     <ClInclude Include="..\..\Source\ComponentLayoutEditor.h" />
-    <ClInclude Include="..\..\Source\imageBinaries.h" />
+    <ClInclude Include="..\..\Source\Editor\CabbageCsoundEditor.h" />
+    <ClInclude Include="..\..\Source\Editor\CabbageEditorCommandManager.h" />
+    <ClInclude Include="..\..\Source\Editor\CabbageEditorWindow.h" />
+    <ClInclude Include="..\..\Source\Plugin\CabbagePluginEditor.h" />
+    <ClInclude Include="..\..\Source\Plugin\CabbagePluginProcessor.h" />
+    <ClInclude Include="..\..\Source\Standalone\CabbageStandaloneDialog.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />
