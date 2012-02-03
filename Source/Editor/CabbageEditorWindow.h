@@ -26,10 +26,12 @@ public:
     ~CabbageEditorWindow();
 
     void closeButtonPressed();
-	CsoundEditor* contentComponent;
+	CsoundEditor* csoundEditor;
+
+	void setCsoundOutputText(String text);
 
 	void openCsoundFile(File input){
-		contentComponent->openFile(input);
+		csoundEditor->openFile(input);
 	}
 
 	void actionListenerCallback (const String& message);

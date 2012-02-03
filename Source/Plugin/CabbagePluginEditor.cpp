@@ -301,35 +301,23 @@ void CabbagePluginAudioProcessorEditor::paint (Graphics& g)
 			layoutComps[i]->toFront(true);
 		}
 	}
-/*
 
-	this needs attention!!
-
-	if(getFilter()->getCsoundStatus()){
-	if(formPic.length()>2)
-			{
-			Image img = ImageCache::getFromFile (File (formPic));
-			g.drawImage(img, 0, 0, getWidth(), getHeight(), 0, 0, img.getWidth(), img.getHeight());
-			}
-		else
-		*/
-			//g.fillAll (formColour);
-
-//componentPanel->toFront(true);
-#ifdef Cabbage_Build_Standalone
-componentPanel->grabKeyboardFocus();
-#endif
-
-	//Image newSkin = ImageCache::getFromMemory (imageBinaries::skin1_png, imageBinaries::skin1_pngSize);
-
-	//for tiling the image to fit the component window
-	//g.setTiledImageFill (newSkin, 0, 0, 1.0f);
-	//g.fillRect (0, 0, this->getWidth(), this->getHeight());
+	if(getFilter()->getCsoundInputFile().loadFileAsString().isEmpty()){
+			Image logo = ImageCache::getFromMemory (BinaryData::logo_cabbage_Black_png, BinaryData::logo_cabbage_Black_pngSize);
+			g.drawImage(logo, 10, 10, getWidth(), getHeight()-60, 0, 0, logo.getWidth(), logo.getHeight());
+	}
+	else
+	{
 	g.setColour (Colours::black);
 	g.fillAll();
 	g.setColour (Colours::grey);
 	g.setOpacity (0.1);
 	g.fillAll();
+	}
+//componentPanel->toFront(true);
+#ifdef Cabbage_Build_Standalone
+componentPanel->grabKeyboardFocus();
+#endif
 }
 
 //==============================================================================

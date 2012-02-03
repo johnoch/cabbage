@@ -41,7 +41,7 @@ StandaloneFilterWindow::StandaloneFilterWindow (const String& title,
 	timerRunning = false;
 	yAxis = 0;
     optionsButton.setTriggeredOnMouseDown (true);
-	setAlwaysOnTop(false);
+	setAlwaysOnTop(true);
 	this->setResizable(false, false);
 
 // MOD - Stefano Bonetti 
@@ -49,7 +49,6 @@ StandaloneFilterWindow::StandaloneFilterWindow (const String& title,
 	ipConnection = new socketConnection(*this);
 	pipeOpenedOk = ipConnection->createPipe(T("cabbage"));
 	if(pipeOpenedOk) Logger::writeToLog(T("Namedpipe created ..."));
-
 #endif 
 // MOD - End
 
@@ -201,7 +200,13 @@ void StandaloneFilterWindow::timerCallback()
 void StandaloneFilterWindow::actionListenerCallback (const String& message){
 	if(message.equalsIgnoreCase("fileSaved")){
 		resetFilter();
-		cabbageCsoundEditor->toFront(true);
+		//cabbageCsoundEditor->toFront(true);
+	}
+	else if(message.contains("fileOpen|")){
+		String file = message.substring(9);
+		csdFile = File(file);
+		resetFilter();
+		cabbageCsoundEditor->repaint();
 	}
 }
 //==============================================================================
@@ -255,6 +260,25 @@ else
   }
 #endif
   // MOD - End
+
+for(int i=0;i<filter->getDebugMessageArray().size();i++)
+      {
+          if(filter->getDebugMessageArray().getReference(i).length()>0)
+          {
+              text += String(filter->getDebugMessageArray().getReference(i).toUTF8());
+          }
+          else 
+          {
+              //cabbageCsoundEditor->setCsoundOutputText(text);
+              break;
+          }
+
+      }
+
+      filter->clearDebugMessageArray();
+	  cabbageCsoundEditor->setCsoundOutputText(text);
+	  //sendMessageToWinXound(T("CABBAGE_DEBUG"), text);
+
 }
 //==============================================================================
 // Delete filter
@@ -310,9 +334,9 @@ void StandaloneFilterWindow::resetFilter()
 #endif
 
 	if(cabbageCsoundEditor->isVisible()){
-		cabbageCsoundEditor->toFront(true);
-		this->toBehind(cabbageCsoundEditor);
-		cabbageCsoundEditor->contentComponent->textEditor->grabKeyboardFocus();
+		//cabbageCsoundEditor->toFront(true);
+		//this->toBehind(cabbageCsoundEditor);
+		cabbageCsoundEditor->csoundEditor->textEditor->grabKeyboardFocus();
 	}
 }
 
@@ -390,7 +414,7 @@ void StandaloneFilterWindow::showAudioSettingsDialog()
     selectorComp.setSize (400, 350);
 	
     DialogWindow::showModalDialog(TRANS("Audio Settings"), &selectorComp, this, Colours::white, true, false, false);
-	//setAlwaysOnTop(true);
+	setAlwaysOnTop(true);
 }
 //==============================================================================
 void StandaloneFilterWindow::closeButtonPressed()
@@ -454,12 +478,15 @@ void StandaloneFilterWindow::buttonClicked (Button*)
 		if(openFC.browseForFileToOpen()){
 		csdFile = openFC.getResult();
 		resetFilter();
+		cabbageCsoundEditor->openCsoundFile(csdFile);
         break;
 		}
 	case 2:
 		cabbageCsoundEditor->openCsoundFile(csdFile);
+		this->toBehind(cabbageCsoundEditor);
 		cabbageCsoundEditor->setVisible(true);
-		cabbageCsoundEditor->toFront(true);
+		cabbageCsoundEditor->setFullScreen(true);
+		cabbageCsoundEditor->csoundEditor->textEditor->grabKeyboardFocus();
         break;
 
     case 4:
@@ -608,8 +635,7 @@ for(int i=0;i<csdText.size();i++)
 				newID = cAttr.getStringProp("pluginID");
 				i = csdText.size();
 				showMessage(cAttr.getStringProp("pluginID"));
-			}
-			
+			}			
 		}
 	}
 

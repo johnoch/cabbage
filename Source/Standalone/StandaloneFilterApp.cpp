@@ -12,7 +12,6 @@ class CabbageStandalone : public JUCEApplication
           void initialise(const String& /*commandLineParameters*/)
           {
 			// initialise our settings file..
-
 			PropertiesFile::Options options;
 			options.applicationName     = "Cabbage Standalone host";
 			options.filenameSuffix      = "settings";

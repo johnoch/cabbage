@@ -8,15 +8,54 @@
 //==============================================================================
 CsoundEditor::CsoundEditor()
 {	
-
 textEditor = new CodeEditorComponent(csoundDoc, &csoundToker);
 textEditor->setBounds(0, 0, getWidth(), getHeight());
-addAndMakeVisible(textEditor);
 textEditor->setWantsKeyboardFocus(true);
+
+Font textEditorFont(T("Bitstream Vera Sans Mono"), 15, 0);
+//background colour ID
+textEditor->setColour(0x1004500, Colours::black);
+textEditor->setFont(textEditorFont);
+
+output = new TextEditor("output");
+output->setMultiLine(true);
+output->setScrollbarsShown(true);
+output->setReturnKeyStartsNewLine(true);
+output->setReadOnly(true);
+
+Font outputFont(T("Bitstream Vera Sans Mono"), 14, 0);
+outputFont.setBold(true);
+output->setFont(outputFont);
+//background colour ID
+Colour col(10, 10, 10);
+output->setColour(0x1000200, col);
+//text colour ID
+output->setColour(0x1000201, Colours::white);
+
+horizontalDividerBar = new StretchableLayoutResizerBar(&horizontalLayout, 1, false);
+
+
+addAndMakeVisible(textEditor);
+addAndMakeVisible(horizontalDividerBar);
+addAndMakeVisible(output);
+
 CommandManager* commandManager = CommandManager::getInstance();
 commandManager->registerAllCommandsForTarget(this);
 commandManager->getKeyMappings()->resetToDefaultMappings();
 addKeyListener(commandManager->getKeyMappings());
+
+horizontalLayout.setItemLayout (0,          // for item 0
+    -.0, -.9,    // must be between 0 and 100 % in size
+    -.7);      // and its preferred size is 70% of the total available space
+
+// The resizer bar
+horizontalLayout.setItemLayout (1,
+    8, 8,
+    8);
+
+horizontalLayout.setItemLayout (2,          // for item 2
+    -0., -.9, // size must be between 0% and 60% of the available space
+    -.3);        // and its preferred size is 30% of total available space
 
 }
 //==============================================================================
@@ -27,7 +66,10 @@ CsoundEditor::~CsoundEditor ()
 //==============================================================================
 void CsoundEditor::resized()
 {
-textEditor->setBounds(0, 0, getWidth(), getHeight());
+Component* comps[] = { textEditor, horizontalDividerBar, output };
+// this will position the components, one beside the other, to fit
+// horizontally into the rectangle provided.
+horizontalLayout.layOutComponents (comps, 3, 0, 0, getWidth(), getHeight(), true, true);
 }
 
 
@@ -180,6 +222,8 @@ FileChooser openFC(T("Open a .csd file..."), File::nonexistent, T("*.csd"));
 if(openFC.browseForFileToOpen())
 	csoundDoc.replaceAllContent(openFC.getResult().loadFileAsString());
 	openCsdFile = openFC.getResult();
+	String filename = openCsdFile.getFullPathName();
+	sendActionMessage(T("fileOpen|")+filename);
 }
 
 void CsoundEditor::openFile(File input)
