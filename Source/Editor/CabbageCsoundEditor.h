@@ -26,15 +26,8 @@
 
 #include "../../JuceLibraryCode/JuceHeader.h" 
 #include "../CabbageUtils.h"
+#include "../BinaryData.h"
 
-class CsoundDocument : public CodeDocument,
-						public CodeDocument::Position
-{
-public:
-	CsoundDocument():
-	CodeDocument(){}
-	~CsoundDocument(){}
-};
 
 class CsoundTokeniser : public CodeTokeniser
 {
@@ -248,36 +241,116 @@ private:
 };
 
 //==============================================================================
+class CodeEditorExtended : public Component
+{
+
+public:
+   CodeEditorExtended(CodeDocument &document, CodeTokeniser *codeTokeniser)
+   {
+		editor = new CodeEditorComponent(document, codeTokeniser);
+		editor->setColour (CaretComponent::caretColourId, Colours::white);
+		editor->setFont(Font::Font(T("Bitstream Vera Sans Mono"), 15, 0));
+		//background colour ID
+		editor->setColour(0x1004500, Colours::black);	   
+		editor->setWantsKeyboardFocus(true);
+		addAndMakeVisible(editor);
+
+	   firstLine = 0;
+   }
+
+   ~CodeEditorExtended (){};
+
+   void scrollBarMoved (ScrollBar *scrollBarThatHasMoved, double newRangeStart)
+   {
+       editor->scrollBarMoved(scrollBarThatHasMoved, newRangeStart);
+
+       if(scrollBarThatHasMoved->isVertical())
+       {
+           firstLine = scrollBarThatHasMoved->getCurrentRangeStart();
+           this->getParentComponent()->repaint();
+       }
+   }
+
+   int getFirstVisibleLine()
+   {
+       return firstLine;
+   }
+
+ScopedPointer<CodeEditorComponent> editor;
+
+private:
+   int firstLine;
+
+	//==============================================================================
+	void paint(Graphics& g)
+	   {
+		   if(editor != 0)
+		   {
+			   g.setFont(editor->getFont());
+			  
+
+			   int firstLineToDraw = this->getFirstVisibleLine();
+			   int lastLineToDraw = firstLineToDraw + editor->getNumLinesOnScreen() + 2;
+
+			   int index = 0;
+			   for (int j = firstLineToDraw; j < lastLineToDraw; ++j)
+			   {
+				   g.setColour(juce::Colours::white);
+				   g.drawText(String(j+1), 0, editor->getLineHeight() * index, 25, editor->getLineHeight(),
+							  juce::Justification::centredRight, false);
+				   index += 1;
+
+			   }
+			   g.setColour(Colours::green);
+			   g.drawLine(27, 0, 27, editor->getHeight());
+
+
+		   }
+	   }
+
+	void resized (){
+		editor->setBounds(30, 0, getWidth() - 30, getHeight());
+	}
+  
+};
+
+//==============================================================================
 class CsoundEditor  :  public Component,
 					   public MenuBarModel,
 					   public ActionBroadcaster,
 					   public ApplicationCommandTarget,
+					   public CodeDocument::Listener,
 					   public CabbageUtils
 {
 
 private:
-	CsoundTokeniser csoundToker;
+	
 	File openCsdFile;
 
 public:
-	ScopedPointer<CodeEditorComponent> textEditor;
+
 	CodeDocument csoundDoc;
+	CsoundTokeniser csoundToker;
+	ScopedPointer<CodeEditorExtended> textEditor;
 	ScopedPointer<TextEditor> output;
+	ScopedPointer<Label> helpLabel;
 	StretchableLayoutManager horizontalLayout;
     ScopedPointer<StretchableLayoutResizerBar> horizontalDividerBar;
     //==============================================================================
 	juce_UseDebuggingNewOperator;
     CsoundEditor ();
     ~CsoundEditor ();
-
-
     //==============================================================================
+	void codeDocumentChanged (const CodeDocument::Position &affectedTextStart, const CodeDocument::Position &affectedTextEnd);
+	//==============================================================================
 	void resized ();
 	void openFile(File input);
 	void openFile();
 	void saveFile();
 	void saveFileAs();
-
+	void newFile(String type);
+	bool hasChanged;
+	bool unSaved;
 	//================= command methods ====================
 	ApplicationCommandTarget* getNextCommandTarget(){
 		return findFirstTargetParentComponent();
@@ -290,12 +363,13 @@ public:
 	//==============================================================================
     const StringArray getMenuBarNames()
     {
-        const char* const names[] = { "File", 0 };
+        const char* const names[] = { "File", "Edit", 0 };
         return StringArray (names);
     }
 
 
     void menuItemSelected (int /*menuItemID*/, int /*topLevelMenuIndex*/){}
+	StringArray opcodes;
 
 };
 

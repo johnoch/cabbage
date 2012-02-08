@@ -33,6 +33,7 @@
 #define JucePlugin_MaxNumInputChannels  2
 #define JucePlugin_MaxNumOutputChannels 2
 #define JucePlugin_PreferredChannelConfigurations   {1, 1}, {2, 2}
+//if you define this in the IDE make sure to remove it when building from the command line...
 #ifdef Cabbage_Plugin_Synth
 #define JucePlugin_IsSynth              1
 #else

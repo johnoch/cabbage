@@ -122,6 +122,7 @@
     </Bscmake>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\Source\BinaryData.cpp" />
     <ClCompile Include="..\..\Source\CabbageGUIClass.cpp" />
     <ClCompile Include="..\..\Source\CabbageLookAndFeel.cpp" />
     <ClCompile Include="..\..\Source\CabbageMainPanel.cpp" />
@@ -141,6 +142,7 @@
   <ItemGroup>
     <ClInclude Include="..\..\JuceLibraryCode\JucePluginCharacteristics.h" />
     <ClInclude Include="..\..\JuceLibraryCode\juce_IncludeCharacteristics.h" />
+    <ClInclude Include="..\..\Source\BinaryData.h" />
     <ClInclude Include="..\..\Source\CabbageCustomWidgets.h" />
     <ClInclude Include="..\..\Source\CabbageGUIClass.h" />
     <ClInclude Include="..\..\Source\CabbageLookAndFeel.h" />
@@ -155,6 +157,9 @@
     <ClInclude Include="..\..\Source\Plugin\CabbagePluginEditor.h" />
     <ClInclude Include="..\..\Source\Plugin\CabbagePluginProcessor.h" />
     <ClInclude Include="..\..\Source\Standalone\CabbageStandaloneDialog.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="resources.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />

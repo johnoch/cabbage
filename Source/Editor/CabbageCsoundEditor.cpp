@@ -6,16 +6,13 @@
 #pragma warning(disable: 4996)
 #pragma warning(disable: 4244)
 //==============================================================================
-CsoundEditor::CsoundEditor()
+CsoundEditor::CsoundEditor():hasChanged(false), unSaved(false)
 {	
-textEditor = new CodeEditorComponent(csoundDoc, &csoundToker);
+//textEditor = new CodeEditorComponent(csoundDoc, &csoundToker);
+opcodes.addLines(String((BinaryData::opcodes_txt)));
+csoundDoc.addListener(this);
+textEditor = new CodeEditorExtended(csoundDoc, &csoundToker);
 textEditor->setBounds(0, 0, getWidth(), getHeight());
-textEditor->setWantsKeyboardFocus(true);
-
-Font textEditorFont(T("Bitstream Vera Sans Mono"), 15, 0);
-//background colour ID
-textEditor->setColour(0x1004500, Colours::black);
-textEditor->setFont(textEditorFont);
 
 output = new TextEditor("output");
 output->setMultiLine(true);
@@ -34,12 +31,20 @@ output->setColour(0x1000201, Colours::white);
 
 horizontalDividerBar = new StretchableLayoutResizerBar(&horizontalLayout, 1, false);
 
+helpLabel = new Label();
+helpLabel->setColour(Label::ColourIds::backgroundColourId, Colours::white);
+helpLabel->setColour(Label::ColourIds::outlineColourId, Colours::green);
+helpLabel->setColour(Label::ColourIds::textColourId, Colours::black);
+outputFont.setHeight(14);
+helpLabel->setFont(outputFont);
+helpLabel->setText(T("Cabbage Csound Editor"), true);
 
 addAndMakeVisible(textEditor);
 addAndMakeVisible(horizontalDividerBar);
+addAndMakeVisible(helpLabel);
 addAndMakeVisible(output);
 
-CommandManager* commandManager = CommandManager::getInstance();
+ScopedPointer<CommandManager> commandManager = CommandManager::getInstance();
 commandManager->registerAllCommandsForTarget(this);
 commandManager->getKeyMappings()->resetToDefaultMappings();
 addKeyListener(commandManager->getKeyMappings());
@@ -50,10 +55,15 @@ horizontalLayout.setItemLayout (0,          // for item 0
 
 // The resizer bar
 horizontalLayout.setItemLayout (1,
-    8, 8,
-    8);
+    15, 15,
+    15);
 
-horizontalLayout.setItemLayout (2,          // for item 2
+// The resizer bar
+horizontalLayout.setItemLayout (2,
+    35, 35,
+    35);
+
+horizontalLayout.setItemLayout (3,          // for item 2
     -0., -.9, // size must be between 0% and 60% of the available space
     -.3);        // and its preferred size is 30% of total available space
 
@@ -66,10 +76,10 @@ CsoundEditor::~CsoundEditor ()
 //==============================================================================
 void CsoundEditor::resized()
 {
-Component* comps[] = { textEditor, horizontalDividerBar, output };
+Component* comps[] = { textEditor, horizontalDividerBar, helpLabel, output };
 // this will position the components, one beside the other, to fit
 // horizontally into the rectangle provided.
-horizontalLayout.layOutComponents (comps, 3, 0, 0, getWidth(), getHeight(), true, true);
+horizontalLayout.layOutComponents (comps, 4, 0, 0, getWidth(), getHeight(), true, true);
 }
 
 
@@ -114,6 +124,7 @@ void CsoundEditor::getCommandInfo (const CommandID commandID, ApplicationCommand
 		result.setInfo (T("Paste"), T("Paste selection"), CommandCategories::edit, 0);
 		result.addDefaultKeypress (T('v'), ModifierKeys::commandModifier);
         break;
+
 	}
 }
 
@@ -136,14 +147,13 @@ void CsoundEditor::getAllCommands (Array <CommandID>& commands)
 
 bool CsoundEditor::perform (const InvocationInfo& info)
 {
-//	int tabIndex = tabComponent->getCurrentTabIndex();
-//	toggleButton = dynamic_cast <StartStopButton*> (info.originatingComponent);
-    switch (info.commandID)
+
+	switch (info.commandID)
     {
 	//---------------------------------------------------------------------------------------------
 	case CommandIDs::fileNew:
 		{
-			//NewFile();
+			newFile("effect");
 			break;
 		}
 	case CommandIDs::fileOpen:
@@ -155,6 +165,7 @@ bool CsoundEditor::perform (const InvocationInfo& info)
 		{
 			saveFile();
 			//toFront(true);
+			repaint();
 			break;
 		}
 	case CommandIDs::fileSaveAs:
@@ -190,7 +201,7 @@ return true;
 //==============================================================================
 const PopupMenu CsoundEditor::getMenuForIndex (int topLevelMenuIndex, const String& menuName)
 {
-CommandManager* commandManager = CommandManager::getInstance();
+ScopedPointer<CommandManager> commandManager = CommandManager::getInstance();
 PopupMenu m1;
 if(topLevelMenuIndex==0)
 	{
@@ -208,12 +219,33 @@ else if(topLevelMenuIndex==1)
 	m1.addCommandItem(commandManager, CommandIDs::editCut);
 	m1.addCommandItem(commandManager, CommandIDs::editCopy);
 	m1.addCommandItem(commandManager, CommandIDs::editPaste);
+	m1.addSeparator();
+
 	return m1;
 	}
 else return m1;
 }
 //==============================================================================
+void CsoundEditor::codeDocumentChanged (const CodeDocument::Position &affectedTextStart, const CodeDocument::Position &affectedTextEnd)
+{
+hasChanged = true;
+String lineFromCsd = textEditor->editor->getDocument().getLine(affectedTextStart.getLineNumber());
+String test1, test2, opcodeName, opcodeInfo, opcodeSyntax;
+for(int i=0;i<opcodes.size();i++){
+	test1 = opcodes[i].substring(1, 20);
+	test2 = test1.substring(0, test1.indexOf("\""));
+	opcodeName = T(" ")+test2;
 
+	if(opcodeName.length()>2)
+	if(lineFromCsd.contains(opcodeName)){
+		test1 = opcodes[i].substring(opcodes[i].indexOf(";")+1, 500);
+		test2 = test1.substring(test1.indexOf(";")+1, 500);
+		opcodeInfo = test2.substring(0, test2.indexOf(";"));
+		opcodeSyntax = test2.substring(test2.indexOf(";")+1, 1000);
+		helpLabel->setText(opcodeName+T(" - ")+opcodeInfo+String("\n")+String("Syntax: ")+opcodeSyntax, true);
+	}
+	}
+}
 
 //==============================================================================
 void CsoundEditor::openFile()
@@ -235,8 +267,13 @@ void CsoundEditor::openFile(File input)
 //==============================================================================
 void CsoundEditor::saveFile()
 {
-openCsdFile.replaceWithText(csoundDoc.getAllContent());
-sendActionMessage("fileSaved");
+if(unSaved)
+	saveFileAs();
+else{
+	openCsdFile.replaceWithText(csoundDoc.getAllContent());
+	sendActionMessage("fileSaved");
+	hasChanged = false;
+	}
 }
 
 //==============================================================================
@@ -247,8 +284,37 @@ FileChooser openFC(T("Save a .csd file..."), File::nonexistent, T("*.csd"));
 if(openFC.browseForFileToSave(true)){
 	File saveFile(openFC.getResult().getFullPathName());
 	saveFile.replaceWithText(csoundDoc.getAllContent());
+	unSaved = false;
 }
-	
+textEditor->repaint();	
 }
 
-//==============================================================================
+//===============================================================================
+void CsoundEditor::newFile(String type)
+{
+if(type=="effect"){
+unSaved = true;
+String untitledCSD= "<CsoundSynthesizer>\n"
+"<CsOptions>\n"
+"-n -d\n"
+"</CsOptions>\n"
+"<CsInstruments>\n"
+"sr = 44100\n"
+"ksmps = 64\n"
+"nchnls = 2\n"
+"\n"
+"instr 1\n"
+"\n"
+"\n"
+"endin\n"
+"\n"
+"</CsInstruments>  \n"
+"<CsScore>\n"
+"f1 0 1024 10 1\n"
+"i1 0 300\n"
+"</CsScore>\n"
+"</CsoundSynthesizer>";
+csoundDoc.replaceAllContent(untitledCSD);
+}
+
+}

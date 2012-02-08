@@ -64,10 +64,10 @@ layoutEditor->setEnabled(false);
 layoutEditor->toFront(false); 
 layoutEditor->updateFrames();
 #ifdef Cabbage_Build_Standalone
-	//only want to grab keyboard focus on standalone mode as DAW handle their own keystrokes
-	componentPanel->setWantsKeyboardFocus(true);
-	componentPanel->toFront(true);
-	componentPanel->grabKeyboardFocus();
+        //only want to grab keyboard focus on standalone mode as DAW handle their own keystrokes
+        componentPanel->setWantsKeyboardFocus(true);
+        componentPanel->toFront(true);
+        componentPanel->grabKeyboardFocus();
 #endif
 }
 else{
@@ -75,13 +75,14 @@ layoutEditor->setEnabled(true);
 layoutEditor->toFront(true); 
 layoutEditor->updateFrames();
 }
-#else
-//only want to grab keyboard focus on standalone mode as DAW handle their own keystrokes
-//componentPanel->setWantsKeyboardFocus(true);
-componentPanel->toFront(true);
-//componentPanel->grabKeyboardFocus();
 #endif
 
+#ifdef Cabbage_Build_Standalone
+        //only want to grab keyboard focus on standalone mode as DAW handle their own keystrokes
+        componentPanel->setWantsKeyboardFocus(true);
+        componentPanel->toFront(true);
+        componentPanel->grabKeyboardFocus();
+#endif
 }
 
 CabbagePluginAudioProcessorEditor::~CabbagePluginAudioProcessorEditor()
@@ -296,13 +297,16 @@ void CabbagePluginAudioProcessorEditor::paint (Graphics& g)
 {
 	for(int i=0;i<getFilter()->getGUILayoutCtrlsSize();i++){
 		if(getFilter()->getGUILayoutCtrls(i).getStringProp("type").equalsIgnoreCase("keyboard")){
+#ifdef Cabbage_Build_Standalone
 			layoutComps[i]->setWantsKeyboardFocus(true);
 			layoutComps[i]->grabKeyboardFocus();
 			layoutComps[i]->toFront(true);
+#endif
 		}
 	}
-
+#ifdef Cabbage_Build_Standalone
 	if(getFilter()->getCsoundInputFile().loadFileAsString().isEmpty()){
+
 			Image logo = ImageCache::getFromMemory (BinaryData::logo_cabbage_Black_png, BinaryData::logo_cabbage_Black_pngSize);
 			g.drawImage(logo, 10, 10, getWidth(), getHeight()-60, 0, 0, logo.getWidth(), logo.getHeight());
 	}
@@ -315,8 +319,13 @@ void CabbagePluginAudioProcessorEditor::paint (Graphics& g)
 	g.fillAll();
 	}
 //componentPanel->toFront(true);
-#ifdef Cabbage_Build_Standalone
 componentPanel->grabKeyboardFocus();
+#else
+	g.setColour (Colours::black);
+	g.fillAll();
+	g.setColour (Colours::grey);
+	g.setOpacity (0.1);
+	g.fillAll();
 #endif
 }
 
@@ -769,8 +778,10 @@ try{
 	}
 
 	layoutComps[idx]->getProperties().set(String("plant"), var(cAttr.getStringProp("plant")));
+#ifdef Cabbage_Build_Standalone
 	layoutComps[idx]->setWantsKeyboardFocus(true);
 	layoutComps[idx]->setAlwaysOnTop(true);
+#endif
 	layoutComps[idx]->addMouseListener(this, false);
 	layoutComps[idx]->setName("midiKeyboard");
 }
@@ -943,7 +954,9 @@ try{
 	((CabbageButton*)controls[idx])->button->addListener(this);
 	if(cAttr.getItemsSize()>0)
 	((CabbageButton*)controls[idx])->button->setButtonText(cAttr.getItems(0));
+#ifdef Cabbage_Build_Standalone
 	((CabbageButton*)controls[idx])->button->setWantsKeyboardFocus(true);
+#endif
 }
 catch(...){
     Logger::writeToLog(T("Syntax error: 'button..."));
@@ -1003,8 +1016,9 @@ try{
 	if(cAttr.getItemsSize()>0)
 	((CabbageCheckbox*)controls[idx])->button->setButtonText(cAttr.getItems(0));
 
+#ifdef Cabbage_Build_Standalone
 	((CabbageCheckbox*)controls[idx])->button->setWantsKeyboardFocus(true);
-
+#endif
 	Logger::writeToLog(cAttr.getPropsString());
 }
 catch(...){
@@ -1257,7 +1271,9 @@ try{
 	float valueY = cabbageABS(min-cAttr.getNumProp("valueY"))/cabbageABS(min-max);
 	//Logger::writeToLog(T("Y:")+String(valueY));
 	((CabbageXYController*)controls[idx])->xypad->setBallXY(valueX, valueY, true);
+#ifdef Cabbage_Build_Standalone	
 	controls[idx]->setWantsKeyboardFocus(false);
+#endif
 	((CabbageXYController*)controls[idx])->xypad->addActionListener(this);
 	if(!cAttr.getStringProp("name").containsIgnoreCase("dummy"))
 	actionListenerCallback(cAttr.getStringProp("name"));

@@ -10,20 +10,17 @@
     <Filter Include="Juce Library Code">
       <UniqueIdentifier>{F7048EA6-F4B2-F31B-E402-E05D678A1111}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Cabbage\Source\Plugin">
+      <UniqueIdentifier>{4066d4cd-7e22-4f12-8779-76f8759f166c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Cabbage\Source\Standalone">
+      <UniqueIdentifier>{5860ad94-1f57-4173-9513-ed189aa4e7b5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Cabbage\Source\Editor">
+      <UniqueIdentifier>{31d08120-137c-4205-a443-a4cb97238401}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\Source\CabbagePluginEditor.cpp">
-      <Filter>Cabbage\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Source\CabbagePluginProcessor.cpp">
-      <Filter>Cabbage\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Source\CabbageStandaloneDialog.cpp">
-      <Filter>Cabbage\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Source\StandaloneFilterApp.cpp">
-      <Filter>Cabbage\Source</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\JuceLibraryCode\JuceLibraryCode1.cpp">
       <Filter>Juce Library Code</Filter>
     </ClCompile>
@@ -45,23 +42,35 @@
     <ClCompile Include="..\..\Source\ComponentLayoutEditor.cpp">
       <Filter>Cabbage\Source</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Source\imageBinaries.cpp">
+    <ClCompile Include="..\..\Source\CabbageLookAndFeel.cpp">
       <Filter>Cabbage\Source</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Source\CabbageLookAndFeel.cpp">
+    <ClCompile Include="..\..\Source\Plugin\CabbagePluginEditor.cpp">
+      <Filter>Cabbage\Source\Plugin</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Plugin\CabbagePluginProcessor.cpp">
+      <Filter>Cabbage\Source\Plugin</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Standalone\CabbageStandaloneDialog.cpp">
+      <Filter>Cabbage\Source\Standalone</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Standalone\StandaloneFilterApp.cpp">
+      <Filter>Cabbage\Source\Standalone</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Editor\CabbageCsoundEditor.cpp">
+      <Filter>Cabbage\Source\Editor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Editor\CabbageEditorWindow.cpp">
+      <Filter>Cabbage\Source\Editor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Editor\CabbageEditorCommandManager.cpp">
+      <Filter>Cabbage\Source\Editor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\BinaryData.cpp">
       <Filter>Cabbage\Source</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\Source\CabbagePluginEditor.h">
-      <Filter>Cabbage\Source</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Source\CabbagePluginProcessor.h">
-      <Filter>Cabbage\Source</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Source\CabbageStandaloneDialog.h">
-      <Filter>Cabbage\Source</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\JuceLibraryCode\AppConfig.h">
       <Filter>Juce Library Code</Filter>
     </ClInclude>
@@ -89,11 +98,34 @@
     <ClInclude Include="..\..\Source\CabbageCustomWidgets.h">
       <Filter>Cabbage\Source</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Source\imageBinaries.h">
-      <Filter>Cabbage\Source</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Source\CabbageLookAndFeel.h">
       <Filter>Cabbage\Source</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Source\Plugin\CabbagePluginEditor.h">
+      <Filter>Cabbage\Source\Plugin</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Plugin\CabbagePluginProcessor.h">
+      <Filter>Cabbage\Source\Plugin</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Standalone\CabbageStandaloneDialog.h">
+      <Filter>Cabbage\Source\Standalone</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Editor\CabbageCsoundEditor.h">
+      <Filter>Cabbage\Source\Editor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Editor\CabbageEditorWindow.h">
+      <Filter>Cabbage\Source\Editor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Editor\CabbageEditorCommandManager.h">
+      <Filter>Cabbage\Source\Editor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\BinaryData.h">
+      <Filter>Cabbage\Source</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="resources.rc">
+      <Filter>Cabbage</Filter>
+    </ResourceCompile>
   </ItemGroup>
 </Project>

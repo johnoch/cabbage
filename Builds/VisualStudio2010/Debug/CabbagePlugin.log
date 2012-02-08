@@ -1,37 +1,26 @@
-﻿Build started 30/10/2011 18:48:10.
-     1>Project "C:\MyDocuments\CabbageSVN\Builds\VisualStudio2010\CabbagePlugin.vcxproj" on node 2 (build target(s)).
-     1>InitializeBuildStatus:
-         Touching ".\Debug\CabbagePlugin.unsuccessfulbuild".
-       ClCompile:
-         c:\Program Files\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /IC:\MyDocuments\SourceCode\Csound5\csound5\H /I"C:\MyDocuments\My Dropbox\vstsdk2.4" /I..\..\JuceLibraryCode /ZI /nologo /W4 /WX- /Od /Oy- /D WIN32 /D _WINDOWS /D MSVC /D DEBUG /D _DEBUG /D JUCER_VS2008_78A5006=1 /D USE_DOUBLE=0 /D useDouble=0 /D _WINDLL /D _MBCS /Gm- /EHsc /MTd /GS /fp:precise /Zc:wchar_t /Zc:forScope /GR /Fo".\Debug\\" /Fd".\Debug\vc100.pdb" /Gd /TP /analyze- /errorReport:prompt ..\..\Source\CabbagePluginProcessor.cpp
-         CabbagePluginProcessor.cpp
-     1>c:\mydocuments\cabbagesvn\source\cabbageplugineditor.h(43): warning C4584: 'CabbagePluginAudioProcessorEditor' : base-class 'juce::MouseListener' is already a base-class of 'juce::AudioProcessorEditor'
-                 c:\mydocuments\jucetip\juce\juce_amalgamated.h(23537) : see declaration of 'juce::MouseListener'
-                 c:\mydocuments\jucetip\juce\juce_amalgamated.h(45467) : see declaration of 'juce::AudioProcessorEditor'
-     1>c:\mydocuments\cabbagesvn\source\cabbagepluginprocessor.cpp(307): warning C4996: 'vsnprintf': This function or variable may be unsafe. Consider using vsnprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-                 c:\program files\microsoft visual studio 10.0\vc\include\stdio.h(354) : see declaration of 'vsnprintf'
-     1>c:\mydocuments\cabbagesvn\source\cabbagepluginprocessor.cpp(382): warning C4101: 'max' : unreferenced local variable
-       Link:
-         c:\Program Files\Microsoft Visual Studio 10.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:".\Debug\CabbagePlugin.dll" /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /NODEFAULTLIB:libcmt.lib /NODEFAULTLIB:msvcrt.lib /MANIFEST /ManifestFile:".\Debug\CabbagePlugin.dll.intermediate.manifest" /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /DEBUG /PDB:".\Debug\CabbagePlugin.pdb" /SUBSYSTEM:WINDOWS /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:".\Debug\CabbagePlugin.lib" /MACHINE:X86 /DLL .\Debug\juce_VST_Wrapper.obj
-         .\Debug\JuceLibraryCode1.obj
-         .\Debug\JuceLibraryCode2.obj
-         .\Debug\JuceLibraryCode3.obj
-         .\Debug\JuceLibraryCode4.obj
-         .\Debug\CabbageGUIClass.obj
-         .\Debug\CabbageLookAndFeel.obj
-         .\Debug\CabbagePluginEditor.obj
-         .\Debug\CabbagePluginProcessor.obj
-         .\Debug\imageBinaries.obj "C:\MyDocuments\SourceCode\Csound5\csound5\csound32.lib" 
-         LINK : .\Debug\CabbagePlugin.dll not found or not built by the last incremental link; performing full link
-            Creating library .\Debug\CabbagePlugin.lib and object .\Debug\CabbagePlugin.exp
-         CabbagePlugin.vcxproj -> C:\MyDocuments\CabbageSVN\Builds\VisualStudio2010\.\Debug\CabbagePlugin.dll
-       Manifest:
-         C:\Program Files\Microsoft SDKs\Windows\v7.0A\bin\mt.exe /nologo /verbose /outputresource:".\Debug\CabbagePlugin.dll;#2" /manifest .\Debug\CabbagePlugin.dll.intermediate.manifest
-       FinalizeBuildStatus:
-         Deleting file ".\Debug\CabbagePlugin.unsuccessfulbuild".
-         Touching ".\Debug\CabbagePlugin.lastbuildstate".
-     1>Done Building Project "C:\MyDocuments\CabbageSVN\Builds\VisualStudio2010\CabbagePlugin.vcxproj" (build target(s)).
-
-Build succeeded.
-
-Time Elapsed 00:00:07.26
+﻿  juce_VST_Wrapper.cpp
+  JuceLibraryCode1.cpp
+  JuceLibraryCode2.cpp
+  JuceLibraryCode3.cpp
+  JuceLibraryCode4.cpp
+  BinaryData.cpp
+  CabbageGUIClass.cpp
+  CabbageLookAndFeel.cpp
+  CabbagePluginEditor.cpp
+  CabbagePluginProcessor.cpp
+c:\mydocuments\cabbagesvn\source\plugin\cabbagepluginprocessor.cpp(317): warning C4996: 'vsnprintf': This function or variable may be unsafe. Consider using vsnprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+          c:\program files\microsoft visual studio 10.0\vc\include\stdio.h(354) : see declaration of 'vsnprintf'
+c:\mydocuments\cabbagesvn\source\plugin\cabbagepluginprocessor.cpp(399): warning C4101: 'max' : unreferenced local variable
+  Generating Code...
+c:\mydocuments\cabbagesvn\source\plugin\cabbagepluginprocessor.cpp(671): warning C4715: 'CabbagePluginAudioProcessor::ReadMidiData' : not all control paths return a value
+c:\mydocuments\cabbagesvn\source\cabbagecustomwidgets.h(1248): warning C4701: potentially uninitialized local variable 'startText' used
+c:\mydocuments\cabbagesvn\source\cabbagelookandfeel.cpp(624): warning C4701: potentially uninitialized local variable 'nameWidth' used
+c:\mydocuments\cabbagesvn\source\cabbagelookandfeel.cpp(669): warning C4701: potentially uninitialized local variable 'destX' used
+c:\mydocuments\cabbagesvn\source\cabbagelookandfeel.cpp(669): warning C4701: potentially uninitialized local variable 'destY' used
+c:\mydocuments\cabbagesvn\source\cabbagelookandfeel.cpp(748): warning C4701: potentially uninitialized local variable 'strWidth' used
+c:\mydocuments\cabbagesvn\source\cabbagelookandfeel.cpp(885): warning C4701: potentially uninitialized local variable 'destWidth' used
+c:\mydocuments\cabbagesvn\source\cabbagelookandfeel.cpp(885): warning C4701: potentially uninitialized local variable 'destHeight' used
+c:\mydocuments\cabbagesvn\source\cabbagelookandfeel.cpp(885): warning C4701: potentially uninitialized local variable 'destY' used
+c:\mydocuments\cabbagesvn\source\cabbagelookandfeel.cpp(885): warning C4701: potentially uninitialized local variable 'destX' used
+     Creating library .\Debug\CabbagePlugin.lib and object .\Debug\CabbagePlugin.exp
+  CabbagePlugin.vcxproj -> C:\MyDocuments\CabbageSVN\Builds\VisualStudio2010\.\Debug\CabbagePlugin.dll

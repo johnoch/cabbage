@@ -412,14 +412,15 @@ void StandaloneFilterWindow::showAudioSettingsDialog()
                                                true, false, true, false);
 
     selectorComp.setSize (400, 350);
-	
+	setAlwaysOnTop(false);
     DialogWindow::showModalDialog(TRANS("Audio Settings"), &selectorComp, this, Colours::white, true, false, false);
 	setAlwaysOnTop(true);
 }
 //==============================================================================
 void StandaloneFilterWindow::closeButtonPressed()
 {
-    JUCEApplication::quit();
+	cabbageCsoundEditor->closeButtonPressed();
+	JUCEApplication::quit();
 }
 
 void StandaloneFilterWindow::resized()
@@ -593,7 +594,7 @@ String VST;
 	else{
 	File dll(saveFC.getResult().withFileExtension(".dll").getFullPathName());
 	//showMessage(dll.getFullPathName());
-	if(!VSTData.copyFileTo(dll))	showMessage("problem moving plugin lib");
+	if(!VSTData.copyFileTo(dll))	showMessage("problem moving plugin lib, make sure it's not currently open in your plugin host!");
 
 
 	
