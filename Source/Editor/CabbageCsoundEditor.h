@@ -249,6 +249,10 @@ public:
    {
 		editor = new CodeEditorComponent(document, codeTokeniser);
 		editor->setColour (CaretComponent::caretColourId, Colours::white);
+		editor->setColour (CodeEditorComponent::highlightColourId, Colours::cadetblue);
+		//editor->setColour (CodeEditorComponent::highlightedTextColourId, Colours::black);
+
+
 		editor->setFont(Font::Font(T("Bitstream Vera Sans Mono"), 15, 0));
 		//background colour ID
 		editor->setColour(0x1004500, Colours::black);	   

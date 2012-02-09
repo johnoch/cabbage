@@ -20,7 +20,7 @@ output->setScrollbarsShown(true);
 output->setReturnKeyStartsNewLine(true);
 output->setReadOnly(true);
 
-Font outputFont(T("Bitstream Vera Sans Mono"), 14, 0);
+Font outputFont(T("Lucida Console"), 14, 0);
 outputFont.setBold(true);
 output->setFont(outputFont);
 //background colour ID
@@ -44,7 +44,7 @@ addAndMakeVisible(horizontalDividerBar);
 addAndMakeVisible(helpLabel);
 addAndMakeVisible(output);
 
-ScopedPointer<CommandManager> commandManager = CommandManager::getInstance();
+CommandManager* commandManager = CommandManager::getInstance();
 commandManager->registerAllCommandsForTarget(this);
 commandManager->getKeyMappings()->resetToDefaultMappings();
 addKeyListener(commandManager->getKeyMappings());
@@ -170,28 +170,34 @@ bool CsoundEditor::perform (const InvocationInfo& info)
 		}
 	case CommandIDs::fileSaveAs:
 		{
+			saveFileAs();
 			break;
 		}
 
 	case CommandIDs::editUndo:
 		{			
+			textEditor->editor->undo();
 			break;
 		}
 	case CommandIDs::editCut:
 		{			
+			textEditor->editor->cutToClipboard();
 			break;
 		}
 	case CommandIDs::editCopy:
 		{			
+			textEditor->editor->copyToClipboard();
 			break;
 		}
 	case CommandIDs::editPaste:
 		{			
+			textEditor->editor->pasteFromClipboard();
 			break;
 		}
 
 	case CommandIDs::editRedo:
 		{			
+			textEditor->editor->redo();
 			break;
 		}
 	}
@@ -201,7 +207,7 @@ return true;
 //==============================================================================
 const PopupMenu CsoundEditor::getMenuForIndex (int topLevelMenuIndex, const String& menuName)
 {
-ScopedPointer<CommandManager> commandManager = CommandManager::getInstance();
+CommandManager* commandManager = CommandManager::getInstance();
 PopupMenu m1;
 if(topLevelMenuIndex==0)
 	{
@@ -294,7 +300,12 @@ void CsoundEditor::newFile(String type)
 {
 if(type=="effect"){
 unSaved = true;
-String untitledCSD= "<CsoundSynthesizer>\n"
+String untitledCSD= 
+"<Cabbage>\n"
+"form size(400, 300), caption(\"Untitled\"), pluginID(\"plu1\")\n"
+"\n"
+"</Cabbage>\n"
+"<CsoundSynthesizer>\n"
 "<CsOptions>\n"
 "-n -d\n"
 "</CsOptions>\n"
@@ -302,6 +313,7 @@ String untitledCSD= "<CsoundSynthesizer>\n"
 "sr = 44100\n"
 "ksmps = 64\n"
 "nchnls = 2\n"
+"0dbfs=1\n"
 "\n"
 "instr 1\n"
 "\n"

@@ -669,7 +669,7 @@ return 1;
 //==============================================================================
 void StandaloneFilterWindow::BatchProcess(String type){
 File thisFile(File::getSpecialLocation(File::currentApplicationFile));
-#ifdef WIN32
+#ifdef WIN32  
 FileChooser saveFC(T("Select files..."), File::nonexistent, T(""));
 String VST;
 	if (saveFC.browseForMultipleFilesToOpen()){
@@ -682,7 +682,7 @@ String VST;
 			}
 	//showMessage(VST);
 	File VSTData(VST);
-	if(!VSTData.exists())
+	if(!VSTData.exists())  
 		showMessage("problem with plugin lib");
 	else{
 		for(int i=0;i<saveFC.getResults().size();i++){
