@@ -319,7 +319,7 @@ void CabbagePluginAudioProcessorEditor::paint (Graphics& g)
 	g.fillAll();
 	}
 //componentPanel->toFront(true);
-componentPanel->grabKeyboardFocus();
+//componentPanel->grabKeyboardFocus();
 #else
 	g.setColour (Colours::black);
 	g.fillAll();

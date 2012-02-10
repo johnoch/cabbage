@@ -443,6 +443,7 @@ void StandaloneFilterWindow::buttonClicked (Button*)
 	PopupMenu subExport;
 	PopupMenu batchProc;
 	m.addItem(1, T("Open Cabbage patch"));
+	m.addItem(3, T("New Cabbage patch"));
 	m.addItem(2, T("View Source"));
     m.addItem(4, TRANS("Audio Settings..."));
     m.addSeparator();
@@ -486,7 +487,13 @@ void StandaloneFilterWindow::buttonClicked (Button*)
 		cabbageCsoundEditor->openCsoundFile(csdFile);
 		this->toBehind(cabbageCsoundEditor);
 		cabbageCsoundEditor->setVisible(true);
-		cabbageCsoundEditor->setFullScreen(true);
+		//cabbageCsoundEditor->setFullScreen(true);
+		cabbageCsoundEditor->csoundEditor->textEditor->grabKeyboardFocus();
+        break;
+
+	case 3:
+		cabbageCsoundEditor->setVisible(true);
+		cabbageCsoundEditor->csoundEditor->newFile("effect");
 		cabbageCsoundEditor->csoundEditor->textEditor->grabKeyboardFocus();
         break;
 
