@@ -285,11 +285,12 @@ else{
 void CsoundEditor::saveFileAs()
 {
 FileChooser openFC(T("Save a .csd file..."), File::nonexistent, T("*.csd"));
-
 if(openFC.browseForFileToSave(true)){
 	File saveFile(openFC.getResult().getFullPathName());
-	saveFile.replaceWithText(csoundDoc.getAllContent());
+	openCsdFile = saveFile;
+	openCsdFile.replaceWithText(csoundDoc.getAllContent());
 	unSaved = false;
+	sendActionMessage(T("fileSaveAs|")+saveFile.getFullPathName());
 }
 textEditor->repaint();	
 }
@@ -299,7 +300,6 @@ void CsoundEditor::newFile(String type)
 {
 String untitledCSD;
 if(type=="effect"){
-unSaved = true;
 untitledCSD= 
 "<Cabbage>\n"
 "form size(400, 300), caption(\"Untitled\"), pluginID(\"plu1\")\n"
@@ -329,7 +329,6 @@ untitledCSD=
 }
 else if(type=="instrument")
 {
-unSaved = true;
 untitledCSD= 
 "<Cabbage>\n"
 "form size(400, 300), caption(\"Untitled\"), pluginID(\"plu1\")\n"
@@ -358,4 +357,5 @@ untitledCSD=
 "</CsoundSynthesizer>";
 }
 csoundDoc.replaceAllContent(untitledCSD);
+saveFileAs();
 }

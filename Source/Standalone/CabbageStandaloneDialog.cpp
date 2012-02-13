@@ -208,6 +208,12 @@ void StandaloneFilterWindow::actionListenerCallback (const String& message){
 		resetFilter();
 		cabbageCsoundEditor->repaint();
 	}
+	else if(message.contains("fileSaveAs|")){
+		String file = message.substring(11);
+		csdFile = File(file);
+		resetFilter();
+		cabbageCsoundEditor->repaint();
+	}
 }
 //==============================================================================
 
@@ -446,8 +452,8 @@ void StandaloneFilterWindow::buttonClicked (Button*)
 	m.addItem(1, T("Open Cabbage patch"));
 	
 
-	newType.addItem(30, T("Instrument"));
-	newType.addItem(31, T("Effect"));
+	newType.addItem(30, T("Effect"));
+	newType.addItem(31, T("Instrument"));
 	m.addSubMenu(T("New Cabbage..."), newType);
 
 	m.addItem(2, T("View Source"));
@@ -478,6 +484,7 @@ void StandaloneFilterWindow::buttonClicked (Button*)
 
 
 	FileChooser openFC(T("Open a Cabbage .csd file..."), File::nonexistent, T("*.csd"));
+	FileChooser saveFC(T("Save Cabbage file as..."), File::nonexistent, T("*.csd"));
 	
 
     switch (m.showAt (&optionsButton))
@@ -505,7 +512,7 @@ void StandaloneFilterWindow::buttonClicked (Button*)
 
 	case 31:
 		cabbageCsoundEditor->setVisible(true);
-		cabbageCsoundEditor->csoundEditor->newFile("effect");
+		cabbageCsoundEditor->csoundEditor->newFile("instrument");
 		cabbageCsoundEditor->csoundEditor->textEditor->grabKeyboardFocus();
         break;
 
