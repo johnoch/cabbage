@@ -440,10 +440,16 @@ void StandaloneFilterWindow::buttonClicked (Button*)
 
 	String test;
     PopupMenu m;
+	PopupMenu newType;
 	PopupMenu subExport;
 	PopupMenu batchProc;
 	m.addItem(1, T("Open Cabbage patch"));
-	m.addItem(3, T("New Cabbage patch"));
+	
+
+	newType.addItem(30, T("Instrument"));
+	newType.addItem(31, T("Effect"));
+	m.addSubMenu(T("New Cabbage..."), newType);
+
 	m.addItem(2, T("View Source"));
     m.addItem(4, TRANS("Audio Settings..."));
     m.addSeparator();
@@ -491,7 +497,13 @@ void StandaloneFilterWindow::buttonClicked (Button*)
 		cabbageCsoundEditor->csoundEditor->textEditor->grabKeyboardFocus();
         break;
 
-	case 3:
+	case 30:
+		cabbageCsoundEditor->setVisible(true);
+		cabbageCsoundEditor->csoundEditor->newFile("effect");
+		cabbageCsoundEditor->csoundEditor->textEditor->grabKeyboardFocus();
+        break;
+
+	case 31:
 		cabbageCsoundEditor->setVisible(true);
 		cabbageCsoundEditor->csoundEditor->newFile("effect");
 		cabbageCsoundEditor->csoundEditor->textEditor->grabKeyboardFocus();

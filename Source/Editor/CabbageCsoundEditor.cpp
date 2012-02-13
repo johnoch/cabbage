@@ -1,6 +1,6 @@
 
 #include "CabbageCsoundEditor.h"
-#include "CabbageEditorCommandManager.h"
+
 
 
 #pragma warning(disable: 4996)
@@ -20,7 +20,7 @@ output->setScrollbarsShown(true);
 output->setReturnKeyStartsNewLine(true);
 output->setReadOnly(true);
 
-Font outputFont(T("Lucida Console"), 14, 0);
+Font outputFont(T("Courier New"), 14, 0);
 outputFont.setBold(true);
 output->setFont(outputFont);
 //background colour ID
@@ -44,10 +44,9 @@ addAndMakeVisible(horizontalDividerBar);
 addAndMakeVisible(helpLabel);
 addAndMakeVisible(output);
 
-CommandManager* commandManager = CommandManager::getInstance();
-commandManager->registerAllCommandsForTarget(this);
-commandManager->getKeyMappings()->resetToDefaultMappings();
-addKeyListener(commandManager->getKeyMappings());
+
+commandManager.registerAllCommandsForTarget(this);
+addKeyListener(commandManager.getKeyMappings());
 
 horizontalLayout.setItemLayout (0,          // for item 0
     -.0, -.9,    // must be between 0 and 100 % in size
@@ -298,9 +297,10 @@ textEditor->repaint();
 //===============================================================================
 void CsoundEditor::newFile(String type)
 {
+String untitledCSD;
 if(type=="effect"){
 unSaved = true;
-String untitledCSD= 
+untitledCSD= 
 "<Cabbage>\n"
 "form size(400, 300), caption(\"Untitled\"), pluginID(\"plu1\")\n"
 "\n"
@@ -326,7 +326,36 @@ String untitledCSD=
 "i1 0 300\n"
 "</CsScore>\n"
 "</CsoundSynthesizer>";
-csoundDoc.replaceAllContent(untitledCSD);
 }
-
+else if(type=="instrument")
+{
+unSaved = true;
+untitledCSD= 
+"<Cabbage>\n"
+"form size(400, 300), caption(\"Untitled\"), pluginID(\"plu1\")\n"
+"\n"
+"</Cabbage>\n"
+"<CsoundSynthesizer>\n"
+"<CsOptions>\n"
+"-n -d -+rtmidi=NULL -M0 --midi-key-cps=4 --midi-velocity-amp=5\n" 
+"</CsOptions>\n"
+"<CsInstruments>\n"
+"sr = 44100\n"
+"ksmps = 64\n"
+"nchnls = 2\n"
+"0dbfs=1\n"
+"\n"
+"instr 1\n"
+"\n"
+"\n"
+"endin\n"
+"\n"
+"</CsInstruments>  \n"
+"<CsScore>\n"
+"f1 0 1024 10 1\n"
+"i1 0 300\n"
+"</CsScore>\n"
+"</CsoundSynthesizer>";
+}
+csoundDoc.replaceAllContent(untitledCSD);
 }

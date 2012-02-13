@@ -27,6 +27,7 @@
 #include "../../JuceLibraryCode/JuceHeader.h" 
 #include "../CabbageUtils.h"
 #include "../BinaryData.h"
+#include "CabbageEditorCommandManager.h"
 
 
 class CsoundTokeniser : public CodeTokeniser
@@ -75,12 +76,12 @@ private:
 	const Colour getDefaultColour (int tokenType)
 	{
     const Colour colours[] = {
-		Colours::white, // error
+		Colours::black, // error
         Colours::green,  // comment
         Colours::blue,  // keyword
-        Colours::white,  // identifier
+        Colours::black,  // identifier
         Colours::orange,  // int literal
-        Colours::white,  // float literal
+        Colours::black,  // float literal
         Colours::red,  // string literal
         Colours::darkgreen,  // operator
         Colours::darkgreen,  // bracket
@@ -248,14 +249,14 @@ public:
    CodeEditorExtended(CodeDocument &document, CodeTokeniser *codeTokeniser)
    {
 		editor = new CodeEditorComponent(document, codeTokeniser);
-		editor->setColour (CaretComponent::caretColourId, Colours::white);
+		editor->setColour (CaretComponent::caretColourId, Colours::blue);
 		editor->setColour (CodeEditorComponent::highlightColourId, Colours::cadetblue);
 		//editor->setColour (CodeEditorComponent::highlightedTextColourId, Colours::black);
 
 
-		editor->setFont(Font::Font(T("Bitstream Vera Sans Mono"), 15, 0));
+		editor->setFont(Font::Font(T("Courier New"), 15, 1));
 		//background colour ID
-		editor->setColour(0x1004500, Colours::black);	   
+		editor->setColour(0x1004500, Colours::white);	   
 		editor->setWantsKeyboardFocus(true);
 		addAndMakeVisible(editor);
 
@@ -340,6 +341,7 @@ public:
 	ScopedPointer<Label> helpLabel;
 	StretchableLayoutManager horizontalLayout;
     ScopedPointer<StretchableLayoutResizerBar> horizontalDividerBar;
+	CommandManager commandManager;
     //==============================================================================
 	juce_UseDebuggingNewOperator;
     CsoundEditor ();
