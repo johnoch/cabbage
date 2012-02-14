@@ -342,6 +342,7 @@ void StandaloneFilterWindow::resetFilter()
 	if(cabbageCsoundEditor->isVisible()){
 		//cabbageCsoundEditor->toFront(true);
 		//this->toBehind(cabbageCsoundEditor);
+		cabbageCsoundEditor->setName(csdFile.getFullPathName());
 		cabbageCsoundEditor->csoundEditor->textEditor->grabKeyboardFocus();
 	}
 }
@@ -661,19 +662,22 @@ for(int i=0;i<csdText.size();i++)
 			else{
 				newID = cAttr.getStringProp("pluginID");
 				i = csdText.size();
-				showMessage(cAttr.getStringProp("pluginID"));
 			}			
 		}
 	}
 
 size_t file_size;
 const char *pluginID = "YROR";
+const char *pluginName = "CabbageEffectNam";
+
+
 long loc;
 fstream mFile(binFile.getFullPathName().toUTF8(), ios_base::in | ios_base::out | ios_base::binary);
 if(mFile.is_open())
   {
 	mFile.seekg (0, ios::end);
 	file_size = mFile.tellg();
+	//set plugin ID
 	mFile.seekg (0, ios::beg);
 	unsigned char* buffer = (unsigned char*)malloc(sizeof(unsigned char)*file_size);
   	mFile.read((char*)&buffer[0], file_size);
@@ -681,10 +685,29 @@ if(mFile.is_open())
 	if (loc < 0)
 		showMessage(T("Internel Cabbage Error: The pluginID was not found"));
 	else {
-		showMessage(T("The pluginID was found"));
 		mFile.seekg (loc, ios::beg);	
 		mFile.write(newID.toUTF8(), 4);	
 	}
+
+	//set plugin name based on .csd file
+	String plugLibName = csdFile.getFileNameWithoutExtension();
+	if(plugLibName.length()<16)
+		for(int y=plugLibName.length();y<16;y++)
+			plugLibName.append(T(" "), 1);
+	
+	mFile.seekg (0, ios::beg);
+	buffer = (unsigned char*)malloc(sizeof(unsigned char)*file_size);
+  	mFile.read((char*)&buffer[0], file_size);
+	loc = cabbageFindPluginID(buffer, file_size, pluginName);
+	if (loc < 0)
+		showMessage(T("Plugin name could not be set?!?"));
+	else {
+		//showMessage("plugin name set!");
+		mFile.seekg (loc, ios::beg);	
+		mFile.write(csdFile.getFileNameWithoutExtension().toUTF8(), 16);	
+	}
+
+
 }
 mFile.close();
 return 1;

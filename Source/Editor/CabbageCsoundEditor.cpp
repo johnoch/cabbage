@@ -14,6 +14,7 @@ csoundDoc.addListener(this);
 textEditor = new CodeEditorExtended(csoundDoc, &csoundToker);
 textEditor->setBounds(0, 0, getWidth(), getHeight());
 
+setApplicationCommandManagerToWatch(&commandManager);
 output = new TextEditor("output");
 output->setMultiLine(true);
 output->setScrollbarsShown(true);
@@ -206,24 +207,23 @@ return true;
 //==============================================================================
 const PopupMenu CsoundEditor::getMenuForIndex (int topLevelMenuIndex, const String& menuName)
 {
-CommandManager* commandManager = CommandManager::getInstance();
 PopupMenu m1;
 if(topLevelMenuIndex==0)
 	{
-	 m1.addCommandItem(commandManager, CommandIDs::fileNew);	 
-	 m1.addCommandItem(commandManager, CommandIDs::fileOpen);
-	 m1.addCommandItem(commandManager, CommandIDs::fileSave);
-	 m1.addCommandItem(commandManager, CommandIDs::fileSaveAs);
+	 m1.addCommandItem(&commandManager, CommandIDs::fileNew);	 
+	 m1.addCommandItem(&commandManager, CommandIDs::fileOpen);
+	 m1.addCommandItem(&commandManager, CommandIDs::fileSave);
+	 m1.addCommandItem(&commandManager, CommandIDs::fileSaveAs);
 	 m1.addSeparator();
 	 return m1;
 	}
 else if(topLevelMenuIndex==1)
 	{
-	m1.addCommandItem(commandManager, CommandIDs::editUndo);
-	m1.addCommandItem(commandManager, CommandIDs::editRedo);
-	m1.addCommandItem(commandManager, CommandIDs::editCut);
-	m1.addCommandItem(commandManager, CommandIDs::editCopy);
-	m1.addCommandItem(commandManager, CommandIDs::editPaste);
+	m1.addCommandItem(&commandManager, CommandIDs::editUndo);
+	m1.addCommandItem(&commandManager, CommandIDs::editRedo);
+	m1.addCommandItem(&commandManager, CommandIDs::editCut);
+	m1.addCommandItem(&commandManager, CommandIDs::editCopy);
+	m1.addCommandItem(&commandManager, CommandIDs::editPaste);
 	m1.addSeparator();
 
 	return m1;
@@ -260,6 +260,7 @@ if(openFC.browseForFileToOpen())
 	csoundDoc.replaceAllContent(openFC.getResult().loadFileAsString());
 	openCsdFile = openFC.getResult();
 	String filename = openCsdFile.getFullPathName();
+	this->setName(openCsdFile.getFullPathName());
 	sendActionMessage(T("fileOpen|")+filename);
 }
 
@@ -267,6 +268,7 @@ void CsoundEditor::openFile(File input)
 {
 	csoundDoc.replaceAllContent(input.loadFileAsString());
 	openCsdFile = input;
+	this->setName(openCsdFile.getFullPathName());
 }
 
 //==============================================================================

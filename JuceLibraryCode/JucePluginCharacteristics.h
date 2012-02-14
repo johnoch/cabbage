@@ -25,8 +25,8 @@
 #define JucePlugin_Build_AU     1  // (If you change this value, you'll also need to re-export the projects using the Jucer)
 #define JucePlugin_Build_RTAS   0  // (If you change this value, you'll also need to re-export the projects using the Jucer)
 
-#define JucePlugin_Name                 "Cabbage"
-#define JucePlugin_Desc                 "Cabbage"
+#define JucePlugin_Name                 "CabbageEffectNam"
+#define JucePlugin_Desc                 "CabbagePlugin"
 #define JucePlugin_Manufacturer         "Cabbage"
 #define JucePlugin_ManufacturerCode     'Cabbu'
 #define JucePlugin_PluginCode           'RORY'
