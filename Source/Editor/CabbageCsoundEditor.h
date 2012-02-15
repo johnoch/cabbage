@@ -253,8 +253,6 @@ public:
 		editor->setColour (CodeEditorComponent::highlightColourId, Colours::cadetblue);
 		//editor->setColour (CodeEditorComponent::highlightedTextColourId, Colours::black);
 
-
-		editor->setFont(Font::Font(T("Courier New"), 15, 1));
 		//background colour ID
 		editor->setColour(0x1004500, Colours::white);	   
 		editor->setWantsKeyboardFocus(true);
@@ -333,7 +331,7 @@ private:
 	File openCsdFile;
 
 public:
-
+	int fontSize;
 	CodeDocument csoundDoc;
 	CsoundTokeniser csoundToker;
 	ScopedPointer<CodeEditorExtended> textEditor;
@@ -341,6 +339,7 @@ public:
 	ScopedPointer<Label> helpLabel;
 	StretchableLayoutManager horizontalLayout;
     ScopedPointer<StretchableLayoutResizerBar> horizontalDividerBar;
+	void setFontSize(String zoom);
 	CommandManager commandManager;
     //==============================================================================
 	juce_UseDebuggingNewOperator;

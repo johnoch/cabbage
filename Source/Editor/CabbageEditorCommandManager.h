@@ -16,6 +16,10 @@ namespace CommandIDs
 	static const int editCut			= 0x2013;
 	static const int editCopy			= 0x2014;
 	static const int editPaste			= 0x2015;
+	static const int editZoomIn			= 0x2016;
+	static const int editZoomOut		= 0x2017;
+
+
 };
 
 //==============================================================================

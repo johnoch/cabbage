@@ -13,6 +13,7 @@ opcodes.addLines(String((BinaryData::opcodes_txt)));
 csoundDoc.addListener(this);
 textEditor = new CodeEditorExtended(csoundDoc, &csoundToker);
 textEditor->setBounds(0, 0, getWidth(), getHeight());
+textEditor->editor->setFont(Font(T("Courier New"), 15, 1));
 
 setApplicationCommandManagerToWatch(&commandManager);
 output = new TextEditor("output");
@@ -21,9 +22,9 @@ output->setScrollbarsShown(true);
 output->setReturnKeyStartsNewLine(true);
 output->setReadOnly(true);
 
-Font outputFont(T("Courier New"), 14, 0);
-outputFont.setBold(true);
-output->setFont(outputFont);
+
+fontSize = 15;
+output->setFont(Font(T("Courier New"), 14, 0));
 //background colour ID
 Colour col(10, 10, 10);
 output->setColour(0x1000200, col);
@@ -36,8 +37,8 @@ helpLabel = new Label();
 helpLabel->setColour(Label::ColourIds::backgroundColourId, Colours::white);
 helpLabel->setColour(Label::ColourIds::outlineColourId, Colours::green);
 helpLabel->setColour(Label::ColourIds::textColourId, Colours::black);
-outputFont.setHeight(14);
-helpLabel->setFont(outputFont);
+
+helpLabel->setFont(Font(T("Courier New"), 14, 0));
 helpLabel->setText(T("Cabbage Csound Editor"), true);
 
 addAndMakeVisible(textEditor);
@@ -82,6 +83,17 @@ Component* comps[] = { textEditor, horizontalDividerBar, helpLabel, output };
 horizontalLayout.layOutComponents (comps, 4, 0, 0, getWidth(), getHeight(), true, true);
 }
 
+//==============================================================================
+void CsoundEditor::setFontSize(String zoom)
+{
+if(zoom==T("in"))
+textEditor->editor->setFont(Font::Font(T("Courier New"), ++fontSize, 1));
+else
+textEditor->editor->setFont(Font::Font(T("Courier New"), --fontSize, 1));
+
+}
+
+//==============================================================================
 
 void CsoundEditor::getCommandInfo (const CommandID commandID, ApplicationCommandInfo& result)
 {
@@ -124,6 +136,14 @@ void CsoundEditor::getCommandInfo (const CommandID commandID, ApplicationCommand
 		result.setInfo (T("Paste"), T("Paste selection"), CommandCategories::edit, 0);
 		result.addDefaultKeypress (T('v'), ModifierKeys::commandModifier);
         break;
+	case CommandIDs::editZoomIn:
+		result.setInfo (T("Zoom in"), T("Zoom in"), CommandCategories::edit, 0);
+		result.addDefaultKeypress (T('='), ModifierKeys::commandModifier);
+        break;
+	case CommandIDs::editZoomOut:
+		result.setInfo (T("Zoom out"), T("Zoom out"), CommandCategories::edit, 0);
+		result.addDefaultKeypress (T('-'), ModifierKeys::commandModifier);
+        break;
 
 	}
 }
@@ -141,6 +161,8 @@ void CsoundEditor::getAllCommands (Array <CommandID>& commands)
 								CommandIDs::editCut,
 								CommandIDs::editPaste,
 								CommandIDs::editRedo,
+								CommandIDs::editZoomIn,
+								CommandIDs::editZoomOut
 	};
 	commands.addArray (ids, sizeof (ids) / sizeof (ids [0]));
 }
@@ -200,6 +222,17 @@ bool CsoundEditor::perform (const InvocationInfo& info)
 			textEditor->editor->redo();
 			break;
 		}
+
+	case CommandIDs::editZoomIn:
+		{			
+			setFontSize("in");
+			break;
+		}
+	case CommandIDs::editZoomOut:
+		{			
+			setFontSize("out");
+			break;
+		}
 	}
 return true;
 }
@@ -207,7 +240,7 @@ return true;
 //==============================================================================
 const PopupMenu CsoundEditor::getMenuForIndex (int topLevelMenuIndex, const String& menuName)
 {
-PopupMenu m1;
+PopupMenu m1, m2;
 if(topLevelMenuIndex==0)
 	{
 	 m1.addCommandItem(&commandManager, CommandIDs::fileNew);	 
@@ -225,7 +258,9 @@ else if(topLevelMenuIndex==1)
 	m1.addCommandItem(&commandManager, CommandIDs::editCopy);
 	m1.addCommandItem(&commandManager, CommandIDs::editPaste);
 	m1.addSeparator();
-
+	m2.addCommandItem(&commandManager, CommandIDs::editZoomIn);
+	m2.addCommandItem(&commandManager, CommandIDs::editZoomOut);
+	m1.addSubMenu(T("Font Size"), m2);
 	return m1;
 	}
 else return m1;

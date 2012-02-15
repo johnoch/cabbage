@@ -339,10 +339,10 @@ void StandaloneFilterWindow::resetFilter()
 	sendMessageToWinXound(T("CABBAGE_LOADED"), "");
 #endif
 
+	cabbageCsoundEditor->setName(csdFile.getFullPathName());
 	if(cabbageCsoundEditor->isVisible()){
 		//cabbageCsoundEditor->toFront(true);
 		//this->toBehind(cabbageCsoundEditor);
-		cabbageCsoundEditor->setName(csdFile.getFullPathName());
 		cabbageCsoundEditor->csoundEditor->textEditor->grabKeyboardFocus();
 	}
 }
@@ -632,6 +632,7 @@ String VST;
 #ifdef Cabbage_Named_Pipe
 	sendMessageToWinXound("CABBAGE_PLUGIN_FILE_UPDATE", csdFile.getFullPathName()+T("|")+loc_csdFile.getFullPathName());
 	csdFile = loc_csdFile;	
+	cabbageCsoundEditor->setName(csdFile.getFullPathName());
 	sendMessageToWinXound("CABBAGE_SHOW_MESSAGE|Info", "WinXound has been updated\nyour .csd file");
 #endif
 	}
