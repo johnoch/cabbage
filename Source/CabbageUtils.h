@@ -130,12 +130,20 @@ static Font widgetText()
 	return font;
 }
 
-//==========================================================================================
+//======= for group components etc =========================================================
 static Colour componentSkin()
 {
-	Colour skin = Colour::fromRGBA (45, 45, 50, 255);
+	Colour skin = Colour::fromRGBA (45, 55, 60, 255);
 	return skin;
 }
+
+//======== for the main background =========================================================
+static Colour backgroundSkin()
+{
+	Colour skin = Colour::fromRGBA (5, 15, 20, 255);
+	return skin;
+}
+
 
 //==========================================================================================
 

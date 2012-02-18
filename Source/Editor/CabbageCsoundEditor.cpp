@@ -34,9 +34,9 @@ output->setColour(0x1000201, Colours::white);
 horizontalDividerBar = new StretchableLayoutResizerBar(&horizontalLayout, 1, false);
 
 helpLabel = new Label();
-helpLabel->setColour(Label::ColourIds::backgroundColourId, Colours::white);
-helpLabel->setColour(Label::ColourIds::outlineColourId, Colours::green);
-helpLabel->setColour(Label::ColourIds::textColourId, Colours::black);
+helpLabel->setColour(Label::backgroundColourId, Colours::white);
+helpLabel->setColour(Label::outlineColourId, Colours::green);
+helpLabel->setColour(Label::textColourId, Colours::black);
 
 helpLabel->setFont(Font(T("Courier New"), 14, 0));
 helpLabel->setText(T("Cabbage Csound Editor"), true);

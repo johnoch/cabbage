@@ -298,33 +298,35 @@ void CabbagePluginAudioProcessorEditor::paint (Graphics& g)
 	for(int i=0;i<getFilter()->getGUILayoutCtrlsSize();i++){
 		if(getFilter()->getGUILayoutCtrls(i).getStringProp("type").equalsIgnoreCase("keyboard")){
 #ifdef Cabbage_Build_Standalone
-			layoutComps[i]->setWantsKeyboardFocus(true);
-			layoutComps[i]->grabKeyboardFocus();
-			layoutComps[i]->toFront(true);
+	//		layoutComps[i]->setWantsKeyboardFocus(true);
+	//		layoutComps[i]->grabKeyboardFocus();
+	//		layoutComps[i]->toFront(true);
 #endif
 		}
 	}
 #ifdef Cabbage_Build_Standalone
 	if(getFilter()->getCsoundInputFile().loadFileAsString().isEmpty()){
-
+		g.setColour (Colours::black);
+			g.fillAll();
 			Image logo = ImageCache::getFromMemory (BinaryData::logo_cabbage_Black_png, BinaryData::logo_cabbage_Black_pngSize);
 			g.drawImage(logo, 10, 10, getWidth(), getHeight()-60, 0, 0, logo.getWidth(), logo.getHeight());
 	}
-	else
-	{
-	g.setColour (Colours::black);
-	g.fillAll();
-	g.setColour (Colours::grey);
-	g.setOpacity (0.1);
-	g.fillAll();
+	else {
+		/*g.setColour (Colours::black);
+		 g.fillAll();
+		 g.setColour (Colours::grey);
+		 g.setOpacity (0.1);
+		 g.fillAll();
+		 */
+		Colour bg = CabbageUtils::backgroundSkin();
+		g.setColour (bg);
+		g.fillAll();
 	}
 //componentPanel->toFront(true);
 //componentPanel->grabKeyboardFocus();
 #else
-	g.setColour (Colours::black);
-	g.fillAll();
-	g.setColour (Colours::grey);
-	g.setOpacity (0.1);
+	Colour bg = CabbageUtils::backgroundSkin();
+	g.setColour (bg);
 	g.fillAll();
 #endif
 }
@@ -872,8 +874,8 @@ void CabbagePluginAudioProcessorEditor::sliderValueChanged (Slider* sliderThatWa
 //check for parent name rather than slider name which is used as a place holder for a label
 //Logger::writeToLog(sliderThatWasMoved->getParentComponent()->getName());
 
-if(sliderThatWasMoved->isEnabled()) // before sending data to on named channel
-    {
+//if(sliderThatWasMoved->isEnabled()) // before sending data to on named channel
+  //  {
     //if(RUNNING){make sure Csound is playing before calling SetChannel()
                 for(int i=0;i<(int)getFilter()->getGUICtrlsSize();i++)//find correct control from vector
                         if(getFilter()->getGUICtrls(i).getStringProp("name")==sliderThatWasMoved->getParentComponent()->getName()){
@@ -900,7 +902,7 @@ if(sliderThatWasMoved->isEnabled()) // before sending data to on named channel
                         }
                 }
 				
-}
+//}
 #endif
 }
 
@@ -1067,7 +1069,7 @@ if(!getFilter()->isGuiEnabled()){
 	else if(dynamic_cast<ToggleButton*>(button)){
      	for(int i=0;i<(int)getFilter()->getGUICtrlsSize();i++)//find correct control from vector
 			if(getFilter()->getGUICtrls(i).getStringProp("name")==button->getName()){
-				Logger::writeToLog(String(button->getToggleStateValue().getValue()));
+			//	Logger::writeToLog(String(button->getToggleStateValue().getValue()));
 
 				if(button->getToggleState()){
 					button->setToggleState(true, false);
@@ -1421,7 +1423,7 @@ for(int i=0;i<(int)getFilter()->getGUICtrlsSize();i++)//find correct control fro
 }
 
 //=============================================================================
-bool CabbagePluginAudioProcessorEditor::keyPressed(const juce::KeyPress &key ,juce::Component *)
+bool CabbagePluginAudioProcessorEditor::keyPressed(const juce::KeyPress &key ,Component *)
 {
 #ifndef Cabbage_No_Csound
 if(!getFilter()->isGuiEnabled()){

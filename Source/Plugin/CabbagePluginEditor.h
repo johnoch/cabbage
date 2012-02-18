@@ -51,7 +51,7 @@ public:
 	void resized();
 private:
 	void InsertGUIControls();
-	bool keyPressed(const juce::KeyPress &,juce::Component *);
+	bool keyPressed(const juce::KeyPress &,Component *);
 	void InsertGroupBox(CabbageGUIClass cAttr);
 	void comboBoxChanged (ComboBox* combo);
 	void InsertComboBox(CabbageGUIClass cAttr);

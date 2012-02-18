@@ -444,8 +444,8 @@ void CabbageLookAndFeel::drawRotarySlider(Graphics& g, int /*x*/, int /*y*/, int
 
 
 		//----- If the value box width is bigger than the slider width.  The slider size needs to be increased to cater for displaying 
-		//the full value.  This should only really apply to small sliders.  The parent of the slider is also increased by the same
-		//amount.  This means if the user is using a caption, then the slider group box will also increase. 
+		//the full value.  This should only really apply to small sliders.  Only the parent needs to be increase, CabbageSlider(), as it
+		//will resize the actual slider itself.  This will work whether the slider uses a group caption or not.
 		if (destWidth < boxWidth) {
 			//Getting difference in width between value box and slider width
 			int diff = boxWidth - destWidth;
@@ -455,7 +455,7 @@ void CabbageLookAndFeel::drawRotarySlider(Graphics& g, int /*x*/, int /*y*/, int
 				boxWidth += 15;
 
 			//Getting parent's original bounds...
-			Component* parent;
+			Component* parent; //CabbageSlider
 			parent = slider.getParentComponent();
 			int parentWidth = parent->getWidth();
 			int parentHeight = parent->getHeight();
@@ -472,12 +472,6 @@ void CabbageLookAndFeel::drawRotarySlider(Graphics& g, int /*x*/, int /*y*/, int
 			int newParentHeight = parentHeight + diff;
 			parent->setBounds (newParentX, newParentY, newParentWidth, newParentHeight);
 
-			/*----- Resizing slider bounds. Getting its x and y coordinates in relation to its parent, not the actual 
-			background!!  Its top-left coordinate shouldn't change as its parent is expanding too. */
-			int originalSliderX = slider.getX();
-			int originalSliderY = slider.getY();
-			slider.setBounds (originalSliderX, originalSliderY, boxWidth, boxWidth);
-
 			//-----Assigning a resize flag to the slider so that it can be checked in the else statement that follows.  
 			//Components have no ID to begin with.  This will prevent the wrong slider being picked up by the else statement 
 			//when they physically overlap. 
@@ -487,27 +481,18 @@ void CabbageLookAndFeel::drawRotarySlider(Graphics& g, int /*x*/, int /*y*/, int
 		}
 	}
 	
-	//----- Else if mouse is not hovering and slider ID is not empty.  This means that the slider had been
+	//----- Else if mouse is not hovering and slider ID is not empty.  This means that the slider's parent had been
 	//resized previously, and will therefore enter this else statement to get resized again back to its original
-	//dimensions. 
+	//dimensions. Once the parent is resized, the slider inside it will resize accordingly.
 	else if ((slider.isMouseOverOrDragging() == false) && (slider.getComponentID().compare ("") != 0)) {
-		//Getting original parent dimensions....
-		Component* parent;
+		//Getting original parent dimensions...		
+		Component* parent;  //CabbageSlider()
 		parent = slider.getParentComponent();
-		int parentWidth = slider.getProperties().getWithDefault(String("origParentWidth"), -99);
-		int parentHeight = slider.getProperties().getWithDefault(String("origParentHeight"), -99);
-		int parentX = slider.getProperties().getWithDefault(String("origParentX"), -99);
-		int parentY = slider.getProperties().getWithDefault(String("origParentY"), -99);
-		//Resizing parent back to original size
+		int parentWidth = slider.getProperties().getWithDefault(String("origWidth"), -99);
+		int parentHeight = slider.getProperties().getWithDefault(String("origHeight"), -99);
+		int parentX = slider.getProperties().getWithDefault(String("origX"), -99);
+		int parentY = slider.getProperties().getWithDefault(String("origY"), -99);
 		parent->setBounds (parentX, parentY, parentWidth, parentHeight);
-
-		//Getting slider original dimensions....
-		int originalWidth = slider.getProperties().getWithDefault(String("origWidth"), -99);
-		int originalHeight = slider.getProperties().getWithDefault(String("origHeight"), -99);
-		int originalX = slider.getProperties().getWithDefault(String("origX"), -99);
-		int originalY = slider.getProperties().getWithDefault(String("origY"), -99);
-		//Resizing back to original size
-		slider.setBounds (originalX, originalY, originalWidth, originalHeight);	
 
 		//assigning an empty ID back to the slider
 		String emptyStr = String::empty;
@@ -816,7 +801,8 @@ void CabbageLookAndFeel::drawLinearSliderThumb (Graphics &g, int /*x*/, int /*y*
 				//Getting difference in width between value box and slider width
 				int diff = boxWidth - slider.getWidth();
 
-				//Getting parent's original bounds...
+				//We only need to worry about resizing the parent, CabbageSlider(), as it will automatically resize
+				//the actual slider image accordingly.
 				Component* parent;
 				parent = slider.getParentComponent();
 				int parentWidth = parent->getWidth();
@@ -834,14 +820,6 @@ void CabbageLookAndFeel::drawLinearSliderThumb (Graphics &g, int /*x*/, int /*y*
 				int newParentHeight = parentHeight + diff;
 				parent->setBounds (newParentX, newParentY, newParentWidth, newParentHeight);
 
-				//----- Resizing slider bounds. Getting its x and y coordinates in relation to its parent, 
-				//not the actual background!!  Its top-left coordinate shouldn't change as its parent is 
-				//expanding too. 
-				int originalSliderX = slider.getX();
-				int originalSliderY = slider.getY();
-				int newHeight = slider.getHeight() + diff;
-				slider.setBounds (originalSliderX, originalSliderY, boxWidth, newHeight);
-
 				//-----Assigning a resize flag to the slider so that it can be checked in the else statement that follows.  
 				//Components have no ID to begin with.  This will prevent the wrong slider being picked up by the else statement 
 				//when they physically overlap. 
@@ -853,25 +831,18 @@ void CabbageLookAndFeel::drawLinearSliderThumb (Graphics &g, int /*x*/, int /*y*
 		}
 		//----- Else if mouse is not hovering and slider ID is not empty.  This means that the slider had been
 		//resized previously, and will therefore enter this else statement to get resized again back to its original
-		//dimensions. 
+		//dimensions. We only need to worry about resizing the parent, CabbageSlider(), as it will resize the actual
+		//slider image accordingly.
 		else if ((slider.isMouseOverOrDragging() == false) && (slider.getComponentID().compare ("") != 0)) {
 			//Getting original parent dimensions....
 			Component* parent;
 			parent = slider.getParentComponent();
-			int parentWidth = slider.getProperties().getWithDefault(String("origParentWidth"), -99);
-			int parentHeight = slider.getProperties().getWithDefault(String("origParentHeight"), -99);
-			int parentX = slider.getProperties().getWithDefault(String("origParentX"), -99);
-			int parentY = slider.getProperties().getWithDefault(String("origParentY"), -99);
+			int parentWidth = slider.getProperties().getWithDefault(String("origWidth"), -99);
+			int parentHeight = slider.getProperties().getWithDefault(String("origHeight"), -99);
+			int parentX = slider.getProperties().getWithDefault(String("origX"), -99);
+			int parentY = slider.getProperties().getWithDefault(String("origY"), -99);
 			//Resizing parent back to original size
 			parent->setBounds (parentX, parentY, parentWidth, parentHeight);
-
-			//Getting slider original dimensions....
-			int originalWidth = slider.getProperties().getWithDefault(String("origWidth"), -99);
-			int originalHeight = slider.getProperties().getWithDefault(String("origHeight"), -99);
-			int originalX = slider.getProperties().getWithDefault(String("origX"), -99);
-			int originalY = slider.getProperties().getWithDefault(String("origY"), -99);
-			//Resizing back to original size
-			slider.setBounds (originalX, originalY, originalWidth, originalHeight);	
 
 			//assigning an empty ID back to the slider
 			String emptyStr = String::empty;
@@ -1068,16 +1039,14 @@ void CabbageLookAndFeel::drawGroupComponentOutline (Graphics &g, int w, int h, c
 	g.setFont (font);
 	Justification just (36);
 	g.setColour (Colours::whitesmoke);
-	g.setOpacity (0.6);
-
+	g.setOpacity (0.8);
 	name = CabbageUtils::cabbageString (name, font, group.getWidth());
-
 	g.drawText (name, 0, 5, w, 13, just, false);
-	g.drawLine (10, 20, w-10, 20, 0.5);
+	g.drawLine (10, 20, w-10, 20, 1);
 
 	//----- Corner holes
-	g.setColour (Colours::black);
-	g.setOpacity (0.6);
+	Colour cl = CabbageUtils::backgroundSkin();
+	g.setColour (cl);
 	g.fillEllipse (3, 3, 6, 6);
 	g.fillEllipse (3, h-9, 6, 6);
 	g.fillEllipse (w-9, 3, 6, 6);

@@ -81,14 +81,15 @@ JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CabbageButton);
 class CabbageSlider : public Component
 {
 int offX, offY, offWidth, offHeight, plantX, plantY;
-String sliderType;
+String sliderType, compName, cl;
 int resizeCount;
 
 public:
 ScopedPointer<GroupComponent> groupbox;
 ScopedPointer<Slider> slider;
 //---- constructor -----
-CabbageSlider(String name, String text, String caption, String kind, String colour, int textBox): plantX(-99), plantY(-99)
+CabbageSlider(String name, String text, String caption, String kind, String colour, int textBox)
+	: plantX(-99), plantY(-99), sliderType(kind), compName(caption), cl(colour)
 {
 	setName(name);
 	offX=offY=offWidth=offHeight=0;
@@ -98,61 +99,6 @@ CabbageSlider(String name, String text, String caption, String kind, String colo
 	addAndMakeVisible(slider);
 	addAndMakeVisible(groupbox);
 	groupbox->setVisible(false);
-	sliderType = kind; 
-	//outline colour ID
-	//groupbox->setColour(0x1005400,
-		//Colours::findColourForName(colour, Colours::whitesmoke));
-	//text colour ID
-	//groupbox->setColour(0x1005410,
-		//Colours::findColourForName(colour, Colours::whitesmoke));
-
-	if(kind.contains(T("vertical"))){
-	slider->setSliderStyle(Slider::LinearVertical);
-	slider->setTextBoxStyle (Slider::TextBoxBelow, true, 60, 20);
-	if(caption.length()>0){
-		offX=10;
-		offY=15;
-		offWidth=-20;
-		offHeight=-25;
-		groupbox->setVisible(true);
-		groupbox->setText(caption);
-		slider->toFront(true);
-	}
-	}
-
-	else if(kind.contains(T("rotary"))){
-		if(colour.length()>0){
-			slider->setColour(0x1001200, Colours::findColourForName(colour, Colours::whitesmoke));
-			}
-		slider->setSliderStyle(Slider::Rotary);
-		getProperties().set("type", var("rslider"));
-		slider->setSliderStyle(Slider::RotaryVerticalDrag);
-		slider->setRotaryParameters(float_Pi * 1.2f, float_Pi * 2.8f, false);
-		slider->setTextBoxStyle (Slider::TextBoxBelow, true, 60, 20);
-	
-		if(caption.length()>0){
-			offX=10;
-			offY=25;
-			//offY=20;
-			offWidth=-20;
-			offHeight = (textBox<1 ? -30 : -30);
-			groupbox->setText(caption);
-			groupbox->setVisible(true);
-			slider->toFront(true);
-		}
-	}
-
-	else{ ///horizontal
-	if(caption.length()>0){
-		offX=15;
-		offY=20;
-		offWidth=-25;
-		offHeight=-22;
-		groupbox->setText(caption);
-		groupbox->setVisible(true);
-		slider->toFront(true);
-		}
-	}
 
 	if(textBox<1) 
 		slider->setTextBoxStyle (Slider::NoTextBox, true, 0, 0);
@@ -163,29 +109,86 @@ CabbageSlider(String name, String text, String caption, String kind, String colo
 }//--- end of constructor ----
 
 //---------------------------------------------
-~CabbageSlider(){
-
+~CabbageSlider()
+{
 }
 
 //---------------------------------------------
 void resized()
 {
-	
-	groupbox->setBounds(0, 0, getWidth(), getHeight()); 
-	slider->setBounds(offX, offY, getWidth()+offWidth, getHeight()+offHeight); 
-	this->setWantsKeyboardFocus(false);
-	
-	if (resizeCount == 0) {
-		slider->getProperties().set(String("origHeight"), getHeight()+offHeight);
-		slider->getProperties().set(String("origWidth"), getWidth()+offWidth);
-		slider->getProperties().set(String("origX"), offX);
-		slider->getProperties().set(String("origY"), offY);
-		slider->getProperties().set(String("origParentHeight"), getHeight());
-		slider->getProperties().set(String("origParentWidth"), getWidth());
-		slider->getProperties().set(String("origParentX"), getX());
-		slider->getProperties().set(String("origParentY"), getY());
+	//if rotary
+	if (sliderType.contains(T("rotary"))) {
+		if(cl.length() > 0)
+			slider->setColour(0x1001200, Colours::findColourForName(cl, Colours::whitesmoke));
+		slider->setSliderStyle(Slider::Rotary);
+		getProperties().set("type", var("rslider"));
+		slider->setSliderStyle(Slider::RotaryVerticalDrag);
+		slider->setRotaryParameters(float_Pi * 1.2f, float_Pi * 2.8f, false);
+		//if using group caption
+		if (compName.length() > 0) {  
+			groupbox->setBounds(0, 0, getWidth(), getHeight());
+			int textHeight = 20;
+			int availableHeight = getHeight()-textHeight;
+			offY = textHeight + 5;
+			int sliderHeight = availableHeight - 10;
+			int sliderWidth = sliderHeight;
+			offX = (getWidth()/2) - (sliderWidth/2);
+			slider->setBounds(offX, offY, sliderWidth, sliderHeight); 
+			groupbox->setText (compName);
+			groupbox->setVisible(true);
+			slider->toFront(true);
+		}
+		//else if no group caption then the slider takes the whole area available
+		else 
+			slider->setBounds(0, 0, getWidth(), getHeight());
+	}
+	//else if vertical
+	else if (sliderType.contains(T("vertical"))) {
+		slider->setSliderStyle(Slider::LinearVertical);
+		if (compName.length() > 0) {
+			groupbox->setBounds(0, 0, getWidth(), getHeight());
+			int textHeight = 20;
+			int availableHeight = getHeight()-textHeight;
+			offY = textHeight + 5;
+			int sliderHeight = availableHeight - 10;
+			int sliderWidth = getWidth() - 20;
+			offX = (getWidth()/2) - (sliderWidth/2);
+			slider->setBounds(offX, offY, sliderWidth, sliderHeight); 
+			groupbox->setVisible(true);
+			groupbox->setText(compName);
+			slider->toFront(true);
+		}
+		else 
+			slider->setBounds(0, 0, getWidth(), getHeight());
+	}
+	//else if horizontal
+	else {
+		slider->setSliderStyle(Slider::LinearHorizontal);
+		if (compName.length() > 0) {
+			groupbox->setBounds(0, 0, getWidth(), getHeight());
+			int textHeight = 20;
+			int availableHeight = getHeight()-textHeight;
+			offY = textHeight + 5;
+			int sliderHeight = availableHeight - 10;
+			int sliderWidth = getWidth() - 20;
+			offX = (getWidth()/2) - (sliderWidth/2);
+			slider->setBounds(offX, offY, sliderWidth, sliderHeight); 
+			groupbox->setText(compName);
+			groupbox->setVisible(true);
+			slider->toFront(true);
+		}
+		else 
+			slider->setBounds(0, 0, getWidth(), getHeight());
 	}
 
+	//We only store the original dimensions the first time resized() is called.
+	//Otherwise we would be passing incorrect values to the slider l+f methods...
+	if (resizeCount == 0) {
+		slider->getProperties().set(String("origHeight"), getHeight());
+		slider->getProperties().set(String("origWidth"), getWidth());
+		slider->getProperties().set(String("origX"), getX());
+		slider->getProperties().set(String("origY"), getY());
+	}
 	resizeCount++;
 	
 }
@@ -625,14 +628,17 @@ public:
 		g.fillRoundedRectangle (0, 0, totalWidth, totalHeight, 5);
 
 		//----- For drawing the actual area that the ball can move in
-		g.setColour (Colours::black);
-		g.setOpacity (0.9);
+		Colour screenCl1 = CabbageUtils::backgroundSkin();
+		Colour screenCl2 = screenCl1.withBrightness (0.12);
+		ColourGradient cl = ColourGradient (screenCl2, availableWidth/2, availableHeight/2, 
+			screenCl1, availableWidth/2, borderTop, true);
+		g.setGradientFill (cl);
 		//g.fillRoundedRectangle (borderLeft, borderTop, availableWidth, availableHeight, (totalWidth/20));
 		g.fillRoundedRectangle (borderLeft, borderTop, availableWidth, availableHeight, 5);
 
 		//----- For drawing the title
-		g.setColour (Colours::whitesmoke);
-		g.setOpacity (0.4);
+		Colour txt = CabbageUtils::componentSkin();
+		g.setColour (txt);
 		Font font = CabbageUtils::widgetText();
 		g.setFont (font);
 		Justification just(1);
@@ -657,11 +663,10 @@ public:
 		g.setOpacity (0.4);
 
 		float thickness = 0.5; //thickness of lines
-		int numSlots = 6;
+		int numSlots = 5;
 		for (int i=1; i<numSlots; i++) {
 			g.drawLine (((availableWidth/numSlots)*i) + borderLeft, borderTop, 
 				((availableWidth/numSlots)*i) + borderLeft, borderBottom, thickness);//vertical lines
-
 			g.drawLine (borderLeft, ((availableHeight/numSlots)*i) + borderTop, borderRight, 
 				((availableHeight/numSlots)*i) + borderTop, thickness);//horizontal lines
 		}
@@ -672,9 +677,9 @@ public:
 		switch (buttonDown)
 		{
 		case 0: //button up
-			g.setOpacity (0.9);
-			g.drawLine (x + (ballSize/2), borderTop, x + (ballSize/2), borderBottom, 1); 
-			g.drawLine (borderLeft, y + (ballSize/2), borderRight, y + (ballSize/2), 1);
+		//	g.setOpacity (0.9);
+		//	g.drawLine (x + (ballSize/2), borderTop, x + (ballSize/2), borderBottom, 1); 
+		//	g.drawLine (borderLeft, y + (ballSize/2), borderRight, y + (ballSize/2), 1);
 			g.setColour (Colours::lime);
 			g.drawEllipse (x+1, y+1, ballSize-2, ballSize-2, 2); //width of 2
 			break;

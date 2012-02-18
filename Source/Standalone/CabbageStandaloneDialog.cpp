@@ -21,6 +21,8 @@
 #include "../../JuceLibraryCode/juce_PluginHeaders.h"
 #include "../Plugin/CabbagePluginProcessor.h"
 
+#define MAXBYTES 16777216
+
 //==============================================================================
 //  Somewhere in the codebase of your plugin, you need to implement this function
 //  and make it create an instance of the filter subclass that you're building.
@@ -501,7 +503,7 @@ void StandaloneFilterWindow::buttonClicked (Button*)
 		cabbageCsoundEditor->openCsoundFile(csdFile);
 		this->toBehind(cabbageCsoundEditor);
 		cabbageCsoundEditor->setVisible(true);
-		//cabbageCsoundEditor->setFullScreen(true);
+		cabbageCsoundEditor->toFront(true);
 		cabbageCsoundEditor->csoundEditor->textEditor->grabKeyboardFocus();
         break;
 
@@ -639,6 +641,83 @@ String VST;
 	}//end of open save dialog
 #endif
 
+#if MACOSX
+	
+	FileChooser saveFC(T("Save as..."), File::nonexistent, T(""));
+	String VST;
+	if (saveFC.browseForFileToSave(true)){
+		if(type.contains("VSTi"))
+			VST = thisFile.getParentDirectory().getFullPathName() + T("//CabbagePluginSynth.dat");
+		else if(type.contains(T("VST")))
+			VST = thisFile.getParentDirectory().getFullPathName() + T("//CabbagePluginEffect.dat");
+		else if(type.contains(T("AU"))){
+			showMessage("this feature is coming soon");
+			//VST = thisFile.getParentDirectory().getFullPathName() + T("\\CabbageVSTfx.component");
+		}
+		showMessage(String("Cabbage VST binary:")+VST);
+		String plist  = T("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
+		plist.append(T("<!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">\n"), MAXBYTES);
+		plist.append(T("<plist version=\"1.0\">\n"), MAXBYTES);
+		plist.append(T("<dict>\n"), MAXBYTES);
+		plist.append(T("<key>CFBundleExecutable</key>\n"), MAXBYTES);
+		plist.append(T("<string>")+String(saveFC.getResult().getFileNameWithoutExtension())+T("</string>\n"), MAXBYTES);
+		plist.append(T("<key>CFBundleIdentifier</key>\n"), MAXBYTES);
+		plist.append(T("<string>com.Cabbage.CabbagePlugin</string>\n"), MAXBYTES);
+		plist.append(T("<key>CFBundleName</key>\n"), MAXBYTES);
+		plist.append(T("<string>CabbagePlugin</string>\n"), MAXBYTES);
+		plist.append(T("<key>CFBundlePackageType</key>\n"), MAXBYTES);
+		plist.append(T("<string>BNDL</string>\n"), MAXBYTES);
+		plist.append(T("<key>CFBundleShortVersionString</key>\n"), MAXBYTES);
+		plist.append(T("<string>1.0.0</string>\n"), MAXBYTES);
+		plist.append(T("<key>CFBundleSignature</key>\n"), MAXBYTES);
+		plist.append(T("<string>PTul</string>\n"), MAXBYTES);
+		plist.append(T("<key>CFBundleVersion</key>\n"), MAXBYTES);
+		plist.append(T("<string>1.0.0</string>\n"), MAXBYTES);
+		plist.append(T("</dict>\n"), MAXBYTES);
+		plist.append(T("</plist>\n"), MAXBYTES);
+		
+		//create a copy of the data package and write it to the new location given by user
+		File VSTData(VST);
+		if(VSTData.exists())showMessage("lib exists");
+		else{
+			showMessage("non existo!");	
+		}
+		
+		
+		String plugType;
+		if(type.contains(T("AU")))
+			plugType = T(".component");
+		else plugType = T(".vst");
+		
+		File dll(saveFC.getResult().withFileExtension(plugType).getFullPathName());
+		
+		if(VSTData.copyFileTo(dll));
+		showMessage("copied");
+		
+		
+		
+		File pl(dll.getFullPathName()+T("/Contents/Info.plist"));
+		showMessage(pl.getFullPathName());
+		pl.replaceWithText(plist);
+		
+		//showMessage(VST+T("/Contents/MacOS/")+saveFC.getResult().getFileNameWithoutExtension());
+		File bin(dll.getFullPathName()+T("/Contents/MacOS/CabbagePlugin"));
+		
+		bin.moveFileTo(dll.getFullPathName()+T("/Contents/MacOS/")+saveFC.getResult().getFileNameWithoutExtension());
+		
+		
+		File loc_csdFile(dll.getFullPathName()+T("/Contents/")+saveFC.getResult().getFileNameWithoutExtension()+T(".csd"));
+		
+		loc_csdFile.replaceWithText(csdFile.loadFileAsString());
+		
+		showMessage(loc_csdFile.getFullPathName());
+		showMessage(csdFile.loadFileAsString());
+		setUniquePluginID(bin, loc_csdFile);
+		csdFile = loc_csdFile;
+	}
+	
+#endif		
+	
 return 0;	
 }
 
@@ -690,6 +769,7 @@ if(mFile.is_open())
 		mFile.write(newID.toUTF8(), 4);	
 	}
 
+#ifdef WIN32
 	//set plugin name based on .csd file
 	String plugLibName = csdFile.getFileNameWithoutExtension();
 	if(plugLibName.length()<16)
@@ -707,7 +787,7 @@ if(mFile.is_open())
 		mFile.seekg (loc, ios::beg);	
 		mFile.write(csdFile.getFileNameWithoutExtension().toUTF8(), 16);	
 	}
-
+#endif
 
 }
 mFile.close();

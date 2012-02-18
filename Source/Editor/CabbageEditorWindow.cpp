@@ -15,11 +15,8 @@ CabbageEditorWindow::CabbageEditorWindow()
 	setContentOwned(csoundEditor, true);
 
 
-#if JUCE_MAC
-setMacMainMenu (0);
-#else
 setMenuBar (csoundEditor, 25);
-#endif
+
 }
 
 //==============================================================================
