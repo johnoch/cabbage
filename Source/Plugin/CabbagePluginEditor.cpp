@@ -298,9 +298,10 @@ void CabbagePluginAudioProcessorEditor::paint (Graphics& g)
 	for(int i=0;i<getFilter()->getGUILayoutCtrlsSize();i++){
 		if(getFilter()->getGUILayoutCtrls(i).getStringProp("type").equalsIgnoreCase("keyboard")){
 #ifdef Cabbage_Build_Standalone
-	//		layoutComps[i]->setWantsKeyboardFocus(true);
-	//		layoutComps[i]->grabKeyboardFocus();
-	//		layoutComps[i]->toFront(true);
+			//this lets controls keep focus even when you are palying the keyboard
+			layoutComps[i]->setWantsKeyboardFocus(true);
+			layoutComps[i]->grabKeyboardFocus();
+			layoutComps[i]->toFront(true);
 #endif
 		}
 	}
