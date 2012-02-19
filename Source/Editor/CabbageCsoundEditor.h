@@ -30,6 +30,7 @@
 #include "CabbageEditorCommandManager.h"
 
 
+
 class CsoundTokeniser : public CodeTokeniser
 {
 public:
@@ -249,8 +250,8 @@ public:
    CodeEditorExtended(CodeDocument &document, CodeTokeniser *codeTokeniser)
    {
 		editor = new CodeEditorComponent(document, codeTokeniser);
-		editor->setColour (CaretComponent::caretColourId, Colours::blue);
-		editor->setColour (CodeEditorComponent::highlightColourId, Colours::cadetblue);
+		editor->setColour (CaretComponent::caretColourId, Colours::white);
+		editor->setColour (CodeEditorComponent::highlightColourId,  Colour::fromRGBA (145, 155, 160, 255));
 		//editor->setColour (CodeEditorComponent::highlightedTextColourId, Colours::black);
 
 		//background colour ID
@@ -336,6 +337,7 @@ public:
 	CsoundTokeniser csoundToker;
 	ScopedPointer<CodeEditorExtended> textEditor;
 	ScopedPointer<TextEditor> output;
+	ScopedPointer<LookAndFeel> lookAndFeel;
 	ScopedPointer<Label> helpLabel;
 	StretchableLayoutManager horizontalLayout;
     ScopedPointer<StretchableLayoutResizerBar> horizontalDividerBar;
@@ -344,6 +346,7 @@ public:
     //==============================================================================
 	juce_UseDebuggingNewOperator;
     CsoundEditor ();
+	ScopedPointer<OldSchoolLookAndFeel> oldLookAndFeel;
     ~CsoundEditor ();
     //==============================================================================
 	void codeDocumentChanged (const CodeDocument::Position &affectedTextStart, const CodeDocument::Position &affectedTextEnd);

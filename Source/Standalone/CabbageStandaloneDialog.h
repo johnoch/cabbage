@@ -24,6 +24,7 @@ using namespace std;
 
 #include "../Editor/CabbageEditorWindow.h"
 #include "../CabbageUtils.h"
+#include "../CabbageLookAndFeel.h"
 
 extern ApplicationProperties* appProperties;
 class CabbagePluginAudioProcessor;
@@ -164,6 +165,7 @@ private:
 	bool isGUIOn;
 	int currentLine;
 	bool pipeOpenedOk;
+	ScopedPointer<CabbageLookAndFeel> lookAndFeel;
 	ScopedPointer<CabbageEditorWindow> cabbageCsoundEditor;
 
 	

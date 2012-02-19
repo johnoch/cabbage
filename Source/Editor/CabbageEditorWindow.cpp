@@ -1,7 +1,7 @@
 #include "CabbageEditorWindow.h"
 
 //==============================================================================
-CabbageEditorWindow::CabbageEditorWindow()
+CabbageEditorWindow::CabbageEditorWindow(LookAndFeel* look)
     : DocumentWindow (T("Cabbage Csound Editor"),
                       Colours::black,
                       DocumentWindow::allButtons)
@@ -9,6 +9,7 @@ CabbageEditorWindow::CabbageEditorWindow()
     centreWithSize (800, 600);
     setVisible (true);
 	setResizable(true, true);
+	this->setLookAndFeel(look);
 	csoundEditor = new CsoundEditor ();
 	csoundEditor->addActionListener(this);
 	csoundEditor->setBounds(0, 0, getWidth(), getHeight());

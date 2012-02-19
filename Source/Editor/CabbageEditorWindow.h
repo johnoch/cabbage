@@ -22,7 +22,7 @@ class CabbageEditorWindow   : public DocumentWindow,
 {
 public:
     //==============================================================================
-    CabbageEditorWindow();
+    CabbageEditorWindow(LookAndFeel* look);
     ~CabbageEditorWindow();
 
     void closeButtonPressed();

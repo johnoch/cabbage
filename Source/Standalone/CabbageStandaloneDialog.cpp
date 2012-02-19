@@ -46,6 +46,9 @@ StandaloneFilterWindow::StandaloneFilterWindow (const String& title,
 	setAlwaysOnTop(true);
 	this->setResizable(false, false);
 
+	lookAndFeel = new CabbageLookAndFeel();
+	this->setLookAndFeel(lookAndFeel);
+
 // MOD - Stefano Bonetti 
 #ifdef Cabbage_Named_Pipe 
 	ipConnection = new socketConnection(*this);
@@ -54,7 +57,7 @@ StandaloneFilterWindow::StandaloneFilterWindow (const String& title,
 #endif 
 // MOD - End
 
-	cabbageCsoundEditor = new CabbageEditorWindow();
+	cabbageCsoundEditor = new CabbageEditorWindow(lookAndFeel);
 	cabbageCsoundEditor->setVisible(false);
 	cabbageCsoundEditor->addActionListener(this);
 
@@ -215,6 +218,12 @@ void StandaloneFilterWindow::actionListenerCallback (const String& message){
 		csdFile = File(file);
 		resetFilter();
 		cabbageCsoundEditor->repaint();
+	}
+	else if(message.contains("fileExportSynth")){
+	exportPlugin(T("VSTi"));
+	}
+	else if(message.contains("fileExportEffect")){
+	exportPlugin(T("VST"));
 	}
 }
 //==============================================================================
@@ -452,6 +461,11 @@ void StandaloneFilterWindow::buttonClicked (Button*)
 	PopupMenu newType;
 	PopupMenu subExport;
 	PopupMenu batchProc;
+	m.setLookAndFeel(lookAndFeel);
+	newType.setLookAndFeel(lookAndFeel);
+	subExport.setLookAndFeel(lookAndFeel);
+	batchProc.setLookAndFeel(lookAndFeel);
+
 	m.addItem(1, T("Open Cabbage patch"));
 	
 
@@ -607,7 +621,7 @@ String VST;
 	}
 	}
 #elif WIN32
-FileChooser saveFC(T("Save as..."), File::nonexistent, T(""));
+FileChooser saveFC(T("Save plugin as..."), File::nonexistent, T(""));
 String VST;
 	if (saveFC.browseForFileToSave(true)){
 		if(type.contains("VSTi"))

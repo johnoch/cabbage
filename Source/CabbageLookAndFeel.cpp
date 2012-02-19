@@ -3,6 +3,7 @@
 //========== Constructor ================================================================================
 CabbageLookAndFeel::CabbageLookAndFeel()
 {
+
 }
 
 
@@ -1054,10 +1055,37 @@ void CabbageLookAndFeel::drawGroupComponentOutline (Graphics &g, int w, int h, c
 }
 
 
+//======== Popup Menu background ======================================================================
+void CabbageLookAndFeel::drawPopupMenuBackground(Graphics &g, int width, int height)
+{
+	g.setColour (Colours::black);
+	g.setOpacity (0.4);
+	g.fillAll();
+}
 
-//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//======== Menubar background ======================================================================
+void CabbageLookAndFeel::drawMenuBarBackground(Graphics &g, int width, int height, bool isMouseOverBar, MenuBarComponent &menuBar)
+{
+	ColourGradient gradient(CabbageUtils::componentSkin(), 0, 0, Colours::red, 0, height, false); 
+	g.setGradientFill(gradient);
+	
+	//g.fillAll(CabbageUtils::componentSkin());
+	//g.setColour (Colours::black);
+	//g.setOpacity (0.4);
+	//g.fillAll(Colours::darkgreen);
+	//g.fillAll(Colour::fromRGBA (145, 155, 160, 255)); 
+}
 
-
+void CabbageLookAndFeel::drawMenuBarItem(Graphics & g, int width, int height, int itemIndex,
+											const String &itemText, bool isMouseOverItem,
+											bool isMenuOpen, bool isMouseOverBar,
+											MenuBarComponent &menuBar)
+{
+	//g.fillAll(Colours::beige);
+	g.setFont(Font(height*.6, 1));
+	g.setColour(Colours::white);
+	g.drawFittedText(itemText, 0, 0, width, height, Justification::centred, 1);
+}
 
 
 //======= Basic Look And Feel Methods ===================================================================

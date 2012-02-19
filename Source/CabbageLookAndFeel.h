@@ -46,9 +46,14 @@ public:
 	virtual void fillTextEditorBackground (Graphics &g, int width, int height, TextEditor &textEditor);
 	virtual void drawGroupComponentOutline (Graphics &g, int w, int h, const String &text, const Justification &position, 
 																									GroupComponent &group);
-	void setDefaultSansSerifTypefaceName (const String &newName);
-
+	virtual void drawMenuBarBackground(Graphics &g, int width, int height, bool isMouseOverBar, MenuBarComponent &menuBar);
 	
+	virtual void drawMenuBarItem(Graphics & g, int width, int height, int itemIndex,
+											const String &itemText, bool isMouseOverItem,
+											bool isMenuOpen, bool isMouseOverBar,
+											MenuBarComponent &menuBar);
+	void setDefaultSansSerifTypefaceName (const String &newName);
+	void drawPopupMenuBackground(Graphics & g, int 	width, int 	height);
 	juce_UseDebuggingNewOperator
 
 

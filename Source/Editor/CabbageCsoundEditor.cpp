@@ -8,6 +8,8 @@
 //==============================================================================
 CsoundEditor::CsoundEditor():hasChanged(false), unSaved(false)
 {	
+//lookAndFeel = look;//new LookAndFeel();
+//this->setLookAndFeel(look);
 //textEditor = new CodeEditorComponent(csoundDoc, &csoundToker);
 opcodes.addLines(String((BinaryData::opcodes_txt)));
 csoundDoc.addListener(this);
@@ -34,13 +36,14 @@ output->setColour(0x1000201, Colours::white);
 horizontalDividerBar = new StretchableLayoutResizerBar(&horizontalLayout, 1, false);
 
 helpLabel = new Label();
-helpLabel->setColour(Label::backgroundColourId, Colours::white);
-helpLabel->setColour(Label::outlineColourId, Colours::green);
-helpLabel->setColour(Label::textColourId, Colours::black);
+oldLookAndFeel = new OldSchoolLookAndFeel();
+helpLabel->setLookAndFeel(oldLookAndFeel);
+helpLabel->setColour(Label::backgroundColourId, CabbageUtils::componentSkin());
+helpLabel->setColour(Label::outlineColourId, Colours::grey);
+helpLabel->setColour(Label::textColourId, Colours::white);
 
-helpLabel->setFont(Font(T("Courier New"), 14, 0));
+helpLabel->setFont(Font(T("Courier New"), 14, 1));
 helpLabel->setText(T("Cabbage Csound Editor"), true);
-
 addAndMakeVisible(textEditor);
 addAndMakeVisible(horizontalDividerBar);
 addAndMakeVisible(helpLabel);
@@ -115,6 +118,14 @@ void CsoundEditor::getCommandInfo (const CommandID commandID, ApplicationCommand
 		result.setInfo (T("Save as"), T("Save file as.."), CommandCategories::file, 0);
 		result.addDefaultKeypress (T('s'), ModifierKeys::shiftModifier | ModifierKeys::commandModifier);
         break;
+    case CommandIDs::fileExportSynth:
+		result.setInfo (T("Export Synth"), T("Export Synth"), CommandCategories::file, 0);
+		result.addDefaultKeypress (T('i'), ModifierKeys::commandModifier);
+        break;
+    case CommandIDs::fileExportEffect:
+		result.setInfo (T("Export Effect"), T("Export Effect"), CommandCategories::file, 0);
+		result.addDefaultKeypress (T('e'), ModifierKeys::commandModifier);
+        break;
 
     case CommandIDs::editUndo:
 		result.setInfo (T("Undo"), T("Undo last action"), CommandCategories::edit, 0);
@@ -155,6 +166,8 @@ void CsoundEditor::getAllCommands (Array <CommandID>& commands)
 								CommandIDs::fileOpen,
 								CommandIDs::fileSave,
 								CommandIDs::fileSaveAs,
+								CommandIDs::fileExportSynth,
+								CommandIDs::fileExportEffect,
 								
 								CommandIDs::editUndo,
 								CommandIDs::editCopy,
@@ -193,6 +206,18 @@ bool CsoundEditor::perform (const InvocationInfo& info)
 	case CommandIDs::fileSaveAs:
 		{
 			saveFileAs();
+			break;
+		}
+
+	case CommandIDs::fileExportSynth:
+		{
+			sendActionMessage("fileExportSynth");
+			break;
+		}
+
+	case CommandIDs::fileExportEffect:
+		{
+			sendActionMessage("fileExportEffect");
 			break;
 		}
 
@@ -241,6 +266,7 @@ return true;
 const PopupMenu CsoundEditor::getMenuForIndex (int topLevelMenuIndex, const String& menuName)
 {
 PopupMenu m1, m2;
+
 if(topLevelMenuIndex==0)
 	{
 	 m1.addCommandItem(&commandManager, CommandIDs::fileNew);	 
@@ -248,6 +274,9 @@ if(topLevelMenuIndex==0)
 	 m1.addCommandItem(&commandManager, CommandIDs::fileSave);
 	 m1.addCommandItem(&commandManager, CommandIDs::fileSaveAs);
 	 m1.addSeparator();
+	 m2.addCommandItem(&commandManager, CommandIDs::fileExportSynth);
+	 m2.addCommandItem(&commandManager, CommandIDs::fileExportEffect);
+	 m1.addSubMenu(T("Export Plugin"), m2);
 	 return m1;
 	}
 else if(topLevelMenuIndex==1)
@@ -282,7 +311,7 @@ for(int i=0;i<opcodes.size();i++){
 		test2 = test1.substring(test1.indexOf(";")+1, 500);
 		opcodeInfo = test2.substring(0, test2.indexOf(";"));
 		opcodeSyntax = test2.substring(test2.indexOf(";")+1, 1000);
-		helpLabel->setText(opcodeName+T(" - ")+opcodeInfo+String("\n")+String("Syntax: ")+opcodeSyntax, true);
+		helpLabel->setText(T("  ")+opcodeName+T("- ")+opcodeInfo+String("\n")+String("   Syntax: ")+opcodeSyntax, true);
 	}
 	}
 }
