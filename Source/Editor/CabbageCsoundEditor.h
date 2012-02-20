@@ -332,13 +332,59 @@ private:
 	File openCsdFile;
 
 public:
+	class helpContext : public Component
+	{
+	String helpText;
+	Colour background, text, outline;
+	Font font;
+	public:
+		helpContext(){}
+		~helpContext(){}
+
+		void paint(Graphics& g){		
+			g.fillAll(background);
+			g.setColour(outline);
+			int width = getWidth();
+			int height = getHeight();
+			g.drawRect(1, 1, getWidth()-2, getHeight()-2);
+			g.setColour(text);
+			g.drawFittedText(helpText, 5, 5, getWidth()-10, getHeight(), Justification::left, 5, 0.2);
+		}
+
+		void resized(){
+			repaint();
+		}
+
+		void setHelpText(String textString){
+			helpText = textString;
+			repaint();
+		}
+
+		void setHelpFont(Font fonttype){
+			font = fonttype;
+		}		
+
+		void setBackgroundColour(Colour colour){
+			background = colour;
+		}
+
+		void setTextColour(Colour colour){
+		text = colour;
+		}
+
+		void setOutlineColour(Colour colour){
+		outline = colour;
+		}
+	};
+
+
 	int fontSize;
 	CodeDocument csoundDoc;
 	CsoundTokeniser csoundToker;
 	ScopedPointer<CodeEditorExtended> textEditor;
 	ScopedPointer<TextEditor> output;
 	ScopedPointer<LookAndFeel> lookAndFeel;
-	ScopedPointer<Label> helpLabel;
+	ScopedPointer<helpContext> helpLabel;
 	StretchableLayoutManager horizontalLayout;
     ScopedPointer<StretchableLayoutResizerBar> horizontalDividerBar;
 	void setFontSize(String zoom);

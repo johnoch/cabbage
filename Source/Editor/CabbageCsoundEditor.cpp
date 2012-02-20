@@ -35,15 +35,15 @@ output->setColour(0x1000201, Colours::white);
 
 horizontalDividerBar = new StretchableLayoutResizerBar(&horizontalLayout, 1, false);
 
-helpLabel = new Label();
+helpLabel = new helpContext();
 oldLookAndFeel = new OldSchoolLookAndFeel();
 helpLabel->setLookAndFeel(oldLookAndFeel);
-helpLabel->setColour(Label::backgroundColourId, CabbageUtils::componentSkin());
-helpLabel->setColour(Label::outlineColourId, Colours::grey);
-helpLabel->setColour(Label::textColourId, Colours::white);
+helpLabel->setBackgroundColour(CabbageUtils::componentSkin());
+helpLabel->setOutlineColour(Colours::grey);
+helpLabel->setTextColour(Colours::white);
 
-helpLabel->setFont(Font(T("Courier New"), 14, 1));
-helpLabel->setText(T("Cabbage Csound Editor"), true);
+helpLabel->setHelpFont(Font(T("Courier New"), 14, 1));
+helpLabel->setHelpText(T("Cabbage Csound Editor"));
 addAndMakeVisible(textEditor);
 addAndMakeVisible(horizontalDividerBar);
 addAndMakeVisible(helpLabel);
@@ -64,7 +64,7 @@ horizontalLayout.setItemLayout (1,
 
 // The resizer bar
 horizontalLayout.setItemLayout (2,
-    35, 65,
+    35, 45,
     55);
 
 horizontalLayout.setItemLayout (3,          // for item 2
@@ -304,10 +304,19 @@ for(int i=0;i<opcodes.size();i++){
 	test1 = opcodes[i].substring(1, 20);
 	test2 = test1.substring(0, test1.indexOf("\""));
 	opcodeName = T(" ")+test2;
-	if(lineFromCsd.contains("rslider")){
-	helpLabel->setText(String("  rslider")+String(" - ")+String("\"Cabbage Rotary Slider\"")+String("\n")+String("  Syntax: ")+String("rslider bounds(x, y, widht, height) [, range(min, max, value), colour(\"colour\"),\n]   channel(\"channel\"), caption(\"string\")"), false);
+	if(lineFromCsd.contains("rslider"))
+	helpLabel->setHelpText(String("rslider")+String(" - ")+String("\"Cabbage Rotary Slider\"")+String("\n")+String("Syntax: ")+String("rslider bounds(x, y, widht, height) [, channel(\"channel\"), range(min, max, value), caption(\"caption\"), colour(\"colour\"), midiCtrl(channel, control)]"));
+	else if(lineFromCsd.contains("hslider"))
+	helpLabel->setHelpText(String("hslider")+String(" - ")+String("\"Cabbage Horizontal Slider\"")+String("\n")+String("Syntax: ")+String("hslider bounds(x, y, widht, height) [, channel(\"channel\"), range(min, max, value), caption(\"caption\"), colour(\"colour\"), midiCtrl(channel, control)]"));
+	else if(lineFromCsd.contains("vslider"))
+	helpLabel->setHelpText(String("vslider")+String(" - ")+String("\"Cabbage Vertical Slider\"")+String("\n")+String("Syntax: ")+String("vslider bounds(x, y, widht, height) [, channel(\"channel\"), range(min, max, value), caption(\"caption\"), colour(\"colour\"), midiCtrl(channel, control)]"));
+	else if(lineFromCsd.contains("button"))
+	helpLabel->setHelpText(String("button")+String(" - ")+String("\"Cabbage Button\"")+String("\n")+String("Syntax: ")+String("button bounds(x, y, widht, height) [, channel(\"channel\"), text(\"ontext\", \"offtext\"), caption(\"caption\")]"));
+	else if(lineFromCsd.contains("checkbox"))
+	helpLabel->setHelpText(String("checkbox")+String(" - ")+String("\"Cabbage Checkbox\"")+String("\n")+String("Syntax: ")+String("checkbox bounds(x, y, widht, height) [, channel(\"channel\"), text(\"buttontext\"), caption(\"caption\")]"));
+	else if(lineFromCsd.contains("combokbox"))
+	helpLabel->setHelpText(String("checkbox")+String(" - ")+String("\"Cabbage Checkbox\"")+String("\n")+String("Syntax: ")+String("combobox bounds(x, y, widht, height) [, channel(\"channel\"), text(\"item1\", \"item2\", \"item3\", etc), caption(\"caption\")]"));
 
-	}
 	else
 	if(opcodeName.length()>2)
 	if(lineFromCsd.contains(opcodeName)){
@@ -315,7 +324,7 @@ for(int i=0;i<opcodes.size();i++){
 		test2 = test1.substring(test1.indexOf(";")+1, 500);
 		opcodeInfo = test2.substring(0, test2.indexOf(";"));
 		opcodeSyntax = test2.substring(test2.indexOf(";")+1, 1000);
-		helpLabel->setText(T("  ")+opcodeName+T("- ")+opcodeInfo+String("\n")+String("   Syntax: ")+opcodeSyntax, true);
+		helpLabel->setHelpText(T("  ")+opcodeName+T("- ")+opcodeInfo+String("\n")+String("   Syntax: ")+opcodeSyntax);
 	}
 	}
 }
