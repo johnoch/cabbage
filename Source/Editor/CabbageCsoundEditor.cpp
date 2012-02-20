@@ -48,7 +48,7 @@ addAndMakeVisible(textEditor);
 addAndMakeVisible(horizontalDividerBar);
 addAndMakeVisible(helpLabel);
 addAndMakeVisible(output);
-
+   
 
 commandManager.registerAllCommandsForTarget(this);
 addKeyListener(commandManager.getKeyMappings());
@@ -57,15 +57,15 @@ horizontalLayout.setItemLayout (0,          // for item 0
     -.0, -.9,    // must be between 0 and 100 % in size
     -.7);      // and its preferred size is 70% of the total available space
 
-// The resizer bar
+// help comp
 horizontalLayout.setItemLayout (1,
     15, 15,
     15);
 
 // The resizer bar
 horizontalLayout.setItemLayout (2,
-    35, 35,
-    35);
+    35, 65,
+    55);
 
 horizontalLayout.setItemLayout (3,          // for item 2
     -0., -.9, // size must be between 0% and 60% of the available space
@@ -304,7 +304,11 @@ for(int i=0;i<opcodes.size();i++){
 	test1 = opcodes[i].substring(1, 20);
 	test2 = test1.substring(0, test1.indexOf("\""));
 	opcodeName = T(" ")+test2;
+	if(lineFromCsd.contains("rslider")){
+	helpLabel->setText(String("  rslider")+String(" - ")+String("\"Cabbage Rotary Slider\"")+String("\n")+String("  Syntax: ")+String("rslider bounds(x, y, widht, height) [, range(min, max, value), colour(\"colour\"),\n]   channel(\"channel\"), caption(\"string\")"), false);
 
+	}
+	else
 	if(opcodeName.length()>2)
 	if(lineFromCsd.contains(opcodeName)){
 		test1 = opcodes[i].substring(opcodes[i].indexOf(";")+1, 500);

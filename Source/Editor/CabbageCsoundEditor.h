@@ -250,7 +250,7 @@ public:
    CodeEditorExtended(CodeDocument &document, CodeTokeniser *codeTokeniser)
    {
 		editor = new CodeEditorComponent(document, codeTokeniser);
-		editor->setColour (CaretComponent::caretColourId, Colours::white);
+		editor->setColour (CaretComponent::caretColourId, Colours::black);
 		editor->setColour (CodeEditorComponent::highlightColourId,  Colour::fromRGBA (145, 155, 160, 255));
 		//editor->setColour (CodeEditorComponent::highlightedTextColourId, Colours::black);
 
