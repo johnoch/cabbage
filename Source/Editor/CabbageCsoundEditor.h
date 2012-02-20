@@ -29,7 +29,47 @@
 #include "../BinaryData.h"
 #include "CabbageEditorCommandManager.h"
 
+class HintDialog : public DialogWindow
+{
+public:
+	HintDialog():
+	DialogWindow("Cabbage", Colours::white, true){}
+	~HintDialog(){}
+};
 
+class HintWindowComp : public Component
+{
+String windowText;
+Colour background, foreground, textColour;
+ScopedPointer<TextButton> button;
+ScopedPointer<ToggleButton> toggle;
+public:
+	HintWindowComp(String infoText, Colour back, Colour fore, Colour text)
+		:windowText(infoText), background(back), foreground(fore), textColour(text)
+	{
+		
+		this->setSize(250, 200);
+		button = new TextButton("Ok");
+		button->setBounds(getWidth()*0.6, getHeight()*.7, getWidth()*0.2, getHeight()*.2);
+		addAndMakeVisible(button);
+
+		toggle = new ToggleButton("Click here if you don't wish to see this info again");
+		toggle->setColour(ToggleButton::ColourIds::textColourId, Colours::white);
+		toggle->setBounds(10, getHeight()*.6, getWidth(), getHeight()*.2);
+		addAndMakeVisible(toggle);
+	}
+	~HintWindowComp(){}
+
+	void paint(Graphics &g){
+			setAlwaysOnTop(true);
+			g.fillAll(background);
+			g.setColour(foreground);
+			g.drawRect(3, 3, getWidth()-6, getHeight()-6);
+			g.setColour(textColour);
+			g.drawFittedText(windowText, 5, 5, getWidth()-10, getHeight(), Justification::left, 5, 0.2);
+	}
+
+};
 
 class CsoundTokeniser : public CodeTokeniser
 {

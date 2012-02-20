@@ -448,6 +448,19 @@ void StandaloneFilterWindow::resized()
     optionsButton.setBounds (8, 6, 60, getTitleBarHeight() - 8);
 }
 
+int StandaloneFilterWindow::showInfoWindow(String text)
+{
+HintDialog hintWindow;
+HintWindowComp textComp("Hello", Colours::black, Colours::lime, Colours::white);
+textComp.setLookAndFeel(lookAndFeel);
+textComp.setLookAndFeel(lookAndFeel);
+if(hintWindow.showModalDialog(String("Cabbage"), &textComp, NULL, Colours::white, true))
+	return 1;
+else
+	return 0;
+return 0;
+}
+
 //==============================================================================
 // Button clicked method
 //==============================================================================
@@ -504,6 +517,7 @@ void StandaloneFilterWindow::buttonClicked (Button*)
 	FileChooser saveFC(T("Save Cabbage file as..."), File::nonexistent, T("*.csd"));
 	
 
+
     switch (m.showAt (&optionsButton))
     {
 	case 1:
@@ -558,11 +572,15 @@ void StandaloneFilterWindow::buttonClicked (Button*)
         break;
 
     case 9:
+		setAlwaysOnTop(false);
+		showInfoWindow(T("Test"));
+
 		if(filter->getMidiDebug())
 			filter->setMidiDebug(false);
 		else 
 			filter->setMidiDebug(true);
-        break;
+        setAlwaysOnTop(true);
+		break;
 
 	case 10:		
 		break;

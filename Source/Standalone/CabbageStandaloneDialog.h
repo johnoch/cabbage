@@ -124,7 +124,8 @@ public:
     //==============================================================================
     void closeButtonPressed();
     void buttonClicked (Button*);
-    void resized();
+    int showInfoWindow(String text);
+	void resized();
 	void changeListenerCallback(ChangeBroadcaster *source);
 	void actionListenerCallback (const String& message);
 	int exportPlugin(String type);
