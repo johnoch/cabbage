@@ -3,7 +3,9 @@
 //========== Constructor ================================================================================
 CabbageLookAndFeel::CabbageLookAndFeel()
 {
-
+setColour(AlertWindow::backgroundColourId, Colours::black);
+setColour(AlertWindow::textColourId, Colours::white);
+setColour(AlertWindow::outlineColourId, Colours::grey);
 }
 
 
@@ -1063,6 +1065,15 @@ void CabbageLookAndFeel::drawPopupMenuBackground(Graphics &g, int width, int hei
 	g.fillAll();
 }
 
+/*
+void CabbageLookAndFeel::drawPopupMenuItem(Graphics &g, int width, int height, bool isSeparator,
+							bool isActive, bool isHighlighted, bool isTicked,
+							bool hasSubMenu, const String &text, const String &shortcutKeyText,
+							Image *image, const Colour *const textColour)
+{
+
+}
+*/
 //======== Menubar background ======================================================================
 void CabbageLookAndFeel::drawMenuBarBackground(Graphics &g, int width, int height, bool isMouseOverBar, MenuBarComponent &menuBar)
 {
@@ -1076,6 +1087,7 @@ void CabbageLookAndFeel::drawMenuBarBackground(Graphics &g, int width, int heigh
 	//g.fillAll(Colour::fromRGBA (145, 155, 160, 255)); 
 }
 
+//======== Menubar item background ======================================================================
 void CabbageLookAndFeel::drawMenuBarItem(Graphics & g, int width, int height, int itemIndex,
 											const String &itemText, bool isMouseOverItem,
 											bool isMenuOpen, bool isMouseOverBar,
@@ -1087,9 +1099,7 @@ void CabbageLookAndFeel::drawMenuBarItem(Graphics & g, int width, int height, in
 	g.drawFittedText(itemText, 0, 0, width, height, Justification::centred, 1);
 }
 
-
-//======= Basic Look And Feel Methods ===================================================================
-
+//======= Basic Look And Feel Methods ==================================================================
 
 //========== Constructor ================================================================================
 CabbageLookAndFeelBasic::CabbageLookAndFeelBasic()

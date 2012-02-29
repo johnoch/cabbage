@@ -29,54 +29,65 @@
 #include "../BinaryData.h"
 #include "CabbageEditorCommandManager.h"
 
-class HintDialog : public DialogWindow
+
+class HintDialogWindow : public DialogWindow
 {
+				
+	class HintDialogComp : public Component
+			{
+			String windowText;
+			Colour background, foreground, textColour;
+			ScopedPointer<ToggleButton> toggle;
+			public:
+				HintDialogComp(String infoText, Colour back, Colour fore, Colour text)
+					:windowText(infoText), background(back), foreground(fore), textColour(text)
+				{
+					setAlwaysOnTop(true);
+					this->setSize(250, 200);
+					toggle = new ToggleButton("Click here if you don't wish to see this info again");
+					toggle->setColour(ToggleButton::ColourIds::textColourId, Colours::white);
+					toggle->setBounds(10, getHeight()*.6, getWidth(), getHeight()*.2);
+					addAndMakeVisible(toggle);
+				}
+				~HintDialogComp(){}
+
+				void paint(Graphics &g){
+						setAlwaysOnTop(true);
+						toFront(true);
+						g.fillAll(background);
+						g.setColour(foreground);
+						g.drawRect(3, 3, getWidth()-6, getHeight()-6);
+						g.setColour(textColour);
+						g.drawFittedText(windowText, 5, 5, getWidth()-10, getHeight(), Justification::left, 5, 0.2);
+				}
+
+			};
+
+ScopedPointer<HintDialogComp> hintComp;
 public:
-	HintDialog():
-	DialogWindow("Cabbage", Colours::white, true){}
-	~HintDialog(){}
+	HintDialogWindow(const String &name, String text, const Colour &backgroundColour, const Colour fore, const Colour font, bool escapeKeyTriggersCloseButton, bool addToDesktop=true):
+	DialogWindow(name, backgroundColour, true){
+	centreWithSize (400, 200);
+	setVisible(true);
+	this->setTitleBarHeight(15);
+	setAlwaysOnTop(true);
+	hintComp = new HintDialogComp(text, backgroundColour, fore, font); 
+	setContentOwned(hintComp, false);
+	}
+	~HintDialogWindow(){}
+
+	void closeButtonPressed(){
+		setVisible(false);
+	}
 };
 
-class HintWindowComp : public Component
-{
-String windowText;
-Colour background, foreground, textColour;
-ScopedPointer<TextButton> button;
-ScopedPointer<ToggleButton> toggle;
-public:
-	HintWindowComp(String infoText, Colour back, Colour fore, Colour text)
-		:windowText(infoText), background(back), foreground(fore), textColour(text)
-	{
-		
-		this->setSize(250, 200);
-		button = new TextButton("Ok");
-		button->setBounds(getWidth()*0.6, getHeight()*.7, getWidth()*0.2, getHeight()*.2);
-		addAndMakeVisible(button);
-
-		toggle = new ToggleButton("Click here if you don't wish to see this info again");
-		toggle->setColour(ToggleButton::ColourIds::textColourId, Colours::white);
-		toggle->setBounds(10, getHeight()*.6, getWidth(), getHeight()*.2);
-		addAndMakeVisible(toggle);
-	}
-	~HintWindowComp(){}
-
-	void paint(Graphics &g){
-			setAlwaysOnTop(true);
-			g.fillAll(background);
-			g.setColour(foreground);
-			g.drawRect(3, 3, getWidth()-6, getHeight()-6);
-			g.setColour(textColour);
-			g.drawFittedText(windowText, 5, 5, getWidth()-10, getHeight(), Justification::left, 5, 0.2);
-	}
-
-};
 
 class CsoundTokeniser : public CodeTokeniser
 {
 public:
 	CsoundTokeniser(){}
 	~CsoundTokeniser(){}
-
+	 
 	//==============================================================================
     enum TokenType
     {
@@ -381,15 +392,16 @@ public:
 		helpContext(){}
 		~helpContext(){}
 
-		void paint(Graphics& g){		
-			g.fillAll(background);
-			g.setColour(outline);
-			int width = getWidth();
-			int height = getHeight();
-			g.drawRect(1, 1, getWidth()-2, getHeight()-2);
-			g.setColour(text);
-			g.drawFittedText(helpText, 5, 5, getWidth()-10, getHeight(), Justification::left, 5, 0.2);
-		}
+		void paint(Graphics& g){
+                       g.fillAll(background);
+                       g.setColour(outline);
+                       int width = getWidth();
+                       int height = getHeight();
+                       g.drawRect(1, 1, getWidth()-2, getHeight()-2);
+                       g.setColour(text);
+                       Justification just(33);
+                       g.drawFittedText(helpText, 10, 10, width-10, height-25, just, 5, 0.2);
+			}
 
 		void resized(){
 			repaint();
@@ -419,6 +431,7 @@ public:
 
 
 	int fontSize;
+
 	CodeDocument csoundDoc;
 	CsoundTokeniser csoundToker;
 	ScopedPointer<CodeEditorExtended> textEditor;
@@ -428,6 +441,10 @@ public:
 	StretchableLayoutManager horizontalLayout;
     ScopedPointer<StretchableLayoutResizerBar> horizontalDividerBar;
 	void setFontSize(String zoom);
+	void setHelpText(String text){
+		helpLabel->setHelpText(text);
+	}
+
 	CommandManager commandManager;
     //==============================================================================
 	juce_UseDebuggingNewOperator;
@@ -438,10 +455,8 @@ public:
 	void codeDocumentChanged (const CodeDocument::Position &affectedTextStart, const CodeDocument::Position &affectedTextEnd);
 	//==============================================================================
 	void resized ();
-	void openFile(File input);
-	void openFile();
-	void saveFile();
-	void saveFileAs();
+	void setCurrentFile(File input);
+	String getCurrentText();
 	void newFile(String type);
 	bool hasChanged;
 	bool unSaved;

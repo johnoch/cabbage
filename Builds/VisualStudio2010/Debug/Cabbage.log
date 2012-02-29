@@ -1,7 +1,5 @@
-﻿  CabbageCsoundEditor.cpp
-c:\mydocuments\cabbagesvn\source\editor\cabbagecsoundeditor.cpp(35): warning C4482: nonstandard extension used: enum 'juce::Label::ColourIds' used in qualified name
-c:\mydocuments\cabbagesvn\source\editor\cabbagecsoundeditor.cpp(36): warning C4482: nonstandard extension used: enum 'juce::Label::ColourIds' used in qualified name
-c:\mydocuments\cabbagesvn\source\editor\cabbagecsoundeditor.cpp(37): warning C4482: nonstandard extension used: enum 'juce::Label::ColourIds' used in qualified name
+﻿  CabbageStandaloneDialog.cpp
+c:\mydocuments\cabbagelatestsvn\source\editor\cabbagecsoundeditor.h(48): warning C4482: nonstandard extension used: enum 'juce::ToggleButton::ColourIds' used in qualified name
   LINK : .\Debug\Cabbage.exe not found or not built by the last incremental link; performing full link
      Creating library .\Debug\Cabbage.lib and object .\Debug\Cabbage.exp
-  Cabbage.vcxproj -> C:\MyDocuments\CabbageSVN\Builds\VisualStudio2010\.\Debug\Cabbage.exe
+  Cabbage.vcxproj -> C:\MyDocuments\CabbageLatestSVN\Builds\VisualStudio2010\.\Debug\Cabbage.exe

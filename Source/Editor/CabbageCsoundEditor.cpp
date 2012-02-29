@@ -193,19 +193,17 @@ bool CsoundEditor::perform (const InvocationInfo& info)
 		}
 	case CommandIDs::fileOpen:
 		{			
-			openFile();
+			sendActionMessage(T("fileOpen"));
 			break;
 		}
 	case CommandIDs::fileSave:
 		{
-			saveFile();
-			//toFront(true);
-			repaint();
+			sendActionMessage("fileSaved");
 			break;
 		}
 	case CommandIDs::fileSaveAs:
 		{
-			saveFileAs();
+			sendActionMessage("fileSaveAs");
 			break;
 		}
 
@@ -316,6 +314,9 @@ for(int i=0;i<opcodes.size();i++){
 	helpLabel->setHelpText(String("checkbox")+String(" - ")+String("\"Cabbage Checkbox\"")+String("\n")+String("Syntax: ")+String("checkbox bounds(x, y, widht, height) [, channel(\"channel\"), text(\"buttontext\"), caption(\"caption\")]"));
 	else if(lineFromCsd.contains("combokbox"))
 	helpLabel->setHelpText(String("checkbox")+String(" - ")+String("\"Cabbage Checkbox\"")+String("\n")+String("Syntax: ")+String("combobox bounds(x, y, widht, height) [, channel(\"channel\"), text(\"item1\", \"item2\", \"item3\", etc), caption(\"caption\")]"));
+	else if(lineFromCsd.contains("xypad"))
+	helpLabel->setHelpText(String("xypad")+String(" - ")+String("\"Cabbage XY Pad\"")+String("\n")+String("Syntax: ")+String("xypad bounds(x, y, widht, height) [, channel(\"channelX\",\"channelY\"), rangeX(min, max, value), rangeY(min, max, value), text(\"caption\")]"));
+
 
 	else
 	if(opcodeName.length()>2)
@@ -330,48 +331,16 @@ for(int i=0;i<opcodes.size();i++){
 }
 
 //==============================================================================
-void CsoundEditor::openFile()
-{
-FileChooser openFC(T("Open a .csd file..."), File::nonexistent, T("*.csd"));
-if(openFC.browseForFileToOpen())
-	csoundDoc.replaceAllContent(openFC.getResult().loadFileAsString());
-	openCsdFile = openFC.getResult();
-	String filename = openCsdFile.getFullPathName();
-	this->setName(openCsdFile.getFullPathName());
-	sendActionMessage(T("fileOpen|")+filename);
-}
-
-void CsoundEditor::openFile(File input)
+void CsoundEditor::setCurrentFile(File input)
 {
 	csoundDoc.replaceAllContent(input.loadFileAsString());
 	openCsdFile = input;
 	this->setName(openCsdFile.getFullPathName());
 }
-
 //==============================================================================
-void CsoundEditor::saveFile()
+String CsoundEditor::getCurrentText()
 {
-if(unSaved)
-	saveFileAs();
-else{
-	openCsdFile.replaceWithText(csoundDoc.getAllContent());
-	sendActionMessage("fileSaved");
-	hasChanged = false;
-	}
-}
-
-//==============================================================================
-void CsoundEditor::saveFileAs()
-{
-FileChooser openFC(T("Save a .csd file..."), File::nonexistent, T("*.csd"));
-if(openFC.browseForFileToSave(true)){
-	File saveFile(openFC.getResult().getFullPathName());
-	openCsdFile = saveFile;
-	openCsdFile.replaceWithText(csoundDoc.getAllContent());
-	unSaved = false;
-	sendActionMessage(T("fileSaveAs|")+saveFile.getFullPathName());
-}
-textEditor->repaint();	
+	return csoundDoc.getAllContent();
 }
 
 //===============================================================================
@@ -395,6 +364,8 @@ untitledCSD=
 "0dbfs=1\n"
 "\n"
 "instr 1\n"
+"a1 inch 1\n"
+"a2 inch 2\n"
 "\n"
 "\n"
 "endin\n"
@@ -402,7 +373,7 @@ untitledCSD=
 "</CsInstruments>  \n"
 "<CsScore>\n"
 "f1 0 1024 10 1\n"
-"i1 0 300\n"
+"i1 0 3600\n"
 "</CsScore>\n"
 "</CsoundSynthesizer>";
 }
@@ -431,10 +402,11 @@ untitledCSD=
 "</CsInstruments>  \n"
 "<CsScore>\n"
 "f1 0 1024 10 1\n"
-"i1 0 300\n"
+"f0 3600\n"
 "</CsScore>\n"
 "</CsoundSynthesizer>";
 }
 csoundDoc.replaceAllContent(untitledCSD);
-saveFileAs();
+unSaved = true;
+sendActionMessage("fileSavedAs");
 }

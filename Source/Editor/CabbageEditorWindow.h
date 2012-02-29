@@ -30,8 +30,12 @@ public:
 
 	void setCsoundOutputText(String text);
 
-	void openCsoundFile(File input){
-		csoundEditor->openFile(input);
+	void setCsoundFile(File input){
+		csoundEditor->setCurrentFile(input);
+	}
+
+	String getCurrentText(){
+		return csoundEditor->getCurrentText();
 	}
 
 	void actionListenerCallback (const String& message);

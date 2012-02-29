@@ -124,11 +124,17 @@ public:
     //==============================================================================
     void closeButtonPressed();
     void buttonClicked (Button*);
-    int showInfoWindow(String text);
+    void showInfoWindow(String text);
 	void resized();
 	void changeListenerCallback(ChangeBroadcaster *source);
 	void actionListenerCallback (const String& message);
 	int exportPlugin(String type);
+	ScopedPointer<HintDialogWindow> hintDialog;
+	void openFile();
+	void saveFile();
+	void saveFileAs();
+
+
 
 	bool isGuiEnabled(){
 		return isGUIOn;
@@ -148,6 +154,7 @@ public:
 
 private:
 	bool timerRunning;
+	bool helpInfo;
 	int setUniquePluginID(File inFile, File csdFile);
 	float yAxis;
 	void timerCallback();

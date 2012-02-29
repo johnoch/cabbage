@@ -54,6 +54,13 @@ public:
 											MenuBarComponent &menuBar);
 	void setDefaultSansSerifTypefaceName (const String &newName);
 	void drawPopupMenuBackground(Graphics & g, int 	width, int 	height);
+/*	void drawPopupMenuItem(Graphics &g, int width, int height, bool isSeparator,
+							bool isActive, bool isHighlighted, bool isTicked,
+							bool hasSubMenu, const String &text, const String &shortcutKeyText,
+							Image *image, const Colour *const textColour);	
+	
+	void CabbageLookAndFeel::drawAlertBox(Graphics & g, AlertWindow &alert, const Rectangle<int> &textArea, TextLayout &textLayout);
+	*/
 	juce_UseDebuggingNewOperator
 
 
