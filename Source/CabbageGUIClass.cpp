@@ -46,6 +46,7 @@ CabbageGUIClass::CabbageGUIClass(String compStr, int ID):
           left = 10;
           width = 250;
           height = 50;
+		  sliderIncr = 0.001;
           channel = "hslider";
           kind = "horizontal";
           min = 0;
@@ -61,6 +62,7 @@ CabbageGUIClass::CabbageGUIClass(String compStr, int ID):
           left = 10;
           width = 60;
           height = 180;
+		  sliderIncr = 0.001;
           channel = "vslider";
           kind = "vertical";
           min = 0;
@@ -76,6 +78,7 @@ CabbageGUIClass::CabbageGUIClass(String compStr, int ID):
           left = 10;
           width = 100;
           height = 100;
+		  sliderIncr = 0.001;
           channel = "rslider";
           kind = "rotary";
           min = 0;
@@ -477,12 +480,15 @@ int CabbageGUIClass::parse(String str)
             }
 			else if(identArray.getReference(indx).toLowerCase().equalsIgnoreCase("range(")){
 				if(strTokens.size()<3){
-					debugMessage =T("WARNING: Not enough paramters passed to range(): usage range(minx, max, value\")");
+					debugMessage =T("WARNING: Not enough paramters passed to range(): usage range(minx, max, value, incr\")");
 				}
 				else{
 				min = strTokens[0].trim().getFloatValue();  
 				max = strTokens[1].trim().getFloatValue();  
 				value = strTokens[2].trim().getFloatValue(); 
+				if(strTokens.size()>3)
+				sliderIncr = strTokens[3].trim().getFloatValue(); 
+
 				sliderRange = max-min;
 				}
 			}
@@ -615,6 +621,8 @@ float CabbageGUIClass::getNumProp(String prop)
 			return linkTo;
 		else if(prop.equalsIgnoreCase(T("tableNum")))
 			return tableNum;
+		else if(prop.equalsIgnoreCase(T("sliderIncr")))
+			return sliderIncr;
 		else return -9999;
 }
 
@@ -663,6 +671,8 @@ void CabbageGUIClass::setNumProp(String prop, float val)
 			 linkTo = val;
 		else if(prop.equalsIgnoreCase(T("sliderRange")))
 			 sliderRange = val;
+		else if(prop.equalsIgnoreCase(T("sliderIncr")))
+			 sliderIncr = val;
 		else if(prop.equalsIgnoreCase(T("xypadRangeY")))
 			 xypadRangeY = val;
 		else if(prop.equalsIgnoreCase(T("xypadRangeX")))

@@ -38,7 +38,7 @@ class CabbageGUIClass : public CabbageUtils
 {
         float width, height, top, left, min, max, tabpage, minX, minY, maxX, maxY, comboRange,
 		noOfMenus, onoff, midiChan, midiCtrl, sliderRange, xypadRangeY, xypadRangeX,
-		line, anchor, linkTo, scaleX, scaleY, value, valueX, valueY, maxItems;
+		line, anchor, linkTo, scaleX, scaleY, value, valueX, valueY, maxItems, sliderIncr;
         StringArray items;
         StringArray onoffcaptions;
 		StringArray key;

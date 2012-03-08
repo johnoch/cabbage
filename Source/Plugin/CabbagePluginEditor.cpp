@@ -298,7 +298,7 @@ void CabbagePluginAudioProcessorEditor::paint (Graphics& g)
 	for(int i=0;i<getFilter()->getGUILayoutCtrlsSize();i++){
 		if(getFilter()->getGUILayoutCtrls(i).getStringProp("type").equalsIgnoreCase("keyboard")){
 #ifdef Cabbage_Build_Standalone
-		if(isMouseOver()){
+		if(isMouseOver(true)){
 			//this lets controls keep focus even when you are palying the keyboard
 			layoutComps[i]->setWantsKeyboardFocus(true);
 			layoutComps[i]->grabKeyboardFocus();
@@ -853,8 +853,8 @@ try{
         ((CabbageSlider*)controls[idx])->setBounds(left+relX, top+relY, width, height);
         else if(cAttr.getStringProp("kind").equalsIgnoreCase("horizontal"))
         ((CabbageSlider*)controls[idx])->setBounds(left+relX, top+relY, width, height);
-       
-        ((CabbageSlider*)controls[idx])->slider->setRange(cAttr.getNumProp("min"), cAttr.getNumProp("max"), 0.001);
+
+        ((CabbageSlider*)controls[idx])->slider->setRange(cAttr.getNumProp("min"), cAttr.getNumProp("max"), 0.001);//cAttr.getNumProp("sliderIncr")
         ((CabbageSlider*)controls[idx])->slider->setValue(cAttr.getNumProp("value"));
         ((CabbageSlider*)controls[idx])->slider->addListener(this);
  
@@ -883,17 +883,20 @@ void CabbagePluginAudioProcessorEditor::sliderValueChanged (Slider* sliderThatWa
                 for(int i=0;i<(int)getFilter()->getGUICtrlsSize();i++)//find correct control from vector
                         if(getFilter()->getGUICtrls(i).getStringProp("name")==sliderThatWasMoved->getParentComponent()->getName()){
 						//getFilter()->getCsound()->SetChannel(getFilter()->getGUICtrls(i).getStringProp("channel").toUTF8(), sliderThatWasMoved->getValue());
-                            //getFilter()->guiCtrls[i].value = (float)sliderThatWasMoved->getValue();
+                        //getFilter()->guiCtrls[i].value = (float)sliderThatWasMoved->getValue();
 #ifndef Cabbage_Build_Standalone
 						getFilter()->getGUICtrls(i).setNumProp("value", (float)sliderThatWasMoved->getValue());
-                        Logger::writeToLog(getFilter()->getGUICtrls(i).getPropsString());
+                        //Logger::writeToLog(getFilter()->getGUICtrls(i).getPropsString());
 						float min = getFilter()->getGUICtrls(i).getNumProp("min");
 						float range = getFilter()->getGUICtrls(i).getNumProp("sliderRange");
 						//getFilter()->setParameterNotifyingHost(i, (float)(sliderThatWasMoved->getValue()));
-						//normalise parameters in plugin mode. 
+						//normalise parameters in plugin mode.
+						getFilter()->beginParameterChangeGesture(i);
                         getFilter()->setParameterNotifyingHost(i, (float)((sliderThatWasMoved->getValue()-min)/range));
+						getFilter()->endParameterChangeGesture(i);
+						Logger::writeToLog(String((float)((sliderThatWasMoved->getValue()-min)/range)));
 #else
-						Logger::writeToLog(String(sliderThatWasMoved->getValue()));
+						Logger::writeToLog("Current Slider Value"+String(sliderThatWasMoved->getValue()));
 						getFilter()->setParameterNotifyingHost(i, (float)sliderThatWasMoved->getValue());
 #endif
                         }
@@ -1301,17 +1304,12 @@ try{
 	//fill array with points from table, is table is valid
 	if(getFilter()->getCompileStatus()==0){
 	tableSize = getFilter()->getCsound()->TableLength(cAttr.getNumProp("tableNum"));
-	for (int i=0; i<(tableSize); i++){
-	float value = getFilter()->getCsound()->TableGet(cAttr.getNumProp("tableNum"), i);
-	Logger::writeToLog(String(value));
-	tableValues.add(getFilter()->getCsound()->TableGet(cAttr.getNumProp("tableNum"), i));
-	}
+	tableValues = getFilter()->getTable(cAttr.getNumProp("tableNum"), tableSize);
 	}
 	else{
 		//if table is not valid fill our array with at least one dummy point
 		tableValues.add(0); 
 	}
-
 	controls.add(new CabbageTable(cAttr.getStringProp("name"),
 		cAttr.getStringProp("caption"),
 		cAttr.getItems(0),
@@ -1354,8 +1352,8 @@ try{
 		componentPanel->addAndMakeVisible(controls[idx]);		
 	}
 	
-	((CabbageTable*)controls[idx])->table->fillTable(tableValues);
-	((CabbageTable*)controls[idx])->table->addActionListener(this);
+	((CabbageTable*)controls[idx])->fillTable(0, tableValues);
+//	((CabbageTable*)controls[idx])->table->addActionListener(this);
 
 	Logger::writeToLog(cAttr.getPropsString());
 }
@@ -1408,10 +1406,11 @@ for(int i=0;i<(int)getFilter()->getGUICtrlsSize();i++)//find correct control fro
 		}
 	}
 	//if message comes from a table
+/*
 	else if(type.equalsIgnoreCase(T("table"))){
 	//now we know it's a table, just check teh channel and away we go...
 		int tableNum = getFilter()->getGUICtrls(i).getNumProp("tableNum");
-		Array<float> table = ((CabbageTable*)controls[i])->table->outputTable();
+		Array<float> table = ((CabbageTable*)controls[i])->getTable();
 		if(getFilter()->getGUICtrls(i).getStringProp("name")==name)
 		{	
 			getFilter()->setParameterNotifyingHost(i, 0);
@@ -1423,6 +1422,7 @@ for(int i=0;i<(int)getFilter()->getGUICtrlsSize();i++)//find correct control fro
 
 		}
 	}
+	*/
 }
 
 //=============================================================================

@@ -567,6 +567,7 @@ void StandaloneFilterWindow::buttonClicked (Button*)
 	else{
 		cabbageCsoundEditor->setVisible(true);
 		cabbageCsoundEditor->csoundEditor->newFile("effect");
+		saveFileAs();
 		cabbageCsoundEditor->csoundEditor->textEditor->grabKeyboardFocus();
 	}
 	}
@@ -576,6 +577,7 @@ void StandaloneFilterWindow::buttonClicked (Button*)
 	else{
 	cabbageCsoundEditor->setVisible(true);
 	cabbageCsoundEditor->csoundEditor->newFile("instrument");
+	saveFileAs();
 	cabbageCsoundEditor->csoundEditor->textEditor->grabKeyboardFocus();
 	}
 	}
@@ -686,7 +688,7 @@ resetFilter();
 void StandaloneFilterWindow::saveFileAs()
 {
 FileChooser saveFC(T("Save Cabbage file as..."), File::nonexistent, T("*.csd"));
-	if(saveFC.browseForFileToOpen()){
+	if(saveFC.browseForFileToSave(true)){
 		csdFile = saveFC.getResult().withFileExtension(T(".csd"));
 		csdFile.replaceWithText(cabbageCsoundEditor->getCurrentText());
 		cabbageCsoundEditor->setCsoundFile(csdFile);

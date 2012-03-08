@@ -38,6 +38,44 @@ class CabbagePluginAudioProcessor  : public AudioProcessor,
 									 public ChangeListener,
 									 public Timer
 {
+    //==============================================================================
+	File csdFile;
+	String filename;
+	String pluginName;
+	bool csoundStatus;
+	int csCompileResult;
+	void timerCallback();
+	String csoundOutput;
+	void changeListenerCallback(ChangeBroadcaster *source);
+	String changeMessageType;
+	bool guiOnOff;
+	int currentLine;
+
+	//============== Csound related variables/methods ==============================
+#ifndef Cabbage_No_Csound
+	MYFLT cs_scale;
+	ScopedPointer<Csound> csound;				//Csound instance
+	MYFLT *CSspin, *CSspout;	//Csound audio IO pointers
+	int csndIndex;				//Csound sample counter
+	int CSCompResult;			//result of Csound performKsmps
+	CsoundChannelListEntry* csoundChanList;  	// list of all available channels...
+	int numCsoundChannels;		//number of Csound channels
+	static void messageCallback(CSOUND *csound, int attr, 
+								const char *fmt, va_list args);  //message callback function
+	int pos;
+	//Csound API functions for deailing with midi input
+	static int OpenMidiInputDevice(CSOUND * csnd, void **userData, const char *devName);
+	static int OpenMidiOutputDevice(CSOUND * csnd, void **userData, const char *devName);
+	static int ReadMidiData(CSOUND *csound, void *userData, unsigned char *mbuf, int nbytes);
+	static int WriteMidiData(CSOUND *csound, void *userData, const unsigned char *mbuf, int nbytes);
+#endif
+	StringArray debugInfo;
+	Array<CabbageGUIClass, CriticalSection> guiLayoutCtrls;
+	Array<CabbageGUIClass, CriticalSection> guiCtrls;
+	String plantFlag;
+	String debugMessage;
+	StringArray debugMessageArray;
+
 public:
     //==============================================================================
 #ifdef Cabbage_Build_Standalone
@@ -131,6 +169,14 @@ public:
 	return pluginName;
 	}
 
+	Array<float> getTable(double tableNum, int tableSize){
+	Array<float> temp;
+	for(int i=0;i<tableSize;i++)	
+		temp.add(csound->TableGet(tableNum, i));
+	return temp;
+	}
+
+
 	void setMidiDebug(bool val){
 		showMIDI=val;
 	}
@@ -220,48 +266,8 @@ public:
 	MidiBuffer midiBuffer;		
 	MidiBuffer ccBuffer;
 	bool showMIDI;
+	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CabbagePluginAudioProcessor);
 	
-private:
-    //==============================================================================
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CabbagePluginAudioProcessor);
-	File csdFile;
-	String filename;
-	String pluginName;
-	bool csoundStatus;
-	int csCompileResult;
-	void timerCallback();
-	String csoundOutput;
-	void changeListenerCallback(ChangeBroadcaster *source);
-	String changeMessageType;
-	bool guiOnOff;
-	int currentLine;
-
-	//============== Csound related variables/methods ==============================
-#ifndef Cabbage_No_Csound
-	MYFLT cs_scale;
-	ScopedPointer<Csound> csound;				//Csound instance
-	MYFLT *CSspin, *CSspout;	//Csound audio IO pointers
-	int csndIndex;				//Csound sample counter
-	int CSCompResult;			//result of Csound performKsmps
-	CsoundChannelListEntry* csoundChanList;  	// list of all available channels...
-	int numCsoundChannels;		//number of Csound channels
-	static void messageCallback(CSOUND *csound, int attr, 
-								const char *fmt, va_list args);  //message callback function
-	int pos;
-	//Csound API functions for deailing with midi input
-	static int OpenMidiInputDevice(CSOUND * csnd, void **userData, const char *devName);
-	static int OpenMidiOutputDevice(CSOUND * csnd, void **userData, const char *devName);
-	static int ReadMidiData(CSOUND *csound, void *userData, unsigned char *mbuf, int nbytes);
-	static int WriteMidiData(CSOUND *csound, void *userData, const unsigned char *mbuf, int nbytes);
-#endif
-	StringArray debugInfo;
-	Array<CabbageGUIClass, CriticalSection> guiLayoutCtrls;
-	Array<CabbageGUIClass, CriticalSection> guiCtrls;
-	String plantFlag;
-	String debugMessage;
-	StringArray debugMessageArray;
-
-
 };
 
 #endif  // __PLUGINPROCESSOR_H_FE85D052__

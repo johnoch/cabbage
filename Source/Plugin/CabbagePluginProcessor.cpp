@@ -382,7 +382,7 @@ if(index<(int)guiCtrls.size()){//make sure index isn't out of range
 		//Logger::writeToLog(("channel:")+test);
 		csoundGetChannelPtr(getCsoundStruct(), &val, guiCtrls.getReference(index).getStringProp("channel").toUTF8(),
                                 CSOUND_CONTROL_CHANNEL | CSOUND_OUTPUT_CHANNEL);
-		//Logger::writeToLog(guiCtrls.getReference(index).getStringProp("channel"));
+		Logger::writeToLog(String("getting param from GUI:")+String(*val));
 
 //#ifdef Cabbage_Build_Standalone
 	        return *val;
