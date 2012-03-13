@@ -896,7 +896,7 @@ void CabbagePluginAudioProcessorEditor::sliderValueChanged (Slider* sliderThatWa
 						getFilter()->endParameterChangeGesture(i);
 						Logger::writeToLog(String((float)((sliderThatWasMoved->getValue()-min)/range)));
 #else
-						Logger::writeToLog("Current Slider Value"+String(sliderThatWasMoved->getValue()));
+						//Logger::writeToLog("Current Slider Value"+String(sliderThatWasMoved->getValue()));
 						getFilter()->setParameterNotifyingHost(i, (float)sliderThatWasMoved->getValue());
 #endif
                         }
@@ -1470,7 +1470,8 @@ for(int i=0;i<(int)getFilter()->getGUICtrlsSize();i++){
 			getFilter()->getGUICtrls(i).getStringProp("type")==T("vslider")){
 	if(controls[i]){
 		//if(getFilter()->getGUICtrls(i).getNumProp("value")!= getFilter()->getParameter(i))
-			((CabbageSlider*)controls[i])->slider->setValue(getFilter()->getParameter(i), false);
+		float val = getFilter()->getGUICtrls(i).getNumProp("sliderRange")*getFilter()->getParameter(i);
+			((CabbageSlider*)controls[i])->slider->setValue(val, false);
 	}
 	}
 	

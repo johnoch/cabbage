@@ -137,9 +137,11 @@ if(csCompileResult==0){
 	CSspin  = csound->GetSpin();
 	cs_scale = csound->Get0dBFS();
 	numCsoundChannels = csoundListChannels(csound->GetCsound(), &csoundChanList);
-	for(int i=0;i<guiCtrls.size();i++)
+	for(int i=0;i<guiCtrls.size();i++){
 		csound->SetChannel( guiCtrls.getReference(i).getStringProp("channel").toUTF8(), 
 							guiCtrls.getReference(i).getNumProp("value"));
+		setParameter(i, guiCtrls.getReference(i).getNumProp("value")); 
+	}
 
 	csndIndex = csound->GetKsmps();
 	csoundStatus = true;
@@ -378,18 +380,19 @@ float CabbagePluginAudioProcessor::getParameter (int index)
 #ifndef Cabbage_No_Csound
 if(index<(int)guiCtrls.size()){//make sure index isn't out of range
         MYFLT* val=0;
+		float range = getGUICtrls(index).getNumProp("sliderRange");
 		//String test = guiCtrls.getReference(index).getStringProp("channel");
 		//Logger::writeToLog(("channel:")+test);
 		csoundGetChannelPtr(getCsoundStruct(), &val, guiCtrls.getReference(index).getStringProp("channel").toUTF8(),
                                 CSOUND_CONTROL_CHANNEL | CSOUND_OUTPUT_CHANNEL);
-		Logger::writeToLog(String("getting param from GUI:")+String(*val));
+		//Logger::writeToLog(String("getting param from GUI:")+String(*val));
 
-//#ifdef Cabbage_Build_Standalone
+#ifdef Cabbage_Build_Standalone
 	        return *val;
-//#else
-
+#else
+		return *val/range;
 //		return getGUICtrls(index).getNumProp("value");
-//#endif
+#endif
 }
 else return 0.f; 
 #endif

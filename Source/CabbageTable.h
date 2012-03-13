@@ -37,6 +37,25 @@ private:
 /*
   ====================================================================================
 
+	Data Structures to hold table data
+
+  ====================================================================================
+*/
+class TableData
+{
+public:
+	Array<float> amps, x, y;
+};
+
+class OverviewData
+{
+public:
+	Array<float> minAmps, maxAmps, minY, maxY;
+};
+
+/*
+  ====================================================================================
+
 	Table
 
   ====================================================================================
@@ -48,35 +67,32 @@ public:
 	Table (int tableSize, Colour colour);
 	~Table();
 
+	void resized();
 	void setOriginalWidth(int w);
-	void fillTables (Array<float> yValues);
-	void calculateBlockAmps (int zoomValue);
-	void drawCachedImage();
+	void createAmpOverviews (Array<float> csndInputData);
+	void setDataSource (int zoomValue);
+	float ampToYCoordinate (float ampValue);
+	void backgroundImage();
 	void paint (Graphics& g);
 	void mouseDown (const MouseEvent& e);
 	CabbageEnvelopeHandleComponent* addHandle(int x, int y);
 	void removeHandle (CabbageEnvelopeHandleComponent* thisHandle);
 	void modifyHandlePos (float j);
-	void AddHandles();
+	void makeTableEditable();
+	void createEnvPath();
 
 private:
-
-	class tableValues{
-	public:
-		Array<float> amps, x, y;
-	};
-
 	Image img;
 	int gen, tblSize;
+	float tableTop, tableBottom, tableLeft, tableHeight;
 	float minAmp, maxAmp, ampRange;
 	float zoom;
-	Array<float> blockMax, blockMin;
-	Array<float> overviewMax, overviewMin;
-	tableValues ampValues;
+	TableData tableData;
+	OverviewData overview;
 	Colour cl;
 	int origWidth;
 	bool useOverview;
-	float maxOverviewZoom, pixPerIndx;
+	float maxZoomForOverview, pixelsPerIndx;
 
 	bool IsNumber(double x) 
     {
@@ -87,6 +103,7 @@ private:
 
 	OwnedArray<CabbageEnvelopeHandleComponent> handles;
 	CabbageEnvelopeHandleComponent* draggingHandle;
+	Path envPath;
 
 
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Table);
@@ -109,7 +126,7 @@ public:
 	~CabbageTableManager();
 
 	void addTable (String name, int tableSize, Colour colour);
-	void fillTable (int tableID, Array<float> yValues);
+	void fillTable (int tableID, Array<float> csndInputData);
 	void tableToFront (int tableOnTop);
 	void mouseDown (const MouseEvent& e);
 
@@ -136,7 +153,7 @@ public:
 	~CabbageTableViewer();
 	void resized();
 	void addTable (String name, int tableSize, Colour colour);
-	void fillTable (int tableID, Array<float> yValues);
+	void fillTable (int tableID, Array<float> csndInputData);
 	void tableToFront (int tableOnTop);
 
 private:

@@ -1,6 +1,6 @@
 #include "CabbageLookAndFeel.h"
 
-//========== Constructor ================================================================================
+
 CabbageLookAndFeel::CabbageLookAndFeel()
 {
 setColour(AlertWindow::backgroundColourId, Colours::black);
@@ -8,12 +8,9 @@ setColour(AlertWindow::textColourId, Colours::white);
 setColour(AlertWindow::outlineColourId, Colours::grey);
 }
 
-
-//========= Destructor ====================================================================================
 CabbageLookAndFeel::~CabbageLookAndFeel()
 {
 }
-
 
 //========= Creating a custom r slider image that can be usede in the drawRotary() method =================
 Image CabbageLookAndFeel::drawRotaryImage(int diameter, const Colour circleFill, float sliderPosProportional, bool useBigImage)
@@ -335,9 +332,11 @@ Image CabbageLookAndFeel::drawTextButtonImage (float width, float height, bool i
 		g.fillRoundedRectangle (width*0.1, height*0.1, width*0.8, height*0.8, height*0.1);
 	}
 
+
 	//----- Returning image
 	return img;
 }
+
 
 
 //=========== Rotary Sliders ==============================================================================
@@ -423,7 +422,7 @@ void CabbageLookAndFeel::drawRotarySlider(Graphics& g, int /*x*/, int /*y*/, int
 		if (numDec < 0)
 			numDec = 0;
 
-		//Setting up the format of the string....
+		//Setting up format string....
 		String format;
 		format << "%." << numDec << "f";
 		String sliderValue = String::formatted(format, slider.getValue());
@@ -435,45 +434,31 @@ void CabbageLookAndFeel::drawRotarySlider(Graphics& g, int /*x*/, int /*y*/, int
 
 		//Drawing background box
 		float boxWidth = strWidth + 2;
-		//g.setColour (circleFill);
 		g.setColour (Colours::whitesmoke);
 		g.fillRoundedRectangle ((slider.getWidth()/2) - (strWidth/2) - 1.0f, (destHeight/2)-7.0f, boxWidth, 13.0f, 4);
 		
 		//Drawing value
-		//g.setColour (markerFill);
 		g.setColour (Colours::black);
+		//g.drawRoundedRectangle ((slider.getWidth()/2) - (strWidth/2) - 1.0f, (destHeight/2)-7.0f, (int)strWidth+2, 13.0f, 4, 1);
 		g.setFont (fontValue);
 		g.drawText (sliderValue, (slider.getWidth()/2) - (strWidth/2), (destHeight/2)-7.0f, (int)strWidth, 13, just, false);
 
-
 		//----- If the value box width is bigger than the slider width.  The slider size needs to be increased to cater for displaying 
-		//the full value.  This should only really apply to small sliders.  Only the parent needs to be increase, CabbageSlider(), as it
-		//will resize the actual slider itself.  This will work whether the slider uses a group caption or not.
+		//the full value.  This should only really apply to small sliders. 
 		if (destWidth < boxWidth) {
-			//Getting difference in width between value box and slider width
+			//centering the slider..
 			int diff = boxWidth - destWidth;
+			int xPos = slider.getX() - (diff/2); //new x
+			int yPos = slider.getY() - (diff/2); //new y
 
 			//if there is a label at the bottom we have to add on the height of the label too...
 			if (slider.getName().length() > 0)
 				boxWidth += 15;
 
-			//Getting parent's original bounds...
-			Component* parent; //CabbageSlider
-			parent = slider.getParentComponent();
-			int parentWidth = parent->getWidth();
-			int parentHeight = parent->getHeight();
-			int parentX = parent->getX();
-			int parentY = parent->getY();
-
-			//setting to front so that it is not physically underneath another slider
-			parent->toFront(true); 
-
-			//Resetting parent bounds...
-			int newParentX = parentX - (diff/2);
-			int newParentY = parentY - (diff/2);
-			int newParentWidth = parentWidth + diff;
-			int newParentHeight = parentHeight + diff;
-			parent->setBounds (newParentX, newParentY, newParentWidth, newParentHeight);
+			//resizing bounds
+			slider.toFront(true);
+			//slider.setAlwaysOnTop (true);
+			slider.setBounds (xPos, yPos, boxWidth, boxWidth);
 
 			//-----Assigning a resize flag to the slider so that it can be checked in the else statement that follows.  
 			//Components have no ID to begin with.  This will prevent the wrong slider being picked up by the else statement 
@@ -484,18 +469,16 @@ void CabbageLookAndFeel::drawRotarySlider(Graphics& g, int /*x*/, int /*y*/, int
 		}
 	}
 	
-	//----- Else if mouse is not hovering and slider ID is not empty.  This means that the slider's parent had been
+	//----- Else if mouse is not hovering and slider ID is not empty.  This means that the slider had been
 	//resized previously, and will therefore enter this else statement to get resized again back to its original
-	//dimensions. Once the parent is resized, the slider inside it will resize accordingly.
+	//dimensions. 
 	else if ((slider.isMouseOverOrDragging() == false) && (slider.getComponentID().compare ("") != 0)) {
-		//Getting original parent dimensions...		
-		Component* parent;  //CabbageSlider()
-		parent = slider.getParentComponent();
-		int parentWidth = slider.getProperties().getWithDefault(String("origWidth"), -99);
-		int parentHeight = slider.getProperties().getWithDefault(String("origHeight"), -99);
-		int parentX = slider.getProperties().getWithDefault(String("origX"), -99);
-		int parentY = slider.getProperties().getWithDefault(String("origY"), -99);
-		parent->setBounds (parentX, parentY, parentWidth, parentHeight);
+		//Setting the slider back to its original dimensions using global parameters set in getProperties()...
+		int originalWidth = slider.getProperties().getWithDefault(String("origWidth"), -99);
+		int originalHeight = slider.getProperties().getWithDefault(String("origHeight"), -99);
+		int originalX = slider.getProperties().getWithDefault(String("origX"), -99);
+		int originalY = slider.getProperties().getWithDefault(String("origY"), -99);
+		slider.setBounds (originalX, originalY, originalWidth, originalHeight);	
 
 		//assigning an empty ID back to the slider
 		String emptyStr = String::empty;
@@ -503,7 +486,7 @@ void CabbageLookAndFeel::drawRotarySlider(Graphics& g, int /*x*/, int /*y*/, int
 	}
 }
 
-				
+
 //=========== Linear Slider Background ===========================================================================
 void CabbageLookAndFeel::drawLinearSliderBackground (Graphics &g, int /*x*/, int /*y*/, int /*width*/, int /*height*/, float sliderPos, 
 																								float /*minSliderPos*/, 
@@ -801,27 +784,17 @@ void CabbageLookAndFeel::drawLinearSliderThumb (Graphics &g, int /*x*/, int /*y*
 
 			//----- If the value box is too wide, then the slider must be resized to accomodate it...
 			if (boxWidth > slider.getWidth()) {
-				//Getting difference in width between value box and slider width
-				int diff = boxWidth - slider.getWidth();
+				float origX = slider.getX();
+				float origY = slider.getY();
+				float origWidth = slider.getWidth();
+				float origHeight = slider.getHeight();
 
-				//We only need to worry about resizing the parent, CabbageSlider(), as it will automatically resize
-				//the actual slider image accordingly.
-				Component* parent;
-				parent = slider.getParentComponent();
-				int parentWidth = parent->getWidth();
-				int parentHeight = parent->getHeight();
-				int parentX = parent->getX();
-				int parentY = parent->getY();
+				float diff = boxWidth - origWidth;
+				float newX = origX - diff/2;
+				float newY = origY - diff/2;
 
-				//setting to front so that it is not physically underneath another slider
-				parent->toFront(true); 
-
-				//Resetting parent bounds...
-				int newParentX = parentX - (diff/2);
-				int newParentY = parentY - (diff/2);
-				int newParentWidth = parentWidth + diff;
-				int newParentHeight = parentHeight + diff;
-				parent->setBounds (newParentX, newParentY, newParentWidth, newParentHeight);
+				slider.setBounds (newX, newY, boxWidth, origHeight+diff);
+				slider.toFront (true);
 
 				//-----Assigning a resize flag to the slider so that it can be checked in the else statement that follows.  
 				//Components have no ID to begin with.  This will prevent the wrong slider being picked up by the else statement 
@@ -834,18 +807,14 @@ void CabbageLookAndFeel::drawLinearSliderThumb (Graphics &g, int /*x*/, int /*y*
 		}
 		//----- Else if mouse is not hovering and slider ID is not empty.  This means that the slider had been
 		//resized previously, and will therefore enter this else statement to get resized again back to its original
-		//dimensions. We only need to worry about resizing the parent, CabbageSlider(), as it will resize the actual
-		//slider image accordingly.
+		//dimensions. 
 		else if ((slider.isMouseOverOrDragging() == false) && (slider.getComponentID().compare ("") != 0)) {
-			//Getting original parent dimensions....
-			Component* parent;
-			parent = slider.getParentComponent();
-			int parentWidth = slider.getProperties().getWithDefault(String("origWidth"), -99);
-			int parentHeight = slider.getProperties().getWithDefault(String("origHeight"), -99);
-			int parentX = slider.getProperties().getWithDefault(String("origX"), -99);
-			int parentY = slider.getProperties().getWithDefault(String("origY"), -99);
-			//Resizing parent back to original size
-			parent->setBounds (parentX, parentY, parentWidth, parentHeight);
+			//Setting the slider back to its original dimensions using global parameters set in getProperties()...
+			int originalWidth = slider.getProperties().getWithDefault(String("origWidth"), -99);
+			int originalHeight = slider.getProperties().getWithDefault(String("origHeight"), -99);
+			int originalX = slider.getProperties().getWithDefault(String("origX"), -99);
+			int originalY = slider.getProperties().getWithDefault(String("origY"), -99);
+			slider.setBounds (originalX, originalY, originalWidth, originalHeight);	
 
 			//assigning an empty ID back to the slider
 			String emptyStr = String::empty;
@@ -933,7 +902,6 @@ void CabbageLookAndFeel::drawButtonText (Graphics &g, TextButton &button, bool i
 		just, false);
 }
 
-
 //=========== ComboBoxes ============================================================================
 void CabbageLookAndFeel::drawComboBox(Graphics& g, int width, int height, bool /*isButtonDown*/,
 																	int /*buttonX*/,
@@ -981,9 +949,9 @@ void CabbageLookAndFeel::fillTextEditorBackground (Graphics &g, int width, int h
 //=========== Labels, slider textboxes are also labels ==================================================
 void CabbageLookAndFeel::drawLabel (Graphics &g, Label &label)
 {	
-	/*----- Getting parent component of label, if it is a slider then the background will
-	be a rectangle with rounded corners.  The background colour is retrieved from the initialisation
-	of the slider / label.  Otherwise it will be normal */
+	//----- Getting parent component of label, if it is a slider then the background will
+	//be a rectangle with rounded corners.  The background colour is retrieved from the initialisation
+	//of the slider / label.  Otherwise it will be normal.
 	Component* comp = label.getParentComponent();
 
 	//Setting the font
@@ -1000,8 +968,8 @@ void CabbageLookAndFeel::drawLabel (Graphics &g, Label &label)
 
 		g.fillRoundedRectangle (0, 0, label.getWidth(), label.getHeight(), label.getHeight()/3);
 
-		/*----- For the text. If the background is brighter than 0.6 then the text is black, otherwise the 
-		text is whitesmoke.*/
+		//----- For the text. If the background is brighter than 0.6 then the text is black, otherwise the 
+		//text is whitesmoke.
 		Justification just(36);	//justification of text
 		if (cl.getBrightness() > 0.6) g.setColour (Colours::black);
 		else g.setColour (Colours::whitesmoke);
@@ -1025,7 +993,7 @@ void CabbageLookAndFeel::drawGroupComponentOutline (Graphics &g, int w, int h, c
 																		const Justification &position, 
 																		GroupComponent &group)
 {
-	//----- Background
+		//----- Background
 	Colour bg = CabbageUtils::componentSkin();
 	g.setColour (bg);
 	g.fillRoundedRectangle (0, 0, w, h, 5);
@@ -1056,58 +1024,97 @@ void CabbageLookAndFeel::drawGroupComponentOutline (Graphics &g, int w, int h, c
 	g.fillEllipse (w-9, h-9, 6, 6);
 }
 
+//======== Scrollbars ==============================================================================
+void CabbageLookAndFeel::drawScrollbar (Graphics &g, ScrollBar &scrollbar, int x, int y, int width, 
+																						int height, 
+																						bool isScrollbarVertical, 
+																						int thumbStartPosition, 
+																						int thumbSize, 
+																						bool isMouseOver, 
+																						bool isMouseDown)
+{
+	g.setColour (CabbageUtils::backgroundSkin());
+	//g.setColour (Colours::transparentBlack);
+	g.fillAll();
+
+	//for horizontal scrollbars
+	if (isScrollbarVertical == false) { 
+		g.setColour (CabbageUtils::componentSkin());
+		g.drawRoundedRectangle (x, y, width, height, 5, 1);
+		g.fillRoundedRectangle (thumbStartPosition+3, 3, thumbSize-6, height-6, 5);
+	}
+}
+
+//======= Scrollbar buttons =======================================================================
+void CabbageLookAndFeel::drawScrollbarButton (Graphics &g, ScrollBar &scrollbar, int width, int height, 
+																					int buttonDirection, 
+																					bool isScrollbarVertical, 
+																					bool isMouseOverButton, 
+																					bool isButtonDown)
+{
+	g.setColour (CabbageUtils::backgroundSkin());
+	//g.setColour (Colours::transparentBlack);
+	g.fillAll();
+
+	if (isButtonDown == true)
+		g.setColour (CabbageUtils::componentSkin().brighter(0.5f));
+	else
+		g.setColour (CabbageUtils::componentSkin());
+
+	//for horizontal scrollbar arrows
+	if (isScrollbarVertical == false) { 
+		Line<float> left (width*0.8, height/2, width*0.2, height/2);
+		Line<float> right (width*0.2, height/2, width*0.8, height/2);
+		if (buttonDirection == 3) 
+			g.drawArrow (left, 0, 10, 10); //left arrow
+		else if (buttonDirection == 1)
+			g.drawArrow (right, 0, 10, 10); //right arrow
+	}
+
+}
 
 //======== Popup Menu background ======================================================================
 void CabbageLookAndFeel::drawPopupMenuBackground(Graphics &g, int width, int height)
 {
-	g.setColour (Colours::black);
-	g.setOpacity (0.4);
-	g.fillAll();
+        g.setColour (Colours::black);
+        g.setOpacity (0.4);
+        g.fillAll();
 }
 
-/*
-void CabbageLookAndFeel::drawPopupMenuItem(Graphics &g, int width, int height, bool isSeparator,
-							bool isActive, bool isHighlighted, bool isTicked,
-							bool hasSubMenu, const String &text, const String &shortcutKeyText,
-							Image *image, const Colour *const textColour)
-{
-
-}
-*/
 //======== Menubar background ======================================================================
 void CabbageLookAndFeel::drawMenuBarBackground(Graphics &g, int width, int height, bool isMouseOverBar, MenuBarComponent &menuBar)
 {
-	ColourGradient gradient(CabbageUtils::componentSkin(), 0, 0, Colours::red, 0, height, false); 
-	g.setGradientFill(gradient);
-	
-	//g.fillAll(CabbageUtils::componentSkin());
-	//g.setColour (Colours::black);
-	//g.setOpacity (0.4);
-	//g.fillAll(Colours::darkgreen);
-	//g.fillAll(Colour::fromRGBA (145, 155, 160, 255)); 
+        ColourGradient gradient(CabbageUtils::componentSkin(), 0, 0, Colours::red, 0, height, false); 
+        g.setGradientFill(gradient);
+        
+        //g.fillAll(CabbageUtils::componentSkin());
+        //g.setColour (Colours::black);
+        //g.setOpacity (0.4);
+        //g.fillAll(Colours::darkgreen);
+        //g.fillAll(Colour::fromRGBA (145, 155, 160, 255)); 
 }
 
 //======== Menubar item background ======================================================================
 void CabbageLookAndFeel::drawMenuBarItem(Graphics & g, int width, int height, int itemIndex,
-											const String &itemText, bool isMouseOverItem,
-											bool isMenuOpen, bool isMouseOverBar,
-											MenuBarComponent &menuBar)
+                                                                                        const String &itemText, bool isMouseOverItem,
+                                                                                        bool isMenuOpen, bool isMouseOverBar,
+                                                                                        MenuBarComponent &menuBar)
 {
-	//g.fillAll(Colours::beige);
-	g.setFont(Font(height*.6, 1));
-	g.setColour(Colours::white);
-	g.drawFittedText(itemText, 0, 0, width, height, Justification::centred, 1);
+        //g.fillAll(Colours::beige);
+        g.setFont(Font(height*.6, 1));
+        g.setColour(Colours::white);
+        g.drawFittedText(itemText, 0, 0, width, height, Justification::centred, 1);
 }
+//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-//======= Basic Look And Feel Methods ==================================================================
 
-//========== Constructor ================================================================================
+
+
+//======= Basic Look And Feel Methods ===================================================================
 CabbageLookAndFeelBasic::CabbageLookAndFeelBasic()
 {
 }
 
-
-//========= Destructor ====================================================================================
 CabbageLookAndFeelBasic::~CabbageLookAndFeelBasic()
 {
 }

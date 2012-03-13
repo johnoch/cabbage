@@ -1855,12 +1855,12 @@ JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CabbageVUMeter);
 class CabbageTable : public Component
 {
 //ScopedPointer<LookAndFeel> lookFeel;
-int offX, offY, offWidth, offHeight;
+int offX, offY, offWidth, offHeight, tableSize;
 public:
 ScopedPointer<GroupComponent> groupbox;
 ScopedPointer<CabbageTableViewer> table;
 //---- constructor -----
-CabbageTable(String name, String text, String caption, int tableSize)
+CabbageTable(String name, String text, String caption, int tblSize): tableSize(tblSize)
 {
 	setName(name);
 	offX=offY=offWidth=offHeight=0;
@@ -1868,8 +1868,8 @@ CabbageTable(String name, String text, String caption, int tableSize)
 	groupbox = new GroupComponent(String("groupbox_")+name);
 	groupbox->setWantsKeyboardFocus(false);
 	table = new CabbageTableViewer();
-	table->setBounds(0, 0, 300, 100);
-	table->addTable("table0", tableSize, Colours::lime);
+	//table->setBounds(0, 0, 300, 200);
+	
 	addAndMakeVisible(table);
 	addAndMakeVisible(groupbox);
 
@@ -1896,10 +1896,6 @@ CabbageTable(String name, String text, String caption, int tableSize)
 
 }
 
-//---------------------------------------------
-//Array<float> getTable(){
-//return nullptr;
-//}
 
 //---------------------------------------------
 void fillTable(int ID, Array<float> yValues){
@@ -1912,6 +1908,7 @@ void resized()
 {
 groupbox->setBounds(0, 0, getWidth(), getHeight()); 
 table->setBounds(offX, offY, getWidth()+offWidth, getHeight()+offHeight); 
+table->addTable("table0", tableSize, Colours::lime);
 this->setWantsKeyboardFocus(false);
 }
 

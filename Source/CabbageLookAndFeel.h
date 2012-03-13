@@ -1,3 +1,5 @@
+#ifndef __CABBAGELOOKANDFEEL_H_
+#define __CABBAGELOOKANDFEEL_H_
 
 /*
   ====================================================================================
@@ -46,26 +48,32 @@ public:
 	virtual void fillTextEditorBackground (Graphics &g, int width, int height, TextEditor &textEditor);
 	virtual void drawGroupComponentOutline (Graphics &g, int w, int h, const String &text, const Justification &position, 
 																									GroupComponent &group);
-	virtual void drawMenuBarBackground(Graphics &g, int width, int height, bool isMouseOverBar, MenuBarComponent &menuBar);
-	
-	virtual void drawMenuBarItem(Graphics & g, int width, int height, int itemIndex,
-											const String &itemText, bool isMouseOverItem,
-											bool isMenuOpen, bool isMouseOverBar,
-											MenuBarComponent &menuBar);
+	virtual void drawScrollbar (Graphics &g, ScrollBar &scrollbar, int x, int y, int width, int height, 
+																							bool isScrollbarVertical, 
+																							int thumbStartPosition, 
+																							int thumbSize, 
+																							bool isMouseOver, 
+																							bool isMouseDown);
+	virtual void drawScrollbarButton (Graphics &g, ScrollBar &scrollbar, int width, int height, int buttonDirection, 
+																								bool isScrollbarVertical, 
+																								bool isMouseOverButton, 
+																								bool isButtonDown);
+
 	void setDefaultSansSerifTypefaceName (const String &newName);
-	void drawPopupMenuBackground(Graphics & g, int 	width, int 	height);
-/*	void drawPopupMenuItem(Graphics &g, int width, int height, bool isSeparator,
-							bool isActive, bool isHighlighted, bool isTicked,
-							bool hasSubMenu, const String &text, const String &shortcutKeyText,
-							Image *image, const Colour *const textColour);	
-	
-	void CabbageLookAndFeel::drawAlertBox(Graphics & g, AlertWindow &alert, const Rectangle<int> &textArea, TextLayout &textLayout);
-	*/
+	virtual void drawMenuBarBackground(Graphics &g, int width, int height, bool isMouseOverBar, MenuBarComponent &menuBar);
+        
+    virtual void drawMenuBarItem(Graphics & g, int width, int height, int itemIndex,
+                                      const String &itemText, bool isMouseOverItem,
+                                      bool isMenuOpen, bool isMouseOverBar,
+                                      MenuBarComponent &menuBar);
+
+	void drawPopupMenuBackground(Graphics &g, int width, int height);
 	juce_UseDebuggingNewOperator
 
 
 private:
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CabbageLookAndFeel);
+	
 	
 };
 
@@ -101,3 +109,6 @@ private:
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CabbageLookAndFeelBasic);
 	
 };
+
+
+#endif //__CABBAGELOOKANDFEEL_H_
