@@ -185,8 +185,11 @@ void CabbagePluginAudioProcessor::createGUI(String source)
 {
 	int guiID=0;
 	StringArray csdText;
+	int lines=1;
+	String csdLine("");
 	csdText.addLines(source);
 	bool multiComment = false;
+	bool multiLine = false;
 	//reset the size of filter's guiCtrls as the constructor can be called many times..
     for(int i=0;i<csdText.size();i++)
         {
@@ -194,8 +197,34 @@ void CabbagePluginAudioProcessor::createGUI(String source)
             {
 				if(csdText[i].indexOfWholeWord(T("groupbox "))==-1)
 					if(csdText[i].trim().isNotEmpty()){
+						
+						if(csdText[i].contains("), \\")||
+											csdText[i].contains("),\\")||
+											csdText[i].contains(") \\")){
+							multiLine = true;
+							csdLine="";
+							lines=0;
+							while(multiLine){
+							if(csdText[i+lines].contains("), \\")||
+											csdText[i].contains("),\\")||
+											csdText[i].contains(") \\"))
+								lines++;
+							else multiLine=false;
+							}
+							for(int y=0;y<=lines;y++)
+							csdLine = csdLine + " "+ csdText[i+y].trim()+" ";
+							i=i+lines;
+						}
+						else
+						csdLine = csdText[i]; 
+						
+						//tidy up string
+						csdLine = csdLine.trimStart();
+						//csdLine = csdLine.removeCharacters(" \\");
+						//csdLine = csdLine.removeCharacters(",\\");
+						Logger::writeToLog(csdLine);
 						StringArray tokes;
-						tokes.addTokens(csdText[i].trimEnd(), ", ", "\"");
+						tokes.addTokens(csdLine.trimEnd(), ", ", "\"");
 						
 						if(tokes.getReference(0).containsIgnoreCase(T("/*"))){
 						multiComment = true;
@@ -227,7 +256,8 @@ void CabbagePluginAudioProcessor::createGUI(String source)
 								||tokes.getReference(0).equalsIgnoreCase(T("vumeter"))
 								||tokes.getReference(0).equalsIgnoreCase(T("hostrecording"))
 								||tokes.getReference(0).equalsIgnoreCase(T("groupbox"))){
-							CabbageGUIClass cAttr(csdText[i].trimEnd(), guiID);
+							CabbageGUIClass cAttr(csdLine.trimEnd(), guiID);
+							csdLine = "";
 							//set up plant flag if needed for other widgets
 							if(cAttr.getStringProp(T("plant")).isNotEmpty())
 								plantFlag = cAttr.getStringProp(T("plant"));
@@ -263,7 +293,8 @@ void CabbagePluginAudioProcessor::createGUI(String source)
 								||tokes.getReference(0).equalsIgnoreCase(T("checkbox"))
 								||tokes.getReference(0).equalsIgnoreCase(T("xypad"))
 								||tokes.getReference(0).equalsIgnoreCase(T("button"))){
-							CabbageGUIClass cAttr(csdText[i].trimEnd(), guiID);
+							CabbageGUIClass cAttr(csdLine.trimEnd(), guiID);
+							csdLine = "";
 							//attach widget to plant if need be
 							if(cAttr.getStringProp(T("relToPlant")).equalsIgnoreCase(T("")))
 								cAttr.setStringProp(T("relToPlant"), plantFlag);
@@ -293,6 +324,7 @@ void CabbagePluginAudioProcessor::createGUI(String source)
 							guiCtrls.add(cAttr);
 							guiID++;
 							}
+
 							//debugMessageArray.addArray(logGUIAttributes(cAttr, T("Interactive")));
 							sendChangeMessage();
 						}

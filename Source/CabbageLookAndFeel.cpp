@@ -422,7 +422,7 @@ void CabbageLookAndFeel::drawRotarySlider(Graphics& g, int /*x*/, int /*y*/, int
 		if (numDec < 0)
 			numDec = 0;
 
-		//Setting up format string....
+		//Setting up the format of the string....
 		String format;
 		format << "%." << numDec << "f";
 		String sliderValue = String::formatted(format, slider.getValue());
@@ -434,31 +434,45 @@ void CabbageLookAndFeel::drawRotarySlider(Graphics& g, int /*x*/, int /*y*/, int
 
 		//Drawing background box
 		float boxWidth = strWidth + 2;
+		//g.setColour (circleFill);
 		g.setColour (Colours::whitesmoke);
 		g.fillRoundedRectangle ((slider.getWidth()/2) - (strWidth/2) - 1.0f, (destHeight/2)-7.0f, boxWidth, 13.0f, 4);
 		
 		//Drawing value
+		//g.setColour (markerFill);
 		g.setColour (Colours::black);
-		//g.drawRoundedRectangle ((slider.getWidth()/2) - (strWidth/2) - 1.0f, (destHeight/2)-7.0f, (int)strWidth+2, 13.0f, 4, 1);
 		g.setFont (fontValue);
 		g.drawText (sliderValue, (slider.getWidth()/2) - (strWidth/2), (destHeight/2)-7.0f, (int)strWidth, 13, just, false);
 
+
 		//----- If the value box width is bigger than the slider width.  The slider size needs to be increased to cater for displaying 
-		//the full value.  This should only really apply to small sliders. 
+		//the full value.  This should only really apply to small sliders.  Only the parent needs to be increase, CabbageSlider(), as it
+		//will resize the actual slider itself.  This will work whether the slider uses a group caption or not.
 		if (destWidth < boxWidth) {
-			//centering the slider..
+			//Getting difference in width between value box and slider width
 			int diff = boxWidth - destWidth;
-			int xPos = slider.getX() - (diff/2); //new x
-			int yPos = slider.getY() - (diff/2); //new y
 
 			//if there is a label at the bottom we have to add on the height of the label too...
 			if (slider.getName().length() > 0)
 				boxWidth += 15;
 
-			//resizing bounds
-			slider.toFront(true);
-			//slider.setAlwaysOnTop (true);
-			slider.setBounds (xPos, yPos, boxWidth, boxWidth);
+			//Getting parent's original bounds...
+			Component* parent; //CabbageSlider
+			parent = slider.getParentComponent();
+			int parentWidth = parent->getWidth();
+			int parentHeight = parent->getHeight();
+			int parentX = parent->getX();
+			int parentY = parent->getY();
+
+			//setting to front so that it is not physically underneath another slider
+			parent->toFront(true); 
+
+			//Resetting parent bounds...
+			int newParentX = parentX - (diff/2);
+			int newParentY = parentY - (diff/2);
+			int newParentWidth = parentWidth + diff;
+			int newParentHeight = parentHeight + diff;
+			parent->setBounds (newParentX, newParentY, newParentWidth, newParentHeight);
 
 			//-----Assigning a resize flag to the slider so that it can be checked in the else statement that follows.  
 			//Components have no ID to begin with.  This will prevent the wrong slider being picked up by the else statement 
@@ -469,16 +483,18 @@ void CabbageLookAndFeel::drawRotarySlider(Graphics& g, int /*x*/, int /*y*/, int
 		}
 	}
 	
-	//----- Else if mouse is not hovering and slider ID is not empty.  This means that the slider had been
+	//----- Else if mouse is not hovering and slider ID is not empty.  This means that the slider's parent had been
 	//resized previously, and will therefore enter this else statement to get resized again back to its original
-	//dimensions. 
+	//dimensions. Once the parent is resized, the slider inside it will resize accordingly.
 	else if ((slider.isMouseOverOrDragging() == false) && (slider.getComponentID().compare ("") != 0)) {
-		//Setting the slider back to its original dimensions using global parameters set in getProperties()...
-		int originalWidth = slider.getProperties().getWithDefault(String("origWidth"), -99);
-		int originalHeight = slider.getProperties().getWithDefault(String("origHeight"), -99);
-		int originalX = slider.getProperties().getWithDefault(String("origX"), -99);
-		int originalY = slider.getProperties().getWithDefault(String("origY"), -99);
-		slider.setBounds (originalX, originalY, originalWidth, originalHeight);	
+		//Getting original parent dimensions...		
+		Component* parent;  //CabbageSlider()
+		parent = slider.getParentComponent();
+		int parentWidth = slider.getProperties().getWithDefault(String("origWidth"), -99);
+		int parentHeight = slider.getProperties().getWithDefault(String("origHeight"), -99);
+		int parentX = slider.getProperties().getWithDefault(String("origX"), -99);
+		int parentY = slider.getProperties().getWithDefault(String("origY"), -99);
+		parent->setBounds (parentX, parentY, parentWidth, parentHeight);
 
 		//assigning an empty ID back to the slider
 		String emptyStr = String::empty;
@@ -486,7 +502,7 @@ void CabbageLookAndFeel::drawRotarySlider(Graphics& g, int /*x*/, int /*y*/, int
 	}
 }
 
-
+				
 //=========== Linear Slider Background ===========================================================================
 void CabbageLookAndFeel::drawLinearSliderBackground (Graphics &g, int /*x*/, int /*y*/, int /*width*/, int /*height*/, float sliderPos, 
 																								float /*minSliderPos*/, 
@@ -784,17 +800,27 @@ void CabbageLookAndFeel::drawLinearSliderThumb (Graphics &g, int /*x*/, int /*y*
 
 			//----- If the value box is too wide, then the slider must be resized to accomodate it...
 			if (boxWidth > slider.getWidth()) {
-				float origX = slider.getX();
-				float origY = slider.getY();
-				float origWidth = slider.getWidth();
-				float origHeight = slider.getHeight();
+				//Getting difference in width between value box and slider width
+				int diff = boxWidth - slider.getWidth();
 
-				float diff = boxWidth - origWidth;
-				float newX = origX - diff/2;
-				float newY = origY - diff/2;
+				//We only need to worry about resizing the parent, CabbageSlider(), as it will automatically resize
+				//the actual slider image accordingly.
+				Component* parent;
+				parent = slider.getParentComponent();
+				int parentWidth = parent->getWidth();
+				int parentHeight = parent->getHeight();
+				int parentX = parent->getX();
+				int parentY = parent->getY();
 
-				slider.setBounds (newX, newY, boxWidth, origHeight+diff);
-				slider.toFront (true);
+				//setting to front so that it is not physically underneath another slider
+				parent->toFront(true); 
+
+				//Resetting parent bounds...
+				int newParentX = parentX - (diff/2);
+				int newParentY = parentY - (diff/2);
+				int newParentWidth = parentWidth + diff;
+				int newParentHeight = parentHeight + diff;
+				parent->setBounds (newParentX, newParentY, newParentWidth, newParentHeight);
 
 				//-----Assigning a resize flag to the slider so that it can be checked in the else statement that follows.  
 				//Components have no ID to begin with.  This will prevent the wrong slider being picked up by the else statement 
@@ -807,14 +833,18 @@ void CabbageLookAndFeel::drawLinearSliderThumb (Graphics &g, int /*x*/, int /*y*
 		}
 		//----- Else if mouse is not hovering and slider ID is not empty.  This means that the slider had been
 		//resized previously, and will therefore enter this else statement to get resized again back to its original
-		//dimensions. 
+		//dimensions. We only need to worry about resizing the parent, CabbageSlider(), as it will resize the actual
+		//slider image accordingly.
 		else if ((slider.isMouseOverOrDragging() == false) && (slider.getComponentID().compare ("") != 0)) {
-			//Setting the slider back to its original dimensions using global parameters set in getProperties()...
-			int originalWidth = slider.getProperties().getWithDefault(String("origWidth"), -99);
-			int originalHeight = slider.getProperties().getWithDefault(String("origHeight"), -99);
-			int originalX = slider.getProperties().getWithDefault(String("origX"), -99);
-			int originalY = slider.getProperties().getWithDefault(String("origY"), -99);
-			slider.setBounds (originalX, originalY, originalWidth, originalHeight);	
+			//Getting original parent dimensions....
+			Component* parent;
+			parent = slider.getParentComponent();
+			int parentWidth = slider.getProperties().getWithDefault(String("origWidth"), -99);
+			int parentHeight = slider.getProperties().getWithDefault(String("origHeight"), -99);
+			int parentX = slider.getProperties().getWithDefault(String("origX"), -99);
+			int parentY = slider.getProperties().getWithDefault(String("origY"), -99);
+			//Resizing parent back to original size
+			parent->setBounds (parentX, parentY, parentWidth, parentHeight);
 
 			//assigning an empty ID back to the slider
 			String emptyStr = String::empty;
@@ -827,7 +857,6 @@ void CabbageLookAndFeel::drawLinearSliderThumb (Graphics &g, int /*x*/, int /*y*
 	
 	g.drawImage (newThumb, destX, destY, destWidth, destHeight, 0, 0, destWidth, destHeight, false);
 }
-
 //======= Toggle Buttons ========================================================================
 void CabbageLookAndFeel::drawToggleButton (Graphics &g, ToggleButton &button, bool /*isMouseOverButton*/, bool /*isButtonDown*/)
 {

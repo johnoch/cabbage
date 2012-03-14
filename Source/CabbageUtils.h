@@ -144,7 +144,12 @@ static Colour backgroundSkin()
 	return skin;
 }
 
-
+static bool isNumber(double x) 
+{
+	// This looks like it should always be true, 
+    // but it's false if x is a NaN.
+    return (x == x); 
+}
 //==========================================================================================
 
 void cabbageSleep(unsigned int mseconds)

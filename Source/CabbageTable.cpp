@@ -10,6 +10,7 @@
 */
 CabbageEnvelopeHandleComponent::CabbageEnvelopeHandleComponent()
 {
+	getProperties().set(String("shape"), var(T("linear")));
 }
 
 CabbageEnvelopeHandleComponent::~CabbageEnvelopeHandleComponent()
@@ -147,6 +148,7 @@ void Table::createAmpOverviews (Array<float> csndInputData)
 	}
 	setDataSource (zoom);
 	createEnvPath();
+	makeTableEditable();
 }
 
 //==============================================================
@@ -177,14 +179,13 @@ void Table::setDataSource (int zoomValue)
 			
 			useOverview = true;
 		}
-		//makeTableEditable();
 	}
 	//----- Else we use original table data for painting
 	else {
 		pixelsPerIndx = (zoomValue*origWidth) / (float)tblSize;
 		useOverview = false;
 	}
-
+	
 	repaint();
 }
 
@@ -266,7 +267,7 @@ void Table::paint (Graphics& g)
 			else
 				maxVal = overview.maxY[i];
 			
-			if (IsNumber(maxVal) && IsNumber(minVal)) {
+			if (CabbageUtils::isNumber(maxVal) && CabbageUtils::isNumber(minVal)) {
 				//g.drawLine (x+viewStart, maxVal, x+viewStart, minVal, 1);
 				g.drawVerticalLine (x+viewStart, maxVal, minVal);
 				x+=1;//.0f;
@@ -296,11 +297,11 @@ void Table::paint (Graphics& g)
 		}
 	}
 
-	g.setColour(Colours::lightblue);
-	envPath.scaleToFit(0, 0, getWidth(), getHeight(), false);
-	g.strokePath (envPath, PathStrokeType(2.0f));
+//	g.setColour(Colours::lightblue);
+//	envPath.scaleToFit (0, tableTop, getWidth(), tableHeight, false);
+//	g.strokePath (envPath, PathStrokeType(2.0f));
 	//----- For handles....
-	/*
+	
 	Path path;
 	for(int i = 0; i < handles.size(); i++) {
 		CabbageEnvelopeHandleComponent* handle = handles.getUnchecked(i);
@@ -345,7 +346,7 @@ void Table::paint (Graphics& g)
 		g.setColour(Colours::lightblue);
 		g.strokePath (path, PathStrokeType(2.0f));
 	}
-	*/
+
 }
 
 //====== Mouse Down ==============================================
@@ -404,20 +405,37 @@ void Table::createEnvPath()
 envPath.startNewSubPath(0, ampToYCoordinate(tableData.amps[0]));
 //create a vector path based on the ftable waveform
 //the path will always be tblSize pixel wide. 
-for(int i=0;i<tblSize;i++)
+for(int i=0;i<tblSize;i++){
 		envPath.lineTo(i, ampToYCoordinate(tableData.amps[i]));
+}
+envPath.scaleToFit(0, tableTop, getWidth(), tableHeight, false);
 }
 
 //====== Add handles for editing table ==================================
 void Table::makeTableEditable()
 {
+	
 	handles.clear();
-	float avg;
-	int arrSize = overview.maxY.size();
-	for (int i=0; i<arrSize; i+=arrSize/5) {
-		avg = (overview.minY[i]-overview.maxY[i]) / 2;
-		addHandle (i, (int)(overview.maxY[i]+avg+0.5));
+	double angle, prevAngle;
+	prevAngle = atan2(envPath.getPointAlongPath(2).getY() - envPath.getPointAlongPath(1).getY(), envPath.getPointAlongPath(2).getX() - envPath.getPointAlongPath(1).getX()) * 180 / 3.14;	
+	//add first handle
+	addHandle (envPath.getPointAlongPath(1).getX(), envPath.getPointAlongPath(1).getY());
+
+	for(int i=2; i<envPath.getLength(); i++){
+	angle = atan2(envPath.getPointAlongPath(i).getY() - envPath.getPointAlongPath(i-1).getY(), envPath.getPointAlongPath(i).getX() - envPath.getPointAlongPath(i-1).getX()) * 180 / 3.14;	
+	//String msg;
+	//msg << "i:" << i << " Path(" << envPath.getPointAlongPath(i).getX() << ", " << envPath.getPointAlongPath(i).getY() << ")" << " Direction:" << angle;
+	//Logger::writeToLog(msg);
+
+	//make sure it's not a NaN
+	if(CabbageUtils::isNumber(angle))
+	//this is not right yet as it adds too many handles....
+	//check that the angle has changed by at least 30 degrees, again, needs work
+	if(((int)prevAngle!=(int)angle)&& abs(prevAngle-angle)>30)
+	addHandle (envPath.getPointAlongPath(i).getX(), envPath.getPointAlongPath(i).getY());
+	prevAngle = angle;
 	}
+	addHandle (envPath.getPointAlongPath(envPath.getLength()).getX(), envPath.getPointAlongPath(envPath.getLength()).getY());
 }
 
 //========= Add Handle ===========================================

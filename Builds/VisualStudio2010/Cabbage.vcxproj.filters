@@ -69,6 +69,9 @@
     <ClCompile Include="..\..\Source\BinaryData.cpp">
       <Filter>Cabbage\Source</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Source\CabbageTable.cpp">
+      <Filter>Cabbage\Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\JuceLibraryCode\AppConfig.h">
@@ -120,6 +123,9 @@
       <Filter>Cabbage\Source\Editor</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\BinaryData.h">
+      <Filter>Cabbage\Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\CabbageTable.h">
       <Filter>Cabbage\Source</Filter>
     </ClInclude>
   </ItemGroup>

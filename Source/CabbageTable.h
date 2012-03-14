@@ -2,6 +2,7 @@
 #define __CABBAGETABLE_H_
 
 #include "../JuceLibraryCode/JuceHeader.h"
+#include "CabbageUtils.h"
 
 #define HANDLESIZE 8
 
@@ -93,13 +94,6 @@ private:
 	int origWidth;
 	bool useOverview;
 	float maxZoomForOverview, pixelsPerIndx;
-
-	bool IsNumber(double x) 
-    {
-		// This looks like it should always be true, 
-        // but it's false if x is a NaN.
-        return (x == x); 
-    }
 
 	OwnedArray<CabbageEnvelopeHandleComponent> handles;
 	CabbageEnvelopeHandleComponent* draggingHandle;

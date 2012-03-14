@@ -55,8 +55,8 @@
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
-      <AdditionalIncludeDirectories>C:\MyDocuments\SourceCode\Csound5\csound5\H;C:\MyDocuments\My Dropbox\vstsdk2.4;..\..\JuceLibraryCode;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;_WINDOWS;MSVC;DEBUG;_DEBUG;JUCER_VS2008_78A5006=1;USE_DOUBLE=0;useDouble=0;$(DefineConst);%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\MyDocuments\SourceCode\Csound5\csound5_32\include;C:\MyDocuments\My Dropbox\vstsdk2.4;..\..\JuceLibraryCode;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;MSVC;DEBUG;_DEBUG;JUCER_VS2008_78A5006=1;$(DefineConst);%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <PrecompiledHeader />
@@ -77,7 +77,7 @@
       <ProgramDatabaseFile>.\Debug\CabbagePlugin.pdb</ProgramDatabaseFile>
       <SubSystem>Windows</SubSystem>
       <TargetMachine>MachineX86</TargetMachine>
-      <AdditionalOptions>"C:\MyDocuments\SourceCode\Csound5\csound5\csound32.lib" %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>"C:\MyDocuments\SourceCode\Csound5\csound5_32\bin\csound32.lib" %(AdditionalOptions)</AdditionalOptions>
     </Link>
     <Bscmake>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -133,6 +133,7 @@
     <ClCompile Include="..\..\Source\BinaryData.cpp" />
     <ClCompile Include="..\..\Source\CabbageGUIClass.cpp" />
     <ClCompile Include="..\..\Source\CabbageLookAndFeel.cpp" />
+    <ClCompile Include="..\..\Source\CabbageTable.cpp" />
     <ClCompile Include="..\..\Source\Plugin\CabbagePluginEditor.cpp" />
     <ClCompile Include="..\..\Source\Plugin\CabbagePluginProcessor.cpp" />
   </ItemGroup>
@@ -144,6 +145,7 @@
     <ClInclude Include="..\..\Source\CabbageCustomWidgets.h" />
     <ClInclude Include="..\..\Source\CabbageGUIClass.h" />
     <ClInclude Include="..\..\Source\CabbageLookAndFeel.h" />
+    <ClInclude Include="..\..\Source\CabbageTable.h" />
     <ClInclude Include="..\..\Source\CabbageUtils.h" />
     <ClInclude Include="..\..\Source\Plugin\CabbagePluginEditor.h" />
     <ClInclude Include="..\..\Source\Plugin\CabbagePluginProcessor.h" />

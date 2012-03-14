@@ -1,1 +1,5 @@
-﻿  juce_VST_Wrapper.cpp
+﻿  CabbagePluginEditor.cpp
+c:\mydocuments\cabbagelatestsvn\source\cabbagecustomwidgets.h(1254): warning C4701: potentially uninitialized local variable 'startText' used
+  LINK : .\Debug\CabbagePlugin.dll not found or not built by the last incremental link; performing full link
+     Creating library .\Debug\CabbagePlugin.lib and object .\Debug\CabbagePlugin.exp
+  CabbagePlugin.vcxproj -> C:\MyDocuments\CabbageLatestSVN\Builds\VisualStudio2010\.\Debug\CabbagePlugin.dll
