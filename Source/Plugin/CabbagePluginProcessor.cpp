@@ -96,7 +96,7 @@ guiOnOff(false)
 //Cabbage plugins always try to load a csd file with the same name as the plugin library.
 //Therefore we need to find the name of the library and append a '.csd' to it. 
 	
-#ifdef CabbageOSX
+#ifdef MACOSX
 String osxCSD = File::getSpecialLocation(File::currentApplicationFile).getFullPathName()+T("/Contents/")+File::getSpecialLocation(File::currentApplicationFile).getFileName();
 File thisFile(osxCSD); 
 Logger::writeToLog("MACOSX defined OK");

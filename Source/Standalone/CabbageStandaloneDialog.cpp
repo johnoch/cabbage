@@ -669,14 +669,27 @@ void StandaloneFilterWindow::buttonClicked (Button*)
 //==============================================================================
 void StandaloneFilterWindow::openFile()
 {
+#ifdef MACOSX
+	FileChooser openFC(T("Open a Cabbage .csd file..."), File::nonexistent, T("*.csd;*.vst"));
+	if(openFC.browseForFileToOpen()){
+		csdFile = openFC.getResult();
+		if(csdFile.getFileExtension()==(".vst")){
+			String csd = csdFile.getFullPathName();
+			csd << "/Contents/" << csdFile.getFileNameWithoutExtension() << ".csd";
+			csdFile = File(csd);
+		}
+		resetFilter();
+		cabbageCsoundEditor->setCsoundFile(csdFile);
+	}	
+	
+#else
 	FileChooser openFC(T("Open a Cabbage .csd file..."), File::nonexistent, T("*.csd"));
-
 	if(openFC.browseForFileToOpen()){
 		csdFile = openFC.getResult();
 		resetFilter();
 		cabbageCsoundEditor->setCsoundFile(csdFile);
 	}
-
+#endif
 }
 
 void StandaloneFilterWindow::saveFile()
@@ -700,10 +713,10 @@ FileChooser saveFC(T("Save Cabbage file as..."), File::nonexistent, T("*.csd"));
 // Export plugin method
 //==============================================================================
 int StandaloneFilterWindow::exportPlugin(String type){
-File thisFile(File::getSpecialLocation(File::currentApplicationFile));
+	File thisFile(File::getSpecialLocation(File::currentApplicationFile));
 #ifdef LINUX
-FileChooser saveFC(T("Save as..."), File::nonexistent, T(""));
-String VST;
+	FileChooser saveFC(T("Save as..."), File::nonexistent, T(""));
+	String VST;
 	if (saveFC.browseForFileToSave(true)){
 		if(type.contains("VSTi"))
 			VST = thisFile.getParentDirectory().getFullPathName() + T("/CabbagePluginSynth.so");
@@ -711,21 +724,21 @@ String VST;
 			VST = thisFile.getParentDirectory().getFullPathName() + T("CabbagePluginEffect.so");
 		else if(type.contains(T("AU"))){
 			showMessage("This feature only works on computers running OSX");
-			}
-	showMessage(VST);
-	File VSTData(VST);
-	if(VSTData.exists())showMessage("lib exists");
-	else{
-	File dll(saveFC.getResult().withFileExtension(".so").getFullPathName());
-	showMessage(dll.getFullPathName());
-	if(VSTData.copyFileTo(dll))	showMessage("moved");
-	File loc_csdFile(saveFC.getResult().withFileExtension(".csd").getFullPathName());
-	loc_csdFile.replaceWithText(csdFile.loadFileAsString());
-	}
+		}
+		showMessage(VST);
+		File VSTData(VST);
+		if(VSTData.exists())showMessage("lib exists");
+		else{
+			File dll(saveFC.getResult().withFileExtension(".so").getFullPathName());
+			showMessage(dll.getFullPathName());
+			if(VSTData.copyFileTo(dll))	showMessage("moved");
+			File loc_csdFile(saveFC.getResult().withFileExtension(".csd").getFullPathName());
+			loc_csdFile.replaceWithText(csdFile.loadFileAsString());
+		}
 	}
 #elif WIN32
-FileChooser saveFC(T("Save plugin as..."), File::nonexistent, T(""));
-String VST;
+	FileChooser saveFC(T("Save plugin as..."), File::nonexistent, T(""));
+	String VST;
 	if (saveFC.browseForFileToSave(true)){
 		if(type.contains("VSTi"))
 			VST = thisFile.getParentDirectory().getFullPathName() + T("\\CabbagePluginSynth.dat");
@@ -733,36 +746,39 @@ String VST;
 			VST = thisFile.getParentDirectory().getFullPathName() + T("\\CabbagePluginEffect.dat");
 		else if(type.contains(T("AU"))){
 			showMessage("This feature only works on computers running OSX");
-			}
-	//showMessage(VST);
-	File VSTData(VST);
-	if(!VSTData.exists())showMessage("problem with plugin lib");
-	else{
-	File dll(saveFC.getResult().withFileExtension(".dll").getFullPathName());
-	//showMessage(dll.getFullPathName());
-	if(!VSTData.copyFileTo(dll))	showMessage("problem moving plugin lib, make sure it's not currently open in your plugin host!");
-
-
-	
-	File loc_csdFile(saveFC.getResult().withFileExtension(".csd").getFullPathName());
-	loc_csdFile.replaceWithText(csdFile.loadFileAsString());
-	setUniquePluginID(dll, loc_csdFile);
-	
+		}
+		//showMessage(VST);
+		File VSTData(VST);
+		if(!VSTData.exists())showMessage("problem with plugin lib");
+		else{
+			File dll(saveFC.getResult().withFileExtension(".dll").getFullPathName());
+			//showMessage(dll.getFullPathName());
+			if(!VSTData.copyFileTo(dll))	showMessage("problem moving plugin lib, make sure it's not currently open in your plugin host!");
+			
+			
+			
+			File loc_csdFile(saveFC.getResult().withFileExtension(".csd").getFullPathName());
+			loc_csdFile.replaceWithText(csdFile.loadFileAsString());
+			setUniquePluginID(dll, loc_csdFile);
+			
 #ifdef Cabbage_Named_Pipe
-	sendMessageToWinXound("CABBAGE_PLUGIN_FILE_UPDATE", csdFile.getFullPathName()+T("|")+loc_csdFile.getFullPathName());
-	csdFile = loc_csdFile;	
-	cabbageCsoundEditor->setName(csdFile.getFullPathName());
-	sendMessageToWinXound("CABBAGE_SHOW_MESSAGE|Info", "WinXound has been updated\nyour .csd file");
+			sendMessageToWinXound("CABBAGE_PLUGIN_FILE_UPDATE", csdFile.getFullPathName()+T("|")+loc_csdFile.getFullPathName());
+			csdFile = loc_csdFile;	
+			cabbageCsoundEditor->setName(csdFile.getFullPathName());
+			sendMessageToWinXound("CABBAGE_SHOW_MESSAGE|Info", "WinXound has been updated\nyour .csd file");
 #endif
-	}
+		}
 	}//end of open save dialog
 #endif
-
+	
 #if MACOSX
 	
-	FileChooser saveFC(T("Save as..."), File::nonexistent, T(""));
+	FileChooser saveFC(T("Save as..."), File::nonexistent, T(".vst"));
 	String VST;
 	if (saveFC.browseForFileToSave(true)){
+		showMessage("name of file is:");
+		showMessage(saveFC.getResult().withFileExtension(".vst").getFullPathName());
+				
 		if(type.contains("VSTi"))
 			VST = thisFile.getParentDirectory().getFullPathName() + T("//CabbagePluginSynth.dat");
 		else if(type.contains(T("VST")))
@@ -816,26 +832,29 @@ String VST;
 		File pl(dll.getFullPathName()+T("/Contents/Info.plist"));
 		showMessage(pl.getFullPathName());
 		pl.replaceWithText(plist);
-		
-		//showMessage(VST+T("/Contents/MacOS/")+saveFC.getResult().getFileNameWithoutExtension());
-		File bin(dll.getFullPathName()+T("/Contents/MacOS/CabbagePlugin"));
-		
-		bin.moveFileTo(dll.getFullPathName()+T("/Contents/MacOS/")+saveFC.getResult().getFileNameWithoutExtension());
+
 		
 		
-		File loc_csdFile(dll.getFullPathName()+T("/Contents/")+saveFC.getResult().getFileNameWithoutExtension()+T(".csd"));
-		
-		loc_csdFile.replaceWithText(csdFile.loadFileAsString());
-		
+		File loc_csdFile(dll.getFullPathName()+T("/Contents/")+saveFC.getResult().getFileNameWithoutExtension()+T(".csd"));		
+		loc_csdFile.replaceWithText(csdFile.loadFileAsString());		
 		showMessage(loc_csdFile.getFullPathName());
 		showMessage(csdFile.loadFileAsString());
+		csdFile = loc_csdFile;		
+		
+		//showMessage(VST+T("/Contents/MacOS/")+saveFC.getResult().getFileNameWithoutExtension());
+		//if plugin already exists there is no point in rewriting the binaries
+		if(!File(saveFC.getResult().withFileExtension(".vst").getFullPathName()+("/Contents/MacOS/")+saveFC.getResult().getFileNameWithoutExtension()).exists()){		
+		File bin(dll.getFullPathName()+T("/Contents/MacOS/CabbagePlugin"));
+		bin.moveFileTo(dll.getFullPathName()+T("/Contents/MacOS/")+saveFC.getResult().getFileNameWithoutExtension());
 		setUniquePluginID(bin, loc_csdFile);
-		csdFile = loc_csdFile;
+		}
+		
+
 	}
 	
 #endif		
 	
-return 0;	
+	return 0;	
 }
 
 //==============================================================================
