@@ -89,6 +89,17 @@ CabbageGUIClass::CabbageGUIClass(String compStr, int ID):
           name.append(String(ID), 1024);
 		  textBox = 0;
 	}
+    else if(compStr.indexOfIgnoreCase("source ")!=-1){
+          top = 10;
+          left = 10;
+          width = 400;
+          height = 240;
+          channel = "";
+          name = "source";
+		  caption = "";
+		  type = name;
+          //name.append(String(ID), 1024);
+	}
 
     else if(compStr.indexOfIgnoreCase("button ")!=-1){
           top = 10;

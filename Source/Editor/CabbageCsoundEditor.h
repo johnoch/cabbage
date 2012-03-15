@@ -45,7 +45,7 @@ class HintDialogWindow : public DialogWindow
 					setAlwaysOnTop(true);
 					this->setSize(250, 200);
 					toggle = new ToggleButton("Click here if you don't wish to see this info again");
-					toggle->setColour(ToggleButton::ColourIds::textColourId, Colours::white);
+					toggle->setColour(ToggleButton::textColourId, Colours::white);
 					toggle->setBounds(10, getHeight()*.6, getWidth(), getHeight()*.2);
 					addAndMakeVisible(toggle);
 				}

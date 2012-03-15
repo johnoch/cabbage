@@ -198,7 +198,12 @@ bool CsoundEditor::perform (const InvocationInfo& info)
 		}
 	case CommandIDs::fileSave:
 		{
+#ifdef Cabbage_Build_Standalone
 			sendActionMessage("fileSaved");
+#else
+			openCsdFile.replaceWithText(csoundDoc.getAllContent());
+			this->getParentComponent()->setVisible(false);
+#endif
 			break;
 		}
 	case CommandIDs::fileSaveAs:

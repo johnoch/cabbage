@@ -22,6 +22,7 @@
 #include "CabbagePluginEditor.h"
 #include  "../CabbageCustomWidgets.h"
 
+
 #ifdef Cabbage_GUI_Editor
 #include "ComponentLayoutEditor.h"
 #include "CabbageMainPanel.h"
@@ -276,7 +277,7 @@ void CabbagePluginAudioProcessorEditor::insertCabbageText(String text)
 			 getFilter()->setCurrentLine(i);
 			 i=csdArray.size();
 		 }
-		 Logger::writeToLog(String(getFilter()->getCurrentLine()));
+		// Logger::writeToLog(String(getFilter()->getCurrentLine()));
 
 	 getFilter()->updateCsoundFile(csdArray.joinIntoString("\n"));
 	 getFilter()->setChangeMessageType("GUI_edit");
@@ -365,6 +366,9 @@ for(int i=0;i<getFilter()->getGUILayoutCtrlsSize();i++){
 		}
 	else if(getFilter()->getGUILayoutCtrls(i).getStringProp("type")==T("vumeter")){
 		InsertVUMeter(getFilter()->getGUILayoutCtrls(i));   
+		}
+	else if(getFilter()->getGUILayoutCtrls(i).getStringProp("type")==T("source")){
+		InsertSourceButton(getFilter()->getGUILayoutCtrls(i));   
 		}
 }
 //add interactive controls
@@ -667,6 +671,61 @@ catch(...){
 }
 
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//	Sourece button. 
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+void CabbagePluginAudioProcessorEditor::InsertSourceButton(CabbageGUIClass cAttr)
+{
+try{
+
+	layoutComps.add(new CabbageButton(cAttr.getStringProp("name"),
+		cAttr.getStringProp("caption"),
+		cAttr.getItems(1-(int)cAttr.getNumProp("value")),
+		cAttr.getStringProp("colour")));	
+	int idx = layoutComps.size()-1;
+
+	float left = cAttr.getNumProp("left");
+	float top = cAttr.getNumProp("top");
+	float width = cAttr.getNumProp("width");
+	float height = cAttr.getNumProp("height");
+
+	//check to see if widgets is anchored
+	//if it is offset it's position accordingly. 
+	int relY=0,relX=0;
+	for(int y=0;y<layoutComps.size();y++){
+	if(cAttr.getStringProp("reltoplant").length()>0){
+	if(layoutComps[y]->getProperties().getWithDefault(String("plant"), -99).toString().equalsIgnoreCase(cAttr.getStringProp("reltoplant")))
+	{
+		width = width*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
+		height = height*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
+		top = top*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
+		left = left*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
+
+		if(layoutComps[y]->getName().containsIgnoreCase("groupbox")||
+			layoutComps[y]->getName().containsIgnoreCase("image"))
+			{			
+			layoutComps[idx]->setBounds(left, top, width, height);
+			//if component is a member of a plant add it directly to the plant
+			layoutComps[y]->addAndMakeVisible(layoutComps[idx]);
+			}
+	}
+	}
+	else{
+	((CabbageButton*)layoutComps[idx])->setBounds(left+relX, top+relY, width, height);
+	componentPanel->addAndMakeVisible(layoutComps[idx]);
+	}
+	}
+	layoutComps[idx]->setName("sourceButton");
+	layoutComps[idx]->getProperties().set(String("plant"), var(cAttr.getStringProp("plant")));
+	((CabbageButton*)layoutComps[idx])->button->addListener(this);
+	((CabbageButton*)layoutComps[idx])->button->setButtonText(cAttr.getItems(0));
+
+}
+catch(...){
+    Logger::writeToLog(T("Syntax error: 'source button..."));
+    }
+}
+
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //	VU widget. 
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 void CabbagePluginAudioProcessorEditor::InsertVUMeter(CabbageGUIClass cAttr)
@@ -894,7 +953,7 @@ void CabbagePluginAudioProcessorEditor::sliderValueChanged (Slider* sliderThatWa
 						getFilter()->beginParameterChangeGesture(i);
                         getFilter()->setParameterNotifyingHost(i, (float)((sliderThatWasMoved->getValue()-min)/range));
 						getFilter()->endParameterChangeGesture(i);
-						Logger::writeToLog(String((float)((sliderThatWasMoved->getValue()-min)/range)));
+						//Logger::writeToLog(String((float)((sliderThatWasMoved->getValue()-min)/range)));
 #else
 						//Logger::writeToLog("Current Slider Value"+String(sliderThatWasMoved->getValue()));
 						getFilter()->setParameterNotifyingHost(i, (float)sliderThatWasMoved->getValue());
@@ -1069,6 +1128,10 @@ if(!getFilter()->isGuiEnabled()){
 					button->setButtonText(getFilter()->getGUICtrls(i).getItems(1));
 
 			}
+			}
+			//source button to show editor when in plugin mode
+			else if(button->getName()=="source"){
+				getFilter()->createAndShowSourceEditor(lookAndFeel);
 			}
 		}
 	}
@@ -1471,7 +1534,7 @@ for(int i=0;i<(int)getFilter()->getGUICtrlsSize();i++){
 	if(controls[i]){
 		//if(getFilter()->getGUICtrls(i).getNumProp("value")!= getFilter()->getParameter(i))
 		float val = getFilter()->getGUICtrls(i).getNumProp("sliderRange")*getFilter()->getParameter(i);
-			((CabbageSlider*)controls[i])->slider->setValue(val, false);
+		((CabbageSlider*)controls[i])->slider->setValue(val, false);
 	}
 	}
 	

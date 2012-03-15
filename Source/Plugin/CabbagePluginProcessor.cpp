@@ -103,7 +103,7 @@ Logger::writeToLog("MACOSX defined OK");
 #else 
 File thisFile(File::getSpecialLocation(File::currentApplicationFile)); 
 #endif
-File csdFile = thisFile.withFileExtension(T(".csd")).getFullPathName();
+csdFile = thisFile.withFileExtension(T(".csd")).getFullPathName();
 
 
 	
@@ -119,7 +119,7 @@ csound = new Csound();
 csound->PreCompile();
 csound->SetHostData(this);
 //for host midi to get sent to Csound, don't need this for standalone
-//but might use it in the future foir midi mapping to controls
+//but might use it in the future for midi mapping to controls
 csound->SetExternalMidiInOpenCallback(OpenMidiInputDevice);
 csound->SetExternalMidiReadCallback(ReadMidiData); 
 csound->SetExternalMidiOutOpenCallback(OpenMidiOutputDevice);
@@ -243,7 +243,7 @@ void CabbagePluginAudioProcessor::createGUI(String source)
 						if(!multiComment)
 						//populate the guiLayoutCtrls vector with non-interactive widgets
 						//the host widgets aren't GUI based but they can be added to this
-						//vector too. 
+						//vector too, as can the editor button. 
 						if(tokes.getReference(0).equalsIgnoreCase(T("form"))
 								||tokes.getReference(0).equalsIgnoreCase(T("image"))
 								||tokes.getReference(0).equalsIgnoreCase(T("keyboard"))
@@ -254,6 +254,7 @@ void CabbagePluginAudioProcessor::createGUI(String source)
 								||tokes.getReference(0).equalsIgnoreCase(T("hostplaying"))
 								||tokes.getReference(0).equalsIgnoreCase(T("hostppqpos"))
 								||tokes.getReference(0).equalsIgnoreCase(T("vumeter"))
+								||tokes.getReference(0).equalsIgnoreCase(T("source"))
 								||tokes.getReference(0).equalsIgnoreCase(T("hostrecording"))
 								||tokes.getReference(0).equalsIgnoreCase(T("groupbox"))){
 							CabbageGUIClass cAttr(csdLine.trimEnd(), guiID);
@@ -342,6 +343,15 @@ void CabbagePluginAudioProcessor::createGUI(String source)
 #endif
 }
 
+//===========================================================
+// SHOW SOURCE EDITOR
+//===========================================================
+void CabbagePluginAudioProcessor::createAndShowSourceEditor(LookAndFeel* looky)
+{
+cabbageCsoundEditor = new CabbageEditorWindow(looky);
+cabbageCsoundEditor->setCsoundFile(csdFile);
+cabbageCsoundEditor->setVisible(true);
+}
 
 //===========================================================
 // CALLBACKS FOR STANDALONE
@@ -417,13 +427,12 @@ if(index<(int)guiCtrls.size()){//make sure index isn't out of range
 		//Logger::writeToLog(("channel:")+test);
 		csoundGetChannelPtr(getCsoundStruct(), &val, guiCtrls.getReference(index).getStringProp("channel").toUTF8(),
                                 CSOUND_CONTROL_CHANNEL | CSOUND_OUTPUT_CHANNEL);
-		//Logger::writeToLog(String("getting param from GUI:")+String(*val));
-
+		//Logger::writeToLog(String("getParam: *val:")+String(*val));
 #ifdef Cabbage_Build_Standalone
 	        return *val;
 #else
+		//Logger::writeToLog(String(*val/range));
 		return *val/range;
-//		return getGUICtrls(index).getNumProp("value");
 #endif
 }
 else return 0.f; 
@@ -435,6 +444,7 @@ void CabbagePluginAudioProcessor::setParameter (int index, float newValue)
 /* this will get called by the plugin GUI sliders or 
 by the host via automation. If it's called by the host it will send 
 message back to the GUI to notify it to update controls */
+
 float range, min, max;
 if(index<(int)guiCtrls.size())//make sure index isn't out of range
    {
@@ -445,7 +455,7 @@ if(index<(int)guiCtrls.size())//make sure index isn't out of range
 		range = getGUICtrls(index).getNumProp("sliderRange");
 		min = getGUICtrls(index).getNumProp("min");
 		guiCtrls.getReference(index).setNumProp("value", (newValue*range)+min);
-		//Logger::writeToLog(T("setParamters():")+String((newValue*range)+min));
+		//Logger::writeToLog(guiCtrls.getReference(index).getStringProp("channel")+T(":")+String((newValue*range)+min));
 		csound->SetChannel(guiCtrls.getReference(index).getStringProp("channel").toUTF8(),  (newValue*range)+min);
 #else 
         guiCtrls.getReference(index).setNumProp("value", newValue);

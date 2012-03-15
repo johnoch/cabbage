@@ -56,7 +56,7 @@
       <Optimization>Disabled</Optimization>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <AdditionalIncludeDirectories>C:\MyDocuments\SourceCode\Csound5\csound5_32\include;C:\MyDocuments\My Dropbox\vstsdk2.4;..\..\JuceLibraryCode;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;_WINDOWS;MSVC;DEBUG;_DEBUG;JUCER_VS2008_78A5006=1;$(DefineConst);%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;MSVC;DEBUG;_DEBUG;JUCER_VS2008_78A5006=1;USE_DOUBLE;$(DefineConst);%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <PrecompiledHeader />
@@ -134,6 +134,9 @@
     <ClCompile Include="..\..\Source\CabbageGUIClass.cpp" />
     <ClCompile Include="..\..\Source\CabbageLookAndFeel.cpp" />
     <ClCompile Include="..\..\Source\CabbageTable.cpp" />
+    <ClCompile Include="..\..\Source\Editor\CabbageCsoundEditor.cpp" />
+    <ClCompile Include="..\..\Source\Editor\CabbageEditorCommandManager.cpp" />
+    <ClCompile Include="..\..\Source\Editor\CabbageEditorWindow.cpp" />
     <ClCompile Include="..\..\Source\Plugin\CabbagePluginEditor.cpp" />
     <ClCompile Include="..\..\Source\Plugin\CabbagePluginProcessor.cpp" />
   </ItemGroup>
@@ -147,6 +150,9 @@
     <ClInclude Include="..\..\Source\CabbageLookAndFeel.h" />
     <ClInclude Include="..\..\Source\CabbageTable.h" />
     <ClInclude Include="..\..\Source\CabbageUtils.h" />
+    <ClInclude Include="..\..\Source\Editor\CabbageCsoundEditor.h" />
+    <ClInclude Include="..\..\Source\Editor\CabbageEditorCommandManager.h" />
+    <ClInclude Include="..\..\Source\Editor\CabbageEditorWindow.h" />
     <ClInclude Include="..\..\Source\Plugin\CabbagePluginEditor.h" />
     <ClInclude Include="..\..\Source\Plugin\CabbagePluginProcessor.h" />
   </ItemGroup>

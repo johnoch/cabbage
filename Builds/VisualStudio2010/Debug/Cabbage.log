@@ -1,6 +1,11 @@
-﻿  CabbageTable.cpp
-c:\mydocuments\cabbagelatestsvn\source\cabbagetable.cpp(242): warning C4701: potentially uninitialized local variable 'viewStart' used
-c:\mydocuments\cabbagelatestsvn\source\cabbagetable.cpp(251): warning C4701: potentially uninitialized local variable 'viewWidth' used
+﻿  CabbagePluginProcessor.cpp
+c:\mydocuments\cabbagelatestsvn\source\plugin\cabbagepluginprocessor.cpp(365): warning C4996: 'vsnprintf': This function or variable may be unsafe. Consider using vsnprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+          c:\program files\microsoft visual studio 10.0\vc\include\stdio.h(354) : see declaration of 'vsnprintf'
+c:\mydocuments\cabbagelatestsvn\source\plugin\cabbagepluginprocessor.cpp(425): warning C4189: 'range' : local variable is initialized but not referenced
+c:\mydocuments\cabbagelatestsvn\source\plugin\cabbagepluginprocessor.cpp(448): warning C4101: 'min' : unreferenced local variable
+c:\mydocuments\cabbagelatestsvn\source\plugin\cabbagepluginprocessor.cpp(448): warning C4101: 'range' : unreferenced local variable
+c:\mydocuments\cabbagelatestsvn\source\plugin\cabbagepluginprocessor.cpp(448): warning C4101: 'max' : unreferenced local variable
+c:\mydocuments\cabbagelatestsvn\source\plugin\cabbagepluginprocessor.cpp(720): warning C4715: 'CabbagePluginAudioProcessor::ReadMidiData' : not all control paths return a value
   LINK : .\Debug\Cabbage.exe not found or not built by the last incremental link; performing full link
      Creating library .\Debug\Cabbage.lib and object .\Debug\Cabbage.exp
   Cabbage.vcxproj -> C:\MyDocuments\CabbageLatestSVN\Builds\VisualStudio2010\.\Debug\Cabbage.exe

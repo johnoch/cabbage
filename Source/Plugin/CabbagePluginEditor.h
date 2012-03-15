@@ -25,7 +25,7 @@
 #include "../../JuceLibraryCode/JucePluginCharacteristics.h"
 #include "CabbagePluginProcessor.h"
 #include "../CabbageLookAndFeel.h"
-#include "../BinaryData.h"
+
 
 class CabbageMainPanel;
 class ComponentLayoutEditor;
@@ -59,6 +59,7 @@ private:
 	void InsertSlider(CabbageGUIClass cAttr); 
     void sliderValueChanged (Slider*);
 	void InsertButton(CabbageGUIClass cAttr);
+	void InsertSourceButton(CabbageGUIClass cAttr);
 	void InsertVUMeter(CabbageGUIClass cAttr);
 	void InsertCheckBox(CabbageGUIClass cAttr);
 	void InsertCsoundOutput(CabbageGUIClass cAttr);
@@ -70,6 +71,7 @@ private:
 	void buttonClicked (Button*);
 	void timerCallback();
 	void mouseDown(const MouseEvent &e);
+
 	void mouseUp(const MouseEvent &e);
 	bool LOCKED;
 	void insertCabbageText(String text);

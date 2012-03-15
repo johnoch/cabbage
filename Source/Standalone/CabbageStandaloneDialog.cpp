@@ -19,7 +19,7 @@
 
 #include "CabbageStandaloneDialog.h"
 #include "../../JuceLibraryCode/juce_PluginHeaders.h"
-#include "../Plugin/CabbagePluginProcessor.h"
+
 
 #define MAXBYTES 16777216
 

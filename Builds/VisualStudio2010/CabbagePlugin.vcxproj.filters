@@ -13,6 +13,9 @@
     <Filter Include="Juce VST Wrapper">
       <UniqueIdentifier>{E7C93B65-34E0-8EC9-DCEB-74C257AD64C4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="CabbagePlugin\Editor">
+      <UniqueIdentifier>{33f1b636-5e45-4b47-bb9d-9e5d61238fbd}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\JuceLibraryCode\JuceLibraryCode1.cpp">
@@ -48,6 +51,15 @@
     <ClCompile Include="..\..\Source\CabbageTable.cpp">
       <Filter>CabbagePlugin\Source</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Source\Editor\CabbageCsoundEditor.cpp">
+      <Filter>CabbagePlugin\Editor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Editor\CabbageEditorWindow.cpp">
+      <Filter>CabbagePlugin\Editor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Editor\CabbageEditorCommandManager.cpp">
+      <Filter>CabbagePlugin\Editor</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\JuceLibraryCode\AppConfig.h">
@@ -82,6 +94,15 @@
     </ClInclude>
     <ClInclude Include="..\..\Source\CabbageTable.h">
       <Filter>CabbagePlugin\Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Editor\CabbageCsoundEditor.h">
+      <Filter>CabbagePlugin\Editor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Editor\CabbageEditorWindow.h">
+      <Filter>CabbagePlugin\Editor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Editor\CabbageEditorCommandManager.h">
+      <Filter>CabbagePlugin\Editor</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

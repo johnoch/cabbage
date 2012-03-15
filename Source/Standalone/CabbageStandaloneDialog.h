@@ -25,9 +25,10 @@ using namespace std;
 #include "../Editor/CabbageEditorWindow.h"
 #include "../CabbageUtils.h"
 #include "../CabbageLookAndFeel.h"
+#include "../Plugin/CabbagePluginProcessor.h"
 
 extern ApplicationProperties* appProperties;
-class CabbagePluginAudioProcessor;
+
 
 //==============================================================================
 // This is the main host window. It gets instatiated in StandaloneFilterApp.cpp

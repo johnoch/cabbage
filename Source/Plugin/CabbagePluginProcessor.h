@@ -24,10 +24,16 @@
 #include "../../JuceLibraryCode/JucePluginCharacteristics.h"
 #include "../CabbageUtils.h"
 #include "../CabbageGUIClass.h"
+#include "../Editor/CabbageEditorWindow.h"
+
 
 #ifndef Cabbage_No_Csound
 #include "csound.hpp"
 #endif
+
+//#ifndef Cabbage_Build_Standalone
+//#include "../Editor/CabbageEditorWindow.h"
+//#endif
 
 //==============================================================================
 // CabbagePluginAudioProcessor definition
@@ -75,9 +81,12 @@ class CabbagePluginAudioProcessor  : public AudioProcessor,
 	String plantFlag;
 	String debugMessage;
 	StringArray debugMessageArray;
+	
+
 
 public:
     //==============================================================================
+ScopedPointer<CabbageEditorWindow> cabbageCsoundEditor;
 #ifdef Cabbage_Build_Standalone
     CabbagePluginAudioProcessor(String inputfile, bool guiOnOff);
 #else
@@ -114,6 +123,10 @@ public:
     bool acceptsMidi() const;
     bool producesMidi() const;
 
+	void createAndShowSourceEditor(LookAndFeel* looky);
+	CabbageEditorWindow* getCsoundEditor(){
+		return cabbageCsoundEditor;
+	}
     //==============================================================================
     int getNumPrograms();
     int getCurrentProgram();
