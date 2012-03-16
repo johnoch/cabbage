@@ -65,8 +65,9 @@ if(csCompileResult==0){
 	csound->PerformKsmps();
 	csound->SetScoreOffsetSeconds(0);
 	csound->RewindScore();
-	CSspout = nullptr; //csound->GetSpout();
-	CSspin  = nullptr;//csound->GetSpin();
+	if(csound->GetSpout()==nullptr)showMessage("bummer");
+	CSspout = csound->GetSpout();
+	CSspin  = csound->GetSpin();
 	numCsoundChannels = csoundListChannels(csound->GetCsound(), &csoundChanList);
 	csndIndex = csound->GetKsmps();
 	cs_scale = csound->Get0dBFS();
@@ -609,7 +610,7 @@ try{
 if(csCompileResult==0){
 keyboardState.processNextMidiBuffer (midiMessages, 0, buffer.getNumSamples(), true);
 midiBuffer = midiMessages;
-//ccBuffer = midiMessages;
+ccBuffer = midiMessages;
 
                for(int i=0;i<buffer.getNumSamples();i++, csndIndex++)
 				{

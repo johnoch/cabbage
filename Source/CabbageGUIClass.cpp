@@ -495,7 +495,10 @@ int CabbageGUIClass::parse(String str)
 				else{
 				min = strTokens[0].trim().getDoubleValue();// getFloatValue();  
 				max = strTokens[1].trim().getDoubleValue();//.getFloatValue();  
+				if(strTokens.size()>2)
 				value = strTokens[2].trim().getDoubleValue();//.getFloatValue(); 
+				else value = 0;
+
 				if(strTokens.size()>3)
 				sliderSkew = strTokens[3].trim().getDoubleValue();//.getFloatValue(); 
 				if(strTokens.size()>4)

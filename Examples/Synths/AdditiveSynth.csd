@@ -1,9 +1,9 @@
 <Cabbage>
 form caption("Cabbage Simple Synth") size(580, 200)
 groupbox text("Simple Additive Synth"), pos(0, 0), size(200, 100)
-rslider bounds(5, 30, 50, 50), channel("rise"), size(300, 50), colour("white"), range(0, 1, 0.1), text("Rise")
-rslider bounds(65, 30, 50, 50), channel("decay"), colour("white"), text("Decay"), range(0, 3, 1)
-rslider bounds(125, 30, 50, 50), channel("deviation"), colour("white"), text("Dev.."), range(0, 3, 1) 
+rslider bounds(5, 30, 60, 60), channel("rise"), size(300, 50), colour("white"), range(0, 1, 0.1), text("Rise")
+rslider bounds(65, 30, 60, 60), channel("decay"), colour("white"), text("Decay"), range(0, 3, 1)
+rslider bounds(125, 30, 60, 60), channel("deviation"), colour("white"), text("Dev.."), range(0, 3, 1) 
 combobox bounds(0, 105, 200, 20), channel("table"), value(1), text("Wave Table 1", "Wave Table 2", "Wave Table 3", "Wave Table 4", "Wave Table 5", "Wave Table 6")
 keyboard bounds(0, 130, 550, 50)
 csoundoutput bounds(210, 00, 340, 145), text("Csound Output")

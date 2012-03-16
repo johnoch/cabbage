@@ -279,10 +279,11 @@ CabbageComboBox(String name, String caption, String text, String colour)
 	
 	groupbox = new GroupComponent(String("groupbox_")+name);
 	combo = new ComboBox(name);
-	addAndMakeVisible(combo);
+	
 	addAndMakeVisible(groupbox);
-
+	addAndMakeVisible(combo);
 	groupbox->setVisible(false);
+
 	//outline colour IDE
 	groupbox->setColour(0x1005400,
 		Colours::findColourForName(colour, Colours::black));
@@ -292,9 +293,9 @@ CabbageComboBox(String name, String caption, String text, String colour)
 	
 	if(caption.length()>0){
 		offX=10;
-		offY=15;
+		offY=35;
 		offWidth=-20;
-		offHeight=-25;
+		offHeight=-45;
 		groupbox->setVisible(true);
 		groupbox->setText(caption);
 	}
