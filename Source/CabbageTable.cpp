@@ -524,9 +524,7 @@ void CabbageTableManager::mouseDown (const MouseEvent& e)
 */
 CabbageTableViewer::CabbageTableViewer()
 {
-	this->setScrollBarsShown (false, true); //only showing the h scrollbar
-	
-
+	this->setScrollBarsShown (true, true); //only showing the h scrollbar
 	//tableManager = new CabbageTableManager();
 	//view->setInterceptsMouseClicks (true, false);
 	

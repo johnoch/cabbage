@@ -65,8 +65,8 @@ if(csCompileResult==0){
 	csound->PerformKsmps();
 	csound->SetScoreOffsetSeconds(0);
 	csound->RewindScore();
-	CSspout = csound->GetSpout();
-	CSspin  = csound->GetSpin();
+	CSspout = nullptr; //csound->GetSpout();
+	CSspin  = nullptr;//csound->GetSpin();
 	numCsoundChannels = csoundListChannels(csound->GetCsound(), &csoundChanList);
 	csndIndex = csound->GetKsmps();
 	cs_scale = csound->Get0dBFS();
@@ -348,8 +348,11 @@ void CabbagePluginAudioProcessor::createGUI(String source)
 //===========================================================
 void CabbagePluginAudioProcessor::createAndShowSourceEditor(LookAndFeel* looky)
 {
+if(!cabbageCsoundEditor){
 cabbageCsoundEditor = new CabbageEditorWindow(looky);
 cabbageCsoundEditor->setCsoundFile(csdFile);
+cabbageCsoundEditor->setCsoundOutputText(csoundOutput);
+}
 cabbageCsoundEditor->setVisible(true);
 }
 
@@ -367,6 +370,9 @@ try{
   ud->debugMessage += String(msg); //We have to append the incoming msg
   ud->csoundOutput += ud->debugMessage;
   ud->debugMessageArray.add(ud->debugMessage);
+ // if(ud->cabbageCsoundEditor)
+	//  if(ud->cabbageCsoundEditor->isShowing())
+		//ud->cabbageCsoundEditor->setCsoundOutputText(ud->csoundOutput);
 #ifdef Cabbage_Named_Pipe
   ud->sendChangeMessage();
 // MOD - End

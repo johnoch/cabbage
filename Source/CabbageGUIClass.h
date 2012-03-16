@@ -36,9 +36,9 @@ using namespace std;
 
 class CabbageGUIClass : public CabbageUtils
 {
-        float width, height, top, left, min, max, tabpage, minX, minY, maxX, maxY, comboRange,
+        double width, height, top, left, min, max, tabpage, minX, minY, maxX, maxY, comboRange,
 		noOfMenus, onoff, midiChan, midiCtrl, sliderRange, xypadRangeY, xypadRangeX,
-		line, anchor, linkTo, scaleX, scaleY, value, valueX, valueY, maxItems, sliderIncr;
+		line, anchor, linkTo, scaleX, scaleY, value, valueX, valueY, maxItems, sliderIncr, sliderSkew;
         StringArray items;
         StringArray onoffcaptions;
 		StringArray key;
@@ -54,8 +54,8 @@ public:
 	CabbageGUIClass(String str, int ID);
     ~CabbageGUIClass();
 	int parse(String str);
-	float getNumProp(String prop);
-	float getNumProp(String prop, int index);
+	double getNumProp(String prop);
+	double getNumProp(String prop, int index);
 	void setNumProp(String prop, float val);
 	void setStringProp(String prop, String val);
 	String getStringProp(String prop);

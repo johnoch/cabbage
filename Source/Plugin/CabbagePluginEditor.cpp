@@ -913,7 +913,9 @@ try{
         else if(cAttr.getStringProp("kind").equalsIgnoreCase("horizontal"))
         ((CabbageSlider*)controls[idx])->setBounds(left+relX, top+relY, width, height);
 
-        ((CabbageSlider*)controls[idx])->slider->setRange(cAttr.getNumProp("min"), cAttr.getNumProp("max"), 0.001);//cAttr.getNumProp("sliderIncr")
+
+		((CabbageSlider*)controls[idx])->slider->setSkewFactor(cAttr.getNumProp("sliderSkew"));
+        ((CabbageSlider*)controls[idx])->slider->setRange(cAttr.getNumProp("min"), cAttr.getNumProp("max"), (double)cAttr.getNumProp("sliderIncr"));
         ((CabbageSlider*)controls[idx])->slider->setValue(cAttr.getNumProp("value"));
         ((CabbageSlider*)controls[idx])->slider->addListener(this);
  
@@ -1020,7 +1022,7 @@ try{
 	}
 	((CabbageButton*)controls[idx])->button->addListener(this);
 	if(cAttr.getItemsSize()>0)
-	((CabbageButton*)controls[idx])->button->setButtonText(cAttr.getItems(0));
+	((CabbageButton*)controls[idx])->button->setButtonText(cAttr.getItems(cAttr.getNumProp("value")));
 #ifdef Cabbage_Build_Standalone
 	((CabbageButton*)controls[idx])->button->setWantsKeyboardFocus(true);
 #endif
@@ -1082,6 +1084,11 @@ try{
 	((CabbageCheckbox*)controls[idx])->button->addListener(this);
 	if(cAttr.getItemsSize()>0)
 	((CabbageCheckbox*)controls[idx])->button->setButtonText(cAttr.getItems(0));
+
+	if(cAttr.getNumProp("value")==1)
+		((CabbageCheckbox*)controls[idx])->button->setToggleState(true, true);
+	else
+		((CabbageCheckbox*)controls[idx])->button->setToggleState(false, true);
 
 #ifdef Cabbage_Build_Standalone
 	((CabbageCheckbox*)controls[idx])->button->setWantsKeyboardFocus(true);

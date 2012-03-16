@@ -39,14 +39,15 @@ CabbageGUIClass::CabbageGUIClass(String compStr, int ID):
 	key.clear();
 	min=0;
 	max=1;
-
+	sliderIncr = 0.01;
+	sliderSkew = 1;
 	//changing case to lower to make syntax non case-sensitive
 	if(compStr.indexOfIgnoreCase("hslider ")!=-1){
           top = 10;
           left = 10;
           width = 250;
           height = 50;
-		  sliderIncr = 0.001;
+		  
           channel = "hslider";
           kind = "horizontal";
           min = 0;
@@ -62,7 +63,6 @@ CabbageGUIClass::CabbageGUIClass(String compStr, int ID):
           left = 10;
           width = 60;
           height = 180;
-		  sliderIncr = 0.001;
           channel = "vslider";
           kind = "vertical";
           min = 0;
@@ -78,7 +78,6 @@ CabbageGUIClass::CabbageGUIClass(String compStr, int ID):
           left = 10;
           width = 100;
           height = 100;
-		  sliderIncr = 0.001;
           channel = "rslider";
           kind = "rotary";
           min = 0;
@@ -494,11 +493,13 @@ int CabbageGUIClass::parse(String str)
 					debugMessage =T("WARNING: Not enough paramters passed to range(): usage range(minx, max, value, incr\")");
 				}
 				else{
-				min = strTokens[0].trim().getFloatValue();  
-				max = strTokens[1].trim().getFloatValue();  
-				value = strTokens[2].trim().getFloatValue(); 
+				min = strTokens[0].trim().getDoubleValue();// getFloatValue();  
+				max = strTokens[1].trim().getDoubleValue();//.getFloatValue();  
+				value = strTokens[2].trim().getDoubleValue();//.getFloatValue(); 
 				if(strTokens.size()>3)
-				sliderIncr = strTokens[3].trim().getFloatValue(); 
+				sliderSkew = strTokens[3].trim().getDoubleValue();//.getFloatValue(); 
+				if(strTokens.size()>4)
+				sliderIncr = strTokens[4].trim().getDoubleValue();//.getFloatValue(); 
 
 				sliderRange = max-min;
 				}
@@ -570,7 +571,7 @@ catch(...){
 }
 //=========================================================================
 //retrieve numerical attributes
-float CabbageGUIClass::getNumProp(String prop)
+double CabbageGUIClass::getNumProp(String prop)
 {
 		if(prop.equalsIgnoreCase(T("width")))
 			return width;
@@ -634,10 +635,12 @@ float CabbageGUIClass::getNumProp(String prop)
 			return tableNum;
 		else if(prop.equalsIgnoreCase(T("sliderIncr")))
 			return sliderIncr;
+		else if(prop.equalsIgnoreCase(T("sliderSkew")))
+			return sliderSkew;
 		else return -9999;
 }
 
-float CabbageGUIClass::getNumProp(String prop, int index)
+double CabbageGUIClass::getNumProp(String prop, int index)
 {
 		if(prop.equalsIgnoreCase(T("configArray")))
 			return vuConfig[index];

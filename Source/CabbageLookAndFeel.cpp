@@ -3,9 +3,6 @@
 
 CabbageLookAndFeel::CabbageLookAndFeel()
 {
-setColour(AlertWindow::backgroundColourId, Colours::black);
-setColour(AlertWindow::textColourId, Colours::white);
-setColour(AlertWindow::outlineColourId, Colours::grey);
 }
 
 CabbageLookAndFeel::~CabbageLookAndFeel()
@@ -244,7 +241,7 @@ Image CabbageLookAndFeel::drawToggleImage (float width, float height, bool isTog
 
 	Colour outline = Colour::fromRGBA (0, 0, 0, 150);
 	g.setColour (outline);
-	g.fillRoundedRectangle (width*0.18, height*0.18, width*0.64, height*0.64, width*0.1);
+	g.fillRoundedRectangle (0, height*0.15, width*0.7, height*0.7, width*0.1);
 
 	//----- If "on"
 	if (isToggleOn == true) {
@@ -252,7 +249,7 @@ Image CabbageLookAndFeel::drawToggleImage (float width, float height, bool isTog
 		ColourGradient greenFill = ColourGradient (Colours::white, 0, 0, Colours::lime,
 			width/2, height/2, false);
 		g.setGradientFill (greenFill);
-		g.fillRoundedRectangle (width*0.2, height*0.2, width*0.6, height*0.6, width*0.1);
+		g.fillRoundedRectangle (0, height*0.15, width*0.7, height*0.7, width*0.1);
 	}
 	//----- If "0ff"
 	else {
@@ -260,26 +257,26 @@ Image CabbageLookAndFeel::drawToggleImage (float width, float height, bool isTog
 		for (float i=0.01; i<0.1; i+=0.01) {
 			Colour shadow = Colour::fromRGBA (5, 5, 5, 255/(i*100));
 			g.setColour (shadow);
-			g.fillRoundedRectangle (width * (0.19+i), height * (0.19+i), 
-				width*0.6, height*0.6, width*0.1);
+			g.fillRoundedRectangle (i, height * (0.15+i), 
+				width*0.7, height*0.7, width*0.1);
 		}
 		//----- Filling in the button
 		Colour bg1 = Colour::fromRGBA (45, 45, 48, 255);
 		Colour bg2 = Colour::fromRGBA (15, 15, 18, 255);
 		ColourGradient cg = ColourGradient (bg1, 0, 0, bg2, width*0.5, height*0.5, false);
 		g.setGradientFill (cg);
-		g.fillRoundedRectangle (width*0.2, height*0.2, width*0.6, height*0.6, width*0.1);
+		g.fillRoundedRectangle (0, height*0.15, width*0.7, height*0.7, width*0.1);
 
 		//----- For emphasising the top and left edges to give the illusion that light is shining on them
 		ColourGradient edgeHighlight = ColourGradient (Colours::lightgrey, 0, 0,
-			Colours::transparentWhite, 0, height*0.25, false);
+			Colours::transparentWhite, 0, height*0.2, false);
 		g.setGradientFill (edgeHighlight);
-		g.fillRoundedRectangle (width*0.2, height*0.2, width*0.6, height*0.6, width*0.1);
+		g.fillRoundedRectangle (0, height*0.15, width*0.7, height*0.7, width*0.1);
 
-		ColourGradient edgeHighlight2 = ColourGradient (Colours::lightgrey, 0, 0,
-			Colours::transparentWhite, width*0.25, 0, false);
+		ColourGradient edgeHighlight2 = ColourGradient (Colours::grey, -0.5, 0,
+			Colours::transparentWhite, width*0.03, 0, false);
 		g.setGradientFill (edgeHighlight2);
-		g.fillRoundedRectangle (width*0.2, height*0.2, width*0.6, height*0.6, width*0.1);
+		g.fillRoundedRectangle (0, height*0.15, width*0.7, height*0.7, width*0.1);
 	}
 
 	//----- Returning image
@@ -296,7 +293,8 @@ Image CabbageLookAndFeel::drawTextButtonImage (float width, float height, bool i
 	//----- Outline
 	Colour outline = Colour::fromRGBA (0, 0, 0, 150);
 	g.setColour (outline);
-	g.fillRoundedRectangle (width*0.09, height*0.09, width*0.82, height*0.82, height*0.1);
+	//g.fillRoundedRectangle (width*0.09, height*0.09, width*0.82, height*0.82, height*0.1);
+	g.fillRoundedRectangle (0, 0, width*0.95, height*0.95, height*0.1);
 
 	//----- If "off"
 	if (isButtonDown == false) {
@@ -304,8 +302,8 @@ Image CabbageLookAndFeel::drawTextButtonImage (float width, float height, bool i
 		for (float i=0.01; i<0.05; i+=0.01) {
 			Colour shadow = Colour::fromRGBA (5, 5, 5, 255/(i*100));
 			g.setColour (shadow);
-			g.fillRoundedRectangle (width * (0.1+i), height * (0.1+i), 
-				width*0.8, height*0.8, height*0.1);
+			g.fillRoundedRectangle (i, i, 
+				width*0.95, height*0.95, height*0.1);
 		}
 	}
 
@@ -315,21 +313,33 @@ Image CabbageLookAndFeel::drawTextButtonImage (float width, float height, bool i
 	ColourGradient cg = ColourGradient (bg1, (width*0.2) * -1, (height*0.2) * -1, 
 		bg2, width*0.5, height*0.5, false);
 	g.setGradientFill (cg);
-	g.fillRoundedRectangle (width*0.1, height*0.1, width*0.8, height*0.8, height*0.1);
+	g.fillRoundedRectangle (0, 0, width*0.95, height*0.95, height*0.1);
 
 	//----- If "off".  (This can't be put in the above if statement as it has to be drawn after the filling
 	//in of the button).
 	if (isButtonDown == false) {
 		//----- For emphasising the top and left edges to give the illusion that light is shining on them
-		ColourGradient edgeHighlight = ColourGradient (Colours::lightgrey, 0, (height*0.25) * -1,
-			Colours::transparentWhite, 0, height*0.15, false);
+		ColourGradient edgeHighlight = ColourGradient (Colours::lightgrey, 0, (height*0.30) * -1,
+			Colours::transparentWhite, 0, height*0.1, false);
 		g.setGradientFill (edgeHighlight);
-		g.fillRoundedRectangle (width*0.1, height*0.1, width*0.8, height*0.8, height*0.1);
+		g.fillRoundedRectangle (0, 0, width*0.95, height*0.95, height*0.1);
 
-		ColourGradient edgeHighlight2 = ColourGradient (Colours::lightgrey, (width*0.25) * -1, 0,
-			Colours::transparentWhite, width*0.15, 0, false);
+		ColourGradient edgeHighlight2 = ColourGradient (Colours::lightgrey, (width*0.20) * -1, 0,
+			Colours::transparentWhite, width*0.05, 0, false);
 		g.setGradientFill (edgeHighlight2);
-		g.fillRoundedRectangle (width*0.1, height*0.1, width*0.8, height*0.8, height*0.1);
+		g.fillRoundedRectangle (0, 0, width*0.95, height*0.95, height*0.1);
+	}
+	else {
+		ColourGradient edgeHighlight = ColourGradient (Colours::lightgrey, 0, (height*0.10) * -1,
+			Colours::transparentWhite, 0, height*0.05, false);
+		g.setGradientFill (edgeHighlight);
+		g.fillRoundedRectangle (0, 0, width*0.95, height*0.95, height*0.1);
+
+		ColourGradient edgeHighlight2 = ColourGradient (Colours::lightgrey, (width*0.10) * -1, 0,
+			Colours::transparentWhite, width*0.03, 0, false);
+		g.setGradientFill (edgeHighlight2);
+		g.fillRoundedRectangle (0, 0, width*0.95, height*0.95, height*0.1);
+
 	}
 
 
@@ -857,6 +867,7 @@ void CabbageLookAndFeel::drawLinearSliderThumb (Graphics &g, int /*x*/, int /*y*
 	
 	g.drawImage (newThumb, destX, destY, destWidth, destHeight, 0, 0, destWidth, destHeight, false);
 }
+
 //======= Toggle Buttons ========================================================================
 void CabbageLookAndFeel::drawToggleButton (Graphics &g, ToggleButton &button, bool /*isMouseOverButton*/, bool /*isButtonDown*/)
 {
@@ -923,7 +934,7 @@ void CabbageLookAndFeel::drawButtonText (Graphics &g, TextButton &button, bool i
 	}
 	else {
 		g.setColour (Colours::grey);
-		destX = width*0.12;
+		destX = width*0.11;
 	}
 
 	g.setFont (font);
@@ -1134,6 +1145,7 @@ void CabbageLookAndFeel::drawMenuBarItem(Graphics & g, int width, int height, in
         g.setColour(Colours::white);
         g.drawFittedText(itemText, 0, 0, width, height, Justification::centred, 1);
 }
+//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 

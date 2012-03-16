@@ -182,7 +182,6 @@ void CsoundEditor::getAllCommands (Array <CommandID>& commands)
 
 bool CsoundEditor::perform (const InvocationInfo& info)
 {
-
 	switch (info.commandID)
     {
 	//---------------------------------------------------------------------------------------------

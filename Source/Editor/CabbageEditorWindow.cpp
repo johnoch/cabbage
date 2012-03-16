@@ -38,6 +38,7 @@ void CabbageEditorWindow::actionListenerCallback (const String& message){
 
 //==============================================================================
 void CabbageEditorWindow::setCsoundOutputText(String text){
+	const MessageManagerLock mmLock;
 	String existingText = csoundEditor->output->getText();
 	csoundEditor->output->setText(existingText+text);
 	csoundEditor->output->setCaretPosition(csoundEditor->output->getText().length());
