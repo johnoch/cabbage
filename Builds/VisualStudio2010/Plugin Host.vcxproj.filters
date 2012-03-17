@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Plugin Host">
+      <UniqueIdentifier>{4B7837A6-2B8D-236D-921F-13B4FD617CFA}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Plugin Host\Plugin">
+      <UniqueIdentifier>{C31AFEAF-1FC2-2CBA-7836-08C0A2CF17DD}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Plugin Host\Cabbage">
+      <UniqueIdentifier>{5F124DCC-086F-C650-CA4A-39161F5DC34A}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Juce Library Code">
+      <UniqueIdentifier>{F7048EA6-F4B2-F31B-E402-E05D678A1111}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\Source\CabbagePatcher\FilterGraph.cpp">
+      <Filter>Plugin Host</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\CabbagePatcher\GraphEditorPanel.cpp">
+      <Filter>Plugin Host</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\CabbagePatcher\HostStartup.cpp">
+      <Filter>Plugin Host</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\CabbagePatcher\InternalFilters.cpp">
+      <Filter>Plugin Host</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\CabbagePatcher\MainHostWindow.cpp">
+      <Filter>Plugin Host</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Plugin\CabbagePluginEditor.cpp">
+      <Filter>Plugin Host\Plugin</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Plugin\CabbagePluginProcessor.cpp">
+      <Filter>Plugin Host\Plugin</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\BinaryData.cpp">
+      <Filter>Plugin Host\Cabbage</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\CabbageGUIClass.cpp">
+      <Filter>Plugin Host\Cabbage</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\CabbageLookAndFeel.cpp">
+      <Filter>Plugin Host\Cabbage</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\CabbageTable.cpp">
+      <Filter>Plugin Host\Cabbage</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\JuceLibraryCode\JuceLibraryCode1.cpp">
+      <Filter>Juce Library Code</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\JuceLibraryCode\JuceLibraryCode2.cpp">
+      <Filter>Juce Library Code</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\JuceLibraryCode\JuceLibraryCode3.cpp">
+      <Filter>Juce Library Code</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\JuceLibraryCode\JuceLibraryCode4.cpp">
+      <Filter>Juce Library Code</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\Source\CabbagePatcher\FilterGraph.h">
+      <Filter>Plugin Host</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\CabbagePatcher\GraphEditorPanel.h">
+      <Filter>Plugin Host</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\CabbagePatcher\InternalFilters.h">
+      <Filter>Plugin Host</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\CabbagePatcher\MainHostWindow.h">
+      <Filter>Plugin Host</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Plugin\CabbagePluginEditor.h">
+      <Filter>Plugin Host\Plugin</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Plugin\CabbagePluginProcessor.h">
+      <Filter>Plugin Host\Plugin</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\BinaryData.h">
+      <Filter>Plugin Host\Cabbage</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\CabbageCustomWidgets.h">
+      <Filter>Plugin Host\Cabbage</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\CabbageGUIClass.h">
+      <Filter>Plugin Host\Cabbage</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\CabbageLookAndFeel.h">
+      <Filter>Plugin Host\Cabbage</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\CabbageTable.h">
+      <Filter>Plugin Host\Cabbage</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\CabbageUtils.h">
+      <Filter>Plugin Host\Cabbage</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\JuceLibraryCode\AppConfig.h">
+      <Filter>Juce Library Code</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\JuceLibraryCode\JuceHeader.h">
+      <Filter>Juce Library Code</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

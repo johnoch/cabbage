@@ -41,8 +41,12 @@ CabbageGUIClass::CabbageGUIClass(String compStr, int ID):
 	max=1;
 	sliderIncr = 0.01;
 	sliderSkew = 1;
+
+	StringArray strTokens;
+	strTokens.addTokens(compStr, " ", "\"");
+
 	//changing case to lower to make syntax non case-sensitive
-	if(compStr.indexOfIgnoreCase("hslider ")!=-1){
+	if(strTokens[0].indexOfIgnoreCase("hslider")!=-1){
           top = 10;
           left = 10;
           width = 250;
@@ -58,7 +62,7 @@ CabbageGUIClass::CabbageGUIClass(String compStr, int ID):
           name.append(String(ID), 1024);
 		  textBox = 0;
 	}
-    else if(compStr.indexOfIgnoreCase("vslider ")!=-1){
+    else if(strTokens[0].indexOfIgnoreCase("vslider")!=-1){
           top = 10;
           left = 10;
           width = 60;
@@ -73,7 +77,7 @@ CabbageGUIClass::CabbageGUIClass(String compStr, int ID):
           name.append(String(ID), 1024);
 		  textBox = 0;
 	}
-    else if(compStr.indexOfIgnoreCase("rslider ")!=-1){
+    else if(strTokens[0].indexOfIgnoreCase("rslider")!=-1){
           top = 10;
           left = 10;
           width = 100;
@@ -88,7 +92,7 @@ CabbageGUIClass::CabbageGUIClass(String compStr, int ID):
           name.append(String(ID), 1024);
 		  textBox = 0;
 	}
-    else if(compStr.indexOfIgnoreCase("source ")!=-1){
+    else if(strTokens[0].indexOfIgnoreCase("source")!=-1){
           top = 10;
           left = 10;
           width = 400;
@@ -100,7 +104,7 @@ CabbageGUIClass::CabbageGUIClass(String compStr, int ID):
           //name.append(String(ID), 1024);
 	}
 
-    else if(compStr.indexOfIgnoreCase("button ")!=-1){
+    else if(strTokens[0].indexOfIgnoreCase("button")!=-1){
           top = 10;
           left = 10;
           width = 80;
@@ -115,7 +119,7 @@ CabbageGUIClass::CabbageGUIClass(String compStr, int ID):
 		  type = name;
           name.append(String(ID), 1024);
 	}
-    else if(compStr.indexOfIgnoreCase("checkbox ")!=-1){
+    else if(strTokens[0].indexOfIgnoreCase("checkbox")!=-1){
           top = 10;
           left = 10;
           width = 100;
@@ -131,7 +135,7 @@ CabbageGUIClass::CabbageGUIClass(String compStr, int ID):
 		  type = name;
           name.append(String(ID), 1024);
 	}
-    else if(compStr.indexOfIgnoreCase("combobox ")!=-1){
+    else if(strTokens[0].indexOfIgnoreCase("combobox")!=-1){
 		
           top = 10;
           left = 10;
@@ -147,7 +151,7 @@ CabbageGUIClass::CabbageGUIClass(String compStr, int ID):
 		  min=1;
 		 
 	} 
-    else if(compStr.indexOfIgnoreCase("label ")!=-1){
+    else if(strTokens[0].indexOfIgnoreCase("label")!=-1){
           top = 10;
           left = 10;
           width = 100;
@@ -161,7 +165,7 @@ CabbageGUIClass::CabbageGUIClass(String compStr, int ID):
 		  type = name;
           name.append(String(ID), 1024);
 	}
-    else if(compStr.indexOfIgnoreCase("image ")!=-1){
+    else if(strTokens[0].indexOfIgnoreCase("image")!=-1){
           top = 10;
           left = 10;
           width = 160;
@@ -179,7 +183,7 @@ CabbageGUIClass::CabbageGUIClass(String compStr, int ID):
 		  colour = "white";
           name.append(String(ID), 1024);
 	}
-    else if(compStr.indexOfIgnoreCase("groupbox ")!=-1){
+    else if(strTokens[0].indexOfIgnoreCase("groupbox")!=-1){
           top = 10;
           left = 10;
           width = 80;
@@ -189,7 +193,7 @@ CabbageGUIClass::CabbageGUIClass(String compStr, int ID):
 		  type = name;
           name.append(String(ID), 1024);
 	}
-    else if(compStr.indexOfIgnoreCase("csoundoutput ")!=-1){
+    else if(strTokens[0].indexOfIgnoreCase("csoundoutput")!=-1){
           top = 10;
           left = 10;
           width = 400;
@@ -199,7 +203,7 @@ CabbageGUIClass::CabbageGUIClass(String compStr, int ID):
 		  type = name;
           name.append(String(ID), 1024);
 	}
-    else if(compStr.indexOfIgnoreCase("vumeter ")!=-1){
+    else if(strTokens[0].indexOfIgnoreCase("vumeter")!=-1){
           top = 10;
           left = 10;
           width = 400;
@@ -210,7 +214,7 @@ CabbageGUIClass::CabbageGUIClass(String compStr, int ID):
 		  type = name;
           name.append(String(ID), 1024);
 	}
-    else if(compStr.indexOfIgnoreCase("table ")!=-1){
+    else if(strTokens[0].indexOfIgnoreCase("table")!=-1){
           top = 10;
           left = 10;
           width = 400;
@@ -222,7 +226,7 @@ CabbageGUIClass::CabbageGUIClass(String compStr, int ID):
 		  tableNum = 1;
           name.append(String(ID), 1024);
 	}
-    else if(compStr.indexOfIgnoreCase("xypad ")!=-1){
+    else if(strTokens[0].indexOfIgnoreCase("xypad")!=-1){
           top = 10;
           left = 10;
           width = 200;
@@ -243,7 +247,7 @@ CabbageGUIClass::CabbageGUIClass(String compStr, int ID):
           name.append(String(ID), 1024);
 		  xyChannel = "";
 	}
-    else if(compStr.indexOfIgnoreCase("keyboard ")!=-1){
+    else if(strTokens[0].indexOfIgnoreCase("keyboard")!=-1){
           top = 10;
           left = 10;
           width = 400;
@@ -253,7 +257,7 @@ CabbageGUIClass::CabbageGUIClass(String compStr, int ID):
 		  type = name;
           name.append(String(ID), 1024);
 	}
-    else if(compStr.indexOfIgnoreCase("form ")!=-1){
+    else if(strTokens[0].indexOfIgnoreCase("form")!=-1){
           top = 10;
           left = 10;
           width = 280;
@@ -264,27 +268,27 @@ CabbageGUIClass::CabbageGUIClass(String compStr, int ID):
 		  caption = "";
 	}
 
-    else if(compStr.indexOfIgnoreCase("hostbpm ")!=-1){
+    else if(strTokens[0].indexOfIgnoreCase("hostbpm")!=-1){
           name = "hostbpm";
 		  type = "hostbpm";
 	}
 
-    else if(compStr.indexOfIgnoreCase("hostppqpos ")!=-1){
+    else if(strTokens[0].indexOfIgnoreCase("hostppqpos")!=-1){
           name = "hostppqpos";
 		  type = "hostppqpos";
 	}
 
-    else if(compStr.indexOfIgnoreCase("hostplaying ")!=-1){
+    else if(strTokens[0].indexOfIgnoreCase("hostplaying")!=-1){
           name = "hostplaying";
 		  type = "hostplaying";
 	}
 
-    else if(compStr.indexOfIgnoreCase("hostrecording ")!=-1){
+    else if(strTokens[0].indexOfIgnoreCase("hostrecording")!=-1){
           name = "hostrecording";
 		  type = "hostrecording";
 	}
 
-    else if(compStr.indexOfIgnoreCase("hosttime ")!=-1){
+    else if(strTokens[0].indexOfIgnoreCase("hosttime")!=-1){
           name = "hosttime";
 		  type = "hosttime";
 	}

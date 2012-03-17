@@ -17,13 +17,13 @@ ifeq ($(CONFIG),Debug)
   LIBDIR := build
   OBJDIR := build/intermediate/Debug
   OUTDIR := build
-  CPPFLAGS := $(DEPFLAGS) -D "LINUX=1" -D "DEBUG=1" -D "_DEBUG=1" -D "USE_DOUBLE" -D "JUCER_LINUX_MAKE_7346DA2A=1" -I "/usr/include" -I "/usr/include/freetype2"
+  CPPFLAGS := $(DEPFLAGS) -D "LINUX=1" -D "DEBUG=1" -D "_DEBUG=1" -D "JUCER_LINUX_MAKE_7346DA2A=1" -I "~/SDKs/vstsdk2.4" -I "/usr/include" -I "/usr/include/freetype2"
   CFLAGS += $(CPPFLAGS) $(TARGET_ARCH) -g -ggdb -O0
-  CXXFLAGS += $(CFLAGS) -I "/usr/local/include/csound"
-  LDFLAGS += -L$(BINDIR) -L$(LIBDIR) -L"/usr/X11R6/lib/" -L"/home/rory/SourceCode/juceTip/bin" -lfreetype -lpthread -lrt -lX11 -lGL -lGLU -lXinerama -lasound -lasound -lcsound64 -lm -lsndfile
+  CXXFLAGS += $(CFLAGS) 
+  LDFLAGS += -L$(BINDIR) -L$(LIBDIR) -L"/usr/X11R6/lib/" -L"C:/bin" -lfreetype -lpthread -lrt -lX11 -lGL -lGLU -lXinerama -lasound 
   LDDEPS :=
-  RESFLAGS :=  -D "LINUX=1" -D "DEBUG=1" -D "_DEBUG=1" -D "USE_DOUBLE" -D "JUCER_LINUX_MAKE_7346DA2A=1" -I "/usr/include" -I "/usr/include/freetype2"
-  TARGET := Cabbage
+  RESFLAGS :=  -D "LINUX=1" -D "DEBUG=1" -D "_DEBUG=1" -D "JUCER_LINUX_MAKE_7346DA2A=1" -I "~/SDKs/vstsdk2.4" -I "/usr/include" -I "/usr/include/freetype2"
+  TARGET := Plugin\ Host
   BLDCMD = $(CXX) -o $(OUTDIR)/$(TARGET) $(OBJECTS) $(LDFLAGS) $(RESOURCES) $(TARGET_ARCH)
 endif
 
@@ -32,24 +32,28 @@ ifeq ($(CONFIG),Release)
   LIBDIR := build
   OBJDIR := build/intermediate/Release
   OUTDIR := build
-  CPPFLAGS := $(DEPFLAGS) -D "LINUX=1" -D "NDEBUG=1" -D "USE_DOUBLE" -D "JUCER_LINUX_MAKE_7346DA2A=1" -I "/usr/include" -I "/usr/include/freetype2"
+  CPPFLAGS := $(DEPFLAGS) -D "LINUX=1" -D "NDEBUG=1" -D "JUCER_LINUX_MAKE_7346DA2A=1" -I "~/SDKs/vstsdk2.4" -I "/usr/include" -I "/usr/include/freetype2"
   CFLAGS += $(CPPFLAGS) $(TARGET_ARCH) -Os
-  CXXFLAGS += $(CFLAGS) -I "/usr/local/include/csound"
-  LDFLAGS += -L$(BINDIR) -L$(LIBDIR) -L"/usr/X11R6/lib/" -L"/home/rory/SourceCode/juceTip/bin" -lfreetype -lpthread -lrt -lX11 -lGL -lGLU -lXinerama -lasound -lasound -lcsound64 -lm -lsndfile
+  CXXFLAGS += $(CFLAGS) 
+  LDFLAGS += -L$(BINDIR) -L$(LIBDIR) -L"/usr/X11R6/lib/" -L"C:/bin" -lfreetype -lpthread -lrt -lX11 -lGL -lGLU -lXinerama -lasound 
   LDDEPS :=
-  RESFLAGS :=  -D "LINUX=1" -D "NDEBUG=1" -D "USE_DOUBLE" -D "JUCER_LINUX_MAKE_7346DA2A=1" -I "/usr/include" -I "/usr/include/freetype2"
-  TARGET := Cabbage
+  RESFLAGS :=  -D "LINUX=1" -D "NDEBUG=1" -D "JUCER_LINUX_MAKE_7346DA2A=1" -I "~/SDKs/vstsdk2.4" -I "/usr/include" -I "/usr/include/freetype2"
+  TARGET := Plugin\ Host
   BLDCMD = $(CXX) -o $(OUTDIR)/$(TARGET) $(OBJECTS) $(LDFLAGS) $(RESOURCES) $(TARGET_ARCH)
 endif
 
 OBJECTS := \
+  $(OBJDIR)/FilterGraph_679097a4.o \
+  $(OBJDIR)/GraphEditorPanel_3602105.o \
+  $(OBJDIR)/HostStartup_61904723.o \
+  $(OBJDIR)/InternalFilters_dddb94ec.o \
+  $(OBJDIR)/MainHostWindow_3cb60aad.o \
+  $(OBJDIR)/CabbagePluginEditor_5a11f64e.o \
+  $(OBJDIR)/CabbagePluginProcessor_73d6661b.o \
+  $(OBJDIR)/BinaryData_5ba7f54.o \
   $(OBJDIR)/CabbageGUIClass_79b9049f.o \
-  $(OBJDIR)/CabbageMainPanel_12c1333.o \
-  $(OBJDIR)/CabbagePluginEditor_e9bade22.o \
-  $(OBJDIR)/CabbagePluginProcessor_4c907dc7.o \
-  $(OBJDIR)/CabbageStandaloneDialog_1f0ad88f.o \
-  $(OBJDIR)/ComponentLayoutEditor_aa38c835.o \
-  $(OBJDIR)/StandaloneFilterApp_e433cd25.o \
+  $(OBJDIR)/CabbageLookAndFeel_220a01a6.o \
+  $(OBJDIR)/CabbageTable_d003e736.o \
   $(OBJDIR)/JuceLibraryCode1_682c927f.o \
   $(OBJDIR)/JuceLibraryCode2_683aaa00.o \
   $(OBJDIR)/JuceLibraryCode3_6848c181.o \
@@ -58,51 +62,71 @@ OBJECTS := \
 .PHONY: clean
 
 $(OUTDIR)/$(TARGET): $(OBJECTS) $(LDDEPS) $(RESOURCES)
-	@echo Linking Cabbage
+	@echo Linking Plugin Host
 	-@mkdir -p $(BINDIR)
 	-@mkdir -p $(LIBDIR)
 	-@mkdir -p $(OUTDIR)
 	@$(BLDCMD)
 
 clean:
-	@echo Cleaning Cabbage
+	@echo Cleaning Plugin Host
 	-@rm -f $(OUTDIR)/$(TARGET)
 	-@rm -rf $(OBJDIR)/*
 	-@rm -rf $(OBJDIR)
+
+$(OBJDIR)/FilterGraph_679097a4.o: ../../Source/CabbagePatcher/FilterGraph.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling FilterGraph.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
+$(OBJDIR)/GraphEditorPanel_3602105.o: ../../Source/CabbagePatcher/GraphEditorPanel.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling GraphEditorPanel.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
+$(OBJDIR)/HostStartup_61904723.o: ../../Source/CabbagePatcher/HostStartup.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling HostStartup.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
+$(OBJDIR)/InternalFilters_dddb94ec.o: ../../Source/CabbagePatcher/InternalFilters.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling InternalFilters.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
+$(OBJDIR)/MainHostWindow_3cb60aad.o: ../../Source/CabbagePatcher/MainHostWindow.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling MainHostWindow.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
+$(OBJDIR)/CabbagePluginEditor_5a11f64e.o: ../../Source/Plugin/CabbagePluginEditor.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling CabbagePluginEditor.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
+$(OBJDIR)/CabbagePluginProcessor_73d6661b.o: ../../Source/Plugin/CabbagePluginProcessor.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling CabbagePluginProcessor.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
+$(OBJDIR)/BinaryData_5ba7f54.o: ../../Source/BinaryData.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling BinaryData.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/CabbageGUIClass_79b9049f.o: ../../Source/CabbageGUIClass.cpp
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling CabbageGUIClass.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
-$(OBJDIR)/CabbageMainPanel_12c1333.o: ../../Source/CabbageMainPanel.cpp
+$(OBJDIR)/CabbageLookAndFeel_220a01a6.o: ../../Source/CabbageLookAndFeel.cpp
 	-@mkdir -p $(OBJDIR)
-	@echo "Compiling CabbageMainPanel.cpp"
+	@echo "Compiling CabbageLookAndFeel.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
-$(OBJDIR)/CabbagePluginEditor_e9bade22.o: ../../Source/CabbagePluginEditor.cpp
+$(OBJDIR)/CabbageTable_d003e736.o: ../../Source/CabbageTable.cpp
 	-@mkdir -p $(OBJDIR)
-	@echo "Compiling CabbagePluginEditor.cpp"
-	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-
-$(OBJDIR)/CabbagePluginProcessor_4c907dc7.o: ../../Source/CabbagePluginProcessor.cpp
-	-@mkdir -p $(OBJDIR)
-	@echo "Compiling CabbagePluginProcessor.cpp"
-	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-
-$(OBJDIR)/CabbageStandaloneDialog_1f0ad88f.o: ../../Source/CabbageStandaloneDialog.cpp
-	-@mkdir -p $(OBJDIR)
-	@echo "Compiling CabbageStandaloneDialog.cpp"
-	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-
-$(OBJDIR)/ComponentLayoutEditor_aa38c835.o: ../../Source/ComponentLayoutEditor.cpp
-	-@mkdir -p $(OBJDIR)
-	@echo "Compiling ComponentLayoutEditor.cpp"
-	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-
-$(OBJDIR)/StandaloneFilterApp_e433cd25.o: ../../Source/StandaloneFilterApp.cpp
-	-@mkdir -p $(OBJDIR)
-	@echo "Compiling StandaloneFilterApp.cpp"
+	@echo "Compiling CabbageTable.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/JuceLibraryCode1_682c927f.o: ../../JuceLibraryCode/JuceLibraryCode1.cpp

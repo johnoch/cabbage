@@ -24,7 +24,7 @@
 #include "../../JuceLibraryCode/JucePluginCharacteristics.h"
 #include "../CabbageUtils.h"
 #include "../CabbageGUIClass.h"
-#include "../Editor/CabbageEditorWindow.h"
+//#include "../Editor/CabbageEditorWindow.h"
 
 
 #ifndef Cabbage_No_Csound
@@ -86,7 +86,7 @@ class CabbagePluginAudioProcessor  : public AudioProcessor,
 
 public:
     //==============================================================================
-ScopedPointer<CabbageEditorWindow> cabbageCsoundEditor;
+	//ScopedPointer<CabbageEditorWindow> cabbageCsoundEditor;
 #ifdef Cabbage_Build_Standalone
     CabbagePluginAudioProcessor(String inputfile, bool guiOnOff);
 #else
@@ -124,9 +124,9 @@ ScopedPointer<CabbageEditorWindow> cabbageCsoundEditor;
     bool producesMidi() const;
 
 	void createAndShowSourceEditor(LookAndFeel* looky);
-	CabbageEditorWindow* getCsoundEditor(){
-		return cabbageCsoundEditor;
-	}
+	//CabbageEditorWindow* getCsoundEditor(){
+	//	return cabbageCsoundEditor;
+	//}
     //==============================================================================
     int getNumPrograms();
     int getCurrentProgram();

@@ -65,7 +65,7 @@ if(csCompileResult==0){
 	csound->PerformKsmps();
 	csound->SetScoreOffsetSeconds(0);
 	csound->RewindScore();
-	if(csound->GetSpout()==nullptr)showMessage("bummer");
+	if(csound->GetSpout()==nullptr);
 	CSspout = csound->GetSpout();
 	CSspin  = csound->GetSpin();
 	numCsoundChannels = csoundListChannels(csound->GetCsound(), &csoundChanList);
@@ -349,12 +349,12 @@ void CabbagePluginAudioProcessor::createGUI(String source)
 //===========================================================
 void CabbagePluginAudioProcessor::createAndShowSourceEditor(LookAndFeel* looky)
 {
-if(!cabbageCsoundEditor){
-cabbageCsoundEditor = new CabbageEditorWindow(looky);
-cabbageCsoundEditor->setCsoundFile(csdFile);
-cabbageCsoundEditor->setCsoundOutputText(csoundOutput);
-}
-cabbageCsoundEditor->setVisible(true);
+//if(!cabbageCsoundEditor){
+//cabbageCsoundEditor = new CabbageEditorWindow(looky);
+//cabbageCsoundEditor->setCsoundFile(csdFile);
+//cabbageCsoundEditor->setCsoundOutputText(csoundOutput);
+//}
+//cabbageCsoundEditor->setVisible(true);
 }
 
 //===========================================================

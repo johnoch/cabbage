@@ -1,11 +1,11 @@
 <Cabbage>
-form caption("Phaser") size(460, 320), pluginID("esgs")
+form caption("Phaser") size(460, 120), pluginID("esgs")
 rslider bounds(0, 0, 80, 80), caption("Rate"), channel("rate"), range(0, 1, 0.2)
 rslider bounds(90, 0, 80, 80), caption("Depth"), channel("depth"), range(0, 1, 0.5)
 rslider bounds(180, 0, 80, 80), caption("Freq."), channel("freq"), range(0, 1, 0.4)
 rslider bounds(270, 0, 80, 80), caption("Feedback"), channel("fback"), range(0, 1, 0.4)
 rslider bounds(360, 0, 80, 80), caption("Level"), channel("level"), range(0, 1, 1)
-source bounds(0, 100, 100, 60), text("Source")
+launch bounds(0, 100, 100, 60), text("View Help"), file("help.html")
 </Cabbage>
 <CsoundSynthesizer>
 <CsOptions>
@@ -16,6 +16,8 @@ sr = 44100
 ksmps = 32
 nchnls = 2
 0dbfs = 1
+
+
 
 opcode	Phaser,a,akkkk
 	ain,krate,kdepth,kfreq,kfback	xin					;READ IN INPUT ARGUMENTS
