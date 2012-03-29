@@ -26,61 +26,11 @@
 
 #include "../../JuceLibraryCode/JuceHeader.h" 
 #include "../CabbageUtils.h"
+#include "../CabbageLookAndFeel.h"
 #include "../BinaryData.h"
 #include "CabbageEditorCommandManager.h"
 
-
-class HintDialogWindow : public DialogWindow
-{
-				
-	class HintDialogComp : public Component
-			{
-			String windowText;
-			Colour background, foreground, textColour;
-			ScopedPointer<ToggleButton> toggle;
-			public:
-				HintDialogComp(String infoText, Colour back, Colour fore, Colour text)
-					:windowText(infoText), background(back), foreground(fore), textColour(text)
-				{
-					setAlwaysOnTop(true);
-					this->setSize(250, 200);
-					toggle = new ToggleButton("Click here if you don't wish to see this info again");
-					toggle->setColour(ToggleButton::textColourId, Colours::white);
-					toggle->setBounds(10, getHeight()*.6, getWidth(), getHeight()*.2);
-					addAndMakeVisible(toggle);
-				}
-				~HintDialogComp(){}
-
-				void paint(Graphics &g){
-						setAlwaysOnTop(true);
-						toFront(true);
-						g.fillAll(background);
-						g.setColour(foreground);
-						g.drawRect(3, 3, getWidth()-6, getHeight()-6);
-						g.setColour(textColour);
-						g.drawFittedText(windowText, 5, 5, getWidth()-10, getHeight(), Justification::left, 5, 0.2);
-				}
-
-			};
-
-ScopedPointer<HintDialogComp> hintComp;
-public:
-	HintDialogWindow(const String &name, String text, const Colour &backgroundColour, const Colour fore, const Colour font, bool escapeKeyTriggersCloseButton, bool addToDesktop=true):
-	DialogWindow(name, backgroundColour, true){
-	centreWithSize (400, 200);
-	setVisible(true);
-	this->setTitleBarHeight(15);
-	setAlwaysOnTop(true);
-	hintComp = new HintDialogComp(text, backgroundColour, fore, font); 
-	setContentOwned(hintComp, false);
-	}
-	~HintDialogWindow(){}
-
-	void closeButtonPressed(){
-		setVisible(false);
-	}
-};
-
+extern ApplicationProperties* appProperties;
 
 class CsoundTokeniser : public CodeTokeniser
 {
@@ -341,6 +291,7 @@ private:
 	   {
 		   if(editor != 0)
 		   {
+			   g.fillAll(Colours::black);
 			   g.setFont(editor->getFont());
 			  
 
@@ -431,12 +382,13 @@ public:
 
 
 	int fontSize;
-
+	ScopedPointer<TabbedComponent> tabComp;
+	ScopedPointer<WebBrowserComponent> htmlHelp;
 	CodeDocument csoundDoc;
 	CsoundTokeniser csoundToker;
 	ScopedPointer<CodeEditorExtended> textEditor;
 	ScopedPointer<TextEditor> output;
-	ScopedPointer<LookAndFeel> lookAndFeel;
+	ScopedPointer<CabbageLookAndFeel> lookAndFeel;
 	ScopedPointer<helpContext> helpLabel;
 	StretchableLayoutManager horizontalLayout;
     ScopedPointer<StretchableLayoutResizerBar> horizontalDividerBar;
@@ -472,7 +424,7 @@ public:
 	//==============================================================================
     const StringArray getMenuBarNames()
     {
-        const char* const names[] = { "File", "Edit", 0 };
+        const char* const names[] = { "File", "Edit", "Help", 0 };
         return StringArray (names);
     }
 

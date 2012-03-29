@@ -35,8 +35,9 @@ StandaloneFilterWindow::StandaloneFilterWindow (const String& title,
     : DocumentWindow (title, backgroundColour,
                       DocumentWindow::minimiseButton
                        | DocumentWindow::closeButton),
-      optionsButton ("options"), isGUIOn(false), pipeOpenedOk(false), helpInfo(false)
+      optionsButton ("options"), isGUIOn(false), pipeOpenedOk(false)
 {
+	consoleMessages = "";
 	setTitleBarButtonsRequired (DocumentWindow::minimiseButton | DocumentWindow::closeButton, false);
     Component::addAndMakeVisible (&optionsButton);
     optionsButton.addListener (this);
@@ -57,11 +58,6 @@ StandaloneFilterWindow::StandaloneFilterWindow (const String& title,
 	if(pipeOpenedOk) Logger::writeToLog(T("Namedpipe created ..."));
 #endif 
 // MOD - End
-
-	cabbageCsoundEditor = new CabbageEditorWindow(lookAndFeel);
-	cabbageCsoundEditor->setVisible(false);
-	cabbageCsoundEditor->addActionListener(this);
-
 
 	JUCE_TRY
     {
@@ -206,24 +202,18 @@ void StandaloneFilterWindow::timerCallback()
 void StandaloneFilterWindow::actionListenerCallback (const String& message){
 	if(message.equalsIgnoreCase("fileSaved")){
 		saveFile();
-		//resetFilter();
-		//cabbageCsoundEditor->toFront(true);
 	}
 	else if(message.contains("fileOpen")){
-	/*	String file = message.substring(9);
-		csdFile = File(file);
-		resetFilter();
-		cabbageCsoundEditor->repaint();*/
 		openFile();
 	}
 	else if(message.contains("fileSaveAs")){
 		saveFileAs();
 	}
 	else if(message.contains("fileExportSynth")){
-	exportPlugin(T("VSTi"));
+	exportPlugin(T("VSTi"), false);
 	}
 	else if(message.contains("fileExportEffect")){
-	exportPlugin(T("VST"));
+	exportPlugin(T("VST"), false);
 	}
 }
 //==============================================================================
@@ -293,7 +283,9 @@ for(int i=0;i<filter->getDebugMessageArray().size();i++)
       }
 
       filter->clearDebugMessageArray();
-	  cabbageCsoundEditor->setCsoundOutputText(text);
+	  consoleMessages = consoleMessages+text+"\n"; 
+	  if(cabbageCsoundEditor)
+		  cabbageCsoundEditor->setCsoundOutputText(text+"\n");
 	  //sendMessageToWinXound(T("CABBAGE_DEBUG"), text);
 
 }
@@ -350,12 +342,12 @@ void StandaloneFilterWindow::resetFilter()
 	sendMessageToWinXound(T("CABBAGE_LOADED"), "");
 #endif
 
+	if(cabbageCsoundEditor){
 	cabbageCsoundEditor->setName(csdFile.getFullPathName());
-	if(cabbageCsoundEditor->isVisible()){
-		//cabbageCsoundEditor->toFront(true);
-		//this->toBehind(cabbageCsoundEditor);
+	if(cabbageCsoundEditor->isVisible())
 		cabbageCsoundEditor->csoundEditor->textEditor->grabKeyboardFocus();
 	}
+
 }
 
 //==============================================================================
@@ -417,6 +409,7 @@ PropertySet* StandaloneFilterWindow::getGlobalSettings()
        ApplicationProperties::setStorageParameters() in your plugin's constructor to
        tell it where to save the file.
     */
+	appProperties->getUserSettings()->setValue("htmlHelp", String("some directory"));
 	return appProperties->getUserSettings();
 }
 
@@ -429,15 +422,18 @@ void StandaloneFilterWindow::showAudioSettingsDialog()
                                                numIns, numIns, numOuts, numOuts,
                                                true, false, true, false);
 
-    selectorComp.setSize (400, 350);
+    selectorComp.setSize (400, 250);
 	setAlwaysOnTop(false);
-    DialogWindow::showModalDialog(TRANS("Audio Settings"), &selectorComp, this, Colours::white, true, false, false);
+	selectorComp.setLookAndFeel(lookAndFeel);
+	Colour col(44, 44, 44);
+	DialogWindow::showModalDialog(TRANS("Audio Settings"), &selectorComp, this, col, true, false, false);
 	setAlwaysOnTop(true);
 }
 //==============================================================================
 void StandaloneFilterWindow::closeButtonPressed()
 {
-	cabbageCsoundEditor->closeButtonPressed();
+if(cabbageCsoundEditor)
+cabbageCsoundEditor->closeButtonPressed();
 	JUCEApplication::quit();
 }
 
@@ -447,38 +443,6 @@ void StandaloneFilterWindow::resized()
     optionsButton.setBounds (8, 6, 60, getTitleBarHeight() - 8);
 }
 
-void StandaloneFilterWindow::showInfoWindow(String commandType)
-{
-	String helpText("");
-	if(commandType==T("Open file"))
-		helpText = T("This command opens a 'cabbaged' Csound text file. A Cabbage .csd file is the same as a regular Csound file only it has a special section marked <Cabbage> that includes information about how the Cabbage instrument will look and interact with Csound. Any Csound file can be loaded and played with Cabbage. The score will start playing back as soon as it opens, and you should probably replace the CsOptions with '-n -d'.\n\nTo continue working turn off help windows in the options menu.");
-	else if(commandType==T("Save file"))
-		helpText = T("This command will save your text into a Cabbage .csd file.\n\nTo continue working turn off help windows in the options menu.");
-	else if(commandType==T("Save file as"))
-		helpText = T("This command will save your current text into a new Cabbage .csd file.\n\nTo continue working turn off help windows in the options menu.");
-	else if(commandType==T("Export plugin"))
-		helpText = T("This command will export your Cabbage instrument as a plugin. When exporting plugins Cabbage will prompt you to save your plugin in a set location, under a specific name. Once Cabbage has created the plugin it will make a copy of the current .csd file and locate it in the same folder as the plugin. This new .csd file will have the same name as the plugin and should ALWAYS be in the same directory as the plugin. \n\nYou do not need to keep exporting instruments as plugins every time you modify them. You need only modify the associated source code. To simplify this task, Cabbage will automatically load the associated Cabbage file whenever you export as a plugin. You'll notice this from the main title bar of the editor.\n\nTo continue working turn off help windows in the options menu.");
-	else if(commandType==T("Audio settings"))
-		helpText = T("This command lets you change your Audio settings. Cabbage handles all audio and MIDI input and output so you don't need to call any devices in the CsOptions section of your source code.\n\nTo continue working turn off help windows in the options menu.");
-	else if(commandType==T("New"))
-		helpText = T("This command will help you create a new Cabbage instrument/effect. Cabbage instrument are synthesiser capable of creating sounds from scratch while effects process incoming audio. Effects can access the incoming audio by using the 'inch' opcodes. Instruments can access the incoming MIDI data in a host of different ways but thee easiest is to pipe the MIDI data directly to instrument p-fields using the MIDI inter-op command line flags. Examples can be found in the examples folder.\n\nTo continue working turn off help windows in the options menu.");	
-	else if(commandType==T("View Text Editor"))
-		helpText = T("This command will launch the integrated text editor. The text editor will always contain the text which corresponds to the instrument that is currently open.\n\nTo continue working turn off help windows in the options menu.");
-	else if(commandType==T("Always on top"))
-		helpText = T("This command lets you toggle 'Always on top' mode. By default it is turned on, which means your Cabbage instrument will always appear on top of any other applications that are currently open.\n\nTo continue working turn off help windows in the options menu.");
-	else if(commandType==T("Update instrument"))
-		helpText = T("This command lets you manually update instruments. This is useful if you wish to use a more advanced editor such as WinXound or Csound QT. You can load the file into both the editor and Cabbage. Any time you save the file in the editor can hit 'update instrument' in Cabbage to see the changes.\n\nTo continue working turn off help windows in the options menu.");
-	else if(commandType==T("Batch convert"))
-		helpText = T("This command will let you convert a selection of Cabbage .csd files into plugins so you don't have to manually open and export each one. Currently this only works on Windows.\n\nTo continue working turn off help windows in the options menu.");
-	else if(commandType==T("Help info"))
-		helpText = T("This command lets you toggle between displaying these little info windows or not.\n\nTo continue working turn off help windows in the options menu.");
-
-	AlertWindow alert(commandType, helpText, AlertWindow::NoIcon, 0);
-
-	alert.setLookAndFeel(lookAndFeel);
-	alert.addButton("Ok", 1);
-	alert.runModalLoop();
-}
 
 //==============================================================================
 // Button clicked method
@@ -490,31 +454,29 @@ void StandaloneFilterWindow::buttonClicked (Button*)
 
 	String test;
     PopupMenu m;
-	PopupMenu newType;
-	PopupMenu subExport;
-	PopupMenu batchProc;
+	PopupMenu subMenu;
 	m.setLookAndFeel(lookAndFeel);
-	newType.setLookAndFeel(lookAndFeel);
-	subExport.setLookAndFeel(lookAndFeel);
-	batchProc.setLookAndFeel(lookAndFeel);
+	subMenu.setLookAndFeel(lookAndFeel);
 
-	m.addItem(1, T("Open Cabbage patch"));
+	m.addItem(1, T("Open Cabbage Instrument"));
 	
 
-	newType.addItem(30, T("Effect"));
-	newType.addItem(31, T("Instrument"));
-	m.addSubMenu(T("New Cabbage..."), newType);
+	subMenu.addItem(30, T("Effect"));
+	subMenu.addItem(31, T("Instrument"));
+	m.addSubMenu(T("New Cabbage..."), subMenu);
 
-	m.addItem(2, T("View Text Editor"));
+	m.addItem(2, T("View Source Editor"));
     m.addItem(4, TRANS("Audio Settings..."));
     m.addSeparator();
-	subExport.addItem(5, TRANS("Plugin Synth"));
-	subExport.addItem(6, TRANS("Plugin Effect"));
-	m.addSubMenu(TRANS("Export"), subExport);
-	if(helpInfo)
-	m.addItem(10, T("Enable help dialogue"), true, true);
-	else
-	m.addItem(10, T("Enable help dialogue"));
+	subMenu.clear();
+	subMenu.addItem(15, TRANS("Plugin Synth"));
+	subMenu.addItem(16, TRANS("Plugin Effect"));
+	m.addSubMenu(TRANS("Export..."), subMenu);
+
+	subMenu.clear();
+	subMenu.addItem(5, TRANS("Plugin Synth"));
+	subMenu.addItem(6, TRANS("Plugin Effect"));
+	m.addSubMenu(TRANS("Export Plugin As..."), subMenu);
 
     m.addSeparator();
 	if(isAlwaysOnTop())
@@ -528,17 +490,28 @@ void StandaloneFilterWindow::buttonClicked (Button*)
 	else
 	m.addItem(9, TRANS("Show MIDI Debug Information"));
 	*/
-
-	batchProc.addItem(11, TRANS("Effects"));
-	batchProc.addItem(12, TRANS("Synths"));
-	m.addSubMenu(TRANS("Batch Convert"), batchProc);
+	subMenu.clear();
+	subMenu.addItem(11, TRANS("Effects"));
+	subMenu.addItem(12, TRANS("Synths"));
+	m.addSubMenu(TRANS("Batch Convert"), subMenu);
 	m.addSeparator();
 	if(timerRunning)
 	m.addItem(99, T("Cabbage Dance"), true, true);
 	else
 	m.addItem(99, T("Cabbage Dance"));
 
-	FileChooser saveFC(T("Save Cabbage file as..."), File::nonexistent, T("*.csd"));
+
+	subMenu.clear();
+	int val = appProperties->getUserSettings()->getValue("DisablePluginInfo", var(0)).getFloatValue();
+	subMenu.addItem(200, "Set Csound Manual Directory");
+	if(!val)
+	subMenu.addItem(201, T("Disable Export Plugin Info"));
+	else
+	subMenu.addItem(201, T("Disable Export Plugin Info"), true, true);
+
+	m.addSubMenu("Preferences", subMenu);
+	
+	
 	
 	
 
@@ -546,83 +519,66 @@ void StandaloneFilterWindow::buttonClicked (Button*)
  
 	//----- open file ------
 	if(options==1){
-		if(helpInfo)showInfoWindow("Open file");
-		else
 		openFile();
 	}
 	//----- view text editor ------
 	else if(options==2){
-	if(helpInfo)showInfoWindow("View text editor");
-	else{
-	cabbageCsoundEditor->setCsoundFile(csdFile);
-		this->toBehind(cabbageCsoundEditor);
-		cabbageCsoundEditor->setVisible(true);
-		cabbageCsoundEditor->toFront(true);
-		cabbageCsoundEditor->csoundEditor->textEditor->grabKeyboardFocus();
+	if(!cabbageCsoundEditor){
+	cabbageCsoundEditor = new CabbageEditorWindow(lookAndFeel);
+	cabbageCsoundEditor->setVisible(false);
+	cabbageCsoundEditor->addActionListener(this);
 	}
+	cabbageCsoundEditor->setCsoundFile(csdFile);
+	this->toBehind(cabbageCsoundEditor);
+	cabbageCsoundEditor->setVisible(true);
+	cabbageCsoundEditor->toFront(true);
+	cabbageCsoundEditor->setCsoundOutputText(consoleMessages);
+	cabbageCsoundEditor->csoundEditor->textEditor->grabKeyboardFocus();
 	}
 	//----- new effect ------
 	else if(options==30){
-		if(helpInfo)showInfoWindow("New");
-	else{
 		cabbageCsoundEditor->setVisible(true);
 		cabbageCsoundEditor->csoundEditor->newFile("effect");
 		saveFileAs();
 		cabbageCsoundEditor->csoundEditor->textEditor->grabKeyboardFocus();
 	}
-	}
 	//----- new instrument ------
 	else if(options==31){
-		if(helpInfo)showInfoWindow("New");
-	else{
 	cabbageCsoundEditor->setVisible(true);
 	cabbageCsoundEditor->csoundEditor->newFile("instrument");
 	saveFileAs();
 	cabbageCsoundEditor->csoundEditor->textEditor->grabKeyboardFocus();
 	}
-	}
 	//----- audio settings ------
    	else if(options==4){
-			if(helpInfo)showInfoWindow("Audio settings");
-	else{
         showAudioSettingsDialog();
 		resetFilter();
 	}
-	}
 
-	//----- export  ------
+	//----- export ------
+	else if(options==15)
+	exportPlugin(T("VSTi"), false);
+	
+	else if(options==16)
+	exportPlugin(T("VST"), false);
+
+
+	//----- export as ------
 	else if(options==5)
-	if(helpInfo)showInfoWindow("Export plugin");
-	else
-	exportPlugin(T("VSTi"));
+	exportPlugin(T("VSTi"), true);
 	
 	else if(options==6)
-	if(helpInfo)showInfoWindow("Export plugin");
-	else
-	exportPlugin(T("VST"));
+	exportPlugin(T("VST"), true);
 
 	//----- always on top  ------
 	else if(options==7)
-	if(helpInfo)showInfoWindow("Always on top");
-	else	
 	if(isAlwaysOnTop())
 		this->setAlwaysOnTop(false);
 	else
 		this->setAlwaysOnTop(true);
 	
-	//----- toggle help info  ------
-	else if(options==10)
-//	if(helpInfo)showInfoWindow("help info");
-//	else
-	if(helpInfo)
-	helpInfo = false;
-	else
-	helpInfo = true;
-	
 	//----- update instrument  ------
     else if(options==8)
-	if(helpInfo)showInfoWindow("Update instrument");
-	else
         resetFilter();
 
 	/*
@@ -641,15 +597,12 @@ void StandaloneFilterWindow::buttonClicked (Button*)
 
 	//----- batch process ------
 	else if(options==11)
-	if(helpInfo)showInfoWindow("Batch convert");
-	else
 		BatchProcess(T("VST"));
 
 	else if(options==12)
-	if(helpInfo)showInfoWindow("Batch convert");
-	else
 		BatchProcess(T("VSTi"));
 
+	//------- cabbage dance ------
 	else if(options==99){
 		if(!timerRunning){
 		startTimer(20);
@@ -660,7 +613,22 @@ void StandaloneFilterWindow::buttonClicked (Button*)
 		timerRunning = false;
 		}
 	}
-		
+//------- preference Csound manual dir ------
+	else if(options==200){
+		String dir = appProperties->getUserSettings()->getValue("CsoundHelpDir", "");
+		FileChooser browser(T("Please select the Csound manual directory..."), File(dir), T("*.csd"));
+		if(browser.browseForDirectory()){
+			appProperties->getUserSettings()->setValue("CsoundHelpDir", browser.getResult().getFullPathName());
+		}	
+	}
+
+	else if(options==201){
+		int val = appProperties->getUserSettings()->getValue("DisablePluginInfo", var(0)).getFloatValue();
+		if(val==0) 
+			appProperties->getUserSettings()->setValue("DisablePluginInfo", var(1));
+		else
+			appProperties->getUserSettings()->setValue("DisablePluginInfo", var(0));
+	}
 	repaint();
 }
 
@@ -679,7 +647,7 @@ void StandaloneFilterWindow::openFile()
 			csdFile = File(csd);
 		}
 		resetFilter();
-		cabbageCsoundEditor->setCsoundFile(csdFile);
+		//cabbageCsoundEditor->setCsoundFile(csdFile);
 	}	
 	
 #else
@@ -687,6 +655,7 @@ void StandaloneFilterWindow::openFile()
 	if(openFC.browseForFileToOpen()){
 		csdFile = openFC.getResult();
 		resetFilter();
+		if(cabbageCsoundEditor)
 		cabbageCsoundEditor->setCsoundFile(csdFile);
 	}
 #endif
@@ -712,8 +681,16 @@ FileChooser saveFC(T("Save Cabbage file as..."), File::nonexistent, T("*.csd"));
 //==============================================================================
 // Export plugin method
 //==============================================================================
-int StandaloneFilterWindow::exportPlugin(String type){
-	File thisFile(File::getSpecialLocation(File::currentApplicationFile));
+int StandaloneFilterWindow::exportPlugin(String type, bool saveAs)
+{
+File dll;
+File loc_csdFile;
+File thisFile(File::getSpecialLocation(File::currentApplicationFile));
+
+if(!csdFile.exists()){
+					showMessage("You need to open a Cabbage instrument before you can export one as a plugin!", lookAndFeel);
+					return 0;
+				}
 #ifdef LINUX
 	FileChooser saveFC(T("Save as..."), File::nonexistent, T(""));
 	String VST;
@@ -737,29 +714,45 @@ int StandaloneFilterWindow::exportPlugin(String type){
 		}
 	}
 #elif WIN32
-	FileChooser saveFC(T("Save plugin as..."), File::nonexistent, T(""));
+	FileChooser saveFC(T("Save plugin as..."), File::nonexistent, T("*.dll"));
 	String VST;
-	if (saveFC.browseForFileToSave(true)){
 		if(type.contains("VSTi"))
 			VST = thisFile.getParentDirectory().getFullPathName() + T("\\CabbagePluginSynth.dat");
 		else if(type.contains(T("VST")))
 			VST = thisFile.getParentDirectory().getFullPathName() + T("\\CabbagePluginEffect.dat");
-		else if(type.contains(T("AU"))){
-			showMessage("This feature only works on computers running OSX");
-		}
-		//showMessage(VST);
+
 		File VSTData(VST);
-		if(!VSTData.exists())showMessage("problem with plugin lib");
+
+		if(!VSTData.exists()){
+			showMessage("Cabbage cannot find the plugin libraries. Make sure that Cabbage is situated in the same directory as CabbagePluginSynth.dat and CabbagePluginEffect.dat", lookAndFeel);
+			return 0;
+		}
 		else{
-			File dll(saveFC.getResult().withFileExtension(".dll").getFullPathName());
+			if(saveAs){
+			if (saveFC.browseForFileToSave(true)){
+			dll = saveFC.getResult().withFileExtension(".dll").getFullPathName();
+			loc_csdFile = saveFC.getResult().withFileExtension(".csd").getFullPathName();
+			}
+			else
+				return 0;
+			}
+			else{
+			dll = csdFile.withFileExtension(".dll").getFullPathName();
+			loc_csdFile = csdFile.withFileExtension(".csd").getFullPathName();
+			
+			}
 			//showMessage(dll.getFullPathName());
-			if(!VSTData.copyFileTo(dll))	showMessage("problem moving plugin lib, make sure it's not currently open in your plugin host!");
+			if(!VSTData.copyFileTo(dll))	
+				showMessage("Problem moving plugin lib, make sure it's not currently open in your plugin host!", lookAndFeel);
 			
-			
-			
-			File loc_csdFile(saveFC.getResult().withFileExtension(".csd").getFullPathName());
 			loc_csdFile.replaceWithText(csdFile.loadFileAsString());
 			setUniquePluginID(dll, loc_csdFile);
+			String info;
+			info = T("Your plugin has been created. It's called:\n\n")+dll.getFullPathName()+T("\n\nIn order to modify this plugin you only have to edit and save the Csound and Cabbage code. You do not need to export every time you make changes.\n\nTo turn off this notice visit 'Preferences' in the main 'options' menu");
+			
+			int val = appProperties->getUserSettings()->getValue("DisablePluginInfo", var(0)).getFloatValue();
+			if(!val)
+			showMessage(info, lookAndFeel);
 			
 #ifdef Cabbage_Named_Pipe
 			sendMessageToWinXound("CABBAGE_PLUGIN_FILE_UPDATE", csdFile.getFullPathName()+T("|")+loc_csdFile.getFullPathName());
@@ -768,7 +761,7 @@ int StandaloneFilterWindow::exportPlugin(String type){
 			sendMessageToWinXound("CABBAGE_SHOW_MESSAGE|Info", "WinXound has been updated\nyour .csd file");
 #endif
 		}
-	}//end of open save dialog
+
 #endif
 	
 #if MACOSX
@@ -872,7 +865,7 @@ for(int i=0;i<csdText.size();i++)
 	if(tokes.getReference(0).equalsIgnoreCase(T("form"))){
 			CabbageGUIClass cAttr(csdText[i].trimEnd(), 0);		
 			if(cAttr.getStringProp("pluginID").length()!=4){
-			showMessage(T("Your plugin ID is not the right size. It should be 4 characters. Some hosts may not be able to load your plugin"));
+			showMessage(T("Your plugin ID is not the right size. It MUST be 4 characters long. Some hosts may not be able to load your plugin"), lookAndFeel);
 			return 0;
 			}
 			else{

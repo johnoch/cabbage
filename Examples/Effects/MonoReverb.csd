@@ -1,7 +1,9 @@
 <Cabbage>
-form caption("Reverb") size(230, 130)
-rslider channel("size"), caption("Reverb"), pos(5, 5), range(0, 1, 0.2)
-rslider channel("fco"), caption("Cut-off"), pos(105, 5), range(0, 22000, 10000)
+form caption("Reverb") size(220, 120)
+groupbox text("Stereo Reverb"), bounds(0, 0, 200, 100)
+rslider channel("size"), bounds(10, 25, 70, 70), text("Size"), range(0, 2, 0.2)
+rslider channel("fco"), bounds(70, 25, 70, 70), text("Cut-off"), range(0, 22000, 10000)
+rslider channel("gain"), bounds(130, 25, 70, 70), text("Gain"), range(0, 1, 0.5)
 </Cabbage>
 <CsoundSynthesizer>
 <CsOptions>
@@ -16,9 +18,10 @@ nchnls = 2
 instr 1
 kfdback chnget "size"
 kfco chnget "fco"
+kgain chnget "gain"
 ain inch 1
 aoutL, aoutR reverbsc ain, ain, kfdback, kfco 
-outs aoutL, aoutR
+outs aoutL*kgain, aoutR*kgain
 endin
 
 </CsInstruments>

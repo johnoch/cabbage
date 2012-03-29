@@ -2,20 +2,24 @@
 #include "CabbageCsoundEditor.h"
 
 
-
 #pragma warning(disable: 4996)
 #pragma warning(disable: 4244)
 //==============================================================================
 CsoundEditor::CsoundEditor():hasChanged(false), unSaved(false)
 {	
-//lookAndFeel = look;//new LookAndFeel();
-//this->setLookAndFeel(look);
+lookAndFeel = new CabbageLookAndFeel();
 //textEditor = new CodeEditorComponent(csoundDoc, &csoundToker);
 opcodes.addLines(String((BinaryData::opcodes_txt)));
 csoundDoc.addListener(this);
 textEditor = new CodeEditorExtended(csoundDoc, &csoundToker);
 textEditor->setBounds(0, 0, getWidth(), getHeight());
 textEditor->editor->setFont(Font(T("Courier New"), 15, 1));
+//appProperties->testWriteAccess(true, true, true);
+
+htmlHelp = new WebBrowserComponent(false);
+
+htmlHelp->goToURL("C:/MyDocuments/CabbageLatestSVN/Docs/cabbage.html");
+
 
 setApplicationCommandManagerToWatch(&commandManager);
 output = new TextEditor("output");
@@ -44,15 +48,23 @@ helpLabel->setTextColour(Colours::white);
 
 helpLabel->setHelpFont(Font(T("Courier New"), 14, 1));
 helpLabel->setHelpText(T("Cabbage Csound Editor"));
-addAndMakeVisible(textEditor);
+
+tabComp = new TabbedComponent(TabbedButtonBar::TabsAtTop);
+tabComp->addTab("Source", Colours::white, textEditor, false);
+tabComp->addTab("Help", Colours::white, htmlHelp, false);
+
+//addAndMakeVisible(textEditor);
+addAndMakeVisible(tabComp);
 addAndMakeVisible(horizontalDividerBar);
 addAndMakeVisible(helpLabel);
 addAndMakeVisible(output);
-   
+
+
 
 commandManager.registerAllCommandsForTarget(this);
 addKeyListener(commandManager.getKeyMappings());
 
+//tab component
 horizontalLayout.setItemLayout (0,          // for item 0
     -.0, -.9,    // must be between 0 and 100 % in size
     -.7);      // and its preferred size is 70% of the total available space
@@ -80,9 +92,10 @@ CsoundEditor::~CsoundEditor ()
 //==============================================================================
 void CsoundEditor::resized()
 {
-Component* comps[] = { textEditor, horizontalDividerBar, helpLabel, output };
+Component* comps[] = { tabComp, horizontalDividerBar, helpLabel, output };
 // this will position the components, one beside the other, to fit
 // horizontally into the rectangle provided.
+//tabComp->setBounds(0, 0, getWidth(), 24);
 horizontalLayout.layOutComponents (comps, 4, 0, 0, getWidth(), getHeight(), true, true);
 }
 
@@ -155,7 +168,11 @@ void CsoundEditor::getCommandInfo (const CommandID commandID, ApplicationCommand
 		result.setInfo (T("Zoom out"), T("Zoom out"), CommandCategories::edit, 0);
 		result.addDefaultKeypress (T('-'), ModifierKeys::commandModifier);
         break;
-
+	case CommandIDs::viewHelp:
+		result.setInfo (T("View Help"), T("View Help"), CommandCategories::help, 0);
+		result.defaultKeypresses.add(KeyPress(KeyPress::F1Key));
+		break;
+		
 	}
 }
 
@@ -175,7 +192,9 @@ void CsoundEditor::getAllCommands (Array <CommandID>& commands)
 								CommandIDs::editPaste,
 								CommandIDs::editRedo,
 								CommandIDs::editZoomIn,
-								CommandIDs::editZoomOut
+								CommandIDs::editZoomOut,
+
+								CommandIDs::viewHelp
 	};
 	commands.addArray (ids, sizeof (ids) / sizeof (ids [0]));
 }
@@ -260,6 +279,45 @@ bool CsoundEditor::perform (const InvocationInfo& info)
 			setFontSize("out");
 			break;
 		}
+	case CommandIDs::viewHelp:
+		{			
+			//showMessage(appProperties->getUserSettings()->getValue("htmlHelp", "string"), lookAndFeel);
+			String helpDir = appProperties->getUserSettings()->getValue("CsoundHelpDir", "");
+			if(helpDir.length()<2)
+				showMessage("Please set the Csound manual directory in the Preference menu");		
+			else{
+			
+			CodeDocument::Position pos1, pos2;
+			pos1 = textEditor->editor->getDocument().findWordBreakBefore(textEditor->editor->getCaretPos());
+			pos2 = textEditor->editor->getDocument().findWordBreakAfter(textEditor->editor->getCaretPos());
+			String opcode = csoundDoc.getTextBetween(pos1, pos2);
+			URL urlCsound(helpDir+"/"+opcode.trim()+T(".html"));
+			String urlCabbage;
+			//showMessage(urlCsound.toString(false), lookAndFeel);
+			if(opcode.trim()==T("rslider")||opcode==T("hslider")||opcode==T("vslider"))
+			urlCabbage = String("C:/MyDocuments/CabbageLatestSVN/Docs/cabbage.html#_sliders");
+			else
+			urlCabbage = String("C:/MyDocuments/CabbageLatestSVN/Docs/cabbage.html#_")+opcode.trim();
+
+			//showMessage(urlCabbage);
+
+			File temp1(urlCsound.toString(false));
+			if(temp1.exists()){
+			htmlHelp->goToURL(urlCsound.toString(false));
+			tabComp->setCurrentTabIndex(1);
+			tabComp->setCurrentTabIndex(0);
+			tabComp->setCurrentTabIndex(1);
+			}
+			else{
+				htmlHelp->goToURL(urlCabbage);
+				tabComp->setCurrentTabIndex(1);
+				tabComp->setCurrentTabIndex(0);
+				tabComp->setCurrentTabIndex(1);
+				}
+			}
+			break;
+		}
+
 	}
 return true;
 }
@@ -294,6 +352,13 @@ else if(topLevelMenuIndex==1)
 	m1.addSubMenu(T("Font Size"), m2);
 	return m1;
 	}
+
+else if(topLevelMenuIndex==2)
+	{
+	m1.addCommandItem(&commandManager, CommandIDs::viewHelp);
+	return m1;
+	}
+	
 else return m1;
 }
 //==============================================================================
@@ -401,7 +466,7 @@ untitledCSD=
 "0dbfs=1\n"
 "\n"
 "instr 1\n"
-"a1 oscil p5, p4, 1\n"
+"a1 oscili p5, p4, 1\n"
 "outs a1, a1"
 "\n"
 "endin\n"

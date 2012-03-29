@@ -42,16 +42,16 @@ CabbageButton(String name, String caption, String buttonText, String colour)
 	offX=offY=offWidth=offHeight=0;
 	groupbox = new GroupComponent(String("groupbox_")+name);
 	button = new TextButton(name);
-	addAndMakeVisible(button);
 	addAndMakeVisible(groupbox);
+	addAndMakeVisible(button);
 	groupbox->setVisible(false);
 
 	button->setButtonText(buttonText);
 	if(caption.length()>0){
 		offX=10;
-		offY=15;
+		offY=35;
 		offWidth=-20;
-		offHeight=-25;
+		offHeight=-45;
 		groupbox->setVisible(true);
 		groupbox->setText(caption);
 	}
@@ -214,8 +214,9 @@ CabbageCheckbox(String name, String caption, String buttonText, String colour)
 	offX=offY=offWidth=offHeight=0;
 	groupbox = new GroupComponent(String("groupbox_")+name);
 	button = new ToggleButton(name);
-	addAndMakeVisible(button);
+
 	addAndMakeVisible(groupbox);
+	addAndMakeVisible(button);
 	groupbox->setVisible(false);
 	//outline colour ID
 	groupbox->setColour(0x1005400,
@@ -227,9 +228,9 @@ CabbageCheckbox(String name, String caption, String buttonText, String colour)
 	button->setButtonText(buttonText);
 	if(caption.length()>0){
 		offX=10;
-		offY=15;
+		offY=20;
 		offWidth=-20;
-		offHeight=-25;
+		offHeight=-30;
 		groupbox->setVisible(true);
 		groupbox->setText(caption);
 	}
@@ -630,18 +631,25 @@ public:
 		g.fillRoundedRectangle (0, 0, totalWidth, totalHeight, 5);
 
 		//----- For drawing the actual area that the ball can move in
-		Colour screenCl1 = CabbageUtils::backgroundSkin();
-		Colour screenCl2 = screenCl1.withBrightness (0.12);
-		ColourGradient cl = ColourGradient (screenCl2, availableWidth/2, availableHeight/2, 
-			screenCl1, availableWidth/2, borderTop, true);
-		g.setGradientFill (cl);
-		//g.fillRoundedRectangle (borderLeft, borderTop, availableWidth, availableHeight, (totalWidth/20));
+		Colour cl = CabbageUtils::backgroundSkin();
+		Colour cl2 = cl.withBrightness (0.15);
+		ColourGradient cg = ColourGradient (cl2, totalWidth*0.5, (availableHeight*0.5) + borderTop, 
+											cl, 0, 0, true);
+		g.setGradientFill (cg);
 		g.fillRoundedRectangle (borderLeft, borderTop, availableWidth, availableHeight, 5);
+
+		//----- Drawing the centre grid lines
+		Colour cl3 = CabbageUtils::componentSkin();
+		ColourGradient cg2 = ColourGradient (cl3, totalWidth*0.5, (availableHeight*0.5) + borderTop, 
+											cl, 0, 0, true);
+		g.setGradientFill (cg2);
+		g.drawLine (borderLeft, (availableHeight*0.5) + borderTop, borderRight, (availableHeight*0.5) + borderTop, 1);
+		g.drawLine ((availableWidth*0.5) + borderLeft, borderTop, (availableWidth*0.5) + borderLeft, borderBottom, 1);
 
 		//----- For drawing the title
 		Colour txt = CabbageUtils::componentSkin();
 		g.setColour (txt);
-		Font font = CabbageUtils::widgetText();
+		Font font = CabbageUtils::componentFont();
 		g.setFont (font);
 		Justification just(1);
 		title = CabbageUtils::cabbageString (title, font, availableWidth-10);
@@ -664,8 +672,8 @@ public:
 		g.setGradientFill (cgGrey);
 		g.setOpacity (0.4);
 
-		float thickness = 0.5; //thickness of lines
-		int numSlots = 5;
+		float thickness = 0.4; //thickness of lines
+		int numSlots = 4;
 		for (int i=1; i<numSlots; i++) {
 			g.drawLine (((availableWidth/numSlots)*i) + borderLeft, borderTop, 
 				((availableWidth/numSlots)*i) + borderLeft, borderBottom, thickness);//vertical lines

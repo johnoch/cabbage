@@ -15,8 +15,8 @@ ksmps = 64
 nchnls = 2
 
 /*************************************/
-/* Based on TPScaler by              */
-/* Victor Lazzarini, 2005            */
+/* TPScaler instrument by            */
+/* Victor Lazzarini                  */
 /*************************************/
 
 instr 1
@@ -31,8 +31,6 @@ kol = int(k4)
 kgr = k3           
 kfr = kol/kgr     
 kps = 1/kol      
-
-
 
 ain    inch  1
 awp  phasor sr/ftlen(1)

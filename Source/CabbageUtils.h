@@ -63,11 +63,17 @@ float cabbageABS(float in){
 }
 
 //===========================================================================================
+static void showMessage(String message, LookAndFeel* feel){
+	AlertWindow alert("Cabbage Message", message, AlertWindow::NoIcon, 0);
+	alert.setLookAndFeel(feel);
+	alert.addButton("Ok", 1);
+	alert.runModalLoop();
+}
+//===========================================================================================
 static void showMessage(String message){
 	AlertWindow alert("Cabbage Message" , message, AlertWindow::NoIcon);
 	alert.showMessageBox(AlertWindow::NoIcon, "Cabbage Message" , message, "Ok");
 }
-
 //===========================================================================================
 static void showMessageWithLocation(String message){
 File thisFile(File::getSpecialLocation(File::currentApplicationFile));
@@ -75,14 +81,17 @@ File thisFile(File::getSpecialLocation(File::currentApplicationFile));
 	alert.showMessageBox(AlertWindow::NoIcon, thisFile.getFullPathName() , message, "Ok");
 }
 //===========================================================================================
-static void showMessage(float num){
+static void showMessage(float num, LookAndFeel* feel){
 	String str(num);
 	File thisFile(File::getSpecialLocation(File::currentApplicationFile));
 
 	AlertWindow alert(thisFile.getFullPathName(), str, AlertWindow::NoIcon);
+	alert.setLookAndFeel(feel);
 	alert.showMessageBox(AlertWindow::NoIcon, thisFile.getFullPathName(), str, "Ok");
+
 }
 
+//===========================================================================================
 StringArray CreateStringArray(std::string str)
 {
 	StringArray strArray;
@@ -123,14 +132,28 @@ static String cabbageString (String input, Font font, float availableWidth)
 		return input;
 }
 
-//==========================================================================================
-static Font widgetText()
+//========= Normal font for components ===============================================
+static Font componentFont()
 {
 	Font font = Font (T("Verdana"), 12, 1);
 	return font;
 }
 
-//======= for group components etc =========================================================
+//======= For slider values etc ======================================================
+static Font valueFont()
+{
+	Font font = Font (T("Helvetica"), 12, 1);
+	return font;
+}
+
+//====== Font Colour ================================================================
+static Colour componentFontColour()
+{
+	Colour cl = Colour::fromRGBA (160, 160, 160, 255);
+	return cl;
+}
+
+//====== for group components etc ==========================================================
 static Colour componentSkin()
 {
 	Colour skin = Colour::fromRGBA (45, 55, 60, 255);
@@ -144,21 +167,22 @@ static Colour backgroundSkin()
 	return skin;
 }
 
-static bool isNumber(double x) 
-{
-	// This looks like it should always be true, 
-    // but it's false if x is a NaN.
-    return (x == x); 
-}
 //==========================================================================================
-
 void cabbageSleep(unsigned int mseconds)
 {
     clock_t goal = mseconds + clock();
     while (goal > clock());
 }
 
+//======== Check if NaN ====================================================================
+static bool isNumber(double x) 
+{
+	// This looks like it should always be true, 
+    // but it's false if x is a NaN.
+    return (x == x); 
+}
 
+//==========================================================================================
 long cabbageFindPluginID(unsigned char *buf, size_t len, const char *s)
 {
 	long i, j;
@@ -184,6 +208,7 @@ long cabbageFindPluginID(unsigned char *buf, size_t len, const char *s)
 	//return position of plugin ID 
 	return ret;
 }
+
 
 };
 

@@ -1,27 +1,27 @@
 <Cabbage>
 form caption("Cabbage Formant Synth"), size(520, 310) 
 
-xypad bounds(0, 0, 250, 210), channel("form1", "form2"), text("Formant Frequnecy  1/2"), rangex(50, 800, 100), rangey(600, 1200, 600)
+xypad bounds(0, 0, 250, 210), channel("form1", "form2"), text("Formant Frequency  1/2"), rangex(50, 800, 100), rangey(600, 1200, 600)
 
 groupbox bounds(260, 0, 240, 100), text("Formant Parameters One"), plant("formant1"){ 
 rslider bounds(15, 30, 60, 60), text("Amp"), colour("white"), channel("amp1"), range(0, .5, .5)
 rslider bounds(65, 30, 60, 60), text("BW"), colour("white"), channel("bw1"), range(10, 120, 60)
-rslider bounds(115, 30, 60, 60), text("Rise"), colour("white"), channel("rise1"), range(0.001, 0.01, 0.001)
-rslider bounds(165, 30, 60, 60), text("Decay"), colour("white"), channel("dec1"), range(0.001, 0.01, 0.001)
+rslider bounds(115, 30, 60, 60), text("Rise"), colour("white"), channel("rise1"), range(0.001, 0.01, 0.001, 1, 0.001)
+rslider bounds(165, 30, 60, 60), text("Decay"), colour("white"), channel("dec1"), range(0.001, 0.01, 0.001, 1, 0.001)
 }
 
 groupbox bounds(260, 105, 240, 100), text("Formant Parameters Two"), plant("formant2"){ 
 rslider bounds(15, 30, 60, 60), text("Amp"), colour("dodgerblue"), channel("amp2"), range(0, .5, .1)
 rslider bounds(65, 30, 60, 60), text("BW"), colour("dodgerblue"), channel("bw2"), range(10, 120, 60)
-rslider bounds(115, 30, 60, 60), text("Rise"), colour("dodgerblue"), channel("rise2"), range(0.001, 0.01, 0.001)
-rslider bounds(165, 30, 60, 60), text("Decay"), colour("dodgerblue"), channel("dec2"), range(0.001, 0.01, 0.001)
+rslider bounds(115, 30, 60, 60), text("Rise"), colour("dodgerblue"), channel("rise2"), range(0.001, 0.01, 0.001, 1, 0.001)
+rslider bounds(165, 30, 60, 60), text("Decay"), colour("dodgerblue"), channel("dec2"), range(0.001, 0.01, 0.001, 1, 0.001)
 }
 
 keyboard bounds(0, 220, 500, 70)
 </Cabbage>
 <CsoundSynthesizer>
 <CsOptions>
--n -d -+rtmidi=NULL -M0 --midi-key-cps=4 
+-n -d -+rtmidi=NULL -M0 --midi-key-cps=4  --midi-velocity-amp=5 
 </CsOptions>
 <CsInstruments>
 sr = 44100 
@@ -30,7 +30,7 @@ nchnls = 2
 0dbfs  = 1 
 
 instr 1
-aEnv madsr 0.01, .5, .6, .1	;master envelope
+aEnv madsr 0.01, p5*.5, .6, .1	;master envelope
 
 kFunkItUp madsr 0.01, .2, .4, .4
 

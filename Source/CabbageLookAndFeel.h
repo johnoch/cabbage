@@ -19,6 +19,7 @@ public:
 	CabbageLookAndFeel();
 	~CabbageLookAndFeel();
 
+	Image drawCheckMark();
 	Image drawRotaryImage(int diameter, const Colour circleFill, float sliderPosProportional, bool useBigImage);
 	Image drawLinearBgImage (float width, float height, float sliderPosProportional, bool isVertical);
 	Image drawLinearThumbImage (float width, float height, const Colour thumbFill, bool isVertical);
@@ -68,6 +69,14 @@ public:
                                       MenuBarComponent &menuBar);
 
 	void drawPopupMenuBackground(Graphics &g, int width, int height);
+	virtual void drawPopupMenuItem (Graphics &g, int width, int height, bool isSeparator, bool isActive, bool isHighlighted, 
+																											bool isTicked, 
+																											bool hasSubMenu, 
+																											const String &text, 
+																											const String &shortcutKeyText, 
+																											Image *image, 
+																											const Colour *const textColour);
+
 	juce_UseDebuggingNewOperator
 
 

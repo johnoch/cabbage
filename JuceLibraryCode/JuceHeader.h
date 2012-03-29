@@ -22,6 +22,8 @@
  #include "../../../juce_amalgamated.h"
 #endif
 
+
+
 namespace ProjectInfo
 {
     const char* const  projectName    = "Plugin Host";

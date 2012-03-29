@@ -260,8 +260,8 @@ CabbageGUIClass::CabbageGUIClass(String compStr, int ID):
     else if(strTokens[0].indexOfIgnoreCase("form")!=-1){
           top = 10;
           left = 10;
-          width = 280;
-          height = 122;
+          width = 600;
+          height = 300;
           name = "form";
 		  type = "form";
 		  text = "";
@@ -433,6 +433,7 @@ int CabbageGUIClass::parse(String str)
 					items.add(strTokens[i]);
 					i++;
 				}
+
 				//messing with my checkbox!
 				comboRange = i;
               }

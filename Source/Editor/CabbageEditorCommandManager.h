@@ -21,7 +21,7 @@ namespace CommandIDs
 	static const int editZoomIn			= 0x2016;
 	static const int editZoomOut		= 0x2017;
 
-
+	static const int viewHelp			= 0x2018;
 };
 
 //==============================================================================
@@ -29,6 +29,7 @@ namespace CommandCategories
 {
     static const char* const file = "File";
     static const char* const edit = "Edit";
+	static const char* const help = "Help";
 }
 
 //==============================================================================

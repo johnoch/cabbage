@@ -20,15 +20,12 @@
 #ifndef __JUCE_STANDALONEFILTERWINDOW_JUCEHEADER__
 #define __JUCE_STANDALONEFILTERWINDOW_JUCEHEADER__
 
-using namespace std; 
-
 #include "../Editor/CabbageEditorWindow.h"
 #include "../CabbageUtils.h"
 #include "../CabbageLookAndFeel.h"
 #include "../Plugin/CabbagePluginProcessor.h"
 
 extern ApplicationProperties* appProperties;
-
 
 //==============================================================================
 // This is the main host window. It gets instatiated in StandaloneFilterApp.cpp
@@ -85,7 +82,7 @@ public:
 		}
 
 		void connectionLost(){
-			showMessage("Connection with WinXound has been lost, please restart Cabbage");
+			showMessage("Connection with WinXound has been lost, please restart Cabbage", nullptr);
 			Logger::writeToLog(T("Connection #") + String (ourNumber) + T(" - connection lost"));
 		}
 
@@ -129,8 +126,7 @@ public:
 	void resized();
 	void changeListenerCallback(ChangeBroadcaster *source);
 	void actionListenerCallback (const String& message);
-	int exportPlugin(String type);
-	ScopedPointer<HintDialogWindow> hintDialog;
+	int exportPlugin(String type, bool saveAs);
 	void openFile();
 	void saveFile();
 	void saveFileAs();
@@ -155,7 +151,6 @@ public:
 
 private:
 	bool timerRunning;
-	bool helpInfo;
 	int setUniquePluginID(File inFile, File csdFile);
 	float yAxis;
 	void timerCallback();
@@ -176,9 +171,129 @@ private:
 	bool pipeOpenedOk;
 	ScopedPointer<CabbageLookAndFeel> lookAndFeel;
 	ScopedPointer<CabbageEditorWindow> cabbageCsoundEditor;
-
+	String consoleMessages;
 	
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (StandaloneFilterWindow);
 };
 
 #endif   // __JUCE_STANDALONEFILTERWINDOW_JUCEHEADER__
+
+
+/*
+class CabbageSettingsDialogue    : public DocumentWindow
+{
+public:
+    //==============================================================================
+	//custom property panel class
+	class CabbagePropertyPanel : public Component
+	{
+	public:
+	class propSlot: public Component,
+					 public Button::Listener
+		{
+			
+			ScopedPointer<TextButton> browseButton;
+			ScopedPointer<ToggleButton> toggleButton;
+			ScopedPointer<Label> propLabel;
+			ScopedPointer<TextEditor> helpDirectory;
+			Rectangle<int> dimensions;
+			int x, y, width, height;
+			String showComp;
+			ScopedPointer<OldSchoolLookAndFeel> oldLook;
+
+		public:
+			propSlot(Rectangle<int> rect, String name, String comp):
+							dimensions(rect), showComp(comp)
+				{	
+						propLabel = new Label(name);
+						oldLook = new OldSchoolLookAndFeel();
+						propLabel->setLookAndFeel(oldLook);
+						propLabel->setColour(Label::textColourId, Colours::white);
+						//propLabel->setColour(Label::ColourIds::outlineColourId, Colours::cornflowerblue);
+						//propLabel->setColour(Label::backgroundColourId, Colours::cornflowerblue);
+						propLabel->setText(name, false);
+						addAndMakeVisible(propLabel);
+	
+						helpDirectory = new TextEditor();
+						//helpDirectory->setLookAndFeel(oldLook);
+						addAndMakeVisible(helpDirectory);
+						helpDirectory->setScrollbarsShown(false);
+						helpDirectory->setColour(TextEditor::textColourId, Colours::white);
+						helpDirectory->setColour(TextEditor::backgroundColourId, Colours::grey);
+						helpDirectory->setColour(TextEditor::ColourIds::outlineColourId, Colours::white);
+						helpDirectory->setColour(TextEditor::ColourIds::shadowColourId, Colours::pink); 
+						helpDirectory->setText("C:\\MyDocuments\\SourceCode\\Csound5\\csoundInstall\\Csound\\doc\\manual");
+						helpDirectory->setCaretPosition(0);
+						if(showComp=="browse"){
+						browseButton = new TextButton("Browse");
+						addAndMakeVisible(browseButton);
+						}
+						else if(showComp=="toggle"){
+						toggleButton = new ToggleButton("Browse");
+						addAndMakeVisible(toggleButton);
+						}
+				}
+
+			~propSlot(){}
+
+			void paint(Graphics &g){
+						g.fillAll(Colours::black);
+				}
+
+			void resized(){
+						propLabel->setBounds(0, 0, 120, dimensions.getHeight());
+						if(showComp=="browse"){
+						helpDirectory->setBounds(125, 0, dimensions.getWidth()-225, dimensions.getHeight());
+						browseButton->setBounds(dimensions.getWidth()-100, 0, 100, dimensions.getHeight());
+					}
+				}
+
+			void buttonClicked (Button*){}
+	
+	};
+
+	//Property panel constructor	
+	CabbagePropertyPanel(Rectangle<int> rect){
+	//CabbageUtils::showMessage(String(rect.getWidth()));
+	props.add(new propSlot(rect, "Csound Help Manual", "browse"));
+	//props.add(new propSlot(rect, "Home .csd directory", "browse"));
+
+	//props.getUnchecked(0)->setBounds(rect);
+	for(int i=0;i<props.size();i++)
+	addAndMakeVisible(props.getUnchecked(i));
+	}
+
+	~CabbagePropertyPanel(){
+
+	}
+
+	void resized(){
+		props.getUnchecked(0)->setBounds(0, 0, this->getWidth(), this->getHeight()); 
+	}
+
+	private:
+		OwnedArray<propSlot> props; 
+	};
+	//end of custom property panel
+
+	CabbageSettingsDialogue (const String& title,
+                            const Colour& backgroundColour, int width, int height): DocumentWindow (title, backgroundColour,
+								DocumentWindow::closeButton)
+	{	
+	Rectangle<int> rect(width, 25);
+	setAlwaysOnTop(true);
+	Rectangle<int> screen = getParentMonitorArea();
+	setTopLeftPosition((screen.getWidth()/2)-this->getWidth()/2, (screen.getHeight()/2)-this->getHeight()/2);  
+	propPanel = new CabbagePropertyPanel(rect);
+	propPanel->setSize(width, height);
+	setContentOwned(propPanel, true);
+	}
+
+	~CabbageSettingsDialogue(){};
+
+	void closeButtonPressed(){
+		setVisible(false);
+	}
+	ScopedPointer<CabbagePropertyPanel> propPanel;
+};
+*/

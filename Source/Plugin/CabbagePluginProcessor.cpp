@@ -41,6 +41,9 @@ changeMessageType(""),
 guiOnOff(guiOnOff),
 currentLine(-99)
 {
+
+setPlayConfigDetails(2, 2, 44100, 512); 
+
 #ifndef Cabbage_No_Csound
 //don't start of run Csound in edit mode
 if(!isGuiEnabled()){
@@ -57,6 +60,8 @@ csoundChanList = NULL;
 numCsoundChannels = 0;
 csndIndex = 32;
 csound->SetMessageCallback(CabbagePluginAudioProcessor::messageCallback);
+
+//if(!csdFile.exists())showMessage("Csound file doesn't exist? The file should be in the same directory as the plugin");
 
 if(!inputfile.isEmpty()){
 csCompileResult = csound->Compile( const_cast<char*>(inputfile.toUTF8().getAddress()));
@@ -85,6 +90,12 @@ else
 Logger::writeToLog("Welcome to Cabbage");
 }//end of guiEnabled() check
 #endif
+
+#ifdef Cabbage_Plugin_Host
+createGUI(csdFile.loadFileAsString());
+#endif
+
+
 }
 #else
 
@@ -172,6 +183,7 @@ if(!isGuiEnabled()){
 		csound = nullptr;
 		Logger::writeToLog("Csound cleaned up");
 	}
+
 }//end of gui enabled check
 #endif
 }
@@ -374,7 +386,7 @@ try{
  // if(ud->cabbageCsoundEditor)
 	//  if(ud->cabbageCsoundEditor->isShowing())
 		//ud->cabbageCsoundEditor->setCsoundOutputText(ud->csoundOutput);
-#ifdef Cabbage_Named_Pipe
+#ifdef Cabbage_Named_Pipe && Cabbage_Build_Standalone
   ud->sendChangeMessage();
 // MOD - End
 #endif
@@ -708,10 +720,14 @@ try{
 		   *mbuf++ = (unsigned char)message.getVelocity();
 		   cnt += 3;
 		   }
-		   else if(message.isController()){
-	  
+		/*   
+		else if(message.isController()){
+			*mbuf++ = (unsigned char)0x7B + message.getChannel();
+			*mbuf++ = (unsigned char)message.getControllerNumber();
+			*mbuf++ = (unsigned char)message.getControllerValue();
+		   cnt += 3;	  
 		  }
-            
+        */    
 	   }
 	   midiData->midiBuffer.clear();
 	}

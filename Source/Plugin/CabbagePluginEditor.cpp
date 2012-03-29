@@ -88,6 +88,7 @@ layoutEditor->updateFrames();
 
 CabbagePluginAudioProcessorEditor::~CabbagePluginAudioProcessorEditor()
 {
+getFilter()->editorBeingDeleted(this);
 #ifdef Cabbage_GUI_Editor
 //delete componentPanel;
 //delete layoutEditor;
@@ -1618,7 +1619,8 @@ for(int i=0;i<getFilter()->getGUILayoutCtrlsSize();i++){
 	
 }
 
-
+//Check to see if I can use the same means to control sliders if they are in the host application. But 
+//	I can't unless I hack the proceeBlcok() method...
 #ifdef Cabbage_Build_Standalone
 	//make sure that the instrument needs midi before turning this on
    MidiMessage message(0xf4, 0, 0, 0);
