@@ -170,7 +170,11 @@ void CsoundEditor::getCommandInfo (const CommandID commandID, ApplicationCommand
         break;
 	case CommandIDs::viewHelp:
 		result.setInfo (T("View Help"), T("View Help"), CommandCategories::help, 0);
-		result.defaultKeypresses.add(KeyPress(KeyPress::F1Key));
+		result.addDefaultKeypress (T('2'), ModifierKeys::commandModifier);
+		break;
+	case CommandIDs::viewSource:
+		result.setInfo (T("View Source"), T("View Help"), CommandCategories::help, 0);
+		result.addDefaultKeypress (T('1'), ModifierKeys::commandModifier);
 		break;
 		
 	}
@@ -194,7 +198,8 @@ void CsoundEditor::getAllCommands (Array <CommandID>& commands)
 								CommandIDs::editZoomIn,
 								CommandIDs::editZoomOut,
 
-								CommandIDs::viewHelp
+								CommandIDs::viewHelp,
+								CommandIDs::viewSource
 	};
 	commands.addArray (ids, sizeof (ids) / sizeof (ids [0]));
 }
@@ -284,7 +289,7 @@ bool CsoundEditor::perform (const InvocationInfo& info)
 			//showMessage(appProperties->getUserSettings()->getValue("htmlHelp", "string"), lookAndFeel);
 			String helpDir = appProperties->getUserSettings()->getValue("CsoundHelpDir", "");
 			if(helpDir.length()<2)
-				showMessage("Please set the Csound manual directory in the Preference menu");		
+				showMessage("Please set the Csound manual directory in the Preference menu", lookAndFeel);		
 			else{
 			
 			CodeDocument::Position pos1, pos2;
@@ -316,6 +321,10 @@ bool CsoundEditor::perform (const InvocationInfo& info)
 				}
 			}
 			break;
+		}
+	case CommandIDs::viewSource:
+		{	
+			tabComp->setCurrentTabIndex(0);
 		}
 
 	}
@@ -356,6 +365,7 @@ else if(topLevelMenuIndex==1)
 else if(topLevelMenuIndex==2)
 	{
 	m1.addCommandItem(&commandManager, CommandIDs::viewHelp);
+	m1.addCommandItem(&commandManager, CommandIDs::viewSource);
 	return m1;
 	}
 	

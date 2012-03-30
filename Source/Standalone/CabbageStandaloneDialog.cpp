@@ -472,12 +472,12 @@ void StandaloneFilterWindow::buttonClicked (Button*)
 	subMenu.addItem(15, TRANS("Plugin Synth"));
 	subMenu.addItem(16, TRANS("Plugin Effect"));
 	m.addSubMenu(TRANS("Export..."), subMenu);
-
+#ifndef MACOSX
 	subMenu.clear();
 	subMenu.addItem(5, TRANS("Plugin Synth"));
 	subMenu.addItem(6, TRANS("Plugin Effect"));
 	m.addSubMenu(TRANS("Export Plugin As..."), subMenu);
-
+#endif
     m.addSeparator();
 	if(isAlwaysOnTop())
 	m.addItem(7, T("Always on Top"), true, true);
@@ -748,7 +748,7 @@ if(!csdFile.exists()){
 			loc_csdFile.replaceWithText(csdFile.loadFileAsString());
 			setUniquePluginID(dll, loc_csdFile);
 			String info;
-			info = T("Your plugin has been created. It's called:\n\n")+dll.getFullPathName()+T("\n\nIn order to modify this plugin you only have to edit and save the Csound and Cabbage code. You do not need to export every time you make changes.\n\nTo turn off this notice visit 'Preferences' in the main 'options' menu");
+			info = T("Your plugin has been created. It's called:\n\n")+dll.getFullPathName()+T("\n\nIn order to modify this plugin you only have to edit the associated .csd file. You do not need to export every time you make changes.\n\nTo turn off this notice visit 'Preferences' in the main 'options' menu");
 			
 			int val = appProperties->getUserSettings()->getValue("DisablePluginInfo", var(0)).getFloatValue();
 			if(!val)
@@ -769,18 +769,21 @@ if(!csdFile.exists()){
 	FileChooser saveFC(T("Save as..."), File::nonexistent, T(".vst"));
 	String VST;
 	if (saveFC.browseForFileToSave(true)){
-		showMessage("name of file is:");
-		showMessage(saveFC.getResult().withFileExtension(".vst").getFullPathName());
+		//showMessage("name of file is:");
+		//showMessage(saveFC.getResult().withFileExtension(".vst").getFullPathName());
 				
 		if(type.contains("VSTi"))
-			VST = thisFile.getParentDirectory().getFullPathName() + T("//CabbagePluginSynth.dat");
+			//VST = thisFile.getParentDirectory().getFullPathName() + T("//CabbagePluginSynth.dat");
+			VST = thisFile.getFullPathName()+"/Contents/CabbagePluginSynth.dat";
 		else if(type.contains(T("VST")))
-			VST = thisFile.getParentDirectory().getFullPathName() + T("//CabbagePluginEffect.dat");
+			//VST = thisFile.getParentDirectory().getFullPathName() + T("//CabbagePluginEffect.dat");
+			VST = thisFile.getFullPathName()+"/Contents/CabbagePluginEffect.dat";
 		else if(type.contains(T("AU"))){
 			showMessage("this feature is coming soon");
 			//VST = thisFile.getParentDirectory().getFullPathName() + T("\\CabbageVSTfx.component");
 		}
-		showMessage(String("Cabbage VST binary:")+VST);
+		//showMessage(thisFile.getFullPathName()+"/Contents/CabbagePluginSynth.dat");
+		
 		String plist  = T("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
 		plist.append(T("<!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">\n"), MAXBYTES);
 		plist.append(T("<plist version=\"1.0\">\n"), MAXBYTES);
@@ -804,9 +807,9 @@ if(!csdFile.exists()){
 		
 		//create a copy of the data package and write it to the new location given by user
 		File VSTData(VST);
-		if(VSTData.exists())showMessage("lib exists");
-		else{
-			showMessage("non existo!");	
+		if(!VSTData.exists()){
+			showMessage("Cabbage cannot find the plugin libraries. Make sure that Cabbage is situated in the same directory as CabbagePluginSynth.dat and CabbagePluginEffect.dat", lookAndFeel);
+			return 0;
 		}
 		
 		
@@ -817,21 +820,21 @@ if(!csdFile.exists()){
 		
 		File dll(saveFC.getResult().withFileExtension(plugType).getFullPathName());
 		
-		if(VSTData.copyFileTo(dll));
-		showMessage("copied");
+		VSTData.copyFileTo(dll);
+		//showMessage("copied");
 		
 		
 		
 		File pl(dll.getFullPathName()+T("/Contents/Info.plist"));
-		showMessage(pl.getFullPathName());
+		//showMessage(pl.getFullPathName());
 		pl.replaceWithText(plist);
 
 		
 		
 		File loc_csdFile(dll.getFullPathName()+T("/Contents/")+saveFC.getResult().getFileNameWithoutExtension()+T(".csd"));		
 		loc_csdFile.replaceWithText(csdFile.loadFileAsString());		
-		showMessage(loc_csdFile.getFullPathName());
-		showMessage(csdFile.loadFileAsString());
+		//showMessage(loc_csdFile.getFullPathName());
+		//showMessage(csdFile.loadFileAsString());
 		csdFile = loc_csdFile;		
 		
 		//showMessage(VST+T("/Contents/MacOS/")+saveFC.getResult().getFileNameWithoutExtension());
@@ -841,6 +844,13 @@ if(!csdFile.exists()){
 		bin.moveFileTo(dll.getFullPathName()+T("/Contents/MacOS/")+saveFC.getResult().getFileNameWithoutExtension());
 		setUniquePluginID(bin, loc_csdFile);
 		}
+		
+		String info;
+		info = T("Your plugin has been created. It's called:\n\n")+dll.getFullPathName()+T("\n\nIn order to modify this plugin you only have to edit the current .csd file. You do not need to export every time you make changes. To open the current csd file with Cabbage in another session, go to 'Open Cabbage Instrument' and select the .vst file. Cabbage will the load the associated .csd file. \n\nTo turn off this notice visit 'Preferences' in the main 'options' menu");
+		
+		int val = appProperties->getUserSettings()->getValue("DisablePluginInfo", var(0)).getFloatValue();
+		if(!val)
+			showMessage(info, lookAndFeel);		
 		
 
 	}
@@ -877,8 +887,6 @@ for(int i=0;i<csdText.size();i++)
 
 size_t file_size;
 const char *pluginID = "YROR";
-const char *pluginName = "CabbageEffectNam";
-
 
 long loc;
 fstream mFile(binFile.getFullPathName().toUTF8(), ios_base::in | ios_base::out | ios_base::binary);
@@ -900,6 +908,7 @@ if(mFile.is_open())
 
 #ifdef WIN32
 	//set plugin name based on .csd file
+	const char *pluginName = "CabbageEffectNam";
 	String plugLibName = csdFile.getFileNameWithoutExtension();
 	if(plugLibName.length()<16)
 		for(int y=plugLibName.length();y<16;y++)

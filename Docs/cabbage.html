@@ -90,7 +90,7 @@ ul, ol, li > p {
   margin-top: 0;
 }
 ul > li     { color: #aaa; }
-ul > li > * { color: black; }
+ul > li > * { color: white; }
 
 pre {
   padding: 0;
@@ -755,7 +755,7 @@ asciidoc.install(2);
 <div id="content">
 <div id="preamble">
 <div class="sectionbody">
-<div class="paragraph"><p>Cabbage is a software for prototyping and developing audio plugins with the Csound audio synthesis language. It provides Csound programmers with a simple albeit powerful toolkit for the development of cross-platform audio software. Pre-built binaries for Microsoft Windows and Apple OSX are available from code.google.com/p/cabbage</p></div>
+<div class="paragraph"><p>Cabbage is a software for prototyping and developing audio plugins with the Csound audio synthesis language. It provides Csound programmers with a simple albeit powerful toolkit for the development of cross-platform audio software. Pre-built binaries for Microsoft Windows and Apple OSX(Built on 10.6) are available from code.google.com/p/cabbage</p></div>
 <div class="paragraph"><p>This document will take you through the basics of using Cabbage. It starts with a look at features provided by the host and then moves on to some simple examples. The text concludes with a reference section for the various GUI controls available in Cabbage. It&#8217;s assumed that the reader has some prior knowledge of Csound.</p></div>
 </div>
 </div>
@@ -848,7 +848,7 @@ asciidoc.install(2);
 </div>
 <div class="sect2">
 <h3 id="_a_basic_cabbage_synthesiser">A basic Cabbage synthesiser</h3>
-<div class="paragraph"><p>Code to create the most basic of Cabbage synthesisers is presented below. This instrument uses the MIDI interop command line flags to pipe MIDI data directly to p-fields in instrument 1. In this case all MIDI pitch data is sent directly to p4, and all MIDI amplitude data is sent to p5.</p></div>
+<div class="paragraph"><p>Code to create the most basic of Cabbage synthesisers is presented below. This instrument uses the MIDI interop command line flags to pipe MIDI data directly to p-fields in instrument 1. In this case all MIDI pitch data is sent directly to p4, and all MIDI amplitude data is sent to p5. MIDI data been sent on channel 1 will cause instrument 1 to play. Data being sent on channel 2 will cause instrument 2 to play. It has been reported that the <em>massign</em> opcode does not work as expected with Cabbage. This is currently under investigation.</p></div>
 <div class="listingblock">
 <div class="content">
 <pre><tt>&lt;Cabbage&gt;
@@ -927,7 +927,7 @@ f0 3600
 &lt;/CsScore&gt;
 &lt;/CsoundSynthesizer&gt;</tt></pre>
 </div></div>
-<div class="paragraph"><p>In the example above we use a <em>hslider</em> which is a horizontal slider. The bounds() identifier sets up the position and size of the widget. The most important identifier is channel("gain"). It is passed a string called <em>gain". This is the same string we pass to 'chnget</em> in our Csound code. When a user moves the slider, the current position of the slider is sent to Csound on a channel named "gain". Without the channel() identifier no communication would take place between the Cabbage control and Csound. The above example also uses a MIDI keyboard that can be used en lieu of a real MIDI keyboard.</p></div>
+<div class="paragraph"><p>In the example above we use a <em>hslider</em> control which is a horizontal slider. The bounds() identifier sets up the position and size of the widget. The most important identifier is channel("gain"). It is passed a string called <em>gain". This is the same string we pass to 'chnget</em> in our Csound code. When a user moves the slider, the current position of the slider is sent to Csound on a channel named "gain". Without the channel() identifier no communication would take place between the Cabbage control and Csound. The above example also uses a MIDI keyboard that can be used en lieu of a real MIDI keyboard.</p></div>
 <div class="paragraph"><p><span class="image">
 <img src="simpleSynth.png" alt="Cabbage" />
 </span></p></div>
@@ -1003,7 +1003,7 @@ i1 0 1000
 <div class="paragraph"><p>Each and every Cabbage control has a numbers of possible identifiers that can be used to tell Cabbage how it will look and behave. All parameters except <em>pos()</em> have default values so they are optional and don&#8217;t have to be set. In the reference tables below any identifiers enclosed in square brackets are optional.</p></div>
 <div class="paragraph"><p>As pos() and size() are the next most useful identifiers they can be set in one go using the bounds() identifier:</p></div>
 <div class="paragraph"><p><em>bounds(x, y, width, height)</em>: integer values that set position and size on screen(in pixels)</p></div>
-<div class="paragraph"><p>Below is a list of the different GUI controls currently available in Cabbage.</p></div>
+<div class="paragraph"><p>Below is a list of the different GUI controls currently available in Cabbage. Controls can be split into two groups, interactive controls and non-interactive controls. The non-interactive controls such as group boxes and images don&#8217;t interact in any way with either Csound or plugin hosts. The interactive controls such as sliders and buttons do interact with Csound. Each interactive control that one inserts into a Cabbage instrument will be accessible in a plugin host if the instrument has been exported as a plugin. The name that appears beside each native slider in the plugin host will be the assigned channel name for that control.</p></div>
 <div class="admonitionblock">
 <table><tr>
 <td class="icon">
@@ -1067,7 +1067,7 @@ i1 0 1000
 <td class="icon">
 <img src="smallLogo.png" alt="Note" />
 </td>
-<td class="content">you can only use one MIDI keyboard component with each Cabbage instrument. Also note that the keyboard can be played at different velocities depending on where you click on the key with your mouse. Clicking at the top of the key will cause a smaller velocity while clicking on the bottom will cause the note to sound with full velocity. .</td>
+<td class="content">you can only use one MIDI keyboard component with each Cabbage instrument. Also note that the keyboard can be played at different velocities depending on where you click on the key with your mouse. Clicking at the top of the key will cause a smaller velocity while clicking on the bottom will cause the note to sound with full velocity. Finally, if you insist on playing the keyboard like a nutter in standalone mode you might experience some unexpected results. The keyboard control is only provided as a quick and easy means of testing plugins in Cabbage. Treating it as anything more than that could result in severe disappointment!</td>
 </tr></table>
 </div>
 <div class="paragraph"><p>Example:</p></div>
@@ -1085,7 +1085,7 @@ i1 0 1000
 <div class="content">
 <pre><tt>csoundoutput bounds(x, y, width, height), text("name")</tt></pre>
 </div></div>
-<div class="paragraph"><p>csoundoutput will let you view the Csound output console within your instrument&#8217;s GUI, useful when debugging Csound instruments.</p></div>
+<div class="paragraph"><p>csoundoutput will let you view the Csound output console within your instrument&#8217;s GUI, useful when deslugging Cabbage instruments.</p></div>
 <div class="paragraph"><p><em>bounds(x, y, width, height)</em>: integer values that set position and size on screen(in pixels)</p></div>
 <div class="paragraph"><p><em>text("name")</em>: "name" will be the text that appears on the top of the check box.</p></div>
 <div class="paragraph"><p>Example:</p></div>
@@ -1134,7 +1134,7 @@ image bounds(30, 30, 200, 150), file("logo_cabbage_sw_no_text.png")</tt></pre>
 <div class="paragraph"><p><em>bounds(x, y, width, height)</em>: integer values that set position and size on screen(in pixels)</p></div>
 <div class="paragraph"><p><em>channel("chanName")</em>: "chanName" is the name of the channel upon which to communicate with Csound(see examples above).</p></div>
 <div class="paragraph"><p><em>caption("caption")</em>: This identifier lets you place your control within a groupbox. "caption" is the text that will appear on groupbox. This identifier is useful for naming and containing controls.</p></div>
-<div class="paragraph"><p><em>range(min, max, value, skew, incr)</em>: the first 2 parameters are required. The rest are optional. The first two paramters let you set the minimum value and the maximum value. The next parameter determines the initial value of the slider. The next allows you to adjust the skew factor. Tweaking the skew factor can cause the slider to output values in a non linear fashion. A skew of 0.5 will cause the slider to output values in an exponential fashion. A skew of 1 is the default value, which causes the slider to bahave is a typical linear form.</p></div>
+<div class="paragraph"><p><em>range(min, max, value, skew, incr)</em>: the first 2 parameters are required. The rest are optional. The first two parameters let you set the minimum value and the maximum value. The next parameter determines the initial value of the slider. The next allows you to adjust the skew factor. Tweaking the skew factor can cause the slider to output values in a non linear fashion. A skew of 0.5 will cause the slider to output values in an exponential fashion. A skew of 1 is the default value, which causes the slider to behave is a typical linear form.</p></div>
 <div class="admonitionblock">
 <table><tr>
 <td class="icon">
@@ -1230,6 +1230,14 @@ checkbox bounds(130, 110, 120, 70), text("Mute"), channel("freq2"), value(1)</tt
 <div class="paragraph"><p><span class="image">
 <img src="combobox.png" alt="Combo" />
 </span></p></div>
+<div class="admonitionblock">
+<table><tr>
+<td class="icon">
+<img src="smallLogo.png" alt="Note" />
+</td>
+<td class="content">Combo boxes are proving a little troublesome when used in plugin hosts. We hope to resolve this issue shortly. In the mean time one can use a slider and split it into different regions.</td>
+</tr></table>
+</div>
 </div>
 <div class="sect2">
 <h3 id="_xypad">XYPad</h3>
@@ -1510,11 +1518,81 @@ cellspacing="0" cellpadding="4">
 </div>
 </div>
 </div>
+<div class="sect1">
+<h2 id="_troubleshooting_faqs_tips_and_tricks">Troubleshooting, FAQs, tips and tricks</h2>
+<div class="sectionbody">
+<div class="ulist"><ul>
+<li>
+<p>
+<em>Why doesn&#8217;t my VST host see my Cabbage plugins?</em>
+The most likely reason is that you have not added the directory containing your plugins to your host&#8217;s preferences. Most hosts will allow you to choose the folders that contain plugins. If you don&#8217;t set the Cabbage plugin directory then the host has no idea where your Cabbage plugins are located.
+</p>
+</li>
+<li>
+<p>
+<em>Why doesn&#8217;t my Cabbage plugin load?</em>
+The most likely reason a plugin will not load is because there are errors in the Csound code. Cabbage plugins will load regardless of errors in the Cabbage code, but errors in the Csound code will stop Csound from compiling successfully and prevent the plugin from loading. Always make sure that the code is error free before exporting.
+</p>
+</li>
+<li>
+<p>
+<em>One mega plugin or several smaller ones?</em>
+It&#8217;s a good idea to split multi-effects instruments into separate plugins. This allows greater modularity within you plugin host and can often lead to less demand on your PC&#8217;s CPU.
+</p>
+</li>
+<li>
+<p>
+<em>Mixing effects and instruments?</em>
+Adding an effect processor to a plugin instrument might seem like a good idea. For instance you might add some reverb to the output of your FM synth to create some nice presence. In general however it is best to keep them separate. Plugin instruments demand a whole lot more CPU than their effects siblings. Performance will be a lot smoother if you split the two processes up and simply send the output of your synthesiser into an instance of a Cabbage reverb effect plugin.
+</p>
+</li>
+<li>
+<p>
+<em>What&#8217;s up? My plugin makes a load of noise?</em>
+If you have nchnls set to 1 thre will be noise sent to the second, or right channel. Make sure taht nchnls is ALWAYS set to 2!
+</p>
+</li>
+<li>
+<p>
+<em>I can&#8217;t tell whether my sliders are controlling anything?!</em>
+There will be times when moving sliders or other interactive controls just doesn&#8217;t do what you might expect. The best way to de-slug Cabbage instruments is to use the <em>printk2</em> opcode in Csound. For instance if a slider is not behaving as expected make sure that Csound is receiving data from the slider on the correct channel. Using the code below should print the values of the slider to the Csound output console each time you move it. If not, then you most likely have the wrong channel name set.
+</p>
+</li>
+</ul></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>(...)
+k1 chnget "slider1"
+printk2 k1
+(...)</tt></pre>
+</div></div>
+<div class="ulist"><ul>
+<li>
+<p>
+<em>What gives? I&#8217;ve checked my channels and they are consistent, yet moving my sliders does nothing?</em>
+We have come across some cases of this happening. In all cases it was due to the fact that chosen channel name contained a /. Please try to use plain old letters for your channel names. Avoid using any kind of mathematical operators or fancy symbols and everything should be Ok.
+</p>
+</li>
+<li>
+<p>
+<em>Can I use nchnls to determine the number of output channels in my plugin?</em>
+Currently all Cabbage plugins are stereo by default. We are looking into ways of making plugins multichannel but limitations in the VST SDK are proving to be a stumbling block. It is something we are committed to finding a fix for.
+</p>
+</li>
+<li>
+<p>
+<em>Can I use Csound MACROs in the &lt;Cabbage&gt; section of my csd file?</em>
+I&#8217;m afraid not. The Cabbage section of your csd file is parsed by Cabbage&#8217;s own parser therefore it will not understand any Csound syntax whatsoever.
+</p>
+</li>
+</ul></div>
+</div>
+</div>
 </div>
 <div id="footnotes"><hr /></div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2012-03-27 01:48:40 GMT Daylight Time
+Last updated 2012-03-30 16:08:13 GMT Daylight Time
 </div>
 </div>
 </body>

@@ -3,9 +3,7 @@ image:hlogo_blue_text.png[Cabbage]
 ==================================
 
 
-
-
-Cabbage is a software for prototyping and developing audio plugins with the Csound audio synthesis language. It provides Csound programmers with a simple albeit powerful toolkit for the development of cross-platform audio software. Pre-built binaries for Microsoft Windows and Apple OSX are available from code.google.com/p/cabbage  
+Cabbage is a software for prototyping and developing audio plugins with the Csound audio synthesis language. It provides Csound programmers with a simple albeit powerful toolkit for the development of cross-platform audio software. Pre-built binaries for Microsoft Windows and Apple OSX(Built on 10.6) are available from code.google.com/p/cabbage  
 
 This document will take you through the basics of using Cabbage. It starts with a look at features provided by the host and then moves on to some simple examples. The text concludes with a reference section for the various GUI controls available in Cabbage. It's assumed that the reader has some prior knowledge of Csound. 
 
@@ -76,7 +74,7 @@ NOTE: This section does not go into details about each Cabbage control, nor does
 A basic Cabbage synthesiser
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Code to create the most basic of Cabbage synthesisers is presented below. This instrument uses the MIDI interop command line flags to pipe MIDI data directly to p-fields in instrument 1. In this case all MIDI pitch data is sent directly to p4, and all MIDI amplitude data is sent to p5. 
+Code to create the most basic of Cabbage synthesisers is presented below. This instrument uses the MIDI interop command line flags to pipe MIDI data directly to p-fields in instrument 1. In this case all MIDI pitch data is sent directly to p4, and all MIDI amplitude data is sent to p5. MIDI data been sent on channel 1 will cause instrument 1 to play. Data being sent on channel 2 will cause instrument 2 to play. It has been reported that the 'massign' opcode does not work as expected with Cabbage. This is currently under investigation. 
 
 ----------------------------------------------------------------------------
 <Cabbage>
@@ -151,9 +149,11 @@ f0 3600
 </CsoundSynthesizer>
 ----------------------------------------------------------------------------
 
-In the example above we use a 'hslider' which is a horizontal slider. The bounds() identifier sets up the position and size of the widget. The most important identifier is channel("gain"). It is passed a string called 'gain". This is the same string we pass to 'chnget' in our Csound code. When a user moves the slider, the current position of the slider is sent to Csound on a channel named "gain". Without the channel() identifier no communication would take place between the Cabbage control and Csound. The above example also uses a MIDI keyboard that can be used en lieu of a real MIDI keyboard. 
+In the example above we use a 'hslider' control which is a horizontal slider. The bounds() identifier sets up the position and size of the widget. The most important identifier is channel("gain"). It is passed a string called 'gain". This is the same string we pass to 'chnget' in our Csound code. When a user moves the slider, the current position of the slider is sent to Csound on a channel named "gain". Without the channel() identifier no communication would take place between the Cabbage control and Csound. The above example also uses a MIDI keyboard that can be used en lieu of a real MIDI keyboard. 
 
 image:simpleSynth.png[Cabbage]
+
+
 
 A basic Cabbage effect
 ~~~~~~~~~~~~~~~~~~~~~~
@@ -219,7 +219,7 @@ As pos() and size() are the next most useful identifiers they can be set in one 
 'bounds(x, y, width, height)': integer values that set position and size on screen(in pixels)
 
 
-Below is a list of the different GUI controls currently available in Cabbage.
+Below is a list of the different GUI controls currently available in Cabbage. Controls can be split into two groups, interactive controls and non-interactive controls. The non-interactive controls such as group boxes and images don't interact in any way with either Csound or plugin hosts. The interactive controls such as sliders and buttons do interact with Csound. Each interactive control that one inserts into a Cabbage instrument will be accessible in a plugin host if the instrument has been exported as a plugin. The name that appears beside each native slider in the plugin host will be the assigned channel name for that control.   
 
 [icon="smallLogo.png"]
 NOTE: In order to save space in the following reference section 'bounds()' will be used instead of 'pos()' and 'size()' wherever applicable. 
@@ -278,7 +278,7 @@ Keyboard create a piano keyboard that will send MIDI information to your Csound 
 'bounds(x, y, width, height)': integer values that set position and size on screen(in pixels)
 
 [icon="smallLogo.png"]
-NOTE: you can only use one MIDI keyboard component with each Cabbage instrument. Also note that the keyboard can be played at different velocities depending on where you click on the key with your mouse. Clicking at the top of the key will cause a smaller velocity while clicking on the bottom will cause the note to sound with full velocity. . 
+NOTE: you can only use one MIDI keyboard component with each Cabbage instrument. Also note that the keyboard can be played at different velocities depending on where you click on the key with your mouse. Clicking at the top of the key will cause a smaller velocity while clicking on the bottom will cause the note to sound with full velocity. Finally, if you insist on playing the keyboard like a nutter in standalone mode you might experience some unexpected results. The keyboard control is only provided as a quick and easy means of testing plugins in Cabbage. Treating it as anything more than that could result in severe disappointment!  
 
 Example:
 -----------------
@@ -293,7 +293,7 @@ CsoundOutput
 csoundoutput bounds(x, y, width, height), text("name") 
 -------------
 
-csoundoutput will let you view the Csound output console within your instrument's GUI, useful when debugging Csound instruments. 
+csoundoutput will let you view the Csound output console within your instrument's GUI, useful when deslugging Cabbage instruments. 
 
 'bounds(x, y, width, height)': integer values that set position and size on screen(in pixels)
 
@@ -351,7 +351,7 @@ Slider can be used to create an on-screen slider. Data can be sent to Csound on 
 
 'caption("caption")': This identifier lets you place your control within a groupbox. "caption" is the text that will appear on groupbox. This identifier is useful for naming and containing controls.  
 
-'range(min, max, value, skew, incr)': the first 2 parameters are required. The rest are optional. The first two paramters let you set the minimum value and the maximum value. The next parameter determines the initial value of the slider. The next allows you to adjust the skew factor. Tweaking the skew factor can cause the slider to output values in a non linear fashion. A skew of 0.5 will cause the slider to output values in an exponential fashion. A skew of 1 is the default value, which causes the slider to bahave is a typical linear form. 
+'range(min, max, value, skew, incr)': the first 2 parameters are required. The rest are optional. The first two parameters let you set the minimum value and the maximum value. The next parameter determines the initial value of the slider. The next allows you to adjust the skew factor. Tweaking the skew factor can cause the slider to output values in a non linear fashion. A skew of 0.5 will cause the slider to output values in an exponential fashion. A skew of 1 is the default value, which causes the slider to behave is a typical linear form. 
 
 [icon="smallLogo.png"]
 NOTE: For the moment 'min' must be less than 'max'. In other words you can't invert the slider. Also note that skew defaults to 1 when the slider is being controlled by MIDI.     
@@ -468,7 +468,7 @@ combobox bounds(0, 110, 120, 70), channel"freq"), caption("Freq"), items("200Hz"
 image:combobox.png[Combo]
 
 [icon="smallLogo.png"]
-NOTE: Combo boxes are proving a little troublesome when used in plugin hosts. We hope to resolve this issue shortly.     
+NOTE: Combo boxes are proving a little troublesome when used in plugin hosts. We hope to resolve this issue shortly. In the mean time one can use a slider and split it into different regions.      
 
 XYPad
 ~~~~~
@@ -524,12 +524,42 @@ This quick reference table table gives a list of the valid identifiers for each 
 |value		|		|x		|x		|x			|			|x			|x		|		|
 |==================================================================================================
 
-Tips and tricks 
----------------
-It's a good idea to split mutli-effects instrument into sperate plugins. This allows greater mofulairy within you plugin host. 
-If your plugin host doesn't see your plugin you most likely have the incorrect plugin directory set in your host.
+Troubleshooting, FAQs, tips and tricks 
+--------------------------------------
+- 'Why doesn't my VST host see my Cabbage plugins?'
+The most likely reason is that you have not added the directory containing your plugins to your host's preferences. Most hosts will allow you to choose the folders that contain plugins. If you don't set the Cabbage plugin directory then the host has no idea where your Cabbage plugins are located. 
+
+- 'Why doesn't my Cabbage plugin load?' 
+The most likely reason a plugin will not load is because there are errors in the Csound code. Cabbage plugins will load regardless of errors in the Cabbage code, but errors in the Csound code will stop Csound from compiling successfully and prevent the plugin from loading. Always make sure that the code is error free before exporting.
+
+- 'One mega plugin or several smaller ones?'
+It's a good idea to split multi-effects instruments into separate plugins. This allows greater modularity within you plugin host and can often lead to less demand on your PC's CPU.
+
+- 'Mixing effects and instruments?'
+Adding an effect processor to a plugin instrument might seem like a good idea. For instance you might add some reverb to the output of your FM synth to create some nice presence. In general however it is best to keep them separate. Plugin instruments demand a whole lot more CPU than their effects siblings. Performance will be a lot smoother if you split the two processes up and simply send the output of your synthesiser into an instance of a Cabbage reverb effect plugin. 
+
+- 'What's up? My plugin makes a load of noise?'
+If you have nchnls set to 1 thre will be noise sent to the second, or right channel. Make sure taht nchnls is ALWAYS set to 2!
+
+- 'I can't tell whether my sliders are controlling anything?!'
+There will be times when moving sliders or other interactive controls just doesn't do what you might expect. The best way to de-slug Cabbage instruments is to use the 'printk2' opcode in Csound. For instance if a slider is not behaving as expected make sure that Csound is receiving data from the slider on the correct channel. Using the code below should print the values of the slider to the Csound output console each time you move it. If not, then you most likely have the wrong channel name set.  
+
+-------------------
+(...)
+k1 chnget "slider1"
+printk2 k1
+(...)
+-------------------
 
 
+- 'What gives? I've checked my channels and they are consistent, yet moving my sliders does nothing?'
+We have come across some cases of this happening. In all cases it was due to the fact that chosen channel name contained a /. Please try to use plain old letters for your channel names. Avoid using any kind of mathematical operators or fancy symbols and everything should be Ok. 
+
+- 'Can I use nchnls to determine the number of output channels in my plugin?'
+Currently all Cabbage plugins are stereo by default. We are looking into ways of making plugins multichannel but limitations in the VST SDK are proving to be a stumbling block. It is something we are committed to finding a fix for. 
+
+- 'Can I use Csound MACROs in the <Cabbage> section of my csd file?'
+I'm afraid not. The Cabbage section of your csd file is parsed by Cabbage's own parser therefore it will not understand any Csound syntax whatsoever. 
 
 ////////////////////////////////////////////////////////////////
 The index is normally left completely empty, it's contents being
