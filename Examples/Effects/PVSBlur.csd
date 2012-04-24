@@ -1,23 +1,21 @@
 <Cabbage>
-form caption("pvsblur"), size(340, 140)
-rslider pos( 10, 10), text("Blur Time") channel("blurtime"), range(0, 2, 0.5)
-rslider pos(110, 10), text("Mix"), channel("mix"), range(0, 1, 0.5)
-rslider pos(210, 10), text("Level"), channel("lev"), range(0, 1, 0.5, 0.5)
-
+form caption("pvsBlur"), size(230, 110)
+rslider bounds(10, 10, 60, 60), text("Blur Time") channel("blurtime"), range(0, 2, 0.5)
+rslider bounds(80, 10, 60, 60), text("Mix"), channel("mix"), range(0, 1, 0.5)
+rslider bounds(140, 10, 60, 60), text("Level"), channel("lev"), range(0, 1, 0.5, 0.5)
 </Cabbage>
-
 <CsoundSynthesizer>
-
 <CsOptions>
 -d -n
 </CsOptions>
-
 <CsInstruments>
-
 sr 		= 	44100
 ksmps 		= 	32
 nchnls 		= 	2
 0dbfs		=	1	;MAXIMUM AMPLITUDE
+
+;Author: Iain McCurdy (2012)
+;http://iainmccurdy.org/csound.html
 
 
 opcode	pvsblur_module,a,akkkkiiii

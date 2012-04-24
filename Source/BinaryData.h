@@ -16,6 +16,9 @@ namespace BinaryData
     extern const char*   Main_cpp;
     const int            Main_cppSize = 1923;
 
+	extern const char*  logo1_png;
+    const int           logo1_pngSize = 5534;
+
     // If you provide the name of one of the binary resource variables above, this function will
     // return the corresponding data and its size (or a null pointer if the name isn't found).
     const char* getNamedResource (const char* resourceNameUTF8, int& dataSizeInBytes) throw();

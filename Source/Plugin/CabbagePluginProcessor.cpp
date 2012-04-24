@@ -39,9 +39,17 @@ showMIDI(false),
 csCompileResult(1), 
 changeMessageType(""), 
 guiOnOff(guiOnOff),
-currentLine(-99)
+currentLine(-99),
+noSteps(0),
+noPatterns(0),
+timeCounter(0),
+beat(0),
+bpm(120)
 {
-
+//reset patMatrix. If this has more than one we know that
+//pattern matrix object is being used
+patStepMatrix.clear();
+patPfieldMatrix.clear();
 setPlayConfigDetails(2, 2, 44100, 512); 
 
 #ifndef Cabbage_No_Csound
@@ -173,6 +181,9 @@ else{
 CabbagePluginAudioProcessor::~CabbagePluginAudioProcessor()
 {
 #ifndef Cabbage_No_Csound
+patStepMatrix.clear();
+patternNames.clear();
+patPfieldMatrix.clear();
 if(!isGuiEnabled()){
 	const MessageManagerLock mmLock;
 	if(csound){
@@ -183,7 +194,6 @@ if(!isGuiEnabled()){
 		csound = nullptr;
 		Logger::writeToLog("Csound cleaned up");
 	}
-
 }//end of gui enabled check
 #endif
 }
@@ -261,12 +271,15 @@ void CabbagePluginAudioProcessor::createGUI(String source)
 								||tokes.getReference(0).equalsIgnoreCase(T("image"))
 								||tokes.getReference(0).equalsIgnoreCase(T("keyboard"))
 								||tokes.getReference(0).equalsIgnoreCase(T("csoundoutput"))
+								||tokes.getReference(0).equalsIgnoreCase(T("vline"))
+								||tokes.getReference(0).equalsIgnoreCase(T("hline"))
 								||tokes.getReference(0).equalsIgnoreCase(T("label"))
 								||tokes.getReference(0).equalsIgnoreCase(T("hostbpm"))
 								||tokes.getReference(0).equalsIgnoreCase(T("hosttime"))
 								||tokes.getReference(0).equalsIgnoreCase(T("hostplaying"))
 								||tokes.getReference(0).equalsIgnoreCase(T("hostppqpos"))
 								||tokes.getReference(0).equalsIgnoreCase(T("vumeter"))
+								||tokes.getReference(0).equalsIgnoreCase(T("patmatrix"))
 								||tokes.getReference(0).equalsIgnoreCase(T("source"))
 								||tokes.getReference(0).equalsIgnoreCase(T("hostrecording"))
 								||tokes.getReference(0).equalsIgnoreCase(T("groupbox"))){
@@ -618,6 +631,7 @@ void CabbagePluginAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiB
 float* audioBuffer;
 #ifndef Cabbage_No_Csound
 
+
 try{
 if(csCompileResult==0){
 keyboardState.processNextMidiBuffer (midiMessages, 0, buffer.getNumSamples(), true);
@@ -626,6 +640,33 @@ ccBuffer = midiMessages;
 
                for(int i=0;i<buffer.getNumSamples();i++, csndIndex++)
 				{
+					if(patMatrixActive==1)
+					{
+					if(timeCounter==(int)(this->getSampleRate()/(bpm/60.f))){
+				    timeCounter=0;
+					for(int y=0;y<noPatterns;y++){
+					if(patStepMatrix[beat+(y*noSteps)].state==1){
+					String scoreEv;
+					scoreEv << "i \"" << patternNames[y].trim()
+					<< "\" 0 .5 " << patStepMatrix[beat+(y*noSteps)].p4
+					<< " "	<< patPfieldMatrix[y].p5 
+					<< " " << patPfieldMatrix[y].p6 
+					<< " " << patPfieldMatrix[y].p7
+					<< " " << patPfieldMatrix[y].p8
+					<< " " << patPfieldMatrix[y].p9;
+					Logger::writeToLog(scoreEv);
+					csound->InputMessage(scoreEv.toUTF8());
+					}
+					}
+					beat++;
+					if(beat==noSteps)
+					beat=0;
+					}
+
+					timeCounter++;   
+				}
+				
+
 				 for(int channel = 0; channel < getNumInputChannels(); channel++ )
 					{
 					audioBuffer = buffer.getSampleData(channel,0);
@@ -634,6 +675,9 @@ ccBuffer = midiMessages;
                        CSCompResult = csound->PerformKsmps();
                        csndIndex = 0;
                        }
+						  
+					   //=============================================
+
 					if(!CSCompResult)
 	    						{
 								pos = csndIndex*getNumInputChannels();

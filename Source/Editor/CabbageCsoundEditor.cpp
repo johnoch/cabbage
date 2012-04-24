@@ -18,7 +18,15 @@ textEditor->editor->setFont(Font(T("Courier New"), 15, 1));
 
 htmlHelp = new WebBrowserComponent(false);
 
-htmlHelp->goToURL("C:/MyDocuments/CabbageLatestSVN/Docs/cabbage.html");
+
+	
+#ifndef MACOSX
+String path = File::getSpecialLocation(File::currentApplicationFile).getParentDirectory().getFullPathName(); 
+htmlHelp->goToURL(path+"/Docs/cabbage.html");
+#else
+	String path = File::getSpecialLocation(File::currentApplicationFile).getFullPathName()+"/Contents/Docs/";
+	htmlHelp->goToURL(path);
+#endif
 
 
 setApplicationCommandManagerToWatch(&commandManager);
@@ -169,12 +177,13 @@ void CsoundEditor::getCommandInfo (const CommandID commandID, ApplicationCommand
 		result.addDefaultKeypress (T('-'), ModifierKeys::commandModifier);
         break;
 	case CommandIDs::viewHelp:
-		result.setInfo (T("View Help"), T("View Help"), CommandCategories::help, 0);
-		result.addDefaultKeypress (T('2'), ModifierKeys::commandModifier);
-		break;
-	case CommandIDs::viewSource:
-		result.setInfo (T("View Source"), T("View Help"), CommandCategories::help, 0);
-		result.addDefaultKeypress (T('1'), ModifierKeys::commandModifier);
+#ifndef MACOSX
+		result.setInfo (T("View Help F1"), T("View Help"), CommandCategories::help, 0);
+		result.defaultKeypresses.add(KeyPress(KeyPress::F1Key));
+#else
+			result.setInfo (T("View Help Ctrl+1"), T("View Help"), CommandCategories::help, 0);
+			result.addDefaultKeypress (T('1'), ModifierKeys::commandModifier);		
+#endif
 		break;
 		
 	}
@@ -198,8 +207,7 @@ void CsoundEditor::getAllCommands (Array <CommandID>& commands)
 								CommandIDs::editZoomIn,
 								CommandIDs::editZoomOut,
 
-								CommandIDs::viewHelp,
-								CommandIDs::viewSource
+								CommandIDs::viewHelp
 	};
 	commands.addArray (ids, sizeof (ids) / sizeof (ids [0]));
 }
@@ -299,10 +307,21 @@ bool CsoundEditor::perform (const InvocationInfo& info)
 			URL urlCsound(helpDir+"/"+opcode.trim()+T(".html"));
 			String urlCabbage;
 			//showMessage(urlCsound.toString(false), lookAndFeel);
-			if(opcode.trim()==T("rslider")||opcode==T("hslider")||opcode==T("vslider"))
-			urlCabbage = String("C:/MyDocuments/CabbageLatestSVN/Docs/cabbage.html#_sliders");
+			String OSXPath = File::getSpecialLocation(File::currentApplicationFile).getFullPathName()+"/Contents/Docs/";	
+			String WINPath = File::getSpecialLocation(File::currentApplicationFile).getParentDirectory().getFullPathName()+"/Docs/"; 
+	
+			if((opcode.trim()==T("rslider"))
+				||(opcode==T("hslider"))
+				||(opcode==T("vslider")))
+#ifndef MACOSX
+			urlCabbage = String(WINPath+"cabbage.html#_sliders");
 			else
-			urlCabbage = String("C:/MyDocuments/CabbageLatestSVN/Docs/cabbage.html#_")+opcode.trim();
+			urlCabbage = String(WINPath+"cabbage.html#_")+opcode.trim();				
+#else
+			urlCabbage = String(OSXPath+"cabbage.html#_sliders");
+			else
+			urlCabbage = String(OSXPath+"cabbage.html#_")+opcode.trim();				
+#endif
 
 			//showMessage(urlCabbage);
 
@@ -321,10 +340,6 @@ bool CsoundEditor::perform (const InvocationInfo& info)
 				}
 			}
 			break;
-		}
-	case CommandIDs::viewSource:
-		{	
-			tabComp->setCurrentTabIndex(0);
 		}
 
 	}
@@ -365,7 +380,6 @@ else if(topLevelMenuIndex==1)
 else if(topLevelMenuIndex==2)
 	{
 	m1.addCommandItem(&commandManager, CommandIDs::viewHelp);
-	m1.addCommandItem(&commandManager, CommandIDs::viewSource);
 	return m1;
 	}
 	

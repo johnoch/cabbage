@@ -19,7 +19,7 @@ instr 1
 kfdback chnget "size"
 kfco chnget "fco"
 kgain chnget "gain"
-ain inch 1
+ain, ainR ins
 aoutL, aoutR reverbsc ain, ain, kfdback, kfco 
 outs aoutL*kgain, aoutR*kgain
 endin

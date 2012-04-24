@@ -35,6 +35,29 @@ using namespace std;
 //===========================================================================================
 //some utility functions used across classes...
 //===========================================================================================
+class CabbagePatternMatrixStepData
+{
+public:
+	int state, p4; 
+
+	CabbagePatternMatrixStepData():
+		state(0), p4(0){
+	}
+};
+
+class CabbagePatternMatrixPfieldData
+{
+public:
+	int p5, p6, p7, p8, p9, p10; 
+
+	CabbagePatternMatrixPfieldData():
+		p5(0), p6(0), p7(0), p8(0), p9(0), p10(0){
+	}
+};
+
+//===========================================================================================
+//some utility functions used across classes...
+//===========================================================================================
 class CabbageUtils
 {
 public:
@@ -63,17 +86,11 @@ float cabbageABS(float in){
 }
 
 //===========================================================================================
-static void showMessage(String message, LookAndFeel* feel){
-	AlertWindow alert("Cabbage Message", message, AlertWindow::NoIcon, 0);
-	alert.setLookAndFeel(feel);
-	alert.addButton("Ok", 1);
-	alert.runModalLoop();
-}
-//===========================================================================================
 static void showMessage(String message){
 	AlertWindow alert("Cabbage Message" , message, AlertWindow::NoIcon);
 	alert.showMessageBox(AlertWindow::NoIcon, "Cabbage Message" , message, "Ok");
 }
+
 //===========================================================================================
 static void showMessageWithLocation(String message){
 File thisFile(File::getSpecialLocation(File::currentApplicationFile));
@@ -81,14 +98,12 @@ File thisFile(File::getSpecialLocation(File::currentApplicationFile));
 	alert.showMessageBox(AlertWindow::NoIcon, thisFile.getFullPathName() , message, "Ok");
 }
 //===========================================================================================
-static void showMessage(float num, LookAndFeel* feel){
+static void showMessage(float num){
 	String str(num);
 	File thisFile(File::getSpecialLocation(File::currentApplicationFile));
 
 	AlertWindow alert(thisFile.getFullPathName(), str, AlertWindow::NoIcon);
-	alert.setLookAndFeel(feel);
 	alert.showMessageBox(AlertWindow::NoIcon, thisFile.getFullPathName(), str, "Ok");
-
 }
 
 //===========================================================================================
@@ -146,6 +161,20 @@ static Font valueFont()
 	return font;
 }
 
+//======= For titles etc ============================================================
+static Font titleFont()
+{
+	Font font = Font ("Helvetica", 14.5, 1);
+	return font;
+}
+
+//======= Title font colour =========================================================
+static Colour titleFontColour()
+{
+	Colour cl = Colour::fromRGBA (100, 100, 100, 255);
+	return cl;
+}
+
 //====== Font Colour ================================================================
 static Colour componentFontColour()
 {
@@ -153,10 +182,11 @@ static Colour componentFontColour()
 	return cl;
 }
 
-//====== for group components etc ==========================================================
+//====== for group components etc =================================================
 static Colour componentSkin()
 {
-	Colour skin = Colour::fromRGBA (45, 55, 60, 255);
+	//Colour skin = Colour::fromRGBA (45, 55, 60, 255);
+	Colour skin = Colour::fromRGBA (75, 85, 90, 100); //some transparency
 	return skin;
 }
 
@@ -164,6 +194,13 @@ static Colour componentSkin()
 static Colour backgroundSkin()
 {
 	Colour skin = Colour::fromRGBA (5, 15, 20, 255);
+	return skin;
+}
+
+//======= for darker backgrounds ==========================================================
+static Colour darkerBackgroundSkin()
+{
+	Colour skin = backgroundSkin().darker(0.4);
 	return skin;
 }
 
@@ -207,6 +244,15 @@ long cabbageFindPluginID(unsigned char *buf, size_t len, const char *s)
 	}
 	//return position of plugin ID 
 	return ret;
+}
+
+//===========================================================================================
+static void showMessage(String message, LookAndFeel* feel)
+{
+    AlertWindow alert("Cabbage Message", message, AlertWindow::NoIcon, 0);
+    alert.setLookAndFeel(feel);
+    alert.addButton("Ok", 1);
+    alert.runModalLoop();
 }
 
 

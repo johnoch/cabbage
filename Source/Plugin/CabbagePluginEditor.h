@@ -69,6 +69,8 @@ private:
 	void InsertImage(CabbageGUIClass cAttr);
 	void InsertLabel(CabbageGUIClass cAttr);
 	void InsertTable(CabbageGUIClass cAttr);
+	void InsertLineSeparator(CabbageGUIClass cAttr);
+	void InsertPatternMatrix(CabbageGUIClass cAttr);
 	void buttonClicked (Button*);
 	void timerCallback();
 	void mouseDown(const MouseEvent &e);

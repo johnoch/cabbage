@@ -346,15 +346,14 @@ if(getFilter()->getGUILayoutCtrls(i).getStringProp("type")==T("image")){
 		}	
 }
 for(int i=0;i<getFilter()->getGUILayoutCtrlsSize();i++){
-
 	if(getFilter()->getGUILayoutCtrls(i).getStringProp("type")==T("form")){
 		SetupWindow(getFilter()->getGUILayoutCtrls(i));   //set main application
 		}
 	else if(getFilter()->getGUILayoutCtrls(i).getStringProp("type")==T("groupbox")){
 		InsertGroupBox(getFilter()->getGUILayoutCtrls(i));  
 		}
-	else if(getFilter()->getGUILayoutCtrls(i).getStringProp("type")==T("tabbox")){
-//		InsertTabBox(getFilter()->getGUILayoutCtrls(i));   
+	else if(getFilter()->getGUILayoutCtrls(i).getStringProp("type")==T("patmatrix")){
+		InsertPatternMatrix(getFilter()->getGUILayoutCtrls(i));   
 		}
 	else if(getFilter()->getGUILayoutCtrls(i).getStringProp("type")==T("keyboard")){
 		InsertMIDIKeyboard(getFilter()->getGUILayoutCtrls(i));   
@@ -370,6 +369,10 @@ for(int i=0;i<getFilter()->getGUILayoutCtrlsSize();i++){
 		}
 	else if(getFilter()->getGUILayoutCtrls(i).getStringProp("type")==T("source")){
 		InsertSourceButton(getFilter()->getGUILayoutCtrls(i));   
+		}
+	else if(getFilter()->getGUILayoutCtrls(i).getStringProp("type")==T("vline")
+		|| getFilter()->getGUILayoutCtrls(i).getStringProp("type")==T("hline")){
+		InsertLineSeparator(getFilter()->getGUILayoutCtrls(i));   
 		}
 }
 //add interactive controls
@@ -413,7 +416,7 @@ try{
 	layoutComps.add(new CabbageGroupbox(cAttr.getStringProp("name"), 
 										 cAttr.getStringProp("caption"), 
 										 cAttr.getItems(0), 
-										 cAttr.getStringProp("colour")
+										 cAttr.getColourProp("colour")
 										 ));
 	int idx = layoutComps.size()-1;
 
@@ -494,7 +497,7 @@ try{
 
 		if(cAttr.getStringProp("file").length()<2)pic="";
 		layoutComps.add(new CabbageImage(cAttr.getStringProp("name"), pic, top+relY, left+relX, width, 
-		height, cAttr.getStringProp("outline"), cAttr.getStringProp("colour"), 
+		height, cAttr.getColourProp("outline"), cAttr.getColourProp("colour"), 
 		cAttr.getStringProp("shape"), cAttr.getNumProp("line")));
 
 	int idx = layoutComps.size()-1;
@@ -509,6 +512,54 @@ try{
 }
 catch(...){
     Logger::writeToLog(T("Syntax error: 'groupbox..."));
+    }
+}
+
+//+++++++++++++++++++++++++++++++++++++++++++
+//					line separator
+//+++++++++++++++++++++++++++++++++++++++++++
+void CabbagePluginAudioProcessorEditor::InsertLineSeparator(CabbageGUIClass cAttr)
+{
+try{
+	if(cAttr.getNumProp("isLineVertical"))
+	layoutComps.add(new CabbageLine(false));
+	else
+	layoutComps.add(new CabbageLine(false));
+	int idx = layoutComps.size()-1;
+
+	float left = cAttr.getNumProp("left");
+	float top = cAttr.getNumProp("top");
+	float width = cAttr.getNumProp("width");
+	float height = cAttr.getNumProp("height");
+	int relY=0,relX=0;
+	for(int y=0;y<layoutComps.size();y++){
+	if(cAttr.getStringProp("reltoplant").length()>0){
+	if(layoutComps[y]->getProperties().getWithDefault(String("plant"), -99).toString().equalsIgnoreCase(cAttr.getStringProp("reltoplant")))
+	{
+		width = width*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
+		height = height*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
+		top = top*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
+		left = left*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
+
+		if(layoutComps[y]->getName().containsIgnoreCase("groupbox")||
+			layoutComps[y]->getName().containsIgnoreCase("image"))
+			{			
+			layoutComps[idx]->setBounds(left, top, width, height);
+			//if component is a member of a plant add it directly to the plant
+			layoutComps[y]->addAndMakeVisible(layoutComps[idx]);
+			}
+	}
+	}
+	else{
+	layoutComps[idx]->setBounds(left+relX, top+relY, width, height);
+	componentPanel->addAndMakeVisible(layoutComps[idx]);
+	}
+	}
+
+	layoutComps[idx]->getProperties().set(String("plant"), var(cAttr.getStringProp("plant")));
+}
+catch(...){
+	Logger::writeToLog(T("Syntax error: 'label..."));
     }
 }
 
@@ -553,10 +604,10 @@ try{
 	cAttr.setStringProp("type", "label");
 	((Label*)layoutComps[idx])->setFont(Font(height));
 
-if(cAttr.getStringProp("colour").length()>0){
+if(cAttr.getColourProp("colour").length()>0){
 	//text colour
 	((GroupComponent*)layoutComps[idx])->setColour(0x1000281,
-		Colours::findColourForName(cAttr.getStringProp("colour"), Colours::black));
+		Colour::fromString(cAttr.getStringProp("colour")));
 	}
 	layoutComps[idx]->getProperties().set(String("plant"), var(cAttr.getStringProp("plant")));
 }
@@ -579,11 +630,11 @@ try{
 	int height = cAttr.getNumProp("height");
 	setSize(width, height);
 	componentPanel->setBounds(left, top, width, height);
-	formColour = Colours::findColourForName(cAttr.getStringProp("colour"), Colours::floralwhite);
+	formColour = Colour::fromString(cAttr.getStringProp("colour"));
 #ifdef Cabbage_GUI_Editor
 	componentPanel->setCompColour(cAttr.getStringProp("colour"));
 #else
-	formColour = Colours::findColourForName(cAttr.getStringProp("colour"), Colours::floralwhite);
+	formColour = Colour::fromString(cAttr.getStringProp("colour"));
 #endif
 
 	
@@ -672,7 +723,7 @@ catch(...){
 }
 
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-//	Sourece button. 
+//	Source button. 
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 void CabbagePluginAudioProcessorEditor::InsertSourceButton(CabbageGUIClass cAttr)
 {
@@ -681,7 +732,7 @@ try{
 	layoutComps.add(new CabbageButton(cAttr.getStringProp("name"),
 		cAttr.getStringProp("caption"),
 		cAttr.getItems(1-(int)cAttr.getNumProp("value")),
-		cAttr.getStringProp("colour")));	
+		cAttr.getColourProp("colour")));	
 	int idx = layoutComps.size()-1;
 
 	float left = cAttr.getNumProp("left");
@@ -872,7 +923,7 @@ try{
                                                                                  cAttr.getStringProp("text"),
                                                                                  cAttr.getStringProp("caption"),
                                                                                  cAttr.getStringProp("kind"),
-                                                                                 cAttr.getStringProp("colour"),
+                                                                                 cAttr.getColourProp("colour"),
                                                                                  cAttr.getNumProp("textbox")
                                                                                  ));   
         int idx = controls.size()-1;
@@ -983,7 +1034,7 @@ try{
 	controls.add(new CabbageButton(cAttr.getStringProp("name"),
 		cAttr.getStringProp("caption"),
 		cAttr.getItems(1-(int)cAttr.getNumProp("value")),
-		cAttr.getStringProp("colour")));	
+		cAttr.getColourProp("colour")));	
 	int idx = controls.size()-1;
 
 	float left = cAttr.getNumProp("left");
@@ -1043,7 +1094,7 @@ try{
 	controls.add(new CabbageCheckbox(cAttr.getStringProp("name"),
 		cAttr.getStringProp("caption"),
 		cAttr.getItems(0),
-		cAttr.getStringProp("colour")));	
+		cAttr.getColourProp("colour")));	
 	int idx = controls.size()-1;
 	float left = cAttr.getNumProp("left");
 	float top = cAttr.getNumProp("top");
@@ -1177,7 +1228,7 @@ try{
 	controls.add(new CabbageComboBox(cAttr.getStringProp("name"),
 		cAttr.getStringProp("caption"),
 		cAttr.getItems(0),
-		cAttr.getStringProp("colour")));
+		cAttr.getColourProp("colour")));
 
 	int idx = controls.size()-1;
 	
@@ -1189,31 +1240,31 @@ try{
 	//check to see if widgets is anchored
 	//if it is offset it's position accordingly. 
 	int relY=0,relX=0;
-	if(layoutComps.size()>0){
-	for(int y=0;y<layoutComps.size();y++){
-	if(cAttr.getStringProp("reltoplant").length()>0){
-	if(layoutComps[y]->getProperties().getWithDefault(String("plant"), -99).toString().equalsIgnoreCase(cAttr.getStringProp("reltoplant")))
-		{
-		width = width*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
-		height = height*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
-		top = top*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
-		left = left*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
-
-		if(layoutComps[y]->getName().containsIgnoreCase("groupbox")||
-			layoutComps[y]->getName().containsIgnoreCase("image"))
-			{			
-			controls[idx]->setBounds(left, top, width, height);
-			//if component is a member of a plant add it directly to the plant
-			layoutComps[y]->addAndMakeVisible(controls[idx]);
-			}
-		}
-	}
-		else{
-	    controls[idx]->setBounds(left+relX, top+relY, width, height);
-		componentPanel->addAndMakeVisible(controls[idx]);		
-		}
-	}
-	}
+        if(layoutComps.size()>0){
+        for(int y=0;y<layoutComps.size();y++){
+        if(cAttr.getStringProp("reltoplant").length()>0){
+        if(layoutComps[y]->getProperties().getWithDefault(String("plant"), -99).toString().equalsIgnoreCase(cAttr.getStringProp("reltoplant")))
+                {
+                width = width*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
+                height = height*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
+                top = top*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
+                left = left*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
+ 
+                if(layoutComps[y]->getName().containsIgnoreCase("groupbox")||
+                        layoutComps[y]->getName().containsIgnoreCase("image"))
+                        {                      
+                        controls[idx]->setBounds(left, top, width, height);
+                        //if component is a member of a plant add it directly to the plant
+                        layoutComps[y]->addAndMakeVisible(controls[idx]);
+                        }
+                }
+        }
+                else{
+            controls[idx]->setBounds(left+relX, top+relY, width, height);
+                componentPanel->addAndMakeVisible(controls[idx]);              
+                }
+        }
+        }
 	else{
 	    controls[idx]->setBounds(left+relX, top+relY, width, height);
 		componentPanel->addAndMakeVisible(controls[idx]);		
@@ -1494,6 +1545,66 @@ for(int i=0;i<(int)getFilter()->getGUICtrlsSize();i++)//find correct control fro
 		}
 	}
 	*/
+}
+
+//+++++++++++++++++++++++++++++++++++++++++++
+//					pattern matrix
+//+++++++++++++++++++++++++++++++++++++++++++
+void CabbagePluginAudioProcessorEditor::InsertPatternMatrix(CabbageGUIClass cAttr)
+{
+int tableSize=0;
+try{
+	controls.add(new CabbagePatternMatrix(getFilter(), cAttr.getStringProp("name"),
+		cAttr.getNumProp("width"),
+		cAttr.getNumProp("height"),
+		cAttr.getStringProp("caption"),
+		cAttr.getItemArray(),
+		cAttr.getNumProp("noSteps"),
+		cAttr.getNumProp("rCtrls")));	
+	int idx = controls.size()-1;
+	float left = cAttr.getNumProp("left");
+	float top = cAttr.getNumProp("top");
+	float width = cAttr.getNumProp("width");
+	float height = cAttr.getNumProp("height");
+
+
+	int relY=0,relX=0;
+	if(layoutComps.size()>0){
+	for(int y=0;y<layoutComps.size();y++){
+	if(cAttr.getStringProp("reltoplant").length()>0){
+	if(layoutComps[y]->getProperties().getWithDefault(String("plant"), -99).toString().equalsIgnoreCase(cAttr.getStringProp("reltoplant")))
+		{
+		width = width*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
+		height = height*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
+		top = top*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
+		left = left*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
+
+		if(layoutComps[y]->getName().containsIgnoreCase("groupbox")||
+			layoutComps[y]->getName().containsIgnoreCase("image"))
+			{			
+			controls[idx]->setBounds(left, top, width, height);
+			//if component is a member of a plant add it directly to the plant
+			layoutComps[y]->addAndMakeVisible(controls[idx]);
+			}
+		}
+	}
+		else{
+	    controls[idx]->setBounds(left+relX, top+relY, width, height);
+		componentPanel->addAndMakeVisible(controls[idx]);		
+		}
+	}
+	}
+	else{
+	    controls[idx]->setBounds(left+relX, top+relY, width, height);
+		componentPanel->addAndMakeVisible(controls[idx]);		
+	}
+
+	Logger::writeToLog(cAttr.getPropsString());
+}
+catch(...){
+    Logger::writeToLog(T("Syntax error: 'pattern matrix..."));
+    }
+	
 }
 
 //=============================================================================

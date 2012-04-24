@@ -17,6 +17,7 @@ nchnls = 2
 /*************************************/
 /* TPScaler instrument by            */
 /* Victor Lazzarini                  */
+/* Cabbage mod by Rory Walsh, 2012   */
 /*************************************/
 
 instr 1

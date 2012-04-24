@@ -78,6 +78,7 @@ class CabbagePluginAudioProcessor  : public AudioProcessor,
 	StringArray debugInfo;
 	Array<CabbageGUIClass, CriticalSection> guiLayoutCtrls;
 	Array<CabbageGUIClass, CriticalSection> guiCtrls;
+	
 	String plantFlag;
 	String debugMessage;
 	StringArray debugMessageArray;
@@ -120,8 +121,19 @@ public:
     bool isInputChannelStereoPair (int index) const;
     bool isOutputChannelStereoPair (int index) const;
 
+
     bool acceptsMidi() const;
     bool producesMidi() const;
+	Array<CabbagePatternMatrixStepData> patStepMatrix;
+	StringArray patternNames;
+	Array<CabbagePatternMatrixPfieldData> patPfieldMatrix;
+	//Array<int> pField4, pField5, pField6, pField7;
+	int noSteps;
+	int noPatterns;
+	int timeCounter;
+	int beat;
+	int patMatrixActive;
+	float bpm;
 
 	void createAndShowSourceEditor(LookAndFeel* looky);
 	//CabbageEditorWindow* getCsoundEditor(){
@@ -188,7 +200,6 @@ public:
 		temp.add(csound->TableGet(tableNum, i));
 	return temp;
 	}
-
 
 	void setMidiDebug(bool val){
 		showMIDI=val;

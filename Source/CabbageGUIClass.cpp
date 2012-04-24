@@ -49,9 +49,8 @@ CabbageGUIClass::CabbageGUIClass(String compStr, int ID):
 	if(strTokens[0].indexOfIgnoreCase("hslider")!=-1){
           top = 10;
           left = 10;
-          width = 250;
-          height = 50;
-		  
+          width = 150;
+          height = 50;		  
           channel = "hslider";
           kind = "horizontal";
           min = 0;
@@ -65,8 +64,8 @@ CabbageGUIClass::CabbageGUIClass(String compStr, int ID):
     else if(strTokens[0].indexOfIgnoreCase("vslider")!=-1){
           top = 10;
           left = 10;
-          width = 60;
-          height = 180;
+          width = 50;
+          height = 150;
           channel = "vslider";
           kind = "vertical";
           min = 0;
@@ -80,8 +79,8 @@ CabbageGUIClass::CabbageGUIClass(String compStr, int ID):
     else if(strTokens[0].indexOfIgnoreCase("rslider")!=-1){
           top = 10;
           left = 10;
-          width = 100;
-          height = 100;
+          width = 60;
+          height = 60;
           channel = "rslider";
           kind = "rotary";
           min = 0;
@@ -92,6 +91,7 @@ CabbageGUIClass::CabbageGUIClass(String compStr, int ID):
           name.append(String(ID), 1024);
 		  textBox = 0;
 	}
+
     else if(strTokens[0].indexOfIgnoreCase("source")!=-1){
           top = 10;
           left = 10;
@@ -101,6 +101,21 @@ CabbageGUIClass::CabbageGUIClass(String compStr, int ID):
           name = "source";
 		  caption = "";
 		  type = name;
+          //name.append(String(ID), 1024);
+	}
+
+    else if(strTokens[0].indexOfIgnoreCase("patmatrix")!=-1){
+          top = 10;
+          left = 10;
+          width = 400;
+          height = 240;
+          channel = "";
+          name = "patmatrix";
+		  caption = "Pattern Matrix";
+		  type = name;
+		  noSteps = 8;
+		  noPatterns=1;
+		  rCtrls=0;
           //name.append(String(ID), 1024);
 	}
 
@@ -158,8 +173,8 @@ CabbageGUIClass::CabbageGUIClass(String compStr, int ID):
           height = 16;
           channel = "label";
           beveltype = "none";
-          colour = "WHITE";
-          fontcolour = "WHITE";
+          colour = Colours::white;
+          fontcolour = Colours::white;
           text = "hello";
           name = "label";
 		  type = name;
@@ -172,15 +187,15 @@ CabbageGUIClass::CabbageGUIClass(String compStr, int ID):
           height = 120;
           channel = "image";
           beveltype = "none";
-          colour = "";
-          fontcolour = "";
+          colour = Colours::white; 
+          fontcolour = Colours::white;
           text = "";
 		  line = 2;
           name = "image";
 		  type = name;
 		  shape="rounded";
-		  outline = "black";
-		  colour = "white";
+		  outline = Colours::black;
+		  colour = Colours::white;
           name.append(String(ID), 1024);
 	}
     else if(strTokens[0].indexOfIgnoreCase("groupbox")!=-1){
@@ -188,9 +203,29 @@ CabbageGUIClass::CabbageGUIClass(String compStr, int ID):
           left = 10;
           width = 80;
           height = 22;
-          colour = "WHITE";
+          colour = Colours::white;
           name = "groupbox";
 		  type = name;
+          name.append(String(ID), 1024);
+	}
+    else if(strTokens[0].indexOfIgnoreCase("vline")!=-1){
+          top = 10;
+          left = 10;
+          width = 180;
+          height = 2;
+          name = "vline";
+		  type = name;
+		  lineIsVertical = 1;
+          name.append(String(ID), 1024);
+	}
+    else if(strTokens[0].indexOfIgnoreCase("hline")!=-1){
+          top = 10;
+          left = 10;
+          width = 2;
+          height = 180;
+          name = "hline";
+		  type = name;
+		  lineIsVertical = 0;
           name.append(String(ID), 1024);
 	}
     else if(strTokens[0].indexOfIgnoreCase("csoundoutput")!=-1){
@@ -198,7 +233,7 @@ CabbageGUIClass::CabbageGUIClass(String compStr, int ID):
           left = 10;
           width = 400;
           height = 200;
-          colour = "";
+          colour = Colours::white;
           name = "csoundoutput";
 		  type = name;
           name.append(String(ID), 1024);
@@ -209,7 +244,7 @@ CabbageGUIClass::CabbageGUIClass(String compStr, int ID):
           width = 400;
           height = 200;
 		  vuConfig.clear();
-          colour = "";
+		  colour = Colours::white;
           name = "vumeter";
 		  type = name;
           name.append(String(ID), 1024);
@@ -219,7 +254,7 @@ CabbageGUIClass::CabbageGUIClass(String compStr, int ID):
           left = 10;
           width = 400;
           height = 200;
-          colour = "";
+          colour = Colours::white;
           name = "table";
 		  type = name;
 		  value = 1;
@@ -252,7 +287,6 @@ CabbageGUIClass::CabbageGUIClass(String compStr, int ID):
           left = 10;
           width = 400;
           height = 100;
-          colour = "LIGHT GREY";
           name = "keyboard";
 		  type = name;
           name.append(String(ID), 1024);
@@ -295,7 +329,7 @@ CabbageGUIClass::CabbageGUIClass(String compStr, int ID):
 
 	tabpage = 0;
 	value = 0;
-	colour = "white";
+	colour = Colours::white;
 //parse the text now that all default values ahve been assigned
 parse(compStr);
 }
@@ -334,6 +368,7 @@ int CabbageGUIClass::parse(String str)
     identArray.add("channel(");
     identArray.add("name(");
     identArray.add("textbox(");
+	identArray.add("instrs(");
     identArray.add("caption(");
     identArray.add(",colour(");
 	identArray.add(" colour(");
@@ -359,7 +394,9 @@ int CabbageGUIClass::parse(String str)
 	identArray.add("scale(");
 	identArray.add("chan(");
 	identArray.add("key(");
+	identArray.add("steps(");
 	identArray.add("pluginid(");
+	identArray.add("rctrls(");
 	//add a few dummy identifiers so we can catch bogus one in the Cabbage code
 	identArray.add("");
 	identArray.add("");
@@ -396,14 +433,62 @@ int CabbageGUIClass::parse(String str)
 					else channels.add(strTokens[0].trim());
 			}
             else if(identArray.getReference(indx).toLowerCase().equalsIgnoreCase(" colour(")||
-				identArray.getReference(indx).toLowerCase().equalsIgnoreCase(",colour(")) colour = strTokens[0].trim();
+				identArray.getReference(indx).toLowerCase().equalsIgnoreCase(",colour(")){
+					if(strTokens.size()<2)
+						colour = Colours::findColourForName(strTokens[0].trim(), Colours::white);
+					else if(strTokens.size()==4)
+						colour = Colour::fromRGBA (strTokens[0].getIntValue(),
+															strTokens[1].getIntValue(), 
+															strTokens[2].getIntValue(),
+															strTokens[3].getIntValue());
+					else if(strTokens.size()==3)
+						colour = Colour::fromRGB (strTokens[0].getIntValue(),
+									strTokens[1].getIntValue(), 
+									strTokens[2].getIntValue());
+			}
 			else if(identArray.getReference(indx).toLowerCase().equalsIgnoreCase("kind(")) kind = strTokens[0].trim();
 			else if(identArray.getReference(indx).toLowerCase().equalsIgnoreCase("file(")) file = strTokens[0].trim();
-			else if(identArray.getReference(indx).toLowerCase().equalsIgnoreCase("fill(")) fill = strTokens[0].trim();
-			else if(identArray.getReference(indx).toLowerCase().equalsIgnoreCase("shape(")) shape = strTokens[0].trim();
-			else if(identArray.getReference(indx).toLowerCase().equalsIgnoreCase("outline(")) outline = strTokens[0].trim();
-			else if(identArray.getReference(indx).toLowerCase().equalsIgnoreCase("textcolour(")) textcolour = strTokens[0].trim();
+			else if(identArray.getReference(indx).toLowerCase().equalsIgnoreCase("fill(")){
+					if(strTokens.size()<2)
+						fill = Colours::findColourForName(strTokens[0].trim(), Colours::white);
+					else if(strTokens.size()==4)
+						fill = Colour::fromRGBA (strTokens[0].getIntValue(),
+															strTokens[1].getIntValue(), 
+															strTokens[2].getIntValue(),
+															strTokens[3].getIntValue());
+					else if(strTokens.size()==3)
+						fill = Colour::fromRGB (strTokens[0].getIntValue(),
+									strTokens[1].getIntValue(), 
+									strTokens[2].getIntValue());
 
+			}
+			else if(identArray.getReference(indx).toLowerCase().equalsIgnoreCase("shape(")) shape = strTokens[0].trim();
+			else if(identArray.getReference(indx).toLowerCase().equalsIgnoreCase("outline(")){
+					if(strTokens.size()<2)
+						outline = Colours::findColourForName(strTokens[0].trim(), Colours::white);
+					else if(strTokens.size()==4)
+						outline = Colour::fromRGBA (strTokens[0].getIntValue(),
+															strTokens[1].getIntValue(), 
+															strTokens[2].getIntValue(),
+															strTokens[3].getIntValue());
+					else if(strTokens.size()==3)
+						outline = Colour::fromRGB (strTokens[0].getIntValue(),
+									strTokens[1].getIntValue(), 
+									strTokens[2].getIntValue());
+			}
+			else if(identArray.getReference(indx).toLowerCase().equalsIgnoreCase("textcolour(")){
+					if(strTokens.size()<2)
+						textcolour = Colours::findColourForName(strTokens[0].trim(), Colours::white);
+					else if(strTokens.size()==4)
+						textcolour = Colour::fromRGBA (strTokens[0].getIntValue(),
+															strTokens[1].getIntValue(), 
+															strTokens[2].getIntValue(),
+															strTokens[3].getIntValue());
+					else if(strTokens.size()==3)
+						textcolour = Colour::fromRGB (strTokens[0].getIntValue(),
+									strTokens[1].getIntValue(), 
+									strTokens[2].getIntValue());
+			}
             else if(identArray.getReference(indx).toLowerCase().equalsIgnoreCase("key(")){
 				key.clear();
 				if(strTokens.size()==1){
@@ -437,6 +522,14 @@ int CabbageGUIClass::parse(String str)
 				//messing with my checkbox!
 				comboRange = i;
               }
+			}
+
+			else if(identArray.getReference(indx).toLowerCase().equalsIgnoreCase("instrs(")){
+              items.clear();//clear any unwanted items
+			  for(int i= 0;i<(int)strTokens.size();i++){
+				String test = strTokens[i]; 
+				items.add(strTokens[i]);	
+				}
 			}
 
 			//numeric paramters
@@ -549,6 +642,9 @@ int CabbageGUIClass::parse(String str)
             else if(identArray.getReference(indx).toLowerCase().equalsIgnoreCase("max(")){
 				max = strTokens[0].trim().getFloatValue();  
 			}
+			else if(identArray.getReference(indx).toLowerCase().equalsIgnoreCase("steps(")){
+				noSteps = strTokens[0].trim().getFloatValue();  
+			}
             else if(identArray.getReference(indx).toLowerCase().equalsIgnoreCase("textbox(")){
 				textBox = strTokens[0].trim().getFloatValue();  
 			}
@@ -559,6 +655,12 @@ int CabbageGUIClass::parse(String str)
 					identArray.getReference(indx).toLowerCase().equalsIgnoreCase(" line(")) line = strTokens[0].trim().getFloatValue();  
             else if(identArray.getReference(indx).toLowerCase().equalsIgnoreCase("value(")) value = strTokens[0].trim().getFloatValue();  
 			else if(identArray.getReference(indx).toLowerCase().equalsIgnoreCase("tabpage(")) tabpage = strTokens[0].trim().getFloatValue();  
+			else if(identArray.getReference(indx).toLowerCase().equalsIgnoreCase("rctrls(")){
+				if(strTokens[0].trim().getFloatValue()>5)
+				rCtrls = 5;
+				else
+				rCtrls = strTokens[0].trim().getFloatValue();  
+			}
 			else {
 			}
 			strTokens.clear();
@@ -645,6 +747,14 @@ double CabbageGUIClass::getNumProp(String prop)
 			return sliderIncr;
 		else if(prop.equalsIgnoreCase(T("sliderSkew")))
 			return sliderSkew;
+		else if(prop.equalsIgnoreCase(T("noSteps")))
+			return noSteps;
+		else if(prop.equalsIgnoreCase(T("rCtrls")))
+			return rCtrls;
+		else if(prop.equalsIgnoreCase(T("lineIsVertical")))
+			return lineIsVertical;
+		else if(prop.equalsIgnoreCase(T("noPatterns")))
+			return items.size(); 
 		else return -9999;
 }
 
@@ -750,14 +860,6 @@ String CabbageGUIClass::getStringProp(String prop)
 			return text.trim();
 		else if(prop.equalsIgnoreCase(T("type")))
 			return type.trim();
-		else if(prop.equalsIgnoreCase(T("colour")))
-			return colour.trim();
-		else if(prop.equalsIgnoreCase(T("fontcolour")))
-			return fontcolour.trim();
-		else if(prop.equalsIgnoreCase(T("outline")))
-			return outline.trim();
-		else if(prop.equalsIgnoreCase(T("fill")))
-			return fill.trim();
 		else if(prop.equalsIgnoreCase(T("shape")))
 			return shape.trim();
 		else if(prop.equalsIgnoreCase(T("beveltype")))
@@ -780,13 +882,25 @@ String CabbageGUIClass::getStringProp(String prop)
 			return plant.trim();
 		else if(prop.equalsIgnoreCase(T("reltoplant")))
 			return reltoplant.trim();
-		else if(prop.equalsIgnoreCase(T("textcolour")))
-			return textcolour.trim();
 		else if(prop.equalsIgnoreCase(T("debugmessage")))
 			return debugMessage;
 		else if(prop.equalsIgnoreCase(T("pluginID")))
 			return pluginID;
 		else return "";
+}
+
+String CabbageGUIClass::getColourProp(String prop)
+{
+		if(prop.equalsIgnoreCase(T("textcolour")))
+			return textcolour.toString();
+		else if(prop.equalsIgnoreCase(T("fontcolour")))
+			return fontcolour.toString();
+		else if(prop.equalsIgnoreCase(T("colour")))
+			return colour.toString();
+		else if(prop.equalsIgnoreCase(T("fill")))
+			return fill.toString();
+		else return "";
+
 }
 
 void CabbageGUIClass::setStringProp(String prop, String val)
@@ -805,14 +919,6 @@ void CabbageGUIClass::setStringProp(String prop, String val)
 			text = val;
 		else if(prop.equalsIgnoreCase(T("type")))
 			type = val;
-		else if(prop.equalsIgnoreCase(T("colour")))
-			colour = val;
-		else if(prop.equalsIgnoreCase(T("fontcolour")))
-			fontcolour = val;
-		else if(prop.equalsIgnoreCase(T("outline")))
-			outline = val;
-		else if(prop.equalsIgnoreCase(T("fill")))
-			fill = val;
 		else if(prop.equalsIgnoreCase(T("shape")))
 			shape = val;
 		else if(prop.equalsIgnoreCase(T("beveltype")))
@@ -835,6 +941,4 @@ void CabbageGUIClass::setStringProp(String prop, String val)
 			plant = val;
 		else if(prop.equalsIgnoreCase(T("reltoplant")))
 			reltoplant = val;
-		else if(prop.equalsIgnoreCase(T("textcolour")))
-			textcolour = val;
 }

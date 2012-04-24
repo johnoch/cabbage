@@ -19,11 +19,10 @@ public:
 	CabbageLookAndFeel();
 	~CabbageLookAndFeel();
 
-	Image drawCheckMark();
 	Image drawRotaryImage(int diameter, const Colour circleFill, float sliderPosProportional, bool useBigImage);
 	Image drawLinearBgImage (float width, float height, float sliderPosProportional, bool isVertical);
 	Image drawLinearThumbImage (float width, float height, const Colour thumbFill, bool isVertical);
-	Image drawToggleImage (float width, float height, bool isToggleOn);
+	static Image drawToggleImage (float width, float height, bool isToggleOn, Colour colour);
 	Image drawTextButtonImage (float width, float height, bool isButtonDown);
 	virtual void drawRotarySlider (Graphics &g, int x, int y, int width, int height, float sliderPosProportional, 
 																					float rotaryStartAngle, 
@@ -61,14 +60,14 @@ public:
 																								bool isButtonDown);
 
 	void setDefaultSansSerifTypefaceName (const String &newName);
-	virtual void drawMenuBarBackground(Graphics &g, int width, int height, bool isMouseOverBar, MenuBarComponent &menuBar);
-        
+	virtual void drawMenuBarBackground(Graphics &g, int width, int height, bool isMouseOverBar, MenuBarComponent &menuBar);   
     virtual void drawMenuBarItem(Graphics & g, int width, int height, int itemIndex,
                                       const String &itemText, bool isMouseOverItem,
                                       bool isMenuOpen, bool isMouseOverBar,
                                       MenuBarComponent &menuBar);
 
 	void drawPopupMenuBackground(Graphics &g, int width, int height);
+	Image drawCheckMark(); 
 	virtual void drawPopupMenuItem (Graphics &g, int width, int height, bool isSeparator, bool isActive, bool isHighlighted, 
 																											bool isTicked, 
 																											bool hasSubMenu, 
@@ -76,6 +75,12 @@ public:
 																											const String &shortcutKeyText, 
 																											Image *image, 
 																											const Colour *const textColour);
+	virtual void drawDocumentWindowTitleBar (DocumentWindow &window, Graphics &g, int w, int h, int titleSpaceX, int titleSpaceW, 
+																											const Image *icon, 
+																											bool drawTitleTextOnLeft);
+	Image drawWindowButtonNormal(int buttonType);
+	Image drawWindowButtonIsOver(int buttonType);
+	virtual Button* createDocumentWindowButton (int buttonType);
 
 	juce_UseDebuggingNewOperator
 
@@ -87,11 +92,13 @@ private:
 };
 
 
-/*=============================================================================================================
-	
-	Basic Look And Feel Class
+/*
+  ====================================================================================
 
-=============================================================================================================*/
+	Alternative Look And Feel Class
+
+  ====================================================================================
+*/
 class CabbageLookAndFeelBasic	:	public LookAndFeel
 {
 public:

@@ -37,15 +37,16 @@ using namespace std;
 class CabbageGUIClass : public CabbageUtils
 {
         double width, height, top, left, min, max, tabpage, minX, minY, maxX, maxY, comboRange,
-		noOfMenus, onoff, midiChan, midiCtrl, sliderRange, xypadRangeY, xypadRangeX,
-		line, anchor, linkTo, scaleX, scaleY, value, valueX, valueY, maxItems, sliderIncr, sliderSkew;
+		noOfMenus, onoff, midiChan, midiCtrl, sliderRange, xypadRangeY, xypadRangeX, noSteps, noPatterns,
+		line, anchor, linkTo, scaleX, scaleY, value, valueX, valueY, maxItems, sliderIncr, sliderSkew, rCtrls, lineIsVertical;
         StringArray items;
         StringArray onoffcaptions;
 		StringArray key;
 		StringArray channels;
-        String channel, name, sizeText, posText, boundsText, text, type, colour, plant, reltoplant, textcolour, bounds, range,
-        fontcolour, outline, fill, shape, beveltype, caption, kind, topitem, yChannel, xChannel,
+        String channel, name, sizeText, posText, boundsText, text, type, plant, reltoplant, bounds, range,
+        shape, beveltype, caption, kind, topitem, yChannel, xChannel,
         exit, csstdout, cssetup, file, debugMessage, xyChannel, pluginID;
+		Colour outline, fill, fontcolour, textcolour, colour;
 		int tableNum, textBox;
 		Array<int> vuConfig;
 
@@ -61,6 +62,7 @@ public:
 	String getStringProp(String prop);
 	String getStringProp(String prop, int index);
 	String getPropsString();
+	String getColourProp(String prop);
 
 
 	inline String setOnOffcaptions(int index, String str){
@@ -85,6 +87,12 @@ public:
 		if(items.size())
 		return items.getReference(index);
 		else return "";
+	}
+
+	inline StringArray getItemArray(){
+		if(items.size())
+		return items;
+		else return StringArray();
 	}
 
 	inline int getItemsSize(){

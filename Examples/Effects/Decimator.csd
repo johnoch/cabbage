@@ -1,8 +1,8 @@
 <Cabbage>
 form size(220, 110), caption("BitC")
 image bounds(0, 0, 200, 90), colour("black"), outline("white")
-rslider bounds(10, 5, 80, 80), channel("bit"), caption("Depth"), colour("lightgrey") range(0, 16, 16)
-checkbox pos(100, 15) text("On/Off"), channel("on_off")
+rslider bounds(10, 10, 70, 70), channel("bit"), text("Depth"), colour("lightgrey") range(0, 16, 16)
+checkbox pos(100, 10) text("On/Off"), channel("on_off")
 </Cabbage>
 <CsoundSynthesizer>
 <CsOptions>
@@ -12,6 +12,8 @@ checkbox pos(100, 15) text("On/Off"), channel("on_off")
 sr = 44100
 ksmps = 64
 nchnls = 2
+
+;Author: Iain McCurdy (2012)
 
 /*
 decimator - Sample rate / Bit depth reduce. Based on the work of Steven Cook. k-rate parameters.

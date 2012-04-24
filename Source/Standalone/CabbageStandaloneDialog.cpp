@@ -537,6 +537,10 @@ void StandaloneFilterWindow::buttonClicked (Button*)
 	}
 	//----- new effect ------
 	else if(options==30){
+	if(!cabbageCsoundEditor){
+		cabbageCsoundEditor = new CabbageEditorWindow(lookAndFeel);
+		cabbageCsoundEditor->addActionListener(this);
+		}
 		cabbageCsoundEditor->setVisible(true);
 		cabbageCsoundEditor->csoundEditor->newFile("effect");
 		saveFileAs();
@@ -544,6 +548,10 @@ void StandaloneFilterWindow::buttonClicked (Button*)
 	}
 	//----- new instrument ------
 	else if(options==31){
+	if(!cabbageCsoundEditor){
+		cabbageCsoundEditor = new CabbageEditorWindow(lookAndFeel);
+		cabbageCsoundEditor->addActionListener(this);
+		}
 	cabbageCsoundEditor->setVisible(true);
 	cabbageCsoundEditor->csoundEditor->newFile("instrument");
 	saveFileAs();

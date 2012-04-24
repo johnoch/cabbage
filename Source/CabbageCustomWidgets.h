@@ -21,6 +21,7 @@
 #define _CabbageWidgets_H__
 
 #include "../JuceLibraryCode/JuceHeader.h"
+#include "CabbageLookAndFeel.h"
 #include "CabbageUtils.h"
 #include "CabbageTable.h"
 
@@ -120,7 +121,7 @@ void resized()
 	//if rotary
 	if (sliderType.contains(T("rotary"))) {
 		if(cl.length() > 0)
-			slider->setColour(0x1001200, Colours::findColourForName(cl, Colours::whitesmoke));
+			slider->setColour(0x1001200, Colour::fromString(cl));
 		slider->setSliderStyle(Slider::Rotary);
 		getProperties().set("type", var("rslider"));
 		slider->setSliderStyle(Slider::RotaryVerticalDrag);
@@ -220,10 +221,10 @@ CabbageCheckbox(String name, String caption, String buttonText, String colour)
 	groupbox->setVisible(false);
 	//outline colour ID
 	groupbox->setColour(0x1005400,
-		Colours::findColourForName(colour, Colours::black));
+		Colour::fromString(colour));
 	//text colour ID
 	groupbox->setColour(0x1005410,
-		Colours::findColourForName(colour, Colours::black));
+		Colour::fromString(colour));
 
 	button->setButtonText(buttonText);
 	if(caption.length()>0){
@@ -238,10 +239,10 @@ CabbageCheckbox(String name, String caption, String buttonText, String colour)
 	if(colour.length()>0)
 	//button colour ID
 	button->setColour(0x1000100,
-			Colours::findColourForName(colour, Colours::grey));
+			Colour::fromString(colour));
 	//text colour id
 	button->setColour(0x1006501,
-			Colours::findColourForName(colour, Colours::grey));
+			Colour::fromString(colour));
 	button->setButtonText(buttonText);
 	this->setWantsKeyboardFocus(false);
 }
@@ -287,10 +288,10 @@ CabbageComboBox(String name, String caption, String text, String colour)
 
 	//outline colour IDE
 	groupbox->setColour(0x1005400,
-		Colours::findColourForName(colour, Colours::black));
+		Colour::fromString(colour));
 	//text colour ID
 	groupbox->setColour(0x1005410,
-		Colours::findColourForName(colour, Colours::black));
+		Colour::fromString(colour));
 	
 	if(caption.length()>0){
 		offX=10;
@@ -356,22 +357,22 @@ private:
 		}
 		else{
 			if(shape.contains("rounded")){
-				g.setColour(Colours::findColourForName(outline, Colours::black));
+				g.setColour(Colour::fromString(outline));
 				g.fillRoundedRectangle(0,0, width, height, width*.02);
-				g.setColour(Colours::findColourForName(fill, Colours::black));
+				g.setColour(Colour::fromString(fill));
 				g.fillRoundedRectangle(line,line, width-(line*2), height-(line*2), width*.02);				
 			}
 			else if(shape.contains("ellipse")){
-				g.setColour(Colours::findColourForName(outline, Colours::black));
+				g.setColour(Colour::fromString(outline));
 				g.fillEllipse(0,0, width, height);
-				g.setColour(Colours::findColourForName(fill, Colours::black));
+				g.setColour(Colour::fromString(fill));
 				g.fillEllipse(line,line, width-(line*2), height-(line*2));				
 			}
 			else if(shape.contains("sharp")){
 				
-				g.setColour(Colours::findColourForName(outline, Colours::black));
+				g.setColour(Colour::fromString(outline));
 				g.fillRect(0,0, width, height);
-				g.setColour(Colours::findColourForName(fill, Colours::black));
+				g.setColour(Colour::fromString(fill));
 				g.fillRect(line,line, width-(line*2), height-(line*2));				
 			}
 		}
@@ -397,10 +398,10 @@ CabbageGroupbox(String name, String caption, String text, String colour):GroupCo
         if(colour.length()>0){
 		//outline colour iD
         setColour(0x1005400,
-                Colours::findColourForName(colour, Colours::black));
+                Colour::fromString(colour));
 		//text colour iD
         setColour(0x1005410,
-                Colours::findColourForName(colour, Colours::black));
+                Colour::fromString(colour));
         }
         this->setText(text);
 		this->setWantsKeyboardFocus(false);
@@ -1922,6 +1923,419 @@ this->setWantsKeyboardFocus(false);
 }
 
 JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CabbageTable);
+};
+
+
+class CabbageNumToggle : public Component,
+						 public ActionBroadcaster
+{
+String name;
+Colour colour;
+ScopedPointer<Label> label;
+int width, height, value, lastValue;
+bool buttonState;
+public:
+	  CabbageNumToggle(String name, int width, int height): 
+					width(width),
+					height(height),
+					value(0),
+					lastValue(0),
+					buttonState(0),
+					colour(Colours::lime)
+	  {
+		setBounds(0, 0, width, height);
+		label = new Label();
+		label->setText("", false);
+		label->getProperties().set("numColour", "black");
+		label->setBounds(0, 0, width, height);
+		label->setEditable(false, true);
+		label->setInterceptsMouseClicks(false, true);
+		addAndMakeVisible(label);
+		label->toFront(true);  
+	  }
+
+	  void mouseDrag (const MouseEvent &e){
+		  if(e.mods.isRightButtonDown()&&buttonState)
+		  if(e.getOffsetFromDragStart().getY()<0){
+			  label->setText(String(value+(e.getDistanceFromDragStart()/2)), false);
+			  lastValue = e.getDistanceFromDragStart()/2;
+			  sendActionMessage(T("button:")+getName()+String("|state:")+String(buttonState)+T("|value:")+label->getText());
+		  }
+		  else{
+			  label->setText(String(value-(e.getDistanceFromDragStart()/2)), false);
+			  lastValue = value-(e.getDistanceFromDragStart()/2);
+			  //send a message with the button number and its value
+			  sendActionMessage(T("button:")+getName()+String("|state:")+String(buttonState)+T("|value:")+label->getText());
+		  }
+
+	  }
+
+	  void mouseExit (const MouseEvent &e){
+		if(e.mods.isRightButtonDown())	  
+			value = lastValue;
+	  }
+
+	void mouseDown(const MouseEvent &e){
+		if(e.mods.isLeftButtonDown())
+		if(getToggleState()){
+			buttonState=false;
+			repaint();
+			//send a message with the button number and its state
+			  sendActionMessage(T("button:")+getName()+String("|state:")+String(buttonState)+T("|value:")+label->getText());
+		}
+		else{
+			buttonState=true;
+			repaint();
+			  sendActionMessage(T("button:")+getName()+String("|state:")+String(buttonState)+T("|value:")+label->getText());
+		}
+	}
+
+	bool getToggleState(){
+		return buttonState;
+	}
+
+	void setToggleState(bool val){
+		buttonState = val;
+	}
+
+	int getCurrentValue(){
+		  return label->getText().getIntValue();
+	  }
+
+	void setActiveColour(String inColour){
+		  colour = Colours::findColourForName(inColour, Colours::lime);
+	  }
+
+	void paint(Graphics &g){
+		Image newButton = CabbageLookAndFeel::drawToggleImage (width, height, buttonState, colour);
+		g.drawImage(newButton, 0, 0, width, height, 0, 0, width, height);
+	}
+
+};
+
+//==============================================================================
+// custom PatternMatrix
+//==============================================================================
+class PatternMatrix : public Component, 
+					  public Timer,
+					  public ButtonListener,
+					  public SliderListener,
+					  public ActionListener
+{
+ScopedPointer<ToggleButton> onoffButton;
+ScopedPointer<Slider> bpm;
+OwnedArray<Slider> pSliders;
+float buttonIndex, updateVar, offX, offY, offWidth, offHeight, 
+noPatterns, noSteps, beat, currentStepButton, rCtrls;
+bool timerActive;
+
+public:
+OwnedArray<CabbageNumToggle> stepButton;
+CabbagePluginAudioProcessor* myFilter;
+//---- constructor -----
+	PatternMatrix(String caption, int width, int height, StringArray patterns, int steps, int rctrls, CabbagePluginAudioProcessor* filter)
+							: timerActive(false), noSteps(steps), 
+								noPatterns(patterns.size()), beat(0), myFilter(filter),
+								currentStepButton(0),
+								buttonIndex(0),
+								updateVar(0),
+								rCtrls(rctrls)
+	{
+		onoffButton = new ToggleButton("Active");
+		onoffButton->setButtonText("");
+		onoffButton->addListener(this);
+		onoffButton->getProperties().set("colour", "red");
+		onoffButton->setBounds(60, 25, 20, 20);
+		addAndMakeVisible(onoffButton);
+
+		bpm = new Slider("bpm");
+		bpm->setSliderStyle(Slider::LinearBar);
+		bpm->setBounds(185, 27, 180, 15);
+		bpm->setRange(0, 1000);
+		bpm->setValue(120);
+		bpm->addListener(this);
+		addAndMakeVisible(bpm);
+
+		myFilter->noSteps = noSteps;
+		myFilter->noPatterns = noPatterns;
+		myFilter->patternNames = patterns;
+		Rectangle<int> pattRect;
+		//set bounds for pattern rectangle
+		pattRect.setBounds(60, 50, width-(rCtrls*40)-60, (height-50)*.95);	
+		//set bounds for slider rectangle
+		Rectangle<int> slidersRect;
+		slidersRect.setBounds(pattRect.getWidth()+60, 50, width-pattRect.getWidth()+60, (height-50)*.95); 
+
+		//populate matrix with step buttons
+		for(int pats=0;pats<patterns.size();pats++)
+			for(int beats=0;beats<steps;beats++){
+				stepButton.add(new CabbageNumToggle("", (pattRect.getWidth()/noSteps), (pattRect.getHeight()/patterns.size())));
+				stepButton[stepButton.size()-1]->addActionListener(this);
+				stepButton[stepButton.size()-1]->setName(String(stepButton.size()-1));
+				CabbagePatternMatrixStepData patMat;
+				myFilter->patStepMatrix.add(patMat);
+				stepButton[stepButton.size()-1]->setTopLeftPosition(pattRect.getX()+(beats*(pattRect.getWidth()/noSteps)), pats*(pattRect.getHeight())/patterns.size()+pattRect.getY());
+				addAndMakeVisible(stepButton[stepButton.size()-1]);
+			}
+		//add p-field controls if needed
+	   for(int pats=0;pats<patterns.size();pats++){
+			for(int i=0;i<rCtrls;i++){
+				pSliders.add(new Slider());
+				pSliders[pSliders.size()-1]->setSliderStyle(Slider::RotaryVerticalDrag);	
+				pSliders[pSliders.size()-1]->addListener(this);
+				pSliders[pSliders.size()-1]->setRange(0, 127, 1);
+				pSliders[pSliders.size()-1]->setTextBoxIsEditable(true);
+				pSliders[pSliders.size()-1]->showTextBox();
+				String sliderName("row:"+String(pats)+"|ctrl:"+String(i));
+				CabbagePatternMatrixPfieldData patMat;
+				myFilter->patPfieldMatrix.add(patMat);
+				pSliders[pSliders.size()-1]->getProperties().set("data", var(sliderName));
+				pSliders[pSliders.size()-1]->setBounds(slidersRect.getX()+(i*40), (((pats*(slidersRect.getHeight())/patterns.size())))+slidersRect.getY(), 40, 40);
+				addAndMakeVisible(pSliders[pSliders.size()-1]);
+				}
+			}
+			
+		}
+
+	~PatternMatrix(){
+		}
+
+
+	void actionListenerCallback(const juce::String &value)
+		{
+			//button:1|state:1|value:127
+			//sort out buttons first
+			if(value.contains("button")){
+			String buttonNum(value.substring(value.indexOf("button:")+7, value.indexOf("|st")));
+			String buttonState(value.substring(value.indexOf("|state:")+7, value.indexOf("|val")));
+			String buttonValue(value.substring(value.indexOf("|value:")+7, value.length()));
+			if(buttonState.getIntValue()==1){
+				Logger::writeToLog(buttonNum);
+				myFilter->patStepMatrix.getReference(buttonNum.getIntValue()).state = buttonState.getIntValue();
+				myFilter->patStepMatrix.getReference(buttonNum.getIntValue()).p4 = buttonValue.getIntValue();
+			}
+			else
+				myFilter->patStepMatrix.getReference(buttonNum.getIntValue()).state = buttonState.getIntValue();
+			}
+			//and now sliders
+		}
+		
+	void sliderValueChanged(juce::Slider *slider){
+		String data = slider->getProperties().getWithDefault("data", String("").contains("row"));
+		if(data.contains("row")){
+		String sliderRow(data.substring(data.indexOf("row:")+4, data.indexOf("|ctr")));
+		String sliderCtrl(data.substring(data.indexOf("|ctrl:")+6, data.length()));		
+		if(sliderCtrl=="0")
+		myFilter->patPfieldMatrix.getReference(sliderRow.getIntValue()).p5 = slider->getValue();
+		else if(sliderCtrl=="1")
+		myFilter->patPfieldMatrix.getReference(sliderRow.getIntValue()).p6 = slider->getValue();
+		else if(sliderCtrl=="2")
+		myFilter->patPfieldMatrix.getReference(sliderRow.getIntValue()).p7 = slider->getValue();
+		else if(sliderCtrl=="3")
+		myFilter->patPfieldMatrix.getReference(sliderRow.getIntValue()).p8 = slider->getValue();
+		else if(sliderCtrl=="4")
+		myFilter->patPfieldMatrix.getReference(sliderRow.getIntValue()).p9 = slider->getValue();
+		}
+
+	}
+
+	void sliderDragEnded(Slider* slider)
+		{
+			if(slider->getName()=="bpm"){
+			myFilter->bpm = slider->getValue();
+			myFilter->timeCounter = 0;
+			this->startTimer(15);
+			}
+		}
+
+	void buttonClicked(Button *button)
+		{
+			if(button->getName()=="Active"){
+				if(button->getToggleState()){
+				this->startTimer(15);
+				myFilter->patMatrixActive=1;
+				}
+				else{
+				this->stopTimer();
+				timerActive = false;
+				myFilter->patMatrixActive=0;
+				}
+			}
+		}
+
+	void timerCallback(){
+			for(int u=0;u<stepButton.size();u++){
+			if(stepButton[u]->getToggleState()==1){
+			stepButton[u]->setActiveColour("lime");
+			stepButton[u]->repaint();
+			}
+			}
+	
+			for(int y=0;y<noPatterns;y++){
+			if(stepButton[myFilter->beat+(y*noSteps)]->getToggleState()==1){			
+			stepButton[myFilter->beat+(y*noSteps)]->setActiveColour("yellow");
+			stepButton[myFilter->beat+(y*noSteps)]->repaint();
+			}
+			}
+
+	}
+JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PatternMatrix);
+};
+
+
+class CabbagePatternMatrix : public Component
+{
+int offX, offY, offWidth, offHeight, tableSize, width, height, rCtrls;
+String caption;
+StringArray patterns;
+public:
+ScopedPointer<PatternMatrix> patternMatrix;
+CabbagePluginAudioProcessor* myFilter;
+//---- constructor -----
+CabbagePatternMatrix(CabbagePluginAudioProcessor* filter, String name, int width, int height, String caption, StringArray patterns, int steps, int rctrls)
+	: myFilter(filter), height(height), width(width), caption(caption), patterns(patterns), rCtrls(rctrls)
+{
+	setName(name);
+	offX=offY=offWidth=offHeight=0;
+
+	
+	patternMatrix = new PatternMatrix(caption, width, height, patterns, steps, rCtrls, myFilter);
+
+	addAndMakeVisible(patternMatrix);
+	this->setWantsKeyboardFocus(false);
+}
+//---------------------------------------------
+~CabbagePatternMatrix(){
+
+}
+
+void paint(Graphics& g){
+	//----- Background
+	Colour bg = Colours::white;
+	g.setColour (bg);
+	g.fillRoundedRectangle (0, 0, width, height, 5);
+
+	//----- Outline
+	g.setColour (CabbageUtils::componentFontColour());
+	g.setOpacity (0.1);
+	g.drawRoundedRectangle (0.5, 0.5, width-1, height-1, 5, 1);
+
+	Font font (T("Impact"), 14, 0);
+	font.setFallbackFontName (T("Verdana")); //in case the user doesn't have the first font installed
+	g.setFont (font);
+	Justification just (4);
+	g.setColour (Colours::black);
+	String name = CabbageUtils::cabbageString (caption, font, width);
+	g.drawText (name, 0, 5, width, 13, just, false);
+	g.drawLine (10, 20, width-10, 20, 0.3);
+
+	for(int i=0;i<patterns.size();i++){
+	Justification just (4);
+	g.setColour (Colours::black);
+	String name = CabbageUtils::cabbageString (patterns[i], font, 60);
+	
+	g.drawText(name, 0, (i*((height-50)/patterns.size()*.90))+50, 60, (height/patterns.size())*.90, just, false);
+	}
+
+	g.drawText("Active", 70, 25, 60, 20, just, false);
+	g.drawText("BPM", 140, 25, 60, 20, just, false);
+
+
+}
+
+//---------------------------------------------
+void resized()
+{
+patternMatrix->setBounds(offX, offY, getWidth()+offWidth, getHeight()+offHeight); 
+this->setWantsKeyboardFocus(false);
+}
+
+JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CabbagePatternMatrix);
+};
+
+
+
+/*
+  ============================================================================
+	Cabbage Footer
+  ============================================================================
+*/
+class CabbageFooter	:	public Component
+{
+public:
+	CabbageFooter()
+	{
+	}
+
+	~CabbageFooter()
+	{
+	}
+
+	void resized()
+	{
+		this->setAlwaysOnTop(true);
+	}
+
+	void paint(Graphics& g)
+	{
+		g.setColour(CabbageUtils::darkerBackgroundSkin());
+		g.fillAll();
+
+		g.setColour (CabbageUtils::titleFontColour());
+		Image logo = ImageCache::getFromMemory (BinaryData::logo1_png, BinaryData::logo1_pngSize);
+		g.drawImage (logo, (getWidth()/2) - (logo.getWidth()*0.35), 3, logo.getWidth()*0.65, logo.getHeight()*0.65, 
+			0, 0, logo.getWidth(), logo.getHeight(), true);
+
+		g.drawLine(0, 0.1, getWidth(), 0.1, 0.2);
+	}
+
+private:
+
+	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CabbageFooter);
+};
+
+
+/*
+  ============================================================================
+	Cabbage Line
+  ============================================================================
+*/
+class CabbageLine	:	public Component
+{
+public:
+	CabbageLine (bool isHorizontal)
+		: isHorizontal(isHorizontal)
+	{
+	}
+
+	~CabbageLine()
+	{
+	}
+
+	void resized()
+	{
+		if (isHorizontal == true)
+			this->setBounds(getX(), getY(), getWidth(), getHeight());
+		else
+			this->setBounds(getX(), getY(), getWidth(), getHeight());	
+
+		this->setAlpha(0.7);
+	}
+
+	void paint(Graphics& g)
+	{
+		g.setColour (Colour::fromRGBA(150, 150, 150, 75));
+		g.fillRoundedRectangle(0, 0, getWidth(), getHeight(), 1);
+
+		g.setColour (CabbageUtils::backgroundSkin());
+		g.fillRoundedRectangle (0, 0, getWidth()-1, getHeight()-1, 1);
+	}
+
+
+private:
+	bool isHorizontal;
+
+	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CabbageLine);
 };
 
 #endif

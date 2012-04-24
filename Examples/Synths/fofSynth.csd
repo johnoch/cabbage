@@ -1,5 +1,5 @@
 <Cabbage>
-form caption("Cabbage Formant Synth"), size(520, 310) 
+form caption("Cabbage Formant Synth"), size(520, 310), pluginID("fof1") 
 
 xypad bounds(0, 0, 250, 210), channel("form1", "form2"), text("Formant Frequency  1/2"), rangex(50, 800, 100), rangey(600, 1200, 600)
 
@@ -21,7 +21,7 @@ keyboard bounds(0, 220, 500, 70)
 </Cabbage>
 <CsoundSynthesizer>
 <CsOptions>
--n -d -+rtmidi=NULL -M0 --midi-key-cps=4  --midi-velocity-amp=5 
+-n -d -m0d -+rtmidi=NULL -M0 --midi-key-cps=4  --midi-velocity-amp=5 
 </CsOptions>
 <CsInstruments>
 sr = 44100 

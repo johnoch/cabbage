@@ -1,5 +1,5 @@
 <Cabbage>
-form caption("Cabbage Easy Bass") size(440, 160), colour("black")
+form caption("Cabbage Easy Bass") size(440, 160), colour("black"), pluginID("ezb1")
 rslider pos(0, 0), size(80, 80) channel("cf"), range(1, 2000, 380), caption("Centre Freq"), colour("white"), midictrl(1, 1)
 rslider pos(85, 0), size(80, 80) channel("res"), range(0, 1, 1), caption("Resonance"), colour("white"), midictrl(1, 2)
 rslider pos(170, 0), size(80, 80) channel("disto"), range(0, 3, 2.5), caption("Dist."), colour("white"), midictrl(1, 3)
@@ -9,7 +9,7 @@ keyboard pos(0, 90), size(420, 50)
 </Cabbage>
 <CsoundSynthesizer>
 <CsOptions>
--d -n -+rtmidi=null -M0 -b1024 --midi-key-cps=4 --midi-velocity-amp=5 
+-d -n -+rtmidi=null -M0 -b1024 --midi-key-cps=4 --midi-velocity-amp=5 -m0d
 </CsOptions>
 <CsInstruments>
 ; Initialize the global variables.

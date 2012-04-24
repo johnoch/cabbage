@@ -3,28 +3,13 @@
 
 CabbageLookAndFeel::CabbageLookAndFeel()
 {
-	setColour(AlertWindow::backgroundColourId, Colours::black);
-	setColour(AlertWindow::textColourId, Colours::white);
+	setColour(AlertWindow::backgroundColourId, Colour::fromRGBA(10, 10, 10, 255));
+	setColour(AlertWindow::textColourId, Colours::whitesmoke);
 	setColour(AlertWindow::outlineColourId, Colours::grey);
 }
 
 CabbageLookAndFeel::~CabbageLookAndFeel()
 {
-}
-
-Image CabbageLookAndFeel::drawCheckMark()
-{
-	Image img = Image::Image(Image::ARGB, 10, 10, true);
-	Graphics g(img);
-
-	Path path;
-	path.startNewSubPath(3, 7);
-	path.lineTo(5, 10);
-	path.lineTo(10, 0);
-	g.setColour (Colours::cornflowerblue);
-	g.strokePath(path, 2.0f);
-
-	return img;
 }
 
 //========= Creating a custom r slider image that can be usede in the drawRotary() method =================
@@ -57,7 +42,7 @@ Image CabbageLookAndFeel::drawRotaryImage(int diameter, const Colour circleFill,
 		ColourGradient greenFill = ColourGradient (Colours::transparentBlack, 0, diameter*0.88, 
 			Colours::lime, 0, diameter*0.7, false); //setting gradient
 		g.setGradientFill (greenFill);
-		g.setOpacity (0.9);
+		g.setOpacity (0.7);
 		g.strokePath (fill, type, tnsForm);
 	}
 
@@ -104,8 +89,8 @@ Image CabbageLookAndFeel::drawRotaryImage(int diameter, const Colour circleFill,
 	//brightness of the selected colour is also brought down a little if too great, to make it look more
 	//realisitc.
 	float brightness = circleFill.getBrightness();
-	if (brightness > 0.8)
-		brightness = 0.8;
+	if (brightness > 0.9)
+		brightness = 0.9;
 	ColourGradient circleGrad = ColourGradient (Colours::white, diameter*-0.2, diameter*-0.2,
 		circleFill.withBrightness (brightness), diameter*0.5, diameter*0.5, false);
 	g.setGradientFill (circleGrad);
@@ -128,7 +113,7 @@ Image CabbageLookAndFeel::drawRotaryImage(int diameter, const Colour circleFill,
 																		diameter/2, diameter/2));	
 	//This is either black or white, depending on the brightness of the inner circle.
 	if (circleFill.getBrightness() > 0.6)
-		g.setColour (Colours::black);
+		g.setColour (Colour::fromRGBA (10, 10, 10, 255));
 	else
 		g.setColour (Colours::whitesmoke);	
 	g.fillPath (circleMarker, tnsForm);
@@ -169,7 +154,7 @@ Image CabbageLookAndFeel::drawLinearBgImage (float width, float height, float sl
 		//----- Green fill.  Using sliderPosProportional to fill in the correct amount.
 		ColourGradient fill = ColourGradient (Colours::transparentBlack, 0, 0, Colours::lime, width*0.1, 0, false);
 		g.setGradientFill (fill);
-		g.setOpacity (0.9);
+		g.setOpacity (0.7);
 		g.fillRoundedRectangle (0, height*0.47, sliderPosProportional*width, height*0.06, height*0.05);
 	}
 	//----- For vertical sliders ---------------------------------------------------
@@ -196,7 +181,7 @@ Image CabbageLookAndFeel::drawLinearBgImage (float width, float height, float sl
 		//----- Green fill.  Using sliderPosProportional to fill in the correct amount.
 		ColourGradient fill = ColourGradient (Colours::transparentBlack, 0, height, Colours::lime, 0, height*0.9, false);
 		g.setGradientFill (fill);
-		g.setOpacity (0.9);
+		g.setOpacity (0.7);
 		sliderPosProportional = 1 - sliderPosProportional; //inverting y axis
 		g.fillRoundedRectangle (width*0.47, sliderPosProportional*height, width*0.06, 
 			height-(sliderPosProportional*height), width*0.05);
@@ -215,8 +200,8 @@ Image CabbageLookAndFeel::drawLinearThumbImage (float width, float height, const
 
 	//----- Setting colour of thumb.  A colour gradient is used to give the illusion of a light source.
 	float brightness = thumbFill.getBrightness();
-	if (brightness > 0.8)
-		brightness = 0.8;
+	if (brightness > 0.9)
+		brightness = 0.9;
 	ColourGradient thumb = ColourGradient (Colours::white, 0, 0, 
 			thumbFill.withBrightness(brightness), width/2, height/2, false);
 
@@ -251,53 +236,52 @@ Image CabbageLookAndFeel::drawLinearThumbImage (float width, float height, const
 }
 
 //========= Creating image for toggle Button ========================================================
-Image CabbageLookAndFeel::drawToggleImage (float width, float height, bool isToggleOn)
+Image CabbageLookAndFeel::drawToggleImage (float width, float height, bool isToggleOn, Colour colour)
 {
 	//----- Creating a blank canvas.
 	Image img = Image::Image(Image::ARGB, width, height, true);
 	Graphics g (img);
+	float opacity;
 
-	Colour outline = Colour::fromRGBA (40, 40, 40, 255);
-	g.setColour (outline);
-	g.fillRoundedRectangle (0, height*0.15, width*0.7, height*0.7, width*0.1);
+	g.setColour (Colour::fromRGBA (10, 10, 10, 255));
+	g.fillRoundedRectangle (0, 0, width*0.95, height*0.95, height*0.1);
 
 	//----- If "on"
 	if (isToggleOn == true) {
-		//g.setColour (Colours::lime);
-		ColourGradient greenFill = ColourGradient (Colours::lime, width*0.35, height/2, Colours::transparentWhite,
-			-10, -10, true);
-		g.setGradientFill (greenFill);
-		g.fillRoundedRectangle (width*0.05, height*0.2, width*0.67, height*0.67, width*0.1);
+		g.setColour (colour);
+		g.fillRoundedRectangle (width*0.01, height*0.01, width*0.93, height*0.93, height*0.1);
+		opacity = 0.4;
 	}
 	//----- If "0ff"
 	else {
 		//----- Shadow
 		for (float i=0.01; i<0.05; i+=0.01) {
-			Colour shadow = Colour::fromRGBA (0, 0, 0, 255/(i*100));
-			g.setColour (shadow);
-			g.fillRoundedRectangle (width*i, height * (0.15+i), 
-				width*0.7, height*0.7, width*0.1);
+			g.setColour (Colour::fromRGBA (0, 0, 0, 255/(i*100)));
+			g.fillRoundedRectangle (width*i, height*i, 
+				width*0.95, height*0.95, height*0.1);
 		}
 		//----- Filling in the button
-		Colour bg1 = Colour::fromRGBA (45, 45, 48, 255);
+		Colour bg1 = Colour::fromRGBA (25, 25, 28, 255);
 		Colour bg2 = Colour::fromRGBA (15, 15, 18, 255);
-		ColourGradient cg = ColourGradient (bg1, 0, 0, bg2, width*0.35, height*0.5, false);
+		ColourGradient cg = ColourGradient (bg1, 0, 0, bg2, width*0.5, height*0.5, false);
 		g.setGradientFill (cg);
-		g.fillRoundedRectangle (width*0.01, height*0.16, width*0.68, height*0.68, width*0.1);
-
-		//----- For emphasising the top and left edges to give the illusion that light is shining on them
-		ColourGradient edgeHighlight = ColourGradient (Colours::lightgrey, 0, 0,
-			Colours::transparentWhite, 0, height*0.2, false);
-		g.setGradientFill (edgeHighlight);
-		g.fillRoundedRectangle (width*0.01, height*0.16, width*0.68, height*0.68, width*0.1);
-
-		ColourGradient edgeHighlight2 = ColourGradient (Colours::grey, -5, 0,
-			Colours::transparentWhite, width*0.1, 0, false);
-		g.setGradientFill (edgeHighlight2);
-		g.fillRoundedRectangle (width*0.01, height*0.16, width*0.68, height*0.68, width*0.1);
+		g.fillRoundedRectangle (width*0.01, height*0.01, width*0.93, height*0.93, height*0.1);
+		opacity = 0.2;
 	}
 
-	//----- Returning image
+	//----- For emphasising the top and left edges to give the illusion that light is shining on them
+	ColourGradient edgeHighlight = ColourGradient (Colours::whitesmoke, 0, 0,
+		Colours::transparentWhite, 0, height*0.1, false);
+	g.setGradientFill (edgeHighlight);
+	g.setOpacity (opacity);
+	g.fillRoundedRectangle (0, 0, width*0.95, height*0.95, height*0.1);
+
+	ColourGradient edgeHighlight2 = ColourGradient (Colours::whitesmoke, 0, 0,
+		Colours::transparentWhite, height*0.1, 0, false);
+	g.setGradientFill (edgeHighlight2);
+    g.setOpacity (opacity);
+	g.fillRoundedRectangle (0, 0, width*0.95, height*0.95, height*0.1);
+	
 	return img;
 }
 
@@ -307,51 +291,48 @@ Image CabbageLookAndFeel::drawTextButtonImage (float width, float height, bool i
 	//----- Creating a blank canvas.
 	Image img = Image::Image(Image::ARGB, width, height, true);
 	Graphics g (img);
+	float opacity;
 
 	//----- Outline
-	Colour outline = Colour::fromRGBA (40, 40, 40, 255);
-	g.setColour (outline);
-	//g.fillRoundedRectangle (width*0.09, height*0.09, width*0.82, height*0.82, height*0.1);
+	g.setColour (Colour::fromRGBA (10, 10, 10, 255));
 	g.fillRoundedRectangle (0, 0, width*0.95, height*0.95, height*0.1);
 
 	//----- If "off"
 	if (isButtonDown == false) {
 		//----- Shadow
-		for (float i=0.01; i<0.03; i+=0.01) {
-			Colour shadow = Colour::fromRGBA (0, 0, 0, 255/(i*100));
-			g.setColour (shadow);
+		for (float i=0.01; i<0.05; i+=0.01) {
+			g.setColour (Colour::fromRGBA (0, 0, 0, 255/(i*100)));
 			g.fillRoundedRectangle (width*i, height*i, 
-				width*0.94, height*0.94, height*0.1);
+				width*0.95, height*0.95, height*0.1);
+			opacity = 0.3;
 		}
 	}
+	else
+		opacity = 0.1;
 
 	//----- Filling in the button
-	Colour bg1 = Colour::fromRGBA (45, 45, 48, 255);
+	Colour bg1 = Colour::fromRGBA (25, 25, 28, 255);
 	Colour bg2 = Colour::fromRGBA (15, 15, 18, 255);
-	ColourGradient cg = ColourGradient (bg1, width*-0.2, height*-0.1, 
-		bg2, width*0.2, height*0.3, false);
+	ColourGradient cg = ColourGradient (bg1, 0, 0, bg2, width*0.5, height*0.5, false);
 	g.setGradientFill (cg);
-	g.fillRoundedRectangle (width*0.01, height*0.01, width*0.94, height*0.94, height*0.1);
+	g.fillRoundedRectangle (width*0.01, height*0.01, width*0.93, height*0.93, height*0.1);
 
-	//----- If "off".  (This can't be put in the above if statement as it has to be drawn after the filling
-	//in of the button).
-	if (isButtonDown == false) {
-		//----- For emphasising the top and left edges to give the illusion that light is shining on them
-		ColourGradient edgeHighlight = ColourGradient (Colours::lightgrey, 0, height*-0.35,
-			Colours::transparentBlack, 0, height*0.07, false);
-		g.setGradientFill (edgeHighlight);
-		g.fillRoundedRectangle (width*0.01, height*0.01, width*0.94, height*0.94, height*0.1);
+	//----- For emphasising the top and left edges to give the illusion that light is shining on them
+	ColourGradient edgeHighlight = ColourGradient (Colours::whitesmoke, 0, 0,
+	Colours::transparentWhite, 0, height*0.1, false);
+	g.setGradientFill (edgeHighlight);
+	g.setOpacity (opacity);
+	g.fillRoundedRectangle (0, 0, width*0.95, height*0.95, height*0.1);
 
-		ColourGradient edgeHighlight2 = ColourGradient (Colours::lightgrey, width*-0.35, 0,
-			Colours::transparentBlack, width*0.02, 0, false);
-		g.setGradientFill (edgeHighlight2);
-		g.fillRoundedRectangle (width*0.01, height*0.01, width*0.94, height*0.94, height*0.1);
-	}
+	ColourGradient edgeHighlight2 = ColourGradient (Colours::whitesmoke, 0, 0,
+		Colours::transparentWhite, height*0.1, 0, false);
+	g.setGradientFill (edgeHighlight2);
+	g.setOpacity (opacity);
+	g.fillRoundedRectangle (0, 0, width*0.95, height*0.95, height*0.1);
+	
 	
 	return img;
 }
-
-
 
 //=========== Rotary Sliders ==============================================================================
 void CabbageLookAndFeel::drawRotarySlider(Graphics& g, int /*x*/, int /*y*/, int /*width*/, int /*height*/,
@@ -873,9 +854,14 @@ void CabbageLookAndFeel::drawLinearSliderThumb (Graphics &g, int /*x*/, int /*y*
 void CabbageLookAndFeel::drawToggleButton (Graphics &g, ToggleButton &button, bool /*isMouseOverButton*/, bool /*isButtonDown*/)
 {
 	int destWidth, destHeight;
-	destWidth = destHeight = button.getHeight();
+	destHeight = button.getHeight();
+	if (button.getButtonText().length() > 0)
+		destWidth = destHeight;
+	else
+		destWidth = button.getWidth();
+
 	int destX = 0;
-	int destY = (button.getHeight() - destHeight) / 2;
+	int destY = 0;
 	bool isToggleOn;
 
 	if (button.getToggleState() == true)
@@ -883,22 +869,33 @@ void CabbageLookAndFeel::drawToggleButton (Graphics &g, ToggleButton &button, bo
 	else
 		isToggleOn = false;
 
-	Image newButton = drawToggleImage (button.getHeight(), button.getHeight(), isToggleOn);
+	//----- Getting the colour...
+	Colour col;
+    if (button.getProperties().getWithDefault("colour", "lime").equals(String("default"))){
+        for (float i=0.01; i<0.03; i+=0.01)
+			col = Colour::fromRGBA (0, 0, 0, 255/(i*100));
+    }
+    else
+		col = Colours::findColourForName(button.getProperties().getWithDefault("colour", "lime"), Colours::lime);
+
+	//----- Creating the image
+	Image newButton = drawToggleImage (destWidth, destHeight, isToggleOn, col);
 
 	//----- Drawing image
 	g.drawImage (newButton, destX, destY, destWidth, destHeight, 0, 0, destWidth, destHeight, false);
 
 	//----- Text
-	Justification just (1); //left
-	Font font = CabbageUtils::componentFont();
-	g.setFont (font);
-	g.setColour (CabbageUtils::componentFontColour());
+	if (button.getButtonText().length() > 0) {
+		Justification just (1); //left
+		g.setFont (CabbageUtils::componentFont());
+		g.setColour (CabbageUtils::componentFontColour());
 
-	String name;
-	name << button.getButtonText();
-	name = CabbageUtils::cabbageString (name, font, (button.getWidth()-destWidth)); //shortening string if too long
+		String name;
+		name << button.getButtonText();
+		name = CabbageUtils::cabbageString (name, CabbageUtils::componentFont(), (button.getWidth()-(destWidth+5))); //shortening string if too long
 
-	g.drawText (name, destWidth+1, destY, button.getWidth(), button.getHeight(), just, false);
+		g.drawText (name, destWidth+5, destY, button.getWidth(), button.getHeight(), just, false);
+	}
 }
 
 //========= Text Button Background ======================================================================
@@ -952,23 +949,22 @@ void CabbageLookAndFeel::drawComboBox(Graphics& g, int width, int height, bool /
 																	ComboBox& box)
 {
 	//----- For the main background
-	g.setColour(Colour::fromRGBA (10, 10, 10, 255));	
-	g.fillRoundedRectangle (0, 0, width, height, height*0.2);
-	g.setColour(CabbageUtils::backgroundSkin().withBrightness(0.1));
-	g.fillRoundedRectangle (2, 2, width-4, height-4, height*0.2);
+	g.setColour(CabbageUtils::darkerBackgroundSkin());
+	g.fillRoundedRectangle (0, 0, width, height, height*0.1);
 	
 	//----- The box that contains the arrow
-	//g.setOpacity (0.7);
 	g.setColour(Colour::fromRGBA (10, 10, 10, 255));
 	float arrowBoxWidth;
 	if (width >= 40)
 		arrowBoxWidth = 20;
 	else
 		arrowBoxWidth = width/2;
+	g.fillRoundedRectangle (width-arrowBoxWidth, 0, arrowBoxWidth, height, height*0.1);
 
-	g.fillRoundedRectangle (width-arrowBoxWidth, 0, arrowBoxWidth, height, height*0.2);
+	//----- Border outline
+	g.drawRoundedRectangle (0.5, 0.5, width-1, height-1, height*0.1, 1);
 
-	//----- Text and Arrow
+	//----- Arrow
 	box.setColour (0x1000a00, CabbageUtils::componentFontColour());
 	g.setColour(CabbageUtils::componentFontColour());
 	const Line<float> line(width-(arrowBoxWidth/2), height*0.25, width-(arrowBoxWidth/2), height*0.75); 
@@ -980,22 +976,21 @@ void CabbageLookAndFeel::drawComboBox(Graphics& g, int width, int height, bool /
 void CabbageLookAndFeel::drawTextEditorOutline (Graphics &g, int width, int height, TextEditor &/*textEditor*/)
 {
 	g.setColour (Colours::transparentBlack);
-	//g.setOpacity (0.9);
 	g.drawRoundedRectangle (0, 0, width, height, height/3, 1);
 }
 
 
 
-//============= TextEditor Background ===================================================================
+//============= TextEditor Background ==============================================================
 void CabbageLookAndFeel::fillTextEditorBackground (Graphics &g, int width, int height, TextEditor &textEditor)
 {
 	textEditor.setColour (0x1000200, Colours::transparentBlack); //this gets rid of the square rectangle background
-	g.setColour (CabbageUtils::backgroundSkin());
-	g.fillRoundedRectangle (0, 0, width, height, height/3);
+	//g.setColour (CabbageUtils::backgroundSkin());
+	//g.fillRoundedRectangle (0, 0, width, height, height/3);
 }
 
 
-//=========== Labels, slider textboxes are also labels ==================================================
+//=========== Labels, slider textboxes are also labels =============================================
 void CabbageLookAndFeel::drawLabel (Graphics &g, Label &label)
 {	
 	//----- Getting parent component of label, if it is a slider then the background will
@@ -1030,7 +1025,11 @@ void CabbageLookAndFeel::drawLabel (Graphics &g, Label &label)
 
 		//----- For the text
 		Justification just(36);
+		if(label.getProperties().getWithDefault("numColour", "")=="black")
+			g.setColour (Colours::black);
+		else
 		g.setColour (CabbageUtils::componentFontColour());
+
 		g.drawText (label.getText(), 0, 0, label.getWidth(), label.getHeight(), just, false);
 	}
 }
@@ -1053,22 +1052,21 @@ void CabbageLookAndFeel::drawGroupComponentOutline (Graphics &g, int w, int h, c
 	
 	//----- Text
 	String name = group.getText();
-	Font font (T("Impact"), 14, 0);
+	Font font = CabbageUtils::titleFont();
 	font.setFallbackFontName (T("Verdana")); //in case the user doesn't have the first font installed
 	g.setFont (font);
-	Justification just (36);
-	g.setColour (CabbageUtils::componentFontColour());
+	g.setColour (CabbageUtils::titleFontColour());
 	name = CabbageUtils::cabbageString (name, font, group.getWidth());
-	g.drawText (name, 0, 5, w, 13, just, false);
-	g.drawLine (10, 20, w-10, 20, 0.3);
+	g.drawText (name, 0, 5, w, font.getHeight(), 36, false);
+	//g.drawLine (10, 20, w-10, 20, 0.2);
 
 	//----- Corner holes
-	Colour cl = CabbageUtils::backgroundSkin();
-	g.setColour (cl);
-	g.fillEllipse (3, 3, 6, 6);
-	g.fillEllipse (3, h-9, 6, 6);
-	g.fillEllipse (w-9, 3, 6, 6);
-	g.fillEllipse (w-9, h-9, 6, 6);
+	g.setColour (CabbageUtils::backgroundSkin());
+	g.setOpacity(0.7);
+	g.fillEllipse (2, 2, 4, 4); //top-left
+	g.fillEllipse (2, h-6, 4, 4); //bottom-left
+	g.fillEllipse (w-6, 2, 4, 4); //top-right
+	g.fillEllipse (w-6, h-6, 4, 4); //bottom-right
 	
 }
 
@@ -1132,23 +1130,38 @@ void CabbageLookAndFeel::drawScrollbarButton (Graphics &g, ScrollBar &scrollbar,
 //======== Popup Menu background ======================================================================
 void CabbageLookAndFeel::drawPopupMenuBackground(Graphics &g, int width, int height)
 {
-	g.setColour (CabbageUtils::backgroundSkin().darker (0.2));
+	g.setColour (CabbageUtils::darkerBackgroundSkin());
     g.fillAll();
 
 	g.setColour (CabbageUtils::componentSkin());
 	g.drawRect (0, -5, width, height+5, 1); //dont want to see top line
 }
 
-//======== Popup Menu Items ======================================================================
-void CabbageLookAndFeel::drawPopupMenuItem (Graphics &g, int width, int height, bool isSeparator, 
-																				bool /*isActive*/,
-                                                                                bool isHighlighted,
-                                                                                bool isTicked,
-                                                                                bool hasSubMenu,
-                                                                                const String &text,
-                                                                                const String &/*shortcutKeyText*/,
-                                                                                Image */*image*/,
-                                                                                const Colour */*const textColour*/)
+//====== Returns image of a check mark ==============================================
+Image CabbageLookAndFeel::drawCheckMark()
+{
+	Image img = Image::Image(Image::ARGB, 10, 10, true);
+	Graphics g(img);
+
+	Path path;
+	path.startNewSubPath(3, 7);
+	path.lineTo(5, 10);
+	path.lineTo(10, 0);
+	g.setColour (Colours::cornflowerblue);
+	g.strokePath(path, 2.0f);
+
+	return img;
+}
+
+//======== Popup Menu Items ===========================================================================
+void CabbageLookAndFeel::drawPopupMenuItem (Graphics &g, int width, int height, bool isSeparator, bool /*isActive*/, 
+																								bool isHighlighted, 
+																								bool isTicked, 
+																								bool hasSubMenu, 
+																								const String &text, 
+																								const String &/*shortcutKeyText*/, 
+																								Image */*image*/, 
+																								const Colour */*const textColour*/)
 {
 	if ((isHighlighted == true) && (isSeparator == false)) {
 		g.setColour (CabbageUtils::componentSkin());
@@ -1159,7 +1172,7 @@ void CabbageLookAndFeel::drawPopupMenuItem (Graphics &g, int width, int height, 
 		g.setColour (CabbageUtils::componentFontColour());
 
 	g.setFont (CabbageUtils::componentFont());
-	g.drawText (text, width*0.1, 0, width*0.8, height, 1, false);
+	g.drawText (CabbageUtils::cabbageString(text, CabbageUtils::componentFont(), width*0.8), 20, 0, width*0.8, height, 1, false);
 
 	if (isSeparator == true) {
         g.setColour(CabbageUtils::componentSkin());
@@ -1169,10 +1182,7 @@ void CabbageLookAndFeel::drawPopupMenuItem (Graphics &g, int width, int height, 
 	if (isTicked) {
 		Image checkMark = drawCheckMark();
 		g.setColour(Colours::cornflowerblue);
-		g.drawImage(checkMark, 5, (height/2)-5, 10, 10, 0, 0, 10, 10, false);
-		//g.fillRect(5, (height/2)-5, 10, 10);
-		//g.drawText(T("\u2717"), 5, (height/2)-5, 10, 10, 36, false);
-	
+		g.drawImage(checkMark, 5, (height/2)-5, 10, 10, 0, 0, 10, 10, false);	
 	}
 	if (hasSubMenu) {
 		g.setColour(Colours::cornflowerblue);
@@ -1190,12 +1200,12 @@ void CabbageLookAndFeel::drawMenuBarBackground(Graphics &g, int width, int heigh
 
 //======== Menubar item background ======================================================================
 void CabbageLookAndFeel::drawMenuBarItem(Graphics & g, int width, int height, int itemIndex,
-                                                                                        const String &itemText, bool isMouseOverItem,
-                                                                                        bool isMenuOpen, bool isMouseOverBar,
-                                                                                        MenuBarComponent &menuBar)
+                                                                              const String &itemText, 
+																			  bool isMouseOverItem,
+                                                                              bool isMenuOpen, 
+																			  bool isMouseOverBar,
+                                                                              MenuBarComponent &menuBar)
 {
-   // g.setFont(Font(height*.6, 1));
-   // g.setColour(Colours::white);
 	if ((isMouseOverItem == true) || (isMenuOpen == true)) {
 		g.setColour (CabbageUtils::backgroundSkin().darker (0.2));
 		g.fillRect (0, 0, width, height);
@@ -1203,20 +1213,126 @@ void CabbageLookAndFeel::drawMenuBarItem(Graphics & g, int width, int height, in
 
 	g.setColour (CabbageUtils::componentFontColour());
 	g.setFont (CabbageUtils::componentFont());
-    g.drawFittedText(itemText, 0, 0, width, height, Justification::centred, 1);
+    g.drawFittedText(CabbageUtils::cabbageString(itemText, CabbageUtils::componentFont(), width*0.9), 5, 0, width, height, 36, 1);
 }
 
+//======== Document Window title bar ===================================================================
+void CabbageLookAndFeel::drawDocumentWindowTitleBar (DocumentWindow &window, Graphics &g, int w, int h, 
+																						int /*titleSpaceX*/, 
+																						int titleSpaceW, 
+																						const Image */*icon*/, 
+																						bool /*drawTitleTextOnLeft*/)
+{
+	window.setUsingNativeTitleBar(false);
 
+	g.setColour (CabbageUtils::darkerBackgroundSkin());
+	g.fillAll();
 
+	g.setColour (CabbageUtils::componentFontColour());
+	Font font = CabbageUtils::titleFont();
+	font.setFallbackFontName (T("Verdana")); 
+	font.setHeight(16);
+	g.setFont (font);
+	g.drawText (CabbageUtils::cabbageString(window.getName(), font, titleSpaceW), (w/2)-(titleSpaceW/2), 
+									(h/2)-(font.getHeight()/2), titleSpaceW, font.getHeight(), 36, false);
+}
 
+//====== Draw Window Button Normal Image =================================================================
+Image CabbageLookAndFeel::drawWindowButtonNormal(int buttonType)
+{
+	int width, height;
+	width = height = 20;
+	Image img = Image::Image(Image::ARGB, width, height, true);
+	Graphics g (img);
 
-//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+	String str;
 
+	if (buttonType == 1) 
+		str << "_";
+	else if (buttonType == 2)
+		str << "+";
+	else if (buttonType == 4) 
+		str << "x";
 
+	//----- Background
+	g.setColour (Colours::transparentBlack);
+	g.fillRoundedRectangle(1, 1, width-2, height-2, 2);
+	
+	//----- Text symbol
+	Font font = CabbageUtils::componentFont();
+	g.setFont (font);
+	g.setColour (CabbageUtils::componentFontColour());
+	g.drawText(str, (width/2) - (font.getHeight()/2), (width/2) - (font.getHeight()/2), 
+		font.getHeight(), font.getHeight(), 36, false);
 
+	return img;
+}
 
-//======= Basic Look And Feel Methods ===================================================================
+//====== Draw Window Button Image Is Over ==============================================================
+Image CabbageLookAndFeel::drawWindowButtonIsOver(int buttonType)
+{
+	int width, height;
+	width = height = 20;
+	Image img = Image::Image(Image::ARGB, width, height, true);
+	Graphics g (img);
+
+	String str;
+
+	if (buttonType == 1) 
+		str << "_";
+	else if (buttonType == 2)
+		str << "+";
+	else if (buttonType == 4) 
+		str << "x";
+
+	//---- Background
+	g.setColour (Colours::transparentBlack);
+	g.fillRoundedRectangle(1, 1, width-2, height-2, 2);
+
+	//---- Text symbol
+	Font font = CabbageUtils::componentFont();
+	g.setFont (font);
+	g.setColour (Colours::whitesmoke);
+	g.drawText(str, (width/2) - (font.getHeight()/2), (width/2) - (font.getHeight()/2), 
+		font.getHeight(), font.getHeight(), 36, false);
+
+	//---- V lines
+	ColourGradient cg = ColourGradient(Colours::transparentBlack, 0, 0, Colours::transparentBlack,
+		0, height, false);
+	cg.addColour (0.5, CabbageUtils::componentFontColour());
+	g.setGradientFill (cg);
+	g.drawLine (0, 0, 0, height, 1);
+	g.drawLine (width, 0, width, height, 1);
+
+	return img;
+}
+
+//========= Document Window Buttons =======================================================================
+Button* CabbageLookAndFeel::createDocumentWindowButton (int buttonType)
+{
+	ImageButton* button;
+	button = new ImageButton("Button");
+	Image normalImage, isOverImage;
+
+	normalImage = drawWindowButtonNormal(buttonType);
+	isOverImage = drawWindowButtonIsOver(buttonType);
+
+	button->setImages(true, false, true, normalImage, 1, Colours::transparentBlack, isOverImage,
+		1, Colours::transparentBlack, isOverImage, 1, Colours::transparentBlack, 0);
+
+	
+	return button;
+}
+
+/*
+  =========================================================================================================
+	
+	Alternative Look and Feel Class
+
+  ---------------------------------------------------------------------------------------------------------
+	
+  =========================================================================================================
+*/
 CabbageLookAndFeelBasic::CabbageLookAndFeelBasic()
 {
 }

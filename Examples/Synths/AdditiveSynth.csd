@@ -1,5 +1,5 @@
 <Cabbage>
-form caption("Cabbage Simple Synth") size(580, 200)
+form caption("Cabbage Simple Synth") size(580, 200), pluginID("add1")
 groupbox text("Simple Additive Synth"), pos(0, 0), size(200, 100)
 rslider bounds(5, 30, 60, 60), channel("rise"), size(300, 50), colour("white"), range(0, 1, 0.1), text("Rise")
 rslider bounds(65, 30, 60, 60), channel("decay"), colour("white"), text("Decay"), range(0, 3, 1)
