@@ -1946,7 +1946,7 @@ public:
 		setBounds(0, 0, width, height);
 		label = new Label();
 		label->setText("", false);
-		label->getProperties().set("numColour", "black");
+		label->getProperties().set("textColour", "black");
 		label->setBounds(0, 0, width, height);
 		label->setEditable(false, true);
 		label->setInterceptsMouseClicks(false, true);

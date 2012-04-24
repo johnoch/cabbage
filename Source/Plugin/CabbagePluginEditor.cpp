@@ -569,7 +569,7 @@ catch(...){
 void CabbagePluginAudioProcessorEditor::InsertLabel(CabbageGUIClass cAttr)
 {
 try{
-	layoutComps.add(new Label(cAttr.getStringProp("name"), cAttr.getStringProp("caption")));	
+	layoutComps.add(new Label(cAttr.getStringProp("name"), cAttr.getStringProp("text")));	
 	int idx = layoutComps.size()-1;
 
 	float left = cAttr.getNumProp("left");
@@ -606,8 +606,7 @@ try{
 
 if(cAttr.getColourProp("colour").length()>0){
 	//text colour
-	((GroupComponent*)layoutComps[idx])->setColour(0x1000281,
-		Colour::fromString(cAttr.getStringProp("colour")));
+	layoutComps[idx]->getProperties().set("textColour",  cAttr.getColourProp("colour"));
 	}
 	layoutComps[idx]->getProperties().set(String("plant"), var(cAttr.getStringProp("plant")));
 }

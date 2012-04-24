@@ -1025,8 +1025,14 @@ void CabbageLookAndFeel::drawLabel (Graphics &g, Label &label)
 
 		//----- For the text
 		Justification just(36);
-		if(label.getProperties().getWithDefault("numColour", "")=="black")
+		String col = label.getProperties().getWithDefault("textColour", "");
+		if(col.length()>0){
+			if(col=="black")
 			g.setColour (Colours::black);
+			else
+			g.setColour(Colour::fromString(col));
+		}
+
 		else
 		g.setColour (CabbageUtils::componentFontColour());
 

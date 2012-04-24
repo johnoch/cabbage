@@ -2,10 +2,13 @@
 image:hlogo_blue_text.png[Cabbage]
 ==================================
 
-
-Cabbage is a software for prototyping and developing audio plugins with the Csound audio synthesis language. It provides Csound programmers with a simple albeit powerful toolkit for the development of cross-platform audio software. Pre-built binaries for Microsoft Windows and Apple OSX(Built on 10.6) are available from code.google.com/p/cabbage  
+Introduction
+------------
+Cabbage is a software for prototyping and developing audio plugins with the Csound audio synthesis language. It provides Csound programmers with a simple albeit powerful toolkit for the development of cross-platform audio software. Pre-built binaries for Microsoft Windows and Apple OSX(Built on 10.6) are available from the http://code.google.com/p/cabbage[Cabbage google code homepage.]  
 
 This document will take you through the basics of using Cabbage. It starts with a look at features provided by the host and then moves on to some simple examples. The text concludes with a reference section for the various GUI controls available in Cabbage. It's assumed that the reader has some prior knowledge of Csound. 
+
+In order to use Cabbage you MUST have Csound installed. 
 
 The Cabbage standalone player
 -----------------------------
@@ -320,9 +323,9 @@ Image creates a static shape or graphic. It can be used to show pictures or it c
 
 'shape("type");': "shape" must be either round(with rounded corners, default), sharp(with sharp corners), or ellipse(an elliptical shape)
 
-'colour': This sets the colour of the image if no file name is given with the file identifier. Any CSS or HTML colour string can be passed to this identifier.
+'colour': This sets the colour of the image if no file name is given with the file identifier. Any CSS or HTML colour string can be passed to this identifier. The colour identifier can also be passed an RBG, or RGBA value. All channel values must be between 0 and 255. For instance colour(0, 0, 255) will create a blue, while colour(0, 255, 0, 255) will create a green with an alpha channel set to full.  
 
-'outline("colour")': This sets the outline colour of the image/shape. Any CSS or HTML colour string can be passed to this identifier.
+'outline("colour")': This sets the outline colour of the image/shape. Any CSS or HTML colour string can be passed to this identifier. The outline identifier can also be passed an RBG, or RGBA value. All channel values must be between 0 and 255. For instance outline(0, 0, 255) will create a blue, while outine(0, 255, 0, 255) will create a green with an alpha channel set to full.  
 
 'line(thickness)': This sets the line thickness in pixels.
 
@@ -362,7 +365,7 @@ NOTE: For the moment 'min' must be less than 'max'. In other words you can't inv
 
 'midCtrl(channel, Ctrlnum)' : channel must be a valid midi channel, while controller num should be the number of the controller you wish to use.
 
-'colour("colour")': This sets the colour of the image if a file name is not passed to file. Any CSS or HTML colour string can be passed to this identifier.
+'colour("colour")': This sets the colour of the image if a file name is not passed to file. Any CSS or HTML colour string can be passed to this identifier. The colour identifier can also be passed an RBG, or RGBA value. All channel values must be between 0 and 255. For instance colour(0, 0, 255) will create a blue, while colour(0, 255, 0, 255) will create a green with an alpha channel set to full.  
 
 
 Slider types:
@@ -561,6 +564,11 @@ Currently all Cabbage plugins are stereo by default. We are looking into ways of
 - 'Can I use Csound MACROs in the <Cabbage> section of my csd file?'
 I'm afraid not. The Cabbage section of your csd file is parsed by Cabbage's own parser therefore it will not understand any Csound syntax whatsoever. 
 
+- 'I've built some amazing instruments, how do I share them with the world?!'
+Easy. Send me, mailto:rorywalsh@ear.ie[Rory], your instruments and I will add them to the Cabbage examples so that other Cabbage users can have a go. 
+
+- 'Why does my instrument produce clicks?'
+There are several reason why one's instrument might produce clicks. The first thing to do is insure that '-m0d' is set in the CsOptions. This will prevent Csound from printing messages to the console. The second thing to do is the change the buffer size in the Cabbage audio settings. Larger buffer sizes will result in less clicks but longer latency. You will need to experiment with the options to see what suits best. 
 ////////////////////////////////////////////////////////////////
 The index is normally left completely empty, it's contents being
 generated automatically by the DocBook toolchain.
