@@ -74,7 +74,6 @@ private:
 	void buttonClicked (Button*);
 	void timerCallback();
 	void mouseDown(const MouseEvent &e);
-
 	void mouseUp(const MouseEvent &e);
 	bool LOCKED;
 	void insertCabbageText(String text);

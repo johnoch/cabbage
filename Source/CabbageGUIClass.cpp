@@ -207,6 +207,7 @@ CabbageGUIClass::CabbageGUIClass(String compStr, int ID):
           name = "groupbox";
 		  type = name;
           name.append(String(ID), 1024);
+		  line = 1;
 	}
     else if(strTokens[0].indexOfIgnoreCase("vline")!=-1){
           top = 10;

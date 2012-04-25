@@ -46,7 +46,7 @@ CabbageButton(String name, String caption, String buttonText, String colour)
 	addAndMakeVisible(groupbox);
 	addAndMakeVisible(button);
 	groupbox->setVisible(false);
-
+	groupbox->getProperties().set("groupLine", var(1));
 	button->setButtonText(buttonText);
 	if(caption.length()>0){
 		offX=10;
@@ -101,7 +101,8 @@ CabbageSlider(String name, String text, String caption, String kind, String colo
 	addAndMakeVisible(slider);
 	addAndMakeVisible(groupbox);
 	groupbox->setVisible(false);
-
+	groupbox->getProperties().set("groupLine", var(1));
+	
 	if(textBox<1) 
 		slider->setTextBoxStyle (Slider::NoTextBox, true, 0, 0);
 
@@ -219,6 +220,8 @@ CabbageCheckbox(String name, String caption, String buttonText, String colour)
 	addAndMakeVisible(groupbox);
 	addAndMakeVisible(button);
 	groupbox->setVisible(false);
+	groupbox->getProperties().set("groupLine", var(1));
+	
 	//outline colour ID
 	groupbox->setColour(0x1005400,
 		Colour::fromString(colour));
@@ -285,7 +288,8 @@ CabbageComboBox(String name, String caption, String text, String colour)
 	addAndMakeVisible(groupbox);
 	addAndMakeVisible(combo);
 	groupbox->setVisible(false);
-
+	groupbox->getProperties().set("groupLine", var(1));
+	
 	//outline colour IDE
 	groupbox->setColour(0x1005400,
 		Colour::fromString(colour));
@@ -391,7 +395,7 @@ OwnedArray<Component> comps;
 int offX, offY, offWidth, offHeight;
 public:
 //---- constructor -----
-CabbageGroupbox(String name, String caption, String text, String colour):GroupComponent(name)
+CabbageGroupbox(String name, String caption, String text, String colour, int line):GroupComponent(name)
 {
         toBack();
         offX=offY=offWidth=offHeight=0;
@@ -405,6 +409,11 @@ CabbageGroupbox(String name, String caption, String text, String colour):GroupCo
         }
         this->setText(text);
 		this->setWantsKeyboardFocus(false);
+		if(line==0)
+		this->getProperties().set("groupLine", var(0));
+		else
+		this->getProperties().set("groupLine", var(1));
+		this->repaint();
 
 }
 //---------------------------------------------

@@ -1,5 +1,5 @@
 <Cabbage>
-form caption("Scantable synthesizer") size(572, 320), colour("black"),pluginID("sca1") 
+form caption("Scantable synthesizer") size(572, 340), colour("black"),pluginID("sca1") 
 rslider bounds(15, 10, 100, 100) channel("init"), range(50,59,50), caption("Initial"), colour("white"), midictrl(1, 1)
 rslider bounds(120, 10, 100, 100) channel("semi"), range(-24,12,-12), caption("Coarse"), colour("white")
 rslider bounds(225, 10, 100, 100) channel("detune"), range(-2,2,0), caption("detune"), colour("white")

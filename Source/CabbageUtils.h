@@ -164,14 +164,14 @@ static Font valueFont()
 //======= For titles etc ============================================================
 static Font titleFont()
 {
-	Font font = Font ("Helvetica", 14.5, 1);
+	Font font = Font ("Helvetica", 12.5, 1);
 	return font;
 }
 
 //======= Title font colour =========================================================
 static Colour titleFontColour()
 {
-	Colour cl = Colour::fromRGBA (100, 100, 100, 255);
+	Colour cl = Colour::fromRGBA (160, 160, 160, 255);
 	return cl;
 }
 

@@ -949,7 +949,7 @@ void CabbageLookAndFeel::drawComboBox(Graphics& g, int width, int height, bool /
 																	ComboBox& box)
 {
 	//----- For the main background
-	g.setColour(CabbageUtils::darkerBackgroundSkin());
+	g.setColour(CabbageUtils::backgroundSkin());
 	g.fillRoundedRectangle (0, 0, width, height, height*0.1);
 	
 	//----- The box that contains the arrow
@@ -1061,11 +1061,13 @@ void CabbageLookAndFeel::drawGroupComponentOutline (Graphics &g, int w, int h, c
 	Font font = CabbageUtils::titleFont();
 	font.setFallbackFontName (T("Verdana")); //in case the user doesn't have the first font installed
 	g.setFont (font);
-	g.setColour (CabbageUtils::titleFontColour());
+	g.setColour (CabbageUtils::componentFontColour());
 	name = CabbageUtils::cabbageString (name, font, group.getWidth());
 	g.drawText (name, 0, 5, w, font.getHeight(), 36, false);
-	//g.drawLine (10, 20, w-10, 20, 0.2);
-
+	if(!group.getProperties().getWithDefault("groupLine", 0).equals(var(0))){
+	g.drawLine (10, 20, w-10, 20, 0.2);
+	Logger::writeToLog("line is 1");
+	}
 	//----- Corner holes
 	g.setColour (CabbageUtils::backgroundSkin());
 	g.setOpacity(0.7);

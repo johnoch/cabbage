@@ -326,6 +326,16 @@ void CabbagePluginAudioProcessorEditor::paint (Graphics& g)
 		Colour bg = CabbageUtils::backgroundSkin();
 		g.setColour (bg);
 		g.fillAll();
+		g.setColour(CabbageUtils::darkerBackgroundSkin());
+		g.fillAll();
+
+		g.setColour (CabbageUtils::titleFontColour());
+		Image logo = ImageCache::getFromMemory (BinaryData::logo1_png, BinaryData::logo1_pngSize);
+		//g.drawImage (logo, (getWidth()/2) - (logo.getWidth()*.35), getHeight()-25, logo.getWidth()*0.65, logo.getHeight()*0.65, 
+		//	0, 0, logo.getWidth(), logo.getHeight(), true);
+		g.drawImage (logo, (getWidth()) - (logo.getWidth()*.75), getHeight()-25, logo.getWidth()*0.65, logo.getHeight()*0.65, 
+			0, 0, logo.getWidth(), logo.getHeight(), true);
+		//g.drawLine(10, getHeight()-27, getWidth()-10, getHeight()-27, 0.2);
 	}
 //componentPanel->toFront(true);
 //componentPanel->grabKeyboardFocus();
@@ -416,8 +426,8 @@ try{
 	layoutComps.add(new CabbageGroupbox(cAttr.getStringProp("name"), 
 										 cAttr.getStringProp("caption"), 
 										 cAttr.getItems(0), 
-										 cAttr.getColourProp("colour")
-										 ));
+										 cAttr.getColourProp("colour"),
+										 cAttr.getNumProp("line")));
 	int idx = layoutComps.size()-1;
 
 	float left = cAttr.getNumProp("left");
@@ -659,6 +669,7 @@ try{
 	//add a dummy control to our layoutComps vector so that our filters layout vector 
 	//is the same size as our editors one. 
 	layoutComps.add(new Component());
+
 }
 catch(...){
     Logger::writeToLog(T("Syntax error: 'form..."));
