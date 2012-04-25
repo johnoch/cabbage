@@ -432,9 +432,15 @@ void StandaloneFilterWindow::showAudioSettingsDialog()
 //==============================================================================
 void StandaloneFilterWindow::closeButtonPressed()
 {
-if(cabbageCsoundEditor)
-cabbageCsoundEditor->closeButtonPressed();
-	JUCEApplication::quit();
+	/*
+if(cabbageCsoundEditor){
+	cabbageCsoundEditor->removeAllActionListeners(); 
+	cabbageCsoundEditor->removeFromDesktop();
+	cabbageCsoundEditor->closeButtonPressed();
+}
+Time::waitForMillisecondCounter(1000);
+*/
+JUCEApplication::quit();
 }
 
 void StandaloneFilterWindow::resized()

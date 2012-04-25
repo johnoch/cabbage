@@ -559,13 +559,16 @@ int CabbageGUIClass::parse(String str)
 				}
             }
 			else if(identArray.getReference(indx).toLowerCase().equalsIgnoreCase("bounds(")){
-				if(strTokens.size()<4){
+				if(strTokens.size()<3){
 					debugMessage = T("WARNING: Not enough paramters passed to bounds(): usage pos(top, left width, height\")");
 				}
 				else{
 				  left = strTokens[0].trim().getFloatValue();  
 				  top = strTokens[1].trim().getFloatValue();  
 				  width = strTokens[2].trim().getFloatValue();  
+				  if(strTokens.size()==3)
+					  height = width;
+				  else
 				  height = strTokens[3].trim().getFloatValue(); 
 				  boundsText = identArray.getReference(indx)+tstr+T(")");
 				}

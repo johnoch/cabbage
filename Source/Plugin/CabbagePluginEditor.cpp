@@ -435,10 +435,10 @@ try{
 	float width = cAttr.getNumProp("width");
 	float height = cAttr.getNumProp("height");
 
-	if(cAttr.getStringProp("plant").length()>1){
-		width = width*cAttr.getNumProp("scaleX");
-		height = height*cAttr.getNumProp("scaleY");
-	}
+	//if(cAttr.getStringProp("plant").length()>1){
+	//	width = width*cAttr.getNumProp("scaleX");
+	//	height = height*cAttr.getNumProp("scaleY");
+	//}
 
 	int relY=0,relX=0;
 	for(int y=0;y<layoutComps.size();y++){
@@ -930,12 +930,12 @@ try{
         float width = cAttr.getNumProp("width");
         float height = cAttr.getNumProp("height");     
         controls.add(new CabbageSlider(cAttr.getStringProp("name"),
-                                                                                 cAttr.getStringProp("text"),
-                                                                                 cAttr.getStringProp("caption"),
-                                                                                 cAttr.getStringProp("kind"),
-                                                                                 cAttr.getColourProp("colour"),
-                                                                                 cAttr.getNumProp("textbox")
-                                                                                 ));   
+                                            cAttr.getStringProp("text"),
+                                            cAttr.getStringProp("caption"),
+                                            cAttr.getStringProp("kind"),
+                                            cAttr.getColourProp("colour"),
+                                            cAttr.getNumProp("textbox")
+                                            ));   
         int idx = controls.size()-1;
  
  
@@ -945,12 +945,19 @@ try{
         if(cAttr.getStringProp("reltoplant").length()>0){
         if(layoutComps[y]->getProperties().getWithDefault(String("plant"), -99).toString().equalsIgnoreCase(cAttr.getStringProp("reltoplant")))
                 {
-                width = width*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
+ /*               width = width*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
                 height = height*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
                 top = top*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
                 left = left*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
- 
-                if(layoutComps[y]->getName().containsIgnoreCase("groupbox")||
+ */
+		
+		width = width*layoutComps[y]->getWidth();
+		height = height*layoutComps[y]->getHeight();
+		if(width<height) height = width;
+		else if(height<width) width = height;
+        top = (top*layoutComps[y]->getHeight());
+		left = (left*layoutComps[y]->getWidth());
+				if(layoutComps[y]->getName().containsIgnoreCase("groupbox")||
                         layoutComps[y]->getName().containsIgnoreCase("image"))
                         {                      
                         controls[idx]->setBounds(left, top, width, height);
@@ -960,7 +967,7 @@ try{
                 }
         }
                 else{
-            controls[idx]->setBounds(left+relX, top+relY, width, height);
+                controls[idx]->setBounds(left+relX, top+relY, width, height);
                 componentPanel->addAndMakeVisible(controls[idx]);              
                 }
         }
@@ -1060,11 +1067,15 @@ try{
 	if(cAttr.getStringProp("reltoplant").length()>0){
 	if(layoutComps[y]->getProperties().getWithDefault(String("plant"), -99).toString().equalsIgnoreCase(cAttr.getStringProp("reltoplant")))
 		{
-		width = width*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
-		height = height*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
-		top = top*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
-		left = left*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
+		//width = width*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
+		//height = height*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
+		//top = top*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
+		//left = left*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
 
+		width = width*layoutComps[y]->getWidth();
+		height = height*layoutComps[y]->getHeight();
+        top = (top*layoutComps[y]->getHeight());
+		left = (left*layoutComps[y]->getWidth());
 		if(layoutComps[y]->getName().containsIgnoreCase("groupbox")||
 			layoutComps[y]->getName().containsIgnoreCase("image"))
 			{			
@@ -1118,10 +1129,14 @@ try{
 	if(cAttr.getStringProp("reltoplant").length()>0){
 	if(layoutComps[y]->getProperties().getWithDefault(String("plant"), -99).toString().equalsIgnoreCase(cAttr.getStringProp("reltoplant")))
 		{
-		width = width*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
-		height = height*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
-		top = top*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
-		left = left*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
+		//width = width*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
+		//height = height*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
+		//top = top*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
+		//left = left*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
+		width = width*layoutComps[y]->getWidth();
+		height = height*layoutComps[y]->getHeight();
+        top = (top*layoutComps[y]->getHeight());
+		left = (left*layoutComps[y]->getWidth());
 
 		if(layoutComps[y]->getName().containsIgnoreCase("groupbox")||
 			layoutComps[y]->getName().containsIgnoreCase("image"))
@@ -1255,11 +1270,15 @@ try{
         if(cAttr.getStringProp("reltoplant").length()>0){
         if(layoutComps[y]->getProperties().getWithDefault(String("plant"), -99).toString().equalsIgnoreCase(cAttr.getStringProp("reltoplant")))
                 {
-                width = width*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
-                height = height*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
-                top = top*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
-                left = left*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
- 
+                //width = width*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
+                //height = height*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
+                //top = top*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
+                //left = left*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
+		width = width*layoutComps[y]->getWidth();
+		height = height*layoutComps[y]->getHeight();
+        top = (top*layoutComps[y]->getHeight());
+		left = (left*layoutComps[y]->getWidth());
+
                 if(layoutComps[y]->getName().containsIgnoreCase("groupbox")||
                         layoutComps[y]->getName().containsIgnoreCase("image"))
                         {                      
@@ -1375,10 +1394,14 @@ try{
 	if(cAttr.getStringProp("reltoplant").length()>0){
 	if(layoutComps[y]->getProperties().getWithDefault(String("plant"), -99).toString().equalsIgnoreCase(cAttr.getStringProp("reltoplant")))
 		{
-		width = width*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
-		height = height*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
-		top = top*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
-		left = left*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
+		//width = width*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
+		//height = height*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
+		//top = top*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
+		//left = left*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
+		width = width*layoutComps[y]->getWidth();
+		height = height*layoutComps[y]->getHeight();
+        top = (top*layoutComps[y]->getHeight());
+		left = (left*layoutComps[y]->getWidth());
 
 		if(layoutComps[y]->getName().containsIgnoreCase("groupbox")||
 			layoutComps[y]->getName().containsIgnoreCase("image"))
@@ -1459,10 +1482,14 @@ try{
 	if(cAttr.getStringProp("reltoplant").length()>0){
 	if(layoutComps[y]->getProperties().getWithDefault(String("plant"), -99).toString().equalsIgnoreCase(cAttr.getStringProp("reltoplant")))
 		{
-		width = width*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
-		height = height*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
-		top = top*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
-		left = left*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
+		//width = width*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
+		//height = height*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
+		//top = top*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
+		//left = left*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
+		width = width*layoutComps[y]->getWidth();
+		height = height*layoutComps[y]->getHeight();
+        top = (top*layoutComps[y]->getHeight());
+		left = (left*layoutComps[y]->getWidth());
 
 		if(layoutComps[y]->getName().containsIgnoreCase("groupbox")||
 			layoutComps[y]->getName().containsIgnoreCase("image"))
@@ -1584,10 +1611,15 @@ try{
 	if(cAttr.getStringProp("reltoplant").length()>0){
 	if(layoutComps[y]->getProperties().getWithDefault(String("plant"), -99).toString().equalsIgnoreCase(cAttr.getStringProp("reltoplant")))
 		{
-		width = width*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
-		height = height*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
-		top = top*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
-		left = left*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
+		//width = width*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
+		//height = height*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
+		//top = top*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
+		//left = left*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
+
+		width = width*layoutComps[y]->getWidth();
+		height = height*layoutComps[y]->getHeight();
+        top = (top*layoutComps[y]->getHeight());
+		left = (left*layoutComps[y]->getWidth());
 
 		if(layoutComps[y]->getName().containsIgnoreCase("groupbox")||
 			layoutComps[y]->getName().containsIgnoreCase("image"))

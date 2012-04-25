@@ -2191,7 +2191,9 @@ CabbagePluginAudioProcessor* myFilter;
 JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PatternMatrix);
 };
 
-
+//==============================================================================
+// CabbagePatternMatrix
+//==============================================================================
 class CabbagePatternMatrix : public Component
 {
 int offX, offY, offWidth, offHeight, tableSize, width, height, rCtrls;
@@ -2262,53 +2264,51 @@ this->setWantsKeyboardFocus(false);
 JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CabbagePatternMatrix);
 };
 
-
-
-/*
-  ============================================================================
-	Cabbage Footer
-  ============================================================================
-*/
-class CabbageFooter	:	public Component
+//==============================================================================
+// custom CabbageLine
+//==============================================================================
+class CabbageLabel	:	public Component
 {
 public:
-	CabbageFooter()
+	CabbageLabel (bool isHorizontal)
+		: isHorizontal(isHorizontal)
 	{
 	}
 
-	~CabbageFooter()
+	~CabbageLabel()
 	{
 	}
 
 	void resized()
 	{
-		this->setAlwaysOnTop(true);
+		if (isHorizontal == true)
+			this->setBounds(getX(), getY(), getWidth(), getHeight());
+		else
+			this->setBounds(getX(), getY(), getWidth(), getHeight());	
+
+		this->setAlpha(0.7);
 	}
 
 	void paint(Graphics& g)
 	{
-		g.setColour(CabbageUtils::darkerBackgroundSkin());
-		g.fillAll();
+		g.setColour (Colour::fromRGBA(150, 150, 150, 75));
+		g.fillRoundedRectangle(0, 0, getWidth(), getHeight(), 1);
 
-		g.setColour (CabbageUtils::titleFontColour());
-		Image logo = ImageCache::getFromMemory (BinaryData::logo1_png, BinaryData::logo1_pngSize);
-		g.drawImage (logo, (getWidth()/2) - (logo.getWidth()*0.35), 3, logo.getWidth()*0.65, logo.getHeight()*0.65, 
-			0, 0, logo.getWidth(), logo.getHeight(), true);
-
-		g.drawLine(0, 0.1, getWidth(), 0.1, 0.2);
+		g.setColour (CabbageUtils::backgroundSkin());
+		g.fillRoundedRectangle (0, 0, getWidth()-1, getHeight()-1, 1);
 	}
 
-private:
 
-	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CabbageFooter);
+private:
+	bool isHorizontal;
+
+	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CabbageLabel);
 };
 
 
-/*
-  ============================================================================
-	Cabbage Line
-  ============================================================================
-*/
+//==============================================================================
+// custom CabbageLine
+//==============================================================================
 class CabbageLine	:	public Component
 {
 public:

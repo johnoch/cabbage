@@ -95,7 +95,7 @@ horizontalLayout.setItemLayout (3,          // for item 2
 //==============================================================================
 CsoundEditor::~CsoundEditor ()
 {
-//csoundDoc.setPositionMaintained(false);
+commandManager.deleteInstance();
 }
 //==============================================================================
 void CsoundEditor::resized()
