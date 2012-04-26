@@ -534,7 +534,7 @@ try{
 	if(cAttr.getNumProp("isLineVertical"))
 	layoutComps.add(new CabbageLine(false));
 	else
-	layoutComps.add(new CabbageLine(false));
+	layoutComps.add(new CabbageLine(true));
 	int idx = layoutComps.size()-1;
 
 	float left = cAttr.getNumProp("left");
@@ -579,7 +579,7 @@ catch(...){
 void CabbagePluginAudioProcessorEditor::InsertLabel(CabbageGUIClass cAttr)
 {
 try{
-	layoutComps.add(new Label(cAttr.getStringProp("name"), cAttr.getStringProp("text")));	
+	layoutComps.add(new CabbageLabel(cAttr.getStringProp("text"), cAttr.getColourProp("colour")));	
 	int idx = layoutComps.size()-1;
 
 	float left = cAttr.getNumProp("left");
@@ -612,13 +612,13 @@ try{
 	}
 
 	cAttr.setStringProp("type", "label");
-	((Label*)layoutComps[idx])->setFont(Font(height));
-
-if(cAttr.getColourProp("colour").length()>0){
-	//text colour
-	layoutComps[idx]->getProperties().set("textColour",  cAttr.getColourProp("colour"));
-	}
-	layoutComps[idx]->getProperties().set(String("plant"), var(cAttr.getStringProp("plant")));
+//	((Label*)layoutComps[idx])->setFont(Font(height));
+//
+//if(cAttr.getColourProp("colour").length()>0){
+//	//text colour
+//	layoutComps[idx]->getProperties().set("textColour",  cAttr.getColourProp("colour"));
+//	}
+//	layoutComps[idx]->getProperties().set(String("plant"), var(cAttr.getStringProp("plant")));
 }
 catch(...){
 	Logger::writeToLog(T("Syntax error: 'label..."));

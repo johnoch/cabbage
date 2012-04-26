@@ -2265,13 +2265,14 @@ JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CabbagePatternMatrix);
 };
 
 //==============================================================================
-// custom CabbageLine
+// custom CabbageLabel
 //==============================================================================
 class CabbageLabel	:	public Component
 {
+
 public:
-	CabbageLabel (bool isHorizontal)
-		: isHorizontal(isHorizontal)
+	CabbageLabel (String text, String colour)
+		: text(text), colour(colour)
 	{
 	}
 
@@ -2281,27 +2282,20 @@ public:
 
 	void resized()
 	{
-		if (isHorizontal == true)
-			this->setBounds(getX(), getY(), getWidth(), getHeight());
-		else
-			this->setBounds(getX(), getY(), getWidth(), getHeight());	
 
-		this->setAlpha(0.7);
 	}
 
 	void paint(Graphics& g)
 	{
-		g.setColour (Colour::fromRGBA(150, 150, 150, 75));
-		g.fillRoundedRectangle(0, 0, getWidth(), getHeight(), 1);
-
-		g.setColour (CabbageUtils::backgroundSkin());
-		g.fillRoundedRectangle (0, 0, getWidth()-1, getHeight()-1, 1);
+		g.setColour(Colour::fromString(colour));
+		g.setFont(CabbageUtils::componentFont());
+		g.setFont(getHeight(), 1);
+		g.drawFittedText(text, 0, 0, getWidth(), getHeight(), Justification::centred, 1, 1);
 	}
 
 
 private:
-	bool isHorizontal;
-
+	String text, colour;
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CabbageLabel);
 };
 
