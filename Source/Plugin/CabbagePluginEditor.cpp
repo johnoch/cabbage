@@ -314,12 +314,10 @@ void CabbagePluginAudioProcessorEditor::paint (Graphics& g)
 		g.setColour (Colours::black);
 		//g.setColour (CabbageUtils::backgroundSkin());
 		g.fillAll();
-		Image logo = ImageCache::getFromMemory (BinaryData::logo_cabbage_Black_png, BinaryData::logo_cabbage_Black_pngSize);
 
-		//g.setColour(Colour::fromRGBA (1, 2, 4, 255));
-	
-		g.drawImage(logo, getWidth()*0.15, getHeight()*0.1, getWidth()*0.7, getHeight()*0.5, 
-			0, 0, logo.getWidth(), logo.getHeight(), false);
+		Image logo = ImageCache::getFromMemory (BinaryData::logo_cabbage_Black_png, BinaryData::logo_cabbage_Black_pngSize);
+        g.drawImage(logo, 10, 10, getWidth(), getHeight()-60, 0, 0, logo.getWidth(), logo.getHeight());
+
 	}
 	else {
 		g.setColour(CabbageUtils::backgroundSkin());

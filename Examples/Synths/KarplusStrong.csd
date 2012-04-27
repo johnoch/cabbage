@@ -1,23 +1,30 @@
 <Cabbage>
-form caption("Cabbage Karplus Wrong!"), size(550, 190)
+form caption("Cabbage Karplus Wrong!"), size(550, 200), plugin("Cab0")
 keyboard bounds(0, 110, 530, 50)
 
 groupbox text("Source and Filter"), bounds(0, 0, 120, 100), plant("source"){
-rslider text("NoiseBW"), bounds(0, 15, 70, 70), colour("dodgerblue"), range(1, 22050, 6000), channel("noiseBW")
-rslider text("Dist.."), bounds(50, 15, 70, 70), colour("dodgerblue"), range(1, 5, 1), channel("earlyDist")
+rslider text("NoiseBW"), bounds(.05, .3, .55), colour("dodgerblue"), range(1, 22050, 6000), channel("noiseBW")
+vline bounds(.5, .3, .01, .5)
+rslider text("Dist.."), bounds(.50, .3, .55), colour("dodgerblue"), range(1, 5, 1), channel("earlyDist")
 }
 
-groupbox text("Filter Cut-off Envelope"), bounds(130, 0, 220, 100), plant("filter-env"){
-rslider bounds(0, 15, 70, 70), text("Att.."), range(0.2, 2, .5), channel("filterAttack")
-rslider bounds(50, 15, 70, 70), text("Dec.."), range(0.01, 2, .1), channel("filterDecay")
-rslider bounds(100, 15, 70, 70), text("Sus.."), range(0.01, 1, .6), channel("filterSustain")
-rslider bounds(150, 15, 70, 70), text("Rel.."), range(0.01, 2, .5), channel("filterRelease")
+groupbox bounds(130, 0, 220, 100), text("Filter Cut-off Envelope"), plant("filter-env"){
+rslider bounds(.03, .32, .55), text("Att.."), colour("white"), channel("att"), range(0.01,3, .5)
+rslider bounds(.27, .32, .55), text("Dec.."), colour("white"), channel("dec"), range(0,1, .5)
+rslider bounds(.5, .32, .55), text("Sus.."), colour("white"), channel("sus"), range(0,1,.8)
+rslider bounds(.74, .32, .55), text("Rel.."), colour("white"), channel("rel"), range(0.01,3, .2)
+image bounds(0.03, .20, .95, .7), colour(145, 145, 155, 50)
+vline bounds(.27, .3, .01, .5)
+vline bounds(.5, .3, .01, .5)
+vline bounds(.74, .3, .01, .5)
 }
 
 groupbox text("Lowpass Filter"), bounds(360, 0, 170, 100), plant("lpfilter"){
-rslider bounds(0, 15, 70, 70), text("Centre.."), range(0, 2000, 1000), range(1, 22050, 2000), channel("lowpassCF")
-rslider bounds(50, 15, 70, 70), text("Res.."), range(0, 1, .1), channel("reosnance")
-rslider bounds(100, 15, 70, 70), text("Dist.."), range(0, 5, .1), channel("distortion")
+rslider bounds(.05, .3, .55), colour("cornflowerblue"), text("Centre.."), range(0, 2000, 1000), range(1, 22050, 2000), channel("lowpassCF")
+vline bounds(.35, .3, .01, .5)
+rslider bounds(.35, .3, .55), colour("cornflowerblue"), text("Res.."), range(0, 1, .1), channel("reosnance")
+vline bounds(.65, .3, .01, .5)
+rslider bounds(.65, .3, .55), colour("cornflowerblue"), text("Dist.."), range(0, 5, .1), channel("distortion")
 }
 
 
@@ -41,10 +48,10 @@ kLPFcf chnget "lowpassCF"
 kRes chnget "resonance"
 kDis chnget "distortion"
 
-kFilterA chnget "filterAttack"
-kFilterD chnget "filterDecay"
-kFilterS chnget "filterSustain"
-kFilterR chnget "filterRelease"
+iFilterA chnget "att"
+iFilterD chnget "dec"
+iFilterS chnget "sus"
+iFilterR chnget "rel"
 
 idel = 1/p4
 alp init 0
@@ -64,15 +71,15 @@ aprev = adelay
 
 
 
-kadsr madsr i(kFilterA), i(kFilterD), i(kFilterS), i(kFilterR)
+kadsr madsr iFilterA, iFilterD, iFilterS, iFilterR
 alft lpf18 adelay, 1+(kLPFcf*kadsr), kRes, kDis
 
-aadsr madsr i(kFilterA), i(kFilterD), i(kFilterS), i(kFilterR)
+aadsr madsr iFilterA, iFilterD, iFilterS, iFilterR
 abal balance alft, aadsr*p5
 
 afltClip clip abal, 2, p5
 
-kDeClicker linenr 1, 0.1, i(kFilterR), 0.01 
+kDeClicker linenr 1, 0.1, iFilterR, 0.01 
 outs afltClip*kDeClicker, afltClip*kDeClicker 
 
 endin
