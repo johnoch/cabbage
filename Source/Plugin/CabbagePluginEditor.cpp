@@ -351,9 +351,7 @@ void CabbagePluginAudioProcessorEditor::InsertGUIControls()
 {
 //add layout controls, non interactive..
 for(int i=0;i<getFilter()->getGUILayoutCtrlsSize();i++){
-if(getFilter()->getGUILayoutCtrls(i).getStringProp("type")==T("image")){
-		InsertImage(getFilter()->getGUILayoutCtrls(i));   
-		}	
+
 }
 for(int i=0;i<getFilter()->getGUILayoutCtrlsSize();i++){
 	if(getFilter()->getGUILayoutCtrls(i).getStringProp("type")==T("form")){
@@ -361,6 +359,9 @@ for(int i=0;i<getFilter()->getGUILayoutCtrlsSize();i++){
 		}
 	else if(getFilter()->getGUILayoutCtrls(i).getStringProp("type")==T("groupbox")){
 		InsertGroupBox(getFilter()->getGUILayoutCtrls(i));  
+		}
+	else if(getFilter()->getGUILayoutCtrls(i).getStringProp("type")==T("image")){
+		InsertImage(getFilter()->getGUILayoutCtrls(i));   
 		}
 	else if(getFilter()->getGUILayoutCtrls(i).getStringProp("type")==T("patmatrix")){
 		InsertPatternMatrix(getFilter()->getGUILayoutCtrls(i));   
@@ -466,7 +467,6 @@ catch(...){
 //+++++++++++++++++++++++++++++++++++++++++++
 void CabbagePluginAudioProcessorEditor::InsertImage(CabbageGUIClass cAttr)
 {
-// this has to be ifdef-ed for different OS 
 try{
 	String pic;
 
@@ -476,27 +476,61 @@ try{
 	File thisFile(File::getSpecialLocation(File::currentApplicationFile)); 
 	pic = thisFile.getParentDirectory().getFullPathName();
 #endif
+
+	
 	float left = cAttr.getNumProp("left");
 	float top = cAttr.getNumProp("top");
 	float width = cAttr.getNumProp("width");
 	float height = cAttr.getNumProp("height");
 
+	if(cAttr.getStringProp("file").length()<2)
+		pic="";
+	else
+#ifdef LINUX
+        pic.append(T("/")+String(cAttr.getStringProp("file")), 1024);
+#else 
+        pic.append(T("\\")+String(cAttr.getStringProp("file")), 1024);  
+#endif
 
-	if(cAttr.getStringProp("plant").length()>1){
-		width = width*cAttr.getNumProp("scaleX");
-		height = height*cAttr.getNumProp("scaleY");
-	}
+	layoutComps.add(new CabbageImage(cAttr.getStringProp("name"), pic, cAttr.getColourProp("outline"), cAttr.getColourProp("colour"), 
+	cAttr.getStringProp("shape"), cAttr.getNumProp("line")));
+
+	int idx = layoutComps.size()-1;
 
 	int relY=0,relX=0;
-	for(int y=0;y<layoutComps.size();y++){
-	if(cAttr.getStringProp("reltoplant").length()>0)
+	if(layoutComps.size()>0){
+	for(int y=0;y<layoutComps.size();y++)
+	if(cAttr.getStringProp("reltoplant").length()>0){
+	String plant = layoutComps[y]->getProperties().getWithDefault(String("plant"), -99);
+	String relTo = cAttr.getStringProp("reltoplant");
+
 	if(layoutComps[y]->getProperties().getWithDefault(String("plant"), -99).toString().equalsIgnoreCase(cAttr.getStringProp("reltoplant")))
-	{
-		relX = layoutComps[y]->getPosition().getX();
-		relY = layoutComps[y]->getPosition().getY();
-		width = width*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
-		height = height*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
+		{
+		//width = width*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
+		//height = height*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
+		//top = top*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
+		//left = left*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
+
+		width = width*layoutComps[y]->getWidth();
+		height = height*layoutComps[y]->getHeight();
+        top = (top*layoutComps[y]->getHeight());
+		left = (left*layoutComps[y]->getWidth());
+		if(layoutComps[y]->getName().containsIgnoreCase("groupbox")||
+			layoutComps[y]->getName().containsIgnoreCase("image"))
+			{			
+			layoutComps[idx]->setBounds(left, top, width, height);
+			layoutComps[y]->addAndMakeVisible(layoutComps[idx]);
+			}
+		}
 	}
+		else{
+	    layoutComps[idx]->setBounds(left+relX, top+relY, width, height);
+		componentPanel->addAndMakeVisible(layoutComps[idx]);		
+		}
+	}
+	else{
+	    layoutComps[idx]->setBounds(left+relX, top+relY, width, height);
+		componentPanel->addAndMakeVisible(layoutComps[idx]);		
 	}
 
 #ifdef LINUX
@@ -505,23 +539,15 @@ try{
 	pic.append(T("\\")+String(cAttr.getStringProp("file")), 1024);	
 #endif
 
-		if(cAttr.getStringProp("file").length()<2)pic="";
-		layoutComps.add(new CabbageImage(cAttr.getStringProp("name"), pic, top+relY, left+relX, width, 
-		height, cAttr.getColourProp("outline"), cAttr.getColourProp("colour"), 
-		cAttr.getStringProp("shape"), cAttr.getNumProp("line")));
-
-	int idx = layoutComps.size()-1;
-
 	layoutComps[idx]->getProperties().set(String("scaleY"), cAttr.getNumProp("scaleY"));
 	layoutComps[idx]->getProperties().set(String("scaleX"), cAttr.getNumProp("scaleX"));
 	layoutComps[idx]->getProperties().set(String("plant"), var(cAttr.getStringProp("plant")));
 	layoutComps[idx]->toBack();
-	componentPanel->addAndMakeVisible(layoutComps[idx]);
-	((CabbageImage*)layoutComps[idx])->setBounds (left+relX, top+relY, width, height);
-	cAttr.setStringProp("yype", "image");
+	//((CabbageImage*)layoutComps[idx])->setBounds (left+relX, top+relY, width, height);
+	cAttr.setStringProp("type", "image");
 }
 catch(...){
-    Logger::writeToLog(T("Syntax error: 'groupbox..."));
+    Logger::writeToLog(T("Syntax error: 'image..."));
     }
 }
 
@@ -546,10 +572,10 @@ try{
 	if(cAttr.getStringProp("reltoplant").length()>0){
 	if(layoutComps[y]->getProperties().getWithDefault(String("plant"), -99).toString().equalsIgnoreCase(cAttr.getStringProp("reltoplant")))
 	{
-		width = width*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
-		height = height*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
-		top = top*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
-		left = left*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
+		width = width*layoutComps[y]->getWidth();
+		height = height*layoutComps[y]->getHeight();
+        top = (top*layoutComps[y]->getHeight());
+		left = (left*layoutComps[y]->getWidth());
 
 		if(layoutComps[y]->getName().containsIgnoreCase("groupbox")||
 			layoutComps[y]->getName().containsIgnoreCase("image"))
@@ -1162,6 +1188,11 @@ try{
 	if(cAttr.getItemsSize()>0)
 	((CabbageCheckbox*)controls[idx])->button->setButtonText(cAttr.getItems(0));
 
+	//set user-defined colour if given
+	if(cAttr.getColourProp("colour")!=Colours::lime.toString())
+		((CabbageCheckbox*)controls[idx])->button->getProperties().set("colour", cAttr.getColourProp("colour"));
+
+	//set initial value if given
 	if(cAttr.getNumProp("value")==1)
 		((CabbageCheckbox*)controls[idx])->button->setToggleState(true, true);
 	else

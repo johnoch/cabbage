@@ -202,7 +202,7 @@ Image CabbageLookAndFeel::drawLinearThumbImage (float width, float height, const
 	float brightness = thumbFill.getBrightness();
 	if (brightness > 0.9)
 		brightness = 0.9;
-	ColourGradient thumb = ColourGradient (Colours::white, 0, 0, 
+	ColourGradient thumb = ColourGradient (Colours::red, 0, 0, 
 			thumbFill.withBrightness(brightness), width/2, height/2, false);
 
 	//----- For horizontal sliders ------------------------------------------
@@ -871,12 +871,12 @@ void CabbageLookAndFeel::drawToggleButton (Graphics &g, ToggleButton &button, bo
 
 	//----- Getting the colour...
 	Colour col;
-    if (button.getProperties().getWithDefault("colour", "lime").equals(String("default"))){
+	if (button.getProperties().getWithDefault("colour", "").toString().length()<1){
         for (float i=0.01; i<0.03; i+=0.01)
 			col = Colour::fromRGBA (0, 0, 0, 255/(i*100));
     }
     else
-		col = Colours::findColourForName(button.getProperties().getWithDefault("colour", "lime"), Colours::lime);
+		col = Colour::fromString(button.getProperties().getWithDefault("colour", "lime"));
 
 	//----- Creating the image
 	Image newButton = drawToggleImage (destWidth, destHeight, isToggleOn, col);

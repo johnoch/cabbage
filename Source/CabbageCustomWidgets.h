@@ -239,10 +239,7 @@ CabbageCheckbox(String name, String caption, String buttonText, String colour)
 		groupbox->setText(caption);
 	}
 
-	if(colour.length()>0)
-	//button colour ID
-	button->setColour(0x1000100,
-			Colour::fromString(colour));
+	button->getProperties().set("colour", String(Colours::lime.toString()));
 	//text colour id
 	button->setColour(0x1006501,
 			Colour::fromString(colour));
@@ -335,14 +332,13 @@ this->setWantsKeyboardFocus(false);
 //==============================================================================
 // custom image component
 //==============================================================================
-class CabbageImage : public Component,
-						public CabbageUtils
+class CabbageImage : public Component
 {
 public:
-	CabbageImage(String name, String file, int top, int left, int width, int height, String outline, String fill, String shape, int line):
-	Component(name), picFile(file), file(file), top(top), left(left), width(width), height(height), fill(fill), outline(outline), shape(shape), line(line){
+	CabbageImage(String name, String file, String outline, String fill, String shape, int line):
+	Component(name), picFile(file), file(file), fill(fill), outline(outline), shape(shape), line(line){
 		setName(name);
-		toBack();
+		//toBack();
 		img = ImageCache::getFromFile (File (file));
 		this->setWantsKeyboardFocus(false);
 	}
@@ -383,6 +379,12 @@ private:
 
 	}
 
+	void resized(){
+	top = getY();
+	left = getX();
+	width = getWidth();
+	height = getHeight();
+	}
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CabbageImage);
 };
 
@@ -2290,7 +2292,7 @@ public:
 		g.setColour(Colour::fromString(colour));
 		g.setFont(CabbageUtils::componentFont());
 		g.setFont(getHeight(), 1);
-		g.drawFittedText(text, 0, 0, getWidth(), getHeight(), Justification::centred, 1, 1);
+		g.drawFittedText(text, 0, 0, getWidth(), getHeight(), Justification::left, 1, 1);
 	}
 
 

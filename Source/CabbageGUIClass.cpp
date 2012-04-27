@@ -60,6 +60,7 @@ CabbageGUIClass::CabbageGUIClass(String compStr, int ID):
 		  type = name;
           name.append(String(ID), 1024);
 		  textBox = 0;
+		  colour = Colours::white;
 	}
     else if(strTokens[0].indexOfIgnoreCase("vslider")!=-1){
           top = 10;
@@ -75,6 +76,7 @@ CabbageGUIClass::CabbageGUIClass(String compStr, int ID):
 		  type = name;
           name.append(String(ID), 1024);
 		  textBox = 0;
+		  colour = Colours::white;
 	}
     else if(strTokens[0].indexOfIgnoreCase("rslider")!=-1){
           top = 10;
@@ -90,6 +92,7 @@ CabbageGUIClass::CabbageGUIClass(String compStr, int ID):
 		  type = name;
           name.append(String(ID), 1024);
 		  textBox = 0;
+		  colour = Colours::white;
 	}
 
     else if(strTokens[0].indexOfIgnoreCase("source")!=-1){
@@ -125,8 +128,8 @@ CabbageGUIClass::CabbageGUIClass(String compStr, int ID):
           width = 80;
           height = 40;
           channel = "buttonchan";
-          items.add(T("off"));
-          items.add(T("on"));
+          items.add(T(""));
+          items.add(T(""));
           name = "button";
 		  max = 1;
 		  min = 0;
@@ -149,6 +152,8 @@ CabbageGUIClass::CabbageGUIClass(String compStr, int ID):
 		  max = 1;
 		  type = name;
           name.append(String(ID), 1024);
+		  //default colour for toggles
+		  colour = Colours::lime;
 	}
     else if(strTokens[0].indexOfIgnoreCase("combobox")!=-1){
 		
@@ -330,7 +335,6 @@ CabbageGUIClass::CabbageGUIClass(String compStr, int ID):
 
 	tabpage = 0;
 	value = 0;
-	colour = Colours::white;
 //parse the text now that all default values ahve been assigned
 parse(compStr);
 }
