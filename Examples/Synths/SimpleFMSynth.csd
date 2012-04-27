@@ -1,6 +1,6 @@
 <Cabbage>
 form caption("Simple FM Synth") size(440, 280)
-hslider pos(30, 20), channel("index"), size(350, 50), range(0, 50, 20), text("Index")
+hslider pos(30, 20), channel("index"), size(350, 50), colour("blue"), range(0, 50, 20), text("Index")
 hslider pos(30, 80), channel("mf"), size(350, 50), range(0, 100, 10), text("Mod Freq")
 keyboard pos(10, 160), size(400, 100)
 </Cabbage>

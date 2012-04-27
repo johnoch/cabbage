@@ -312,7 +312,7 @@ void CabbagePluginAudioProcessorEditor::paint (Graphics& g)
 #ifdef Cabbage_Build_Standalone
 	if(getFilter()->getCsoundInputFile().loadFileAsString().isEmpty()){
 		g.setColour (Colours::black);
-		//g.setColour (CabbageUtils::backgroundSkin());
+		//g.setColour (CabbageUtils::getBackgroundSkin());
 		g.fillAll();
 
 		Image logo = ImageCache::getFromMemory (BinaryData::logo_cabbage_Black_png, BinaryData::logo_cabbage_Black_pngSize);
@@ -320,10 +320,10 @@ void CabbagePluginAudioProcessorEditor::paint (Graphics& g)
 
 	}
 	else {
-		g.setColour(CabbageUtils::backgroundSkin());
+		g.setColour(CabbageUtils::getBackgroundSkin());
 		g.fillAll();
 
-		g.setColour (CabbageUtils::titleFontColour());
+		g.setColour (CabbageUtils::getTitleFontColour());
 		Image logo = ImageCache::getFromMemory (BinaryData::logo1_png, BinaryData::logo1_pngSize);
 		//g.drawImage (logo, (getWidth()/2) - (logo.getWidth()*.35), getHeight()-25, logo.getWidth()*0.65, logo.getHeight()*0.65, 
 		//	0, 0, logo.getWidth(), logo.getHeight(), true);
@@ -334,7 +334,7 @@ void CabbagePluginAudioProcessorEditor::paint (Graphics& g)
 //componentPanel->toFront(true);
 //componentPanel->grabKeyboardFocus();
 #else
-	Colour bg = CabbageUtils::backgroundSkin();
+	Colour bg = CabbageUtils::getBackgroundSkin();
 	g.setColour (bg);
 	g.fillAll();
 #endif

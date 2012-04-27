@@ -5,7 +5,7 @@ keyboard bounds(0, 110, 530, 50)
 groupbox text("Source and Filter"), bounds(0, 0, 120, 100), plant("source"){
 rslider text("NoiseBW"), bounds(.05, .3, .55), colour("dodgerblue"), range(1, 22050, 6000), channel("noiseBW")
 vline bounds(.5, .3, .01, .5)
-rslider text("Dist.."), bounds(.50, .3, .55), colour("dodgerblue"), range(1, 5, 1), channel("earlyDist")
+rslider text("Dist.."), bounds(.50, .3, .55), colour("dodgerblue"), range(1, 50, 1), channel("earlyDist")
 }
 
 groupbox bounds(130, 0, 220, 100), text("Filter Cut-off Envelope"), plant("filter-env"){

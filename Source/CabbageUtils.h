@@ -148,42 +148,42 @@ static String cabbageString (String input, Font font, float availableWidth)
 }
 
 //========= Normal font for components ===============================================
-static Font componentFont()
+static Font getgetComponentFontColour()
 {
 	Font font = Font (T("Verdana"), 12, 1);
 	return font;
 }
 
 //======= For slider values etc ======================================================
-static Font valueFont()
+static Font getValueFont()
 {
 	Font font = Font (T("Helvetica"), 12, 1);
 	return font;
 }
 
 //======= For titles etc ============================================================
-static Font titleFont()
+static Font getTitleFont()
 {
 	Font font = Font ("Helvetica", 12.5, 1);
 	return font;
 }
 
 //======= Title font colour =========================================================
-static Colour titleFontColour()
+static Colour getTitleFontColour()
 {
 	Colour cl = Colour::fromRGBA (160, 160, 160, 255);
 	return cl;
 }
 
 //====== Font Colour ================================================================
-static Colour componentFontColour()
+static Colour getComponentFontColour()
 {
 	Colour cl = Colour::fromRGBA (160, 160, 160, 255);
 	return cl;
 }
 
 //====== for group components etc =================================================
-static Colour componentSkin()
+static Colour getComponentSkin()
 {
 	//Colour skin = Colour::fromRGBA (45, 55, 60, 255);
 	Colour skin = Colour::fromRGBA (75, 85, 90, 100); //some transparency
@@ -191,16 +191,16 @@ static Colour componentSkin()
 }
 
 //======== for the main background =========================================================
-static Colour backgroundSkin()
+static Colour getBackgroundSkin()
 {
 	Colour skin = Colour::fromRGBA (5, 15, 20, 255);
 	return skin;
 }
 
 //======= for darker backgrounds ==========================================================
-static Colour darkerBackgroundSkin()
+static Colour getDarkerBackgroundSkin()
 {
-	Colour skin = backgroundSkin().darker(0.4);
+	Colour skin = getBackgroundSkin().darker(0.4);
 	return skin;
 }
 

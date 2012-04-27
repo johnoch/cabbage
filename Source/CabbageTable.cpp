@@ -208,7 +208,7 @@ void Table::backgroundImage()
 	Graphics g (img);
 		
 	//----- For drawing the actual canvas area
-	//g.setColour (CabbageUtils::backgroundSkin());
+	//g.setColour (CabbageUtils::getBackgroundSkin());
 	g.setColour (Colours::black);
 	g.fillRoundedRectangle (0, 0, getWidth(), getHeight(), 5);
 

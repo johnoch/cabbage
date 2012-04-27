@@ -150,6 +150,8 @@ void resized()
 	//else if vertical
 	else if (sliderType.contains(T("vertical"))) {
 		slider->setSliderStyle(Slider::LinearVertical);
+		if(cl.length() > 0)
+			slider->setColour(Slider::thumbColourId, Colour::fromString(cl));
 		if (compName.length() > 0) {
 			groupbox->setBounds(0, 0, getWidth(), getHeight());
 			int textHeight = 20;
@@ -169,6 +171,8 @@ void resized()
 	//else if horizontal
 	else {
 		slider->setSliderStyle(Slider::LinearHorizontal);
+		if(cl.length() > 0)
+			slider->setColour(Slider::ColourIds::thumbColourId, Colour::fromString(cl));
 		if (compName.length() > 0) {
 			groupbox->setBounds(0, 0, getWidth(), getHeight());
 			int textHeight = 20;
@@ -640,12 +644,12 @@ public:
 		Graphics g (img);
 
 		//----- For drawing the background
-		Colour bg = CabbageUtils::componentSkin();
+		Colour bg = CabbageUtils::getComponentSkin();
 		g.setColour (bg);
 		g.fillRoundedRectangle (0, 0, totalWidth, totalHeight, 5);
 
 		//----- For drawing the actual area that the ball can move in
-		Colour cl = CabbageUtils::backgroundSkin();
+		Colour cl = CabbageUtils::getBackgroundSkin();
 		Colour cl2 = cl.withBrightness (0.15);
 		ColourGradient cg = ColourGradient (cl2, totalWidth*0.5, (availableHeight*0.5) + borderTop, 
 											cl, 0, 0, true);
@@ -653,7 +657,7 @@ public:
 		g.fillRoundedRectangle (borderLeft, borderTop, availableWidth, availableHeight, 5);
 
 		//----- Drawing the centre grid lines
-		Colour cl3 = CabbageUtils::componentSkin();
+		Colour cl3 = CabbageUtils::getComponentSkin();
 		ColourGradient cg2 = ColourGradient (cl3, totalWidth*0.5, (availableHeight*0.5) + borderTop, 
 											cl, 0, 0, true);
 		g.setGradientFill (cg2);
@@ -661,9 +665,9 @@ public:
 		g.drawLine ((availableWidth*0.5) + borderLeft, borderTop, (availableWidth*0.5) + borderLeft, borderBottom, 1);
 
 		//----- For drawing the title
-		Colour txt = CabbageUtils::componentSkin();
+		Colour txt = CabbageUtils::getComponentSkin();
 		g.setColour (txt);
-		Font font = CabbageUtils::componentFont();
+		Font font = CabbageUtils::getgetComponentFontColour();
 		g.setFont (font);
 		Justification just(1);
 		title = CabbageUtils::cabbageString (title, font, availableWidth-10);
@@ -2231,7 +2235,7 @@ void paint(Graphics& g){
 	g.fillRoundedRectangle (0, 0, width, height, 5);
 
 	//----- Outline
-	g.setColour (CabbageUtils::componentFontColour());
+	g.setColour (CabbageUtils::getComponentFontColour());
 	g.setOpacity (0.1);
 	g.drawRoundedRectangle (0.5, 0.5, width-1, height-1, 5, 1);
 
@@ -2292,7 +2296,7 @@ public:
 	void paint(Graphics& g)
 	{
 		g.setColour(Colour::fromString(colour));
-		g.setFont(CabbageUtils::componentFont());
+		g.setFont(CabbageUtils::getgetComponentFontColour());
 		g.setFont(getHeight(), 1);
 		g.drawFittedText(text, 0, 0, getWidth(), getHeight(), Justification::left, 1, 1);
 	}
@@ -2334,7 +2338,7 @@ public:
 		g.setColour (Colour::fromRGBA(150, 150, 150, 75));
 		g.fillRoundedRectangle(0, 0, getWidth(), getHeight(), 1);
 
-		g.setColour (CabbageUtils::backgroundSkin());
+		g.setColour (CabbageUtils::getBackgroundSkin());
 		g.fillRoundedRectangle (0, 0, getWidth()-1, getHeight()-1, 1);
 	}
 

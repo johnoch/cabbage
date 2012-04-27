@@ -179,7 +179,7 @@ CabbageGUIClass::CabbageGUIClass(String compStr, int ID):
           height = 16;
           channel = "label";
           beveltype = "none";
-		  colour = CabbageUtils::componentFontColour();
+		  colour = CabbageUtils::getComponentFontColour();
           fontcolour = Colours::white;
           text = "hello";
           name = "label";

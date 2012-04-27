@@ -50,7 +50,7 @@ horizontalDividerBar = new StretchableLayoutResizerBar(&horizontalLayout, 1, fal
 helpLabel = new helpContext();
 oldLookAndFeel = new OldSchoolLookAndFeel();
 helpLabel->setLookAndFeel(oldLookAndFeel);
-helpLabel->setBackgroundColour(CabbageUtils::componentSkin());
+helpLabel->setBackgroundColour(CabbageUtils::getComponentSkin());
 helpLabel->setOutlineColour(Colours::grey);
 helpLabel->setTextColour(Colours::white);
 
