@@ -312,21 +312,17 @@ void CabbagePluginAudioProcessorEditor::paint (Graphics& g)
 #ifdef Cabbage_Build_Standalone
 	if(getFilter()->getCsoundInputFile().loadFileAsString().isEmpty()){
 		g.setColour (Colours::black);
-			g.fillAll();
-			Image logo = ImageCache::getFromMemory (BinaryData::logo_cabbage_Black_png, BinaryData::logo_cabbage_Black_pngSize);
-			g.drawImage(logo, 10, 10, getWidth(), getHeight()-60, 0, 0, logo.getWidth(), logo.getHeight());
+		//g.setColour (CabbageUtils::backgroundSkin());
+		g.fillAll();
+		Image logo = ImageCache::getFromMemory (BinaryData::logo_cabbage_Black_png, BinaryData::logo_cabbage_Black_pngSize);
+
+		//g.setColour(Colour::fromRGBA (1, 2, 4, 255));
+	
+		g.drawImage(logo, getWidth()*0.15, getHeight()*0.1, getWidth()*0.7, getHeight()*0.5, 
+			0, 0, logo.getWidth(), logo.getHeight(), false);
 	}
 	else {
-		/*g.setColour (Colours::black);
-		 g.fillAll();
-		 g.setColour (Colours::grey);
-		 g.setOpacity (0.1);
-		 g.fillAll();
-		 */
-		Colour bg = CabbageUtils::backgroundSkin();
-		g.setColour (bg);
-		g.fillAll();
-		g.setColour(CabbageUtils::darkerBackgroundSkin());
+		g.setColour(CabbageUtils::backgroundSkin());
 		g.fillAll();
 
 		g.setColour (CabbageUtils::titleFontColour());
@@ -455,6 +451,7 @@ try{
 	layoutComps[idx]->toBack();
 	componentPanel->addAndMakeVisible(layoutComps[idx]);
 	layoutComps[idx]->getProperties().set(String("plant"), var(cAttr.getStringProp("plant")));
+	layoutComps[idx]->getProperties().set(String("groupLine"), cAttr.getNumProp("line"));
 
 }
 catch(...){
@@ -960,7 +957,8 @@ try{
                                             cAttr.getStringProp("caption"),
                                             cAttr.getStringProp("kind"),
                                             cAttr.getColourProp("colour"),
-                                            cAttr.getNumProp("textbox")
+                                            cAttr.getNumProp("textbox"),
+											cAttr.getNumProp("tracker")
                                             ));   
         int idx = controls.size()-1;
  

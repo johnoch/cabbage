@@ -1,6 +1,6 @@
 <Cabbage>
 form caption("Waveguide pluck ") size(355, 150), colour("black"), pluginID("plu1")
-rslider pos(0, 0), size(80, 80) channel("pick"), range(.1, 1,.5), caption("Pick"), colour("yellow"), midictrl(1, 1)
+rslider pos(0, 0), size(80, 80) channel("pick"), tracker(0), range(.1, 1,.5), caption("Pick"), colour("yellow"), midictrl(1, 1)
 rslider pos(85, 0), size(80, 80) channel("plucked"), range(0,2,1), caption("Point-plucked"), colour("yellow"), midictrl(1, 2)
 rslider pos(170, 0), size(80, 80) channel("damping"), range(1, 100, 10), caption("Damping"), colour("yellow"), midictrl(1, 3)
 rslider pos(255, 0), size(80, 80) channel("filter"), range(10, 30000, 100), caption("Filter"), colour("yellow"), midictrl(1, 4)

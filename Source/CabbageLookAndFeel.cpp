@@ -3,8 +3,8 @@
 
 CabbageLookAndFeel::CabbageLookAndFeel()
 {
-	setColour(AlertWindow::backgroundColourId, Colour::fromRGBA(10, 10, 10, 255));
-	setColour(AlertWindow::textColourId, Colours::whitesmoke);
+	setColour(AlertWindow::backgroundColourId, CabbageUtils::darkerBackgroundSkin());
+	setColour(AlertWindow::textColourId, CabbageUtils::componentFontColour());
 	setColour(AlertWindow::outlineColourId, Colours::grey);
 }
 
@@ -12,13 +12,14 @@ CabbageLookAndFeel::~CabbageLookAndFeel()
 {
 }
 
-//========= Creating a custom r slider image that can be usede in the drawRotary() method =================
-Image CabbageLookAndFeel::drawRotaryImage(int diameter, const Colour circleFill, float sliderPosProportional, bool useBigImage)
+//========= Rotary slider image ==============================================================================
+Image CabbageLookAndFeel::drawRotaryImage(int diameter, const Colour circleFill, float sliderPosProportional, 
+																							float zeroPosProportional, 
+																							bool useTrackerFill,
+																							bool useBigImage)
 {
-	//This is where the rotary slider image gets drawn.  The diameter width is passed in to draw the exact size
-	//slider where no scaling is needed.  A simpler slider is used if the diameter is 25 or less.
+	//A simpler slider is created if the diameter is 25 or less.
 
-	//----- Creating a blank canvas with the same width as the slider.
 	Image img = Image::Image(Image::ARGB, diameter, diameter, true);
 	Graphics g (img);
 
@@ -27,31 +28,25 @@ Image CabbageLookAndFeel::drawRotaryImage(int diameter, const Colour circleFill,
 	float numRadians = (300*3.14) / 180; 
 	AffineTransform tnsForm = AffineTransform::identity; //this means no transform, or identical
 
-	//----- Outer grey circle and green fill.  They only get drawn if the bigger slider image is
-	//to be used...
+	//----- Outer grey circle and green fill.  Only used if using big slider image.
 	if (useBigImage == true) {
-		g.setColour (Colours::grey);
-		g.setOpacity (0.5);
+		g.setColour (Colour::fromRGBA(150, 165, 170, 150));
 		g.drawEllipse (0.5, 0.5, diameter-1, diameter-1, 1);
 
-		Path fill; //for the green fill
-		fill.addArc (diameter*0.075, diameter*0.075, diameter*0.85, diameter*0.85, -2.6167, 
-												(sliderPosProportional-0.5)*numRadians, true);
-		PathStrokeType type (diameter*0.05);
+		if (useTrackerFill == true) {
+			Path path; 
+			path.addArc (diameter*0.075, diameter*0.075, diameter*0.85, diameter*0.85, -2.6167 + (zeroPosProportional*numRadians), 
+													(sliderPosProportional-0.5)*numRadians, true);
+			PathStrokeType type (diameter*0.05);
 
-		ColourGradient greenFill = ColourGradient (Colours::transparentBlack, 0, diameter*0.88, 
-			Colours::lime, 0, diameter*0.7, false); //setting gradient
-		g.setGradientFill (greenFill);
-		g.setOpacity (0.7);
-		g.strokePath (fill, type, tnsForm);
+			g.setColour(Colours::lime);
+			g.setOpacity (0.7);
+			g.strokePath (path, type, tnsForm);
+		}
 	}
 
-
-	//----- Polygon.  Drawing a ploygon with 12 steps.  I'm using a colour gradient that goes from white 
-	//to black from the top-left to the bottom-right.  This gives the illusion that a light source is shining 
-	//on the slider.
-	g.setColour (Colours::black); 
-	g.setOpacity (0.4);
+	//----- Polygon
+	g.setColour (Colour::fromRGBA(0, 0, 0, 150));
 	g.fillEllipse (diameter*0.17, diameter*0.17, diameter*0.7, diameter*0.7); //for shadow
 
 	Path newPolygon;
@@ -76,18 +71,14 @@ Image CabbageLookAndFeel::drawRotaryImage(int diameter, const Colour circleFill,
 
 
 	//----- Inner circle
-	//Using different offsets and shades of black to give the illusion of a shadow...
-	g.setColour (Colours::black);
-	g.setOpacity (0.6);
+	g.setColour (Colour::fromRGBA(0, 0, 0, 180)); //for inner shadow
 	g.fillEllipse (diameter*0.185, diameter*0.185, diameter*0.65, diameter*0.65); 
 	for (float i=0.09; i>0.0; i-=0.01) {
 		g.setOpacity (i*2);
 		g.fillEllipse (diameter * (0.19+i), diameter * (0.19+i), diameter*0.62, diameter*0.62);
 	}
 
-	//Using a colour gradient from white to the chosen colour gives the effect of a light source.  The
-	//brightness of the selected colour is also brought down a little if too great, to make it look more
-	//realisitc.
+	//Using a colour gradient from white to the chosen colour gives the effect of a light source.  
 	float brightness = circleFill.getBrightness();
 	if (brightness > 0.9)
 		brightness = 0.9;
@@ -99,7 +90,6 @@ Image CabbageLookAndFeel::drawRotaryImage(int diameter, const Colour circleFill,
 		g.fillEllipse (diameter*0.19, diameter*0.19, diameter*0.62, diameter*0.62); 
 	else
 		g.fillEllipse (diameter*0.1, diameter*0.1, diameter*0.8, diameter*0.8);
-
 
 	//----- Marker.  
 	Path circleMarker;
@@ -118,15 +108,15 @@ Image CabbageLookAndFeel::drawRotaryImage(int diameter, const Colour circleFill,
 		g.setColour (Colours::whitesmoke);	
 	g.fillPath (circleMarker, tnsForm);
 
-
-	//Returning image...
 	return img;
 }
 
-//========== Creating Image for Linear Slider Background ==========================================================
-Image CabbageLookAndFeel::drawLinearBgImage (float width, float height, float sliderPosProportional, bool isVertical)
+//===== Linear slider bg image =========================================================================
+Image CabbageLookAndFeel::drawLinearBgImage (float width, float height, float sliderPosProportional, 
+																					float zeroPosProportional,
+																					bool useTrackerFill,
+																					bool isVertical)
 {
-	//----- Creating a blank canvas.
 	Image img = Image::Image(Image::ARGB, width, height, true);
 	Graphics g (img);
 	
@@ -148,14 +138,25 @@ Image CabbageLookAndFeel::drawLinearBgImage (float width, float height, float sl
 		g.setColour (Colours::whitesmoke);
 		g.setOpacity (0.1);
 		g.fillRoundedRectangle (0, height*0.44, width, height*0.15, height*0.05); //for light effect
-		g.setColour (Colours::black);
+		g.setColour (Colour::fromRGBA(5, 5, 5, 255));
 		g.fillRoundedRectangle (0, height*0.425, width*0.99, height*0.15, height*0.05); //main rectangle
 
-		//----- Green fill.  Using sliderPosProportional to fill in the correct amount.
-		ColourGradient fill = ColourGradient (Colours::transparentBlack, 0, 0, Colours::lime, width*0.1, 0, false);
-		g.setGradientFill (fill);
-		g.setOpacity (0.7);
-		g.fillRoundedRectangle (0, height*0.47, sliderPosProportional*width, height*0.06, height*0.05);
+		//----- Green tracker fill. 
+		if (useTrackerFill == true) {
+			ColourGradient fill;
+			if (zeroPosProportional != 0) {
+				fill = ColourGradient (Colours::lime, 0, 0, Colours::lime, width, 0, false);
+				fill.addColour(zeroPosProportional, Colours::transparentBlack);
+				fill.addColour(zeroPosProportional+0.05, Colours::lime);
+				fill.addColour(zeroPosProportional-0.05, Colours::lime);
+			}
+			else
+				fill = ColourGradient (Colours::transparentBlack, 0, 0, Colours::lime, width*0.1, 0, false);
+
+			g.setGradientFill (fill);
+			g.setOpacity(0.9);
+			g.drawLine (zeroPosProportional*width, height*0.5, sliderPosProportional*width, height*0.5, height*0.05);
+		}
 	}
 	//----- For vertical sliders ---------------------------------------------------
 	if (isVertical == true) {
@@ -175,30 +176,40 @@ Image CabbageLookAndFeel::drawLinearBgImage (float width, float height, float sl
 		g.setColour (Colours::whitesmoke);
 		g.setOpacity (0.1);
 		g.fillRoundedRectangle (width*0.44, 0, width*0.15, height, width*0.05); //for light effect
-		g.setColour (Colours::black);
+		g.setColour (Colour::fromRGBA(5, 5, 5, 255));
 		g.fillRoundedRectangle (width*0.425, 0, width*0.15, height*0.99, width*0.05); //main rectangle
 
-		//----- Green fill.  Using sliderPosProportional to fill in the correct amount.
-		ColourGradient fill = ColourGradient (Colours::transparentBlack, 0, height, Colours::lime, 0, height*0.9, false);
-		g.setGradientFill (fill);
-		g.setOpacity (0.7);
-		sliderPosProportional = 1 - sliderPosProportional; //inverting y axis
-		g.fillRoundedRectangle (width*0.47, sliderPosProportional*height, width*0.06, 
-			height-(sliderPosProportional*height), width*0.05);
+		//----- Green tracker fill.  
+		if (useTrackerFill == true) {
+			ColourGradient fill;
+			if (zeroPosProportional != 0) {
+				fill = ColourGradient (Colours::lime, 0, height, Colours::lime, 0, 0, false);
+				fill.addColour(zeroPosProportional, Colours::transparentBlack);
+				fill.addColour(zeroPosProportional+0.05, Colours::lime);
+				fill.addColour(zeroPosProportional-0.05, Colours::lime);
+			}
+			else
+				fill = ColourGradient (Colours::transparentBlack, 0, height, Colours::lime, 0, height*0.9, false);
+
+			g.setGradientFill (fill);
+			g.setOpacity(0.9);
+			sliderPosProportional = 1 - sliderPosProportional; //inverting y axis
+			zeroPosProportional = 1 - zeroPosProportional;
+			g.drawLine (width*0.5, sliderPosProportional*height, width*0.5, zeroPosProportional*height, width*0.05);
+		}
 	}
 
-	//----- Returning image
 	return img;
 }
 
-//========= Creating image for linear slider thumb ========================================================
-Image CabbageLookAndFeel::drawLinearThumbImage (float width, float height, const Colour thumbFill, bool isVertical)
+//========= Linear slider thumb image ====================================================================
+Image CabbageLookAndFeel::drawLinearThumbImage (float width, float height, const Colour thumbFill, 
+																					bool isVertical)
 {
-	//----- Creating a blank canvas.
 	Image img = Image::Image(Image::ARGB, width, height, true);
 	Graphics g (img);
 
-	//----- Setting colour of thumb.  A colour gradient is used to give the illusion of a light source.
+	//----- Setting colour of thumb.
 	float brightness = thumbFill.getBrightness();
 	if (brightness > 0.9)
 		brightness = 0.9;
@@ -231,14 +242,12 @@ Image CabbageLookAndFeel::drawLinearThumbImage (float width, float height, const
 		g.fillEllipse (width*0.1, height*0.2, width*0.8, height*0.6);
 	}
 
-	//----- Returning image
 	return img;
 }
 
-//========= Creating image for toggle Button ========================================================
+//========= Toggle Button image ========================================================
 Image CabbageLookAndFeel::drawToggleImage (float width, float height, bool isToggleOn, Colour colour)
 {
-	//----- Creating a blank canvas.
 	Image img = Image::Image(Image::ARGB, width, height, true);
 	Graphics g (img);
 	float opacity;
@@ -285,10 +294,9 @@ Image CabbageLookAndFeel::drawToggleImage (float width, float height, bool isTog
 	return img;
 }
 
-//========= Creating image for text Button ========================================================
+//========= Text button image ========================================================
 Image CabbageLookAndFeel::drawTextButtonImage (float width, float height, bool isButtonDown)
 {
-	//----- Creating a blank canvas.
 	Image img = Image::Image(Image::ARGB, width, height, true);
 	Graphics g (img);
 	float opacity;
@@ -330,9 +338,17 @@ Image CabbageLookAndFeel::drawTextButtonImage (float width, float height, bool i
 	g.setOpacity (opacity);
 	g.fillRoundedRectangle (0, 0, width*0.95, height*0.95, height*0.1);
 	
-	
 	return img;
 }
+
+/*
+	------------------------------------------------------------------------------------------------------
+	
+	Start of Look and Feel methods
+
+	------------------------------------------------------------------------------------------------------
+*/
+
 
 //=========== Rotary Sliders ==============================================================================
 void CabbageLookAndFeel::drawRotarySlider(Graphics& g, int /*x*/, int /*y*/, int /*width*/, int /*height*/,
@@ -396,12 +412,24 @@ void CabbageLookAndFeel::drawRotarySlider(Graphics& g, int /*x*/, int /*y*/, int
 	
 	//----- Getting the final destination dimensions....
 	destHeight = sliderBottom - destY;
-	destWidth = destHeight;							//because rotary slider images generally have the same width and height....
-	destX = ((slider.getWidth() - destWidth) / 2);	//starting x position, this ensures that the image will be centered
+	destWidth = destHeight;							//because rotary slider images have the same width and height....
+	destX = ((slider.getWidth() - destWidth) / 2);	//starting x position
 
-	//----- Getting slider image and drawing it....
 	Colour circleFill = slider.findColour(0x1001200, false);
-	Image newSlider = drawRotaryImage(destWidth, circleFill, sliderPosProportional, useBigImage);
+
+	//---- Getting the zero position in proportion to the range.  The tracker fill starts at 0, not the minimum...
+	float zeroPosProportional = 0;
+	if (slider.getMinimum() < 0)
+		zeroPosProportional = (slider.getMinimum()*-1) / (slider.getMaximum() - slider.getMinimum());
+
+	//----- If using a tracker fill
+	bool useTracker = true;
+	int test = slider.getProperties().getWithDefault(String("tracker"), -99);
+	if (test == 0)
+		useTracker = false;
+
+	//----- Creating slider image
+	Image newSlider = drawRotaryImage(destWidth, circleFill, sliderPosProportional, zeroPosProportional, useTracker, useBigImage);
 	g.setOpacity (1);
 	g.drawImage (newSlider, destX, destY, destWidth, destHeight, 0, 0, destWidth, destWidth, false);
 
@@ -507,6 +535,18 @@ void CabbageLookAndFeel::drawLinearSliderBackground (Graphics &g, int /*x*/, int
 	//for drawing the image in the correct position.
 	float sliderPosProportional = (slider.getValue()-slider.getMinimum()) / (slider.getMaximum()-slider.getMinimum());
 
+	//---- Getting the zero position in proportion to the range.  The tracker fill starts at 0, not the minimum...
+	float zeroPosProportional = 0; 
+	if (slider.getMinimum() < 0)
+		zeroPosProportional = (slider.getMinimum()*-1) / (slider.getMaximum() - slider.getMinimum());
+
+	//---- If using a tracker fill
+	//----- If using a tracker fill
+	bool useTracker = true;
+	int test = slider.getProperties().getWithDefault(String("tracker"), -99);
+	if (test == 0)
+		useTracker = false;
+
 	Image newBackground;
 
 	//----- Variables for determining new destination width, height, position etc...
@@ -577,9 +617,9 @@ void CabbageLookAndFeel::drawLinearSliderBackground (Graphics &g, int /*x*/, int
 		}
 		
 		slider.setEnabled (false); //setting it back to disabled. Otherwise the slider would move slightly.
-
+		
 		//----- Getting image
-		newBackground = drawLinearBgImage (destWidth, destHeight, sliderPosProportional, false);
+		newBackground = drawLinearBgImage (destWidth, destHeight, sliderPosProportional, zeroPosProportional, useTracker, false);
 	}
 
 	//----- If Vertical Slider ---------------------------------------------------------------------------
@@ -639,8 +679,8 @@ void CabbageLookAndFeel::drawLinearSliderBackground (Graphics &g, int /*x*/, int
 		}
 		slider.setEnabled (false); //setting it back to disabled. Otherwise the slider would move slightly.
 
-		//----- Creating background image
-		newBackground = drawLinearBgImage (destWidth, destHeight, sliderPosProportional, true);
+		//----- Getting image
+		newBackground = drawLinearBgImage (destWidth, destHeight, sliderPosProportional, zeroPosProportional, useTracker, true);
 	}
 	
 	//----- Drawing Image. 
@@ -1066,7 +1106,6 @@ void CabbageLookAndFeel::drawGroupComponentOutline (Graphics &g, int w, int h, c
 	g.drawText (name, 0, 5, w, font.getHeight(), 36, false);
 	if(!group.getProperties().getWithDefault("groupLine", 0).equals(var(0))){
 	g.drawLine (10, 20, w-10, 20, 0.2);
-	Logger::writeToLog("line is 1");
 	}
 	//----- Corner holes
 	g.setColour (CabbageUtils::backgroundSkin());

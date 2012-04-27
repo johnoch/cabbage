@@ -41,6 +41,7 @@ CabbageGUIClass::CabbageGUIClass(String compStr, int ID):
 	max=1;
 	sliderIncr = 0.01;
 	sliderSkew = 1;
+	trackerFill = 1;
 
 	StringArray strTokens;
 	strTokens.addTokens(compStr, " ", "\"");
@@ -178,7 +179,7 @@ CabbageGUIClass::CabbageGUIClass(String compStr, int ID):
           height = 16;
           channel = "label";
           beveltype = "none";
-          colour = Colours::white;
+		  colour = CabbageUtils::componentFontColour;
           fontcolour = Colours::white;
           text = "hello";
           name = "label";
@@ -402,6 +403,7 @@ int CabbageGUIClass::parse(String str)
 	identArray.add("steps(");
 	identArray.add("pluginid(");
 	identArray.add("rctrls(");
+	identArray.add("tracker(");
 	//add a few dummy identifiers so we can catch bogus one in the Cabbage code
 	identArray.add("");
 	identArray.add("");
@@ -653,6 +655,9 @@ int CabbageGUIClass::parse(String str)
 			else if(identArray.getReference(indx).toLowerCase().equalsIgnoreCase("steps(")){
 				noSteps = strTokens[0].trim().getFloatValue();  
 			}
+			else if(identArray.getReference(indx).toLowerCase().equalsIgnoreCase("tracker(")){
+				trackerFill = strTokens[0].trim().getFloatValue();  
+			}
             else if(identArray.getReference(indx).toLowerCase().equalsIgnoreCase("textbox(")){
 				textBox = strTokens[0].trim().getFloatValue();  
 			}
@@ -763,6 +768,8 @@ double CabbageGUIClass::getNumProp(String prop)
 			return lineIsVertical;
 		else if(prop.equalsIgnoreCase(T("noPatterns")))
 			return items.size(); 
+		else if(prop.equalsIgnoreCase(T("tracker")))
+			return trackerFill; 
 		else return -9999;
 }
 

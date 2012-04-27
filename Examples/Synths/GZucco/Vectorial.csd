@@ -4,32 +4,32 @@ form caption("Vectorial Synth"), size(780, 310), pluginID("vec1")
 xypad bounds(0, 0, 250, 210), channel("chanx", "chany"), text("Vectorial mixing"), rangex(0, 1, .5), rangey(0, 1, .5)
 
 groupbox bounds(260, 0, 240, 100), text("ADSR"), plant("adsr"){ 
-rslider bounds(15, 30, 60, 60), text("A"), colour("dodgerblue"), channel("att"), range(0.01,3, .5)
-rslider bounds(65, 30, 60, 60), text("D"), colour("dodgerblue"), channel("dec"), range(0,1, .5)
-rslider bounds(115, 30, 60, 60), text("S"), colour("dodgerblue"), channel("sus"), range(0,1,.8)
-rslider bounds(165, 30, 60, 60), text("R"), colour("dodgerblue"), channel("rel"), range(0.01,3, .2)
+rslider bounds(.0, .3, .6, .6), text("A"), colour("orange"), channel("att"), range(0.01,3, .5)
+rslider bounds(.25, .3, .6, .6), text("D"), colour("orange"), channel("dec"), range(0,1, .5)
+rslider bounds(.5, .3, .6, .6), text("S"), colour("orange"), channel("sus"), range(0,1,.8)
+rslider bounds(.75, .3, .6, .6), text("R"), colour("orange"), channel("rel"), range(0.01,3, .2)
 }
 
 groupbox bounds(260, 105, 240, 100), text("Tune"), plant("tune"){ 
-rslider bounds(15, 30, 60, 60), text("Detune1"), colour("dodgerblue"), channel("det1"), range(-24,12,0)
-rslider bounds(65, 30, 60, 60), text("Detune2"), colour("dodgerblue"), channel("det2"), range(-24,12,-5)
-rslider bounds(115, 30, 60, 60), text("Detune3"), colour("dodgerblue"), channel("det3"), range(-24,12,0)
-rslider bounds(165, 30, 60, 60), text("Detune4"), colour("dodgerblue"), channel("det4"), range(-24,12,-12)
+rslider bounds(.0, .3, .6, .6), text("Detune1"), colour("dodgerblue"), channel("det1"), range(-24,12,0)
+rslider bounds(.25, .3, .6, .6), text("Detune2"), colour("dodgerblue"), channel("det2"), range(-24,12,-5)
+rslider bounds(.5, .3, .6, .6), text("Detune3"), colour("dodgerblue"), channel("det3"), range(-24,12,0)
+rslider bounds(.75, .3, .6, .6), text("Detune4"), colour("dodgerblue"), channel("det4"), range(-24,12,-12)
 }
 
 groupbox bounds(510,0, 240, 100), text("LFO/Stereo chorus"), plant("mod"){ 
-rslider bounds(15, 30, 60, 60), text("Lfo amp"), colour("dodgerblue"), channel("lfoamp"), range(0,50, 0)
-rslider bounds(65, 30, 60, 60), text("Lfo rate"), colour("dodgerblue"), channel("lforate"), range(0,20, 0)
-rslider bounds(115, 30, 60, 60), text("depth"), colour("dodgerblue"), channel("chdepth"), range(0,10,0)
-rslider bounds(165, 30, 60, 60), text("rate"), colour("dodgerblue"), channel("chrate"), range(0,10,0)
+rslider bounds(.0, .3, .6, .6), text("Lfo amp"), colour("dodgerblue"), channel("lfoamp"), range(0,50, 0)
+rslider bounds(.25, .3, .6, .6), text("Lfo rate"), colour("dodgerblue"), channel("lforate"), range(0,20, 0)
+rslider bounds(.5, .3, .6, .6), text("depth"), colour("dodgerblue"), channel("chdepth"), range(0,10,0)
+rslider bounds(.75, .3, .6, .6), text("rate"), colour("dodgerblue"), channel("chrate"), range(0,10,0)
 }
 
 groupbox bounds(510,105, 240, 100), text("Reverb"), plant("rev"){ 
-rslider bounds(15, 30, 60, 60), text("level"), colour("dodgerblue"), channel("level"), range(0,1,0)
-rslider bounds(65, 30, 60, 60), text("size"), colour("dodgerblue"), channel("size"), range(.1,.99,.5)
+rslider bounds(0, .3, .6, .6), text("level"), colour("dodgerblue"), channel("level"), range(0,1,0)
+rslider bounds(0.25, .3, .6, .6), text("size"), colour("dodgerblue"), channel("size"), range(.1,.99,.5)
 ;rslider bounds(115, 30, 60, 60), text("depth"), colour("dodgerblue"), channel("chdepth"), range(0,10,0)
 ;rslider bounds(165, 30, 60, 60), text("rate"), colour("dodgerblue"), channel("chrate"), range(0,10,0)
-checkbox  bounds(140, 30, 160, 30),channel("onoff"), text("On/Off"), value(0)
+checkbox  bounds(.55, .40, .60, .30),channel("onoff"), text("On/Off"), value(0), colour("blue")
 }
 
 keyboard bounds(0, 220, 750, 70)

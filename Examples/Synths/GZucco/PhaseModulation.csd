@@ -7,17 +7,17 @@ rslider bounds(330, 10, 100, 100) channel("index"), range(0,2,0), caption("Index
 rslider bounds(435, 10, 100, 100) channel("fback"), range(0, .1,0), caption("Feedback"), colour("white")
 
 groupbox bounds(15, 120, 240, 100), text("ADSR amplitude"), plant("ADSR"){ 
-rslider bounds(15, 30, 60, 60), text("A"), colour("white"), channel("att"), range(0.01,3, .5)
-rslider bounds(65, 30, 60, 60), text("D"), colour("white"), channel("dec"), range(0,1, .5)
-rslider bounds(115, 30, 60, 60), text("S"), colour("white"), channel("sus"), range(0,1,.8)
-rslider bounds(165, 30, 60, 60), text("R"), colour("white"), channel("rel"), range(0.01,3, .2)
+rslider bounds(.0, .3, .6, .6), text("A"), colour("orange"), channel("att"), range(0.01,3, .5)
+rslider bounds(.25, .3, .6, .6), text("D"), colour("orange"), channel("dec"), range(0,1, .5)
+rslider bounds(.5, .3, .6, .6), text("S"), colour("orange"), channel("sus"), range(0,1,.8)
+rslider bounds(.75, .3, .6, .6), text("R"), colour("orange"), channel("rel"), range(0.01,3, .2)
 }
 groupbox bounds(260, 120, 280, 100), text("ADSR index modulation"), plant("indexmod"){ 
-rslider bounds(15, 30, 60, 60), text("A"), colour("white"), channel("att2"), range(0.01,3, .5)
-rslider bounds(65, 30, 60, 60), text("D"), colour("white"), channel("dec2"), range(0,1, .5)
-rslider bounds(115, 30, 60, 60), text("S"), colour("white"), channel("sus2"), range(0,1,.8)
-rslider bounds(165, 30, 60, 60), text("R"), colour("white"), channel("rel2"), range(0.01,3, .2)
-rslider bounds(215, 30, 60, 60), text("Spread"),channel("spread"), range(0, 1, .5), colour("white")
+rslider bounds(.0, .3, .6, .6), text("A"), colour("orange"), channel("att"), range(0.01,3, .5)
+rslider bounds(.2, .3, .6, .6), text("D"), colour("orange"), channel("dec"), range(0,1, .5)
+rslider bounds(.4, .3, .6, .6), text("S"), colour("orange"), channel("sus"), range(0,1,.8)
+rslider bounds(.6, .3, .6, .6), text("R"), colour("orange"), channel("rel"), range(0.01,3, .2)
+rslider bounds(.8, .3, .6, .6), text("Spread"),channel("spread"), range(0, 1, .5), colour("white")
 }
 
 

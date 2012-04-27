@@ -1,10 +1,10 @@
 <Cabbage>
 form caption("CrazyPluck"), size(320, 190), pluginID("cra1") 
 groupbox bounds(0, 0, 300, 100), text("Parameters"), plant("control1"){ 
-rslider bounds(15, 30, 60, 60), text("ratio"), colour("white"), channel("ratio"), range(1, 1.2,1)
-rslider bounds(85, 30, 60, 60), text("time"), colour("white"), channel("time"), range(.001,.1,.1)
-rslider bounds(155, 30, 60, 60), text("random"), colour("white"), channel("random"), range(.001,.1,0)
-rslider bounds(225, 30, 60, 60), text("Event number"), colour("white"), channel("number"), range(1,50,10)
+rslider bounds(.05, .3, .6, .6), text("ratio"), colour("white"), channel("ratio"), range(1, 1.2,1)
+rslider bounds(.28, .3, .6, .6), text("time"), colour("white"), channel("time"), range(.001,.1,.1)
+rslider bounds(.52, .3, .6, .6), text("random"), colour("white"), channel("random"), range(.001,.1,0)
+rslider bounds(.75, .3, .6, .6), text("Event number"), colour("white"), channel("number"), range(1,50,10)
 }
 keyboard bounds(0, 110, 300, 70)
 </Cabbage>

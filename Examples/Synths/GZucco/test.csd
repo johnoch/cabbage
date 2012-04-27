@@ -1,23 +1,14 @@
 <Cabbage>
 form caption("Additive synthesizer") size(572, 320), colour("black"),pluginID("add1") 
-rslider bounds(15, 10, 100, 100) channel("speed"), range(1,10,2), caption("Speed"), colour("lime ")
-rslider bounds(120, 10, 100, 100) channel("semi"), range(-12,12,0), caption("Coarse"), colour("lime ")
-rslider bounds(225, 10, 100, 100) channel("partials"), range(3,8,4), caption("Partials"), colour("lime ")
-rslider bounds(330, 10, 100, 100) caption("Vib Amp"), colour("lime "), channel("lfoamp"), range(0,20, 0)
-rslider bounds(435, 10, 100, 100) caption("Vib Rate"), colour("lime "), channel("lforate"), range(0,20, 0)
-
-groupbox bounds(15, 120, 240, 100), text("ADSR amplitude"), plant("ADSR"){ 
-image file("adsr.png"), bounds(0, .3, .8, .7)
-rslider bounds(0, .3, .6, .6), text("A"), colour("lime "), channel("att"), range(0.01,3, .5)
-rslider bounds(.25, .3, .6, .6), text("D"), colour("lime "), channel("dec"), range(0,1, .5)
-rslider bounds(.5, .3, .6, .6), text("S"), colour("lime "), channel("sus"), range(0,1,.8)
-rslider bounds(.75, .3, .6, .6), text("R"), colour("lime "), channel("rel"), range(0.01,3, .2)
-}
-groupbox bounds(285, 120, 250, 100), text("Filter/Reverb"), plant("filtrev"){ 
-rslider bounds(0, .3, .6, .6), text("cutoff"), colour("lime "), channel("cutoff"), range(200,8000,1000)
-rslider bounds(.25, .3, .6, .6),text("level"), colour("lime "), channel("level"), range(0,1,.7)
-rslider bounds(.5, .3, .6, .6), text("size"), colour("lime "), channel("size"), range(.1,.99,.8)
-checkbox  bounds(.75, .40, .60, .30),channel("onoff"), text("ON"), value(0)
+groupbox bounds(0, 0, 220, 90), text("ADSR Envelope"), plant("ADSR"){ 
+rslider bounds(.03, .32, .6), text("Att.."), colour("white"), channel("att"), range(0.01,3, .5)
+rslider bounds(.27, .32, .6), text("Dec.."), colour("white"), channel("dec"), range(0,1, .5)
+rslider bounds(.5, .32, .6), text("Sus.."), colour("white"), channel("sus"), range(0,1,.8)
+rslider bounds(.74, .32, .6), text("Rel.."), colour("white"), channel("rel"), range(0.01,3, .2)
+image bounds(0.03, .24, .95, .7), colour(145, 145, 155, 50)
+vline bounds(.27, .36, .01, .5)
+vline bounds(.5, .36, .01, .5)
+vline bounds(.74, .36, .01, .5)
 }
 
 keyboard pos(1, 240), size(550, 60)

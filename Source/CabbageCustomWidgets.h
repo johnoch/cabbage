@@ -85,13 +85,14 @@ class CabbageSlider : public Component
 int offX, offY, offWidth, offHeight, plantX, plantY;
 String sliderType, compName, cl;
 int resizeCount;
+int tracker;
 
 public:
 ScopedPointer<GroupComponent> groupbox;
 ScopedPointer<Slider> slider;
 //---- constructor -----
-CabbageSlider(String name, String text, String caption, String kind, String colour, int textBox)
-	: plantX(-99), plantY(-99), sliderType(kind), compName(caption), cl(colour)
+CabbageSlider(String name, String text, String caption, String kind, String colour, int textBox, int trackerFill)
+	: plantX(-99), plantY(-99), sliderType(kind), compName(caption), cl(colour), tracker(trackerFill)
 {
 	setName(name);
 	offX=offY=offWidth=offHeight=0;
@@ -102,6 +103,7 @@ CabbageSlider(String name, String text, String caption, String kind, String colo
 	addAndMakeVisible(groupbox);
 	groupbox->setVisible(false);
 	groupbox->getProperties().set("groupLine", var(1));
+	slider->getProperties().set("tracker", tracker);
 	
 	if(textBox<1) 
 		slider->setTextBoxStyle (Slider::NoTextBox, true, 0, 0);

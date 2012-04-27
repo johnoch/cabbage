@@ -1,9 +1,8 @@
-;This example shows how xypads work. xypads output data on two channels, in this case a channel named 
-;"index" and another channel named "carrier". Automation can be turned on by pressing the on button and 
-;"throwing" the ball. The ball's speed can also be sped up or slowed down using the slider.  
 <Cabbage>
-form caption("Csound Output") size(460, 300)
-csoundoutput bounds(10, 10, 420, 260), text("Csound Output")
+form caption("VU Meters") size(460, 300)
+vumeter  bounds(0, 0, 100, 200), config(1, 1), channel("left", "right")
+vumeter  bounds(150, 0, 100, 200), config(1, 1), channel("mono1", "mono2")
+
 </Cabbage>
 <CsoundSynthesizer>
 <CsOptions>
@@ -16,8 +15,21 @@ ksmps = 32
 nchnls = 2
 0dbfs = 1
 
+
 instr 1
-printks "\nCsound messages are useful when it comes to de-slugging instruments(debugging Cabbage is called de-slugging!)\n", 1 
+a1 randi 1, 10, 2
+a2 randi 1, 4, 2
+a3 randi 1, 6, 2
+a4 randi 1, 1, 2
+k1 rms a1
+k2 rms a2
+k3 rms a3
+k4 rms a4
+chnset k1, "left"
+chnset k2, "right"
+chnset k3, "mono1"
+chnset k4, "mono2"
+
 endin
 
 </CsInstruments>
