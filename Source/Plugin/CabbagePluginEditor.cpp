@@ -288,8 +288,8 @@ void CabbagePluginAudioProcessorEditor::insertCabbageText(String text)
 //==============================================================================
 void CabbagePluginAudioProcessorEditor::resized()
 {
-#ifdef Cabbage_GUI_Editor
 if(componentPanel)componentPanel->setBounds(0, 0, this->getWidth(), this->getHeight());
+#ifdef Cabbage_GUI_Editor
 if(layoutEditor)layoutEditor->setBounds(0, 0, this->getWidth(), this->getHeight());
 #endif
 }
@@ -975,8 +975,11 @@ try{
 		
 		width = width*layoutComps[y]->getWidth();
 		height = height*layoutComps[y]->getHeight();
+
+		if(cAttr.getStringProp("type").equalsIgnoreCase("rslider"))
 		if(width<height) height = width;
 		else if(height<width) width = height;
+
         top = (top*layoutComps[y]->getHeight());
 		left = (left*layoutComps[y]->getWidth());
 				if(layoutComps[y]->getName().containsIgnoreCase("groupbox")||
@@ -999,10 +1002,10 @@ try{
                 componentPanel->addAndMakeVisible(controls[idx]);              
         }
  
-        if(cAttr.getStringProp("kind").equalsIgnoreCase("vertical"))
-        ((CabbageSlider*)controls[idx])->setBounds(left+relX, top+relY, width, height);
-        else if(cAttr.getStringProp("kind").equalsIgnoreCase("horizontal"))
-        ((CabbageSlider*)controls[idx])->setBounds(left+relX, top+relY, width, height);
+        //if(cAttr.getStringProp("kind").equalsIgnoreCase("vertical"))
+        //((CabbageSlider*)controls[idx])->setBounds(left+relX, top+relY, width, height);
+        //else if(cAttr.getStringProp("kind").equalsIgnoreCase("horizontal"))
+        //((CabbageSlider*)controls[idx])->setBounds(left+relX, top+relY, width, height);
 
 
 		((CabbageSlider*)controls[idx])->slider->setSkewFactor(cAttr.getNumProp("sliderSkew"));
