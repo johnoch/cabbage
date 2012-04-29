@@ -2024,7 +2024,7 @@ public:
 	  }
 
 	void paint(Graphics &g){
-		Image newButton = CabbageLookAndFeel::drawToggleImage (width, height, buttonState, colour);
+		Image newButton = CabbageLookAndFeel::drawToggleImage (width, height, buttonState, colour, true);
 		g.drawImage(newButton, 0, 0, width, height, 0, 0, width, height);
 	}
 

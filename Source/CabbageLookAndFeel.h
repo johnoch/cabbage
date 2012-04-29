@@ -26,7 +26,7 @@ public:
 																								bool useTrackerFill,
 																								bool isVertical);
 	Image drawLinearThumbImage (float width, float height, const Colour thumbFill, bool isVertical);
-	static Image drawToggleImage (float width, float height, bool isToggleOn, Colour colour);
+	static Image drawToggleImage (float width, float height, bool isToggleOn, Colour colour, bool isRect);
 	Image drawTextButtonImage (float width, float height, bool isButtonDown);
 	virtual void drawRotarySlider (Graphics &g, int x, int y, int width, int height, float sliderPosProportional, 
 																					float rotaryStartAngle, 
