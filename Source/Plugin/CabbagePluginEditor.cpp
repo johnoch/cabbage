@@ -1137,10 +1137,13 @@ catch(...){
 void CabbagePluginAudioProcessorEditor::InsertCheckBox(CabbageGUIClass cAttr)
 {
 try{
+	bool RECT = cAttr.getStringProp("shape").equalsIgnoreCase("square");
+		
 	controls.add(new CabbageCheckbox(cAttr.getStringProp("name"),
 		cAttr.getStringProp("caption"),
 		cAttr.getItems(0),
-		cAttr.getColourProp("colour")));	
+		cAttr.getColourProp("colour"),
+		RECT));	
 	int idx = controls.size()-1;
 	float left = cAttr.getNumProp("left");
 	float top = cAttr.getNumProp("top");

@@ -152,6 +152,7 @@ CabbageGUIClass::CabbageGUIClass(String compStr, int ID):
 		  min = 0;
 		  max = 1;
 		  type = name;
+		  shape = "circle";
           name.append(String(ID), 1024);
 		  //default colour for toggles
 		  colour = Colours::lime;

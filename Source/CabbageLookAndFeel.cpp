@@ -308,7 +308,7 @@ Image CabbageLookAndFeel::drawToggleImage (float width, float height, bool isTog
         ColourGradient cg = ColourGradient(colour.withSaturation(0.2), width*0.4, height*0.4, colour,
             width*0.8, height*0.8, true);        
         g.setGradientFill (cg);
-        g.fillEllipse(width*0.09, height*0.09, width*0.82, height*0.82);
+		g.fillEllipse(width*0.09, height*0.09, width*0.82, height*0.82);
     }
     //----- If "0ff"
     else {
@@ -949,8 +949,10 @@ void CabbageLookAndFeel::drawToggleButton (Graphics &g, ToggleButton &button, bo
     else
 		col = Colour::fromString(button.getProperties().getWithDefault("colour", "lime"));
 
+	bool isRECT = button.getProperties().getWithDefault("isRect", 0);
+
 	//----- Creating the image
-	Image newButton = drawToggleImage (destWidth, destHeight, isToggleOn, col, false);
+	Image newButton = drawToggleImage (destWidth, destHeight, isToggleOn, col, isRECT);
 
 	//----- Drawing image
 	g.drawImage (newButton, destX, destY, destWidth, destHeight, 0, 0, destWidth, destHeight, false);

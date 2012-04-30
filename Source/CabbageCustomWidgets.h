@@ -216,7 +216,7 @@ public:
 ScopedPointer<GroupComponent> groupbox;
 ScopedPointer<ToggleButton> button;
 //---- constructor -----
-CabbageCheckbox(String name, String caption, String buttonText, String colour)
+CabbageCheckbox(String name, String caption, String buttonText, String colour, bool isRect)
 {
 	setName(name);
 	offX=offY=offWidth=offHeight=0;
@@ -245,7 +245,8 @@ CabbageCheckbox(String name, String caption, String buttonText, String colour)
 		groupbox->setText(caption);
 	}
 
-	button->getProperties().set("colour", String(Colours::lime.toString()));
+	button->getProperties().set("isRect", isRect);
+	button->getProperties().set("colour", colour);
 	//text colour id
 	button->setColour(0x1006501,
 			Colour::fromString(colour));
@@ -2039,7 +2040,7 @@ class PatternMatrix : public Component,
 					  public SliderListener,
 					  public ActionListener
 {
-ScopedPointer<ToggleButton> onoffButton;
+ScopedPointer<CabbageCheckbox> onoffButton;
 ScopedPointer<Slider> bpm;
 OwnedArray<Slider> pSliders;
 float buttonIndex, updateVar, offX, offY, offWidth, offHeight, 
@@ -2058,10 +2059,11 @@ CabbagePluginAudioProcessor* myFilter;
 								updateVar(0),
 								rCtrls(rctrls)
 	{
-		onoffButton = new ToggleButton("Active");
-		onoffButton->setButtonText("");
-		onoffButton->addListener(this);
-		onoffButton->getProperties().set("colour", "red");
+		onoffButton = new CabbageCheckbox("", "", "", Colours::red.toString(), true);
+
+		onoffButton->button->setButtonText("");
+		onoffButton->button->addListener(this);
+		//onoffButton->getProperties().set(Colours, "red");
 		onoffButton->setBounds(60, 25, 20, 20);
 		addAndMakeVisible(onoffButton);
 
