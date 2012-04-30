@@ -668,7 +668,7 @@ public:
 		//----- For drawing the title
 		Colour txt = CabbageUtils::getComponentSkin();
 		g.setColour (txt);
-		Font font = CabbageUtils::getgetComponentFontColour();
+		Font font = CabbageUtils::getComponentFont();
 		g.setFont (font);
 		Justification just(1);
 		title = CabbageUtils::cabbageString (title, font, availableWidth-10);
@@ -1958,7 +1958,7 @@ public:
 					height(height),
 					value(0),
 					lastValue(0),
-					buttonState(0),
+					buttonState(false),
 					colour(Colours::lime)
 	  {
 		setBounds(0, 0, width, height);
@@ -2059,7 +2059,7 @@ CabbagePluginAudioProcessor* myFilter;
 								updateVar(0),
 								rCtrls(rctrls)
 	{
-		onoffButton = new CabbageCheckbox("", "", "", Colours::red.toString(), true);
+		onoffButton = new CabbageCheckbox("Active", "", "", Colours::red.toString(), true);
 
 		onoffButton->button->setButtonText("");
 		onoffButton->button->addListener(this);
@@ -2091,8 +2091,14 @@ CabbagePluginAudioProcessor* myFilter;
 				stepButton.add(new CabbageNumToggle("", (pattRect.getWidth()/noSteps), (pattRect.getHeight()/patterns.size())));
 				stepButton[stepButton.size()-1]->addActionListener(this);
 				stepButton[stepButton.size()-1]->setName(String(stepButton.size()-1));
+				
+			if(myFilter->patStepMatrix.size()>0)
+				stepButton[stepButton.size()-1]->setToggleState(myFilter->patStepMatrix[stepButton.size()-1].state);
+				
+			else{
 				CabbagePatternMatrixStepData patMat;
 				myFilter->patStepMatrix.add(patMat);
+			}
 				stepButton[stepButton.size()-1]->setTopLeftPosition(pattRect.getX()+(beats*(pattRect.getWidth()/noSteps)), pats*(pattRect.getHeight())/patterns.size()+pattRect.getY());
 				addAndMakeVisible(stepButton[stepButton.size()-1]);
 			}
@@ -2191,6 +2197,7 @@ CabbagePluginAudioProcessor* myFilter;
 			}
 	
 			for(int y=0;y<noPatterns;y++){
+			Logger::writeToLog(String(myFilter->beat+(y*noSteps)));
 			if(stepButton[myFilter->beat+(y*noSteps)]->getToggleState()==1){			
 			stepButton[myFilter->beat+(y*noSteps)]->setActiveColour("yellow");
 			stepButton[myFilter->beat+(y*noSteps)]->repaint();
@@ -2298,7 +2305,7 @@ public:
 	void paint(Graphics& g)
 	{
 		g.setColour(Colour::fromString(colour));
-		g.setFont(CabbageUtils::getgetComponentFontColour());
+		g.setFont(CabbageUtils::getComponentFont());
 		g.setFont(getHeight(), 1);
 		g.drawFittedText(text, 0, 0, getWidth(), getHeight(), Justification::left, 1, 1);
 	}

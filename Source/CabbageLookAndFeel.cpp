@@ -402,7 +402,7 @@ void CabbageLookAndFeel::drawRotarySlider(Graphics& g, int /*x*/, int /*y*/, int
 	//----- Variables for slider name
 	String name;
 	name << slider.getName();
-	Font fontName = CabbageUtils::getgetComponentFontColour();
+	Font fontName = CabbageUtils::getComponentFont();
 	Justification justName (36); //centered
 	float nameWidth = fontName.getStringWidth(name);
 
@@ -555,167 +555,167 @@ void CabbageLookAndFeel::drawRotarySlider(Graphics& g, int /*x*/, int /*y*/, int
 
 				
 //=========== Linear Slider Background ===========================================================================
-void CabbageLookAndFeel::drawLinearSliderBackground (Graphics &g, int /*x*/, int /*y*/, int /*width*/, int /*height*/, float sliderPos, 
-																								float /*minSliderPos*/, 
-																								float /*maxSliderPos*/, 
-																								const Slider::SliderStyle style, 
-																								Slider &slider)
+void CabbageLookAndFeel::drawLinearSliderBackground (Graphics &g, int /*x*/, int /*y*/, int /*width*/, int /*height*/, float /*sliderPos*/, 
+                                                                                                float /*minSliderPos*/, 
+                                                                                                float /*maxSliderPos*/, 
+                                                                                                const Slider::SliderStyle style, 
+                                                                                                Slider &slider)
 {
-	//----- Getting the proportional position that the current value has in relation to the max. This is used
-	//for drawing the image in the correct position.
-	float sliderPosProportional = (slider.getValue()-slider.getMinimum()) / (slider.getMaximum()-slider.getMinimum());
+    float range = slider.getMaximum() - slider.getMinimum();
 
-	//---- Getting the zero position in proportion to the range.  The tracker fill starts at 0, not the minimum...
-	float zeroPosProportional = 0; 
-	if (slider.getMinimum() < 0)
-		zeroPosProportional = (slider.getMinimum()*-1) / (slider.getMaximum() - slider.getMinimum());
+    //----- Getting the proportional position that the current value has in relation to the range
+    float sliderPosProportional = (slider.getValue()-slider.getMinimum()) / range;
+    
+    //---- Getting the zero position in proportion to the range.  The tracker fill starts at 0, not the minimum...
+    float zeroPosProportional = 0; 
+    if (slider.getMinimum() < 0)
+        zeroPosProportional = (abs(slider.getMinimum())) / range;
 
-	//---- If using a tracker fill
-	//----- If using a tracker fill
-	bool useTracker = true;
-	int test = slider.getProperties().getWithDefault(String("tracker"), -99);
-	if (test == 0)
-		useTracker = false;
+    //----- If using a tracker fill
+    bool useTracker = true;
+    int trackerFlag = slider.getProperties().getWithDefault(String("tracker"), -99);
+    if (trackerFlag == 0)
+        useTracker = false;
 
-	Image newBackground;
+    Image newBackground;
 
-	//----- Variables for determining new destination width, height, position etc...
-	float destX, destY, sliderEnd;
-	float destHeight = slider.getHeight(); 
-	float destWidth = slider.getWidth();
-	
-	//----- Determining if the user wants a name label displayed......
-	bool showName = false;
-	String name;
-	Font fontName;
-	float nameWidth;
-	Justification just (36); //centered
-	if (slider.getName().length() > 0) {
-		name << slider.getName();
-		fontName = CabbageUtils::getgetComponentFontColour();
-		g.setFont (fontName);
-		nameWidth = fontName.getStringWidth(name);
-		g.setColour (CabbageUtils::getComponentFontColour());
-		showName = true; //setting flag to true
-	}
+    //----- Variables for determining new destination width, height, position etc...
+    float destX, destY, sliderEnd;
+    float destHeight = slider.getHeight(); 
+    float destWidth = slider.getWidth();
+    
+    //----- Determining if the user wants a name label displayed......
+    bool showName = false;
+    String name;
+    Font fontName;
+    float nameWidth;
+    Justification just (36); //centered
+    if (slider.getName().length() > 0) {
+        name << slider.getName();
+        fontName = CabbageUtils::getComponentFont();
+        g.setFont (fontName);
+        nameWidth = fontName.getStringWidth(name);
+        g.setColour (CabbageUtils::getComponentFontColour());
+        showName = true; //setting flag to true
+    }
 
-	//----- If Horizontal Slider --------------------------------------------------------------------------
-	if (style == Slider::LinearHorizontal) {
-		//setting the available space for the name
-		nameWidth = slider.getWidth() * 0.2; 
+    //----- If Horizontal Slider --------------------------------------------------------------------------
+    if (style == Slider::LinearHorizontal) {
+        //setting the available space for the name
+        nameWidth = slider.getWidth() * 0.2; 
 
-		//Variables for slider value / textbox
-		String str;
-		str << slider.getMaximum() << slider.getInterval();
-		int len = str.length() * 7; //length of text
+        //Variables for slider value / textbox
+        String str;
+        str << slider.getMaximum() << slider.getInterval();
+        int len = str.length() * 7; //length of text
 
-		//----- start and end of slider image, height*0.25 is to make room for the edge of the slider thumb when at 
-		//a maximum or minimum
-		destX = slider.getHeight()*0.25; 
-		sliderEnd = slider.getWidth() - destX; 
-		//----- starting y position
-		destY = 0;//(slider.getHeight()/2) - (destHeight/2);
+        //----- start and end of slider image, height*0.25 is to make room for the edge of the slider thumb when at 
+        //a maximum or minimum
+        destX = slider.getHeight()*0.25; 
+        sliderEnd = slider.getWidth() - destX; 
+        //----- starting y position
+        destY = 0;//(slider.getHeight()/2) - (destHeight/2);
 
-		//----- If there is a name label it will be shown at the start while the value will be at the end when 
-		//the mouse hovers over the slider. 
-		Justification justLeft (1); //left
-		if (showName == true) { //if the name should be displayed
-			name = CabbageUtils::cabbageString (name, fontName, nameWidth); //shortening string if too long
-			g.drawText (name, 0, (slider.getHeight()/2) - 6, (int)nameWidth, 13, justLeft, false);
-			destX += nameWidth+2; //adjusting destX to accomodate slider name
-		}
+        //----- If there is a name label it will be shown at the start while the value will be at the end when 
+        //the mouse hovers over the slider. 
+        Justification justLeft (1); //left
+        if (showName == true) { //if the name should be displayed
+            name = CabbageUtils::cabbageString (name, fontName, nameWidth); //shortening string if too long
+            g.drawText (name, 0, (slider.getHeight()/2) - 6, (int)nameWidth, 13, justLeft, false);
+            destX += nameWidth+2; //adjusting destX to accomodate slider name
+        }
 
-		//----- If textbox IS NOT to be displayed!!!!!! 
-		if (slider.getTextBoxPosition() == Slider::NoTextBox) 
-			slider.setTextBoxStyle (Slider::NoTextBox, true, 0, 0);
+        //----- If textbox IS NOT to be displayed!!!!!! 
+        if (slider.getTextBoxPosition() == Slider::NoTextBox) 
+            slider.setTextBoxStyle (Slider::NoTextBox, true, 0, 0);
 
-		//----- If textbox IS to be displayed!!!!  
-		else {
-			slider.setTextBoxStyle (Slider::TextBoxRight, false, len, 15);
-			sliderEnd -= len;
-		}
+        //----- If textbox IS to be displayed!!!!  
+        else {
+            slider.setTextBoxStyle (Slider::TextBoxRight, false, len, 15);
+            sliderEnd -= len;
+        }
 
-		//Getting the new destination width of image
-		destWidth = sliderEnd - destX;
+        //Getting the new destination width of image
+        destWidth = sliderEnd - destX;
 
-		//----- Slider is enabled and value changed if mouse click is within the actual slider image....
-		if (slider.isMouseButtonDown() == true) {
-			Point<int> mousePos = slider.getMouseXYRelative();
-			slider.setEnabled(true);
-			if ((mousePos.getX() >= (destX-5)) && (mousePos.getX() <= (sliderEnd+5)))
-				slider.setValue(((mousePos.getX()-destX) / destWidth) * (slider.getMaximum() - slider.getMinimum()));
-		}
-		
-		slider.setEnabled (false); //setting it back to disabled. Otherwise the slider would move slightly.
-		
-		//----- Getting image
-		newBackground = drawLinearBgImage (destWidth, destHeight, sliderPosProportional, zeroPosProportional, useTracker, false);
-	}
+        //----- Slider is enabled and value changed if mouse click is within the actual slider image....
+        if (slider.isMouseButtonDown() == true) {
+            Point<int> mousePos = slider.getMouseXYRelative();
+            slider.setEnabled(true);
+            if ((mousePos.getX() >= (destX-5)) && (mousePos.getX() <= (sliderEnd+5)))
+                slider.setValue((((mousePos.getX()-destX)/destWidth) * range) + slider.getMinimum());
+        }
+        
+        slider.setEnabled (false); //setting it back to disabled. Otherwise the slider would move slightly.
+        
+        //----- Getting image
+        newBackground = drawLinearBgImage (destWidth, destHeight, sliderPosProportional, zeroPosProportional, useTracker, false);
+    }
 
-	//----- If Vertical Slider ---------------------------------------------------------------------------
-	if (style == Slider::LinearVertical) {
+    //----- If Vertical Slider ---------------------------------------------------------------------------
+    if (style == Slider::LinearVertical) {
 
-		//----- starting x position
-		destX = ((slider.getWidth() - destWidth) / 2);	
-		//----- starting y position, width*0.25 is to make room for the edge of the slider thumb when at a 
-		//maximum or minimum
-		destY = slider.getWidth()*0.25; 
-		sliderEnd = slider.getHeight() - destY;
+        //----- starting x position
+        destX = ((slider.getWidth() - destWidth) / 2);    
+        //----- starting y position, width*0.25 is to make room for the edge of the slider thumb when at a 
+        //maximum or minimum
+        destY = slider.getWidth()*0.25; 
+        sliderEnd = slider.getHeight() - destY;
 
-		//----- If textbox IS NOT to be displayed!!!!!! 
-		//If there is a name label it will be shown at the bottom	while the value will be at the top when 
-		//the mouse hovers over the slider. 
-		if (slider.getTextBoxPosition() == Slider::NoTextBox) {
-			slider.setTextBoxStyle (Slider::NoTextBox, true, 0, 0);
-			if (showName == true) { //if the name should be displayed
-				name = CabbageUtils::cabbageString (name, fontName, slider.getWidth()); //shortening string if too long
-				g.drawText (name, (slider.getWidth()/2) - (nameWidth/2), slider.getHeight() - 13, 
-															(int)nameWidth, 13,	just, false);
-				sliderEnd -= 21; //name label(11) + space(10) between image and text
-			}
-			destY += 15; //value(15)
-		}
+        //----- If textbox IS NOT to be displayed!!!!!! 
+        //If there is a name label it will be shown at the bottom    while the value will be at the top when 
+        //the mouse hovers over the slider. 
+        if (slider.getTextBoxPosition() == Slider::NoTextBox) {
+            slider.setTextBoxStyle (Slider::NoTextBox, true, 0, 0);
+            if (showName == true) { //if the name should be displayed
+                name = CabbageUtils::cabbageString (name, fontName, slider.getWidth()); //shortening string if too long
+                g.drawText (name, (slider.getWidth()/2) - (nameWidth/2), slider.getHeight() - 13, 
+                                                            (int)nameWidth, 13,    just, false);
+                sliderEnd -= 21; //name label(11) + space(10) between image and text
+            }
+            destY += 15; //value(15)
+        }
 
-		//----- If textbox IS to be displayed!!!!  
-		//This means that if the user wants a label it will automatically	go at the top. 
-		else {
-			String str;
-			str << slider.getMaximum() << slider.getInterval();
-			int len = str.length() * 7; //length of text
-			slider.setTextBoxStyle (Slider::TextBoxBelow, false, len, 15);
-			sliderEnd -= 30; //textbox height(15) plus gap(15)
+        //----- If textbox IS to be displayed!!!!  
+        //This means that if the user wants a label it will automatically    go at the top. 
+        else {
+            String str;
+            str << slider.getMaximum() << slider.getInterval();
+            int len = str.length() * 7; //length of text
+            slider.setTextBoxStyle (Slider::TextBoxBelow, false, len, 15);
+            sliderEnd -= 30; //textbox height(15) plus gap(15)
 
-			if (showName == true) { //if name label is to be displayed
-				name = CabbageUtils::cabbageString (name, fontName, slider.getWidth()); //shortening string if too long
-				g.drawText (name, (slider.getWidth()/2) - (nameWidth/2), 0, (int)nameWidth, 13, 
-																				just, false);
-				destY += 15; //name(15)
-				//sliderEnd -= 0; Having a textbox will automatically adjust slider.getHeight() so no need to 
-				//subtract anything here
-			}
-		}
+            if (showName == true) { //if name label is to be displayed
+                name = CabbageUtils::cabbageString (name, fontName, slider.getWidth()); //shortening string if too long
+                g.drawText (name, (slider.getWidth()/2) - (nameWidth/2), 0, (int)nameWidth, 13, 
+                                                                                just, false);
+                destY += 15; //name(15)
+                //sliderEnd -= 0; Having a textbox will automatically adjust slider.getHeight() so no need to 
+                //subtract anything here
+            }
+        }
 
-		//Getting the new destination height of image
-		destHeight = sliderEnd - destY;
+        //Getting the new destination height of image
+        destHeight = sliderEnd - destY;
 
-		//----- Slider is enabled and value changed if mouse click is within the actual slider image....
-		if (slider.isMouseButtonDown() == true) {
-			Point<int> mousePos = slider.getMouseXYRelative();
-			slider.setEnabled (true);
-			if ((mousePos.getY() >= (destY-5)) && (mousePos.getY() <= (sliderEnd+5))) {
-				float yInvert = 1 - ((mousePos.getY()-destY) / destHeight);
-				slider.setValue (yInvert * (slider.getMaximum() - slider.getMinimum()));
-			}
-		}
-		slider.setEnabled (false); //setting it back to disabled. Otherwise the slider would move slightly.
+        //----- Slider is enabled and value changed if mouse click is within the actual slider image....
+        if (slider.isMouseButtonDown() == true) {
+            Point<int> mousePos = slider.getMouseXYRelative();
+            slider.setEnabled (true);
+            if ((mousePos.getY() >= (destY-5)) && (mousePos.getY() <= (sliderEnd+5))) {
+                float yInvert = 1 - ((mousePos.getY()-destY) / destHeight);
+                slider.setValue ((yInvert*range)+slider.getMinimum());
+            }
+        }
+        slider.setEnabled (false); //setting it back to disabled. Otherwise the slider would move slightly.
 
-		//----- Getting image
-		newBackground = drawLinearBgImage (destWidth, destHeight, sliderPosProportional, zeroPosProportional, useTracker, true);
-	}
-	
-	//----- Drawing Image. 
-	g.setOpacity (1);
-	g.drawImage(newBackground, destX, destY, destWidth, destHeight, 0, 0, destWidth, destHeight, false);
+        //----- Getting image
+        newBackground = drawLinearBgImage (destWidth, destHeight, sliderPosProportional, zeroPosProportional, useTracker, true);
+    }
+    
+    //----- Drawing Image. 
+    g.setOpacity (1);
+    g.drawImage(newBackground, destX, destY, destWidth, destHeight, 0, 0, destWidth, destHeight, false);
 }
 
 
@@ -759,7 +759,7 @@ void CabbageLookAndFeel::drawLinearSliderThumb (Graphics &g, int /*x*/, int /*y*
 		//Getting width of name label....
 		String name;
 		name << slider.getName();
-		Font fontName = CabbageUtils::getgetComponentFontColour();
+		Font fontName = CabbageUtils::getComponentFont();
 		g.setFont (fontName);
 		float nameWidth = slider.getWidth() * 0.2; //fontName.getStringWidth(name);
 
@@ -960,12 +960,12 @@ void CabbageLookAndFeel::drawToggleButton (Graphics &g, ToggleButton &button, bo
 	//----- Text
 	if (button.getButtonText().length() > 0) {
 		Justification just (1); //left
-		g.setFont (CabbageUtils::getgetComponentFontColour());
+		g.setFont (CabbageUtils::getComponentFont());
 		g.setColour (CabbageUtils::getComponentFontColour());
 
 		String name;
 		name << button.getButtonText();
-		name = CabbageUtils::cabbageString (name, CabbageUtils::getgetComponentFontColour(), (button.getWidth()-(destWidth+5))); //shortening string if too long
+		name = CabbageUtils::cabbageString (name, CabbageUtils::getComponentFont(), (button.getWidth()-(destWidth+5))); //shortening string if too long
 
 		g.drawText (name, destWidth+5, destY, button.getWidth(), button.getHeight(), just, false);
 	}
@@ -991,7 +991,7 @@ void CabbageLookAndFeel::drawButtonText (Graphics &g, TextButton &button, bool i
 	float height = button.getHeight();
 	float destX;
 	float destWidth = width*0.8;
-	Font font = CabbageUtils::getgetComponentFontColour();
+	Font font = CabbageUtils::getComponentFont();
 	String text;
 	text << button.getButtonText();
 	text = CabbageUtils::cabbageString (text, font, destWidth);
@@ -1071,7 +1071,7 @@ void CabbageLookAndFeel::drawLabel (Graphics &g, Label &label)
 	//of the slider / label.  Otherwise it will be normal.
 	Component* comp = label.getParentComponent();
 
-	g.setFont (CabbageUtils::getgetComponentFontColour());
+	g.setFont (CabbageUtils::getComponentFont());
 
 	if (dynamic_cast<Slider*>(comp)) { //If slider
 	//----- Drawing rounded rectangle
@@ -1251,8 +1251,8 @@ void CabbageLookAndFeel::drawPopupMenuItem (Graphics &g, int width, int height, 
 	else
 		g.setColour (CabbageUtils::getComponentFontColour());
 
-	g.setFont (CabbageUtils::getgetComponentFontColour());
-	g.drawText (CabbageUtils::cabbageString(text, CabbageUtils::getgetComponentFontColour(), width*0.8), 20, 0, width*0.8, height, 1, false);
+	g.setFont (CabbageUtils::getComponentFont());
+	g.drawText (CabbageUtils::cabbageString(text, CabbageUtils::getComponentFont(), width*0.8), 20, 0, width*0.8, height, 1, false);
 
 	if (isSeparator == true) {
         g.setColour(CabbageUtils::getComponentSkin());
@@ -1292,8 +1292,8 @@ void CabbageLookAndFeel::drawMenuBarItem(Graphics & g, int width, int height, in
 	}
 
 	g.setColour (CabbageUtils::getComponentFontColour());
-	g.setFont (CabbageUtils::getgetComponentFontColour());
-    g.drawFittedText(CabbageUtils::cabbageString(itemText, CabbageUtils::getgetComponentFontColour(), width*0.9), 5, 0, width, height, 36, 1);
+	g.setFont (CabbageUtils::getComponentFont());
+    g.drawFittedText(CabbageUtils::cabbageString(itemText, CabbageUtils::getComponentFont(), width*0.9), 5, 0, width, height, 36, 1);
 }
 
 //======== Document Window title bar ===================================================================
@@ -1339,7 +1339,7 @@ Image CabbageLookAndFeel::drawWindowButtonNormal(int buttonType)
 	g.fillRoundedRectangle(1, 1, width-2, height-2, 2);
 	
 	//----- Text symbol
-	Font font = CabbageUtils::getgetComponentFontColour();
+	Font font = CabbageUtils::getComponentFont();
 	g.setFont (font);
 	g.setColour (CabbageUtils::getComponentFontColour());
 	g.drawText(str, (width/2) - (font.getHeight()/2), (width/2) - (font.getHeight()/2), 
@@ -1370,7 +1370,7 @@ Image CabbageLookAndFeel::drawWindowButtonIsOver(int buttonType)
 	g.fillRoundedRectangle(1, 1, width-2, height-2, 2);
 
 	//---- Text symbol
-	Font font = CabbageUtils::getgetComponentFontColour();
+	Font font = CabbageUtils::getComponentFont();
 	g.setFont (font);
 	g.setColour (Colours::whitesmoke);
 	g.drawText(str, (width/2) - (font.getHeight()/2), (width/2) - (font.getHeight()/2), 

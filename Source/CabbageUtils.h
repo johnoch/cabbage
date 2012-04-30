@@ -148,7 +148,7 @@ static String cabbageString (String input, Font font, float availableWidth)
 }
 
 //========= Normal font for components ===============================================
-static Font getgetComponentFontColour()
+static Font getComponentFont()
 {
 	Font font = Font (T("Verdana"), 12, 1);
 	return font;

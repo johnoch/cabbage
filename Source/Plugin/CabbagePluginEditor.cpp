@@ -1623,6 +1623,8 @@ for(int i=0;i<(int)getFilter()->getGUICtrlsSize();i++)//find correct control fro
 void CabbagePluginAudioProcessorEditor::InsertPatternMatrix(CabbageGUIClass cAttr)
 {
 int tableSize=0;
+//getFilter()->patStepMatrix.clear();
+//getFilter()->patPfieldMatrix.clear();
 try{
 	controls.add(new CabbagePatternMatrix(getFilter(), cAttr.getStringProp("name"),
 		cAttr.getNumProp("width"),

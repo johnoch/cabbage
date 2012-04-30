@@ -111,7 +111,17 @@ createGUI(csdFile.loadFileAsString());
 // PLUGIN - CONSTRUCTOR 
 //===========================================================
 CabbagePluginAudioProcessor::CabbagePluginAudioProcessor():
-guiOnOff(false)
+csoundStatus(false), 
+showMIDI(false), 
+csCompileResult(1), 
+changeMessageType(""), 
+guiOnOff(guiOnOff),
+currentLine(-99),
+noSteps(0),
+noPatterns(0),
+timeCounter(0),
+beat(0),
+bpm(120)
 {
 //Cabbage plugins always try to load a csd file with the same name as the plugin library.
 //Therefore we need to find the name of the library and append a '.csd' to it. 
