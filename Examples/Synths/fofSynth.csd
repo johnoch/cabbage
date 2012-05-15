@@ -3,7 +3,7 @@ form caption("Cabbage Formant Synth"), size(520, 335), pluginID("fof1")
 
 xypad bounds(0, 0, 250, 210), channel("form1", "form2"), text("Formant Frequency  1/2"), rangex(50, 800, 100), rangey(600, 1200, 600)
   
-groupbox bounds(260, 0, 240, 100), line(0), text("Formant Parameters One"), plant("formant1"){ 
+groupbox bounds(260, 0, 240, 100), line(0), text("Formant Parameters One"), plant("formant1"){
 hline bounds(0.1, .2, .8, .03)
 rslider bounds(.03, .3, .6), text("Amp"), colour("brown"), channel("amp1"), range(0, .5, .5)
 vline bounds(.27, .3, .01, .5)
@@ -38,6 +38,31 @@ sr = 44100
 ksmps = 32 
 nchnls = 2 
 0dbfs  = 1 
+
+
+;groupbox bounds(260, 0, 240, 100), line(0), text("Formant Parameters One"), plant("formant1"){ 
+;hline bounds(0.1, .2, .8, .03)
+;rslider bounds(.03, .3, .6), text("Amp"), colour("brown"), channel("amp1"), range(0, .5, .5)
+;vline bounds(.27, .3, .01, .5)
+;rslider bounds(.27, .3, .6), text("BW"), colour("brown"), channel("bw1"), range(10, 120, 60)
+;vline bounds(.5, .3, .01, .5)
+;rslider bounds(.5, .3, .6), text("Rise"), colour("brown"), channel("rise1"), range(0.001, 0.01, 0.001, 1, 0.001)
+;vline bounds(.73, .3, .01, .5)
+;rslider bounds(.73, .3, .6), text("Decay"), colour("brown"), channel("dec1"), range(0.001, 0.01, 0.001, 1, 0.001)
+;image bounds(.03, .02, .95, .95), colour(200, 200, 255, 50)
+;}
+
+;groupbox bounds(260, 105, 240, 100), line(0), text("Formant Parameters Two"), plant("formant2"){ 
+;hline bounds(0.1, .2, .8, .03)
+;rslider bounds(.03, .3, .6), text("Amp"), colour("brown"), channel("amp2"), range(0, .5, .5)
+;vline bounds(.27, .3, .01, .5)
+;rslider bounds(.27, .3, .6), text("BW"), colour("brown"), channel("bw2"), range(10, 120, 60)
+;vline bounds(.5, .3, .01, .5)
+;rslider bounds(.5, .3, .6), text("Rise"), colour("brown"), channel("rise2"), range(0.001, 0.01, 0.001, 1, 0.001)
+;vline bounds(.73, .3, .01, .5)
+;rslider bounds(.73, .3, .6), text("Decay"), colour("brown"), channel("dec2"), range(0.001, 0.01, 0.001, 1, 0.001)
+;image bounds(.03, .02, .95, .95), colour(200, 200, 255, 50)
+;}
 
 ;Author: Rory Walsh (2012)
 

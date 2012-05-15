@@ -8,7 +8,7 @@ rslider bounds(435, 10, 100, 100) caption("Vib Rate"), colour("lime "), channel(
 
 groupbox bounds(15, 120, 240, 100), text("ADSR amplitude"), plant("ADSR"){ 
 image file("adsr.png"), bounds(0, .3, .8, .7)
-rslider bounds(0, .3, .6, .6), text("A"), colour("lime "), channel("att"), range(0.01,3, .5)
+rslider bounds(0, .3, .6, .6), text("A"), colour("red "), channel("att"), range(0.01,3, .5)
 rslider bounds(.25, .3, .6, .6), text("D"), colour("lime "), channel("dec"), range(0,1, .5)
 rslider bounds(.5, .3, .6, .6), text("S"), colour("lime "), channel("sus"), range(0,1,.8)
 rslider bounds(.75, .3, .6, .6), text("R"), colour("lime "), channel("rel"), range(0.01,3, .2)

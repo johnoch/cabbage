@@ -915,6 +915,8 @@ String CabbageGUIClass::getColourProp(String prop)
 			return colour.toString();
 		else if(prop.equalsIgnoreCase(T("fill")))
 			return fill.toString();
+		else if(prop.equalsIgnoreCase(T("outline")))
+			return outline.toString();
 		else return "";
 
 }

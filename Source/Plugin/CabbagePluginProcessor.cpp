@@ -44,7 +44,8 @@ noSteps(0),
 noPatterns(0),
 timeCounter(0),
 beat(0),
-bpm(120)
+bpm(120),
+patMatrixActive(0)
 {
 //reset patMatrix. If this has more than one we know that
 //pattern matrix object is being used
@@ -57,6 +58,7 @@ setPlayConfigDetails(2, 2, 44100, 512);
 if(!isGuiEnabled()){
 csound = new Csound();
 csound->PreCompile();
+csound->SetMessageCallback(CabbagePluginAudioProcessor::messageCallback);
 csound->SetHostData(this);
 //for host midi to get sent to Csound, don't need this for standalone
 //but might use it in the future foir midi mapping to controls
@@ -67,7 +69,6 @@ csound->SetExternalMidiReadCallback(ReadMidiData);
 csoundChanList = NULL;
 numCsoundChannels = 0;
 csndIndex = 32;
-csound->SetMessageCallback(CabbagePluginAudioProcessor::messageCallback);
 
 //if(!csdFile.exists())showMessage("Csound file doesn't exist? The file should be in the same directory as the plugin");
 
@@ -76,8 +77,9 @@ csCompileResult = csound->Compile( const_cast<char*>(inputfile.toUTF8().getAddre
 if(csCompileResult==0){
 	//simple hack to allow tables to be set up correctly. 
 	csound->PerformKsmps();
-	csound->SetScoreOffsetSeconds(0);
-	csound->RewindScore();
+	//csound->SetScoreOffsetSeconds(0);
+	//csound->RewindScore();
+	csound->SetMessageCallback(CabbagePluginAudioProcessor::messageCallback);
 	if(csound->GetSpout()==nullptr);
 	CSspout = csound->GetSpout();
 	CSspin  = csound->GetSpin();
@@ -121,7 +123,8 @@ noSteps(0),
 noPatterns(0),
 timeCounter(0),
 beat(0),
-bpm(120)
+bpm(120),
+patMatrixActive(0)
 {
 //Cabbage plugins always try to load a csd file with the same name as the plugin library.
 //Therefore we need to find the name of the library and append a '.csd' to it. 
@@ -155,6 +158,9 @@ csound->SetExternalMidiReadCallback(ReadMidiData);
 csound->SetExternalMidiOutOpenCallback(OpenMidiOutputDevice);
 csound->SetExternalMidiWriteCallback(WriteMidiData);
 
+patStepMatrix.clear();
+patternNames.clear();
+patPfieldMatrix.clear();
 
 csoundChanList = NULL;
 numCsoundChannels = 0;
@@ -406,13 +412,13 @@ try{
   ud->debugMessage += String(msg); //We have to append the incoming msg
   ud->csoundOutput += ud->debugMessage;
   ud->debugMessageArray.add(ud->debugMessage);
- // if(ud->cabbageCsoundEditor)
+  //if(ud->cabbageCsoundEditor)
 	//  if(ud->cabbageCsoundEditor->isShowing())
 		//ud->cabbageCsoundEditor->setCsoundOutputText(ud->csoundOutput);
-#ifdef Cabbage_Named_Pipe && Cabbage_Build_Standalone
+//#ifdef Cabbage_Named_Pipe && Cabbage_Build_Standalone
   ud->sendChangeMessage();
 // MOD - End
-#endif
+//#endif
   ud->debugMessage = "";
   ud = nullptr;
 }

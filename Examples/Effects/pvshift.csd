@@ -1,7 +1,7 @@
 <Cabbage>
 form caption("pvshift Frequency Shifter") size(560, 180)
 groupbox bounds(10,  10, 220, 140), text("Shift"), plant("Shift"){
-rslider pos( 10, 20), text("Course"), channel("shiftC"), range(-5000, 5000, 0)
+rslider pos(.10, .50), text("Course"), channel("shiftC"), range(-5000, 5000, 0)
 rslider pos(110, 20), text("Fine"), channel("shiftF"), range(-10, 10, 0)
 }
 groupbox bounds(230,  10, 310, 140){

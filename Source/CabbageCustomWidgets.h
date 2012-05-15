@@ -365,20 +365,19 @@ private:
 		else{
 			if(shape.contains("rounded")){
 				g.setColour(Colour::fromString(outline));
-				g.fillRoundedRectangle(0,0, width, height, width*.02);
+				g.drawRoundedRectangle(0,0, width, height, width*.02, line);
 				g.setColour(Colour::fromString(fill));
 				g.fillRoundedRectangle(line,line, width-(line*2), height-(line*2), width*.02);				
 			}
 			else if(shape.contains("ellipse")){
 				g.setColour(Colour::fromString(outline));
-				g.fillEllipse(0,0, width, height);
+				g.drawEllipse(0,0, width, height, line);
 				g.setColour(Colour::fromString(fill));
 				g.fillEllipse(line,line, width-(line*2), height-(line*2));				
 			}
 			else if(shape.contains("sharp")){
-				
 				g.setColour(Colour::fromString(outline));
-				g.fillRect(0,0, width, height);
+				g.drawRect(0,0, width, height, line);
 				g.setColour(Colour::fromString(fill));
 				g.fillRect(line,line, width-(line*2), height-(line*2));				
 			}
@@ -2065,12 +2064,16 @@ CabbagePluginAudioProcessor* myFilter;
 		onoffButton->button->addListener(this);
 		//onoffButton->getProperties().set(Colours, "red");
 		onoffButton->setBounds(60, 25, 20, 20);
+
+		if(myFilter->patMatrixActive)
+			onoffButton->button->setToggleState(true, true);
+
 		addAndMakeVisible(onoffButton);
 
 		bpm = new Slider("bpm");
 		bpm->setSliderStyle(Slider::LinearBar);
 		bpm->setBounds(185, 27, 180, 15);
-		bpm->setRange(0, 1000);
+		bpm->setRange(0, 1000, 1);
 		bpm->setValue(120);
 		bpm->addListener(this);
 		addAndMakeVisible(bpm);
@@ -2086,22 +2089,33 @@ CabbagePluginAudioProcessor* myFilter;
 		slidersRect.setBounds(pattRect.getWidth()+60, 50, width-pattRect.getWidth()+60, (height-50)*.95); 
 
 		//populate matrix with step buttons
+		if(myFilter->patStepMatrix.size()==0)
+		{
 		for(int pats=0;pats<patterns.size();pats++)
 			for(int beats=0;beats<steps;beats++){
 				stepButton.add(new CabbageNumToggle("", (pattRect.getWidth()/noSteps), (pattRect.getHeight()/patterns.size())));
 				stepButton[stepButton.size()-1]->addActionListener(this);
 				stepButton[stepButton.size()-1]->setName(String(stepButton.size()-1));
-				
-			if(myFilter->patStepMatrix.size()>0)
-				stepButton[stepButton.size()-1]->setToggleState(myFilter->patStepMatrix[stepButton.size()-1].state);
-				
-			else{
+//				stepButton[stepButton.size()-1]->setToggleState(myFilter->patStepMatrix[stepButton.size()-1].state);			
 				CabbagePatternMatrixStepData patMat;
 				myFilter->patStepMatrix.add(patMat);
-			}
 				stepButton[stepButton.size()-1]->setTopLeftPosition(pattRect.getX()+(beats*(pattRect.getWidth()/noSteps)), pats*(pattRect.getHeight())/patterns.size()+pattRect.getY());
 				addAndMakeVisible(stepButton[stepButton.size()-1]);
 			}
+		}
+		else{
+		for(int pats=0;pats<patterns.size();pats++)
+			for(int beats=0;beats<steps;beats++){
+				stepButton.add(new CabbageNumToggle("", (pattRect.getWidth()/noSteps), (pattRect.getHeight()/patterns.size())));
+				stepButton[stepButton.size()-1]->addActionListener(this);
+				stepButton[stepButton.size()-1]->setName(String(stepButton.size()-1));
+				stepButton[stepButton.size()-1]->setToggleState(myFilter->patStepMatrix[stepButton.size()-1].state);			
+				//CabbagePatternMatrixStepData patMat;
+				//myFilter->patStepMatrix.add(patMat);
+				stepButton[stepButton.size()-1]->setTopLeftPosition(pattRect.getX()+(beats*(pattRect.getWidth()/noSteps)), pats*(pattRect.getHeight())/patterns.size()+pattRect.getY());
+				addAndMakeVisible(stepButton[stepButton.size()-1]);
+			}
+		}
 		//add p-field controls if needed
 	   for(int pats=0;pats<patterns.size();pats++){
 			for(int i=0;i<rCtrls;i++){

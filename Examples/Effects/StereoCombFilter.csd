@@ -1,17 +1,17 @@
 <Cabbage>
 form size(420, 130), caption("StereoComb")
 
-groupbox text("Left"), bounds(0, 5, 140, 100), plant("left"){
-rslider bounds(5, 15, 70, 70), text("Delay"), colour("white"), channel("combDelay1"), range(0, 10, .68)
-rslider bounds(60, 15, 70, 70), text("Decay"), colour("white"), channel("combRev1"), range(0, 3, .37)
+groupbox text("Left"), bounds(10, 5, 140, 100), plant("left"){
+rslider bounds(.06, .3, .6), text("Delay"), colour("white"), channel("combDelay1"), range(0, 10, .68)
+rslider bounds(.5, .3, .6), text("Decay"), colour("white"), channel("combRev1"), range(0, 3, .37)
 }
 
-groupbox text("Right"), bounds(150, 5, 140, 100), plant("right"){
-rslider bounds(5, 15, 70, 70), text("Delay"), colour("white"), channel("combDelay2"), range(0, 10, .68)
-rslider bounds(60, 15, 70, 70), text("Decay"), colour("white"), channel("combRev2"), range(0, 3, .37)
+groupbox text("Right"), bounds(160, 5, 140, 100), plant("right"){
+rslider bounds(.06, .3, .6), text("Delay"), colour("white"), channel("combDelay2"), range(0, 10, .68)
+rslider bounds(.5, .3, .6), text("Decay"), colour("white"), channel("combRev2"), range(0, 3, .37)
 }
 
-rslider bounds(300, 0, 100, 100), text("Dry/Wet"), range(0, 1, 0), channel("drywet"), colour("dodgerblue")
+rslider bounds(315, 0, 100, 100), text("Dry/Wet"), range(0, 1, 0), channel("drywet"), colour("dodgerblue")
 
 
 

@@ -276,7 +276,7 @@ for(int i=0;i<filter->getDebugMessageArray().size();i++)
           }
           else 
           {
-              //cabbageCsoundEditor->setCsoundOutputText(text);
+              cabbageCsoundEditor->setCsoundOutputText(text);
               break;
           }
 

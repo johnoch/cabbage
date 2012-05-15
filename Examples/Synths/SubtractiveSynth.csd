@@ -8,13 +8,13 @@ rslider bounds(260, 10, 70), channel("lfo_depth"), range(0, 10000, 10), caption(
 rslider bounds(335, 10, 70), channel("disto"), range(0, 3, .5), caption("Dist."), colour("white")
 
 groupbox bounds(223, 85, 210, 90), text("Amplitude Envelope"), plant("filter-env"){
-rslider bounds(.03, .32, .55), text("Att.."), colour("red"), channel("att"), range(0.01,3, .5)
-rslider bounds(.27, .32, .55), text("Dec.."), colour("red"), channel("dec"), range(0,1, .5)
-rslider bounds(.5, .32, .55), text("Sus.."), colour("red"), channel("sus"), range(0,1,.8)
-rslider bounds(.74, .32, .55), text("Rel.."), colour("red"), channel("rel"), range(0.01,3, .2)
-vline bounds(.27, .3, .01, .5)
-vline bounds(.5, .3, .01, .5)
-vline bounds(.74, .3, .01, .5)
+rslider bounds(.03, .32, .55), text("Att.."), colour("red"), channel("att"), range(.01,3, .5)
+rslider bounds(.27, .32, .55), text("Att.."), colour("red"), channel("dec"), range(0,1, .5)
+rslider bounds(.5, .32, .55), text("Att.."), colour("red"), channel("sus"), range(0,1,.8)
+rslider bounds(.74, .32, .55), text("Att.."), colour("red"), channel("rel"), range(0.01,3, .2)
+;vline bounds(.27, .3, .01, .5)
+;vline bounds(.5, .3, .01, .5)
+;vline bounds(.74, .3, .01, .5)
 }
 
 groupbox bounds(10, 85, 210, 90), text("Delay"), plant("stero_delay"){
@@ -31,7 +31,7 @@ keyboard bounds(0, 190, 440, 70)
 </Cabbage>
 <CsoundSynthesizer>
 <CsOptions>
--d -n -+rtmidi=null -M0 -b1024 --midi-key-cps=4 --midi-velocity-amp=5 -m0d
+-d -n
 </CsOptions>
 <CsInstruments>
 ; Initialize the global variables. 
@@ -40,7 +40,30 @@ ksmps = 32
 nchnls = 2
 0dbfs = 1
 
+
+
+opcode AudioTrigger, a, a
+aSig xin
+setksmps(1)
+kSig downsamp aSig
+kgo changed kSig
+if(kgo==1) then
+	if(kSig==int(1)) then
+	event "i", 100, 0, .1
+	elseif(kSig==int(2)) then
+	event "i", 200, 0, .1
+	endif
+endif
+xout aSig
+endop
+
 instr 1
+ain inch 1
+a1 AudioTrigger ain
+endin
+
+
+instr 100
 kcf chnget "cf"
 kres chnget "res"
 klforate chnget "lfo_rate"
@@ -78,7 +101,8 @@ endin
 </CsInstruments>
 <CsScore>
 f1 0 1024 10 1
-f0 3600
+;f0 3600
+i1 0 1000
 i1000 0 3600
 </CsScore>
 </CsoundSynthesizer>

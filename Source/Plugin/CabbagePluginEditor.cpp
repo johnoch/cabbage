@@ -1295,38 +1295,36 @@ try{
 	float width = cAttr.getNumProp("width");
 	float height = cAttr.getNumProp("height");
 
-	//check to see if widgets is anchored
-	//if it is offset it's position accordingly. 
 	int relY=0,relX=0;
-        if(layoutComps.size()>0){
-        for(int y=0;y<layoutComps.size();y++){
-        if(cAttr.getStringProp("reltoplant").length()>0){
-        if(layoutComps[y]->getProperties().getWithDefault(String("plant"), -99).toString().equalsIgnoreCase(cAttr.getStringProp("reltoplant")))
-                {
-                //width = width*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
-                //height = height*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
-                //top = top*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
-                //left = left*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
+	if(layoutComps.size()>0){
+	for(int y=0;y<layoutComps.size();y++){
+	if(cAttr.getStringProp("reltoplant").length()>0){
+	if(layoutComps[y]->getProperties().getWithDefault(String("plant"), -99).toString().equalsIgnoreCase(cAttr.getStringProp("reltoplant")))
+		{
+		//width = width*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
+		//height = height*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
+		//top = top*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
+		//left = left*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
 		width = width*layoutComps[y]->getWidth();
 		height = height*layoutComps[y]->getHeight();
-        top = (top*layoutComps[y]->getHeight());
-		left = (left*layoutComps[y]->getWidth());
+        top = (top*layoutComps[y]->getHeight())+layoutComps[y]->getY();
+		left = (left*layoutComps[y]->getWidth())+layoutComps[y]->getX();
 
-                if(layoutComps[y]->getName().containsIgnoreCase("groupbox")||
-                        layoutComps[y]->getName().containsIgnoreCase("image"))
-                        {                      
-                        controls[idx]->setBounds(left, top, width, height);
-                        //if component is a member of a plant add it directly to the plant
-                        layoutComps[y]->addAndMakeVisible(controls[idx]);
-                        }
-                }
-        }
-                else{
-            controls[idx]->setBounds(left+relX, top+relY, width, height);
-                componentPanel->addAndMakeVisible(controls[idx]);              
-                }
-        }
-        }
+		if(layoutComps[y]->getName().containsIgnoreCase("groupbox")||
+			layoutComps[y]->getName().containsIgnoreCase("image"))
+			{			
+			controls[idx]->setBounds(left, top, width, height);
+			//if component is a member of a plant add it directly to the plant
+			layoutComps[y]->addAndMakeVisible(controls[idx]);
+			}
+		}
+	}
+		else{
+	    controls[idx]->setBounds(left+relX, top+relY, width, height);
+		componentPanel->addAndMakeVisible(controls[idx]);		
+		}
+	}
+	}
 	else{
 	    controls[idx]->setBounds(left+relX, top+relY, width, height);
 		componentPanel->addAndMakeVisible(controls[idx]);		
