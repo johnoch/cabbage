@@ -30,7 +30,8 @@ CabbageGUIClass::CabbageGUIClass(String compStr, int ID):
 								midiCtrl(-99),
 								boundsText(""),
 								posText(""),
-								sizeText("")
+								sizeText(""),
+								preset("")
 {
 //Default values are assigned to all attributres 
 //before parsing begins
@@ -144,14 +145,14 @@ CabbageGUIClass::CabbageGUIClass(String compStr, int ID):
           width = 100;
           height = 22;
           channel = "checkchan";
-          caption = "";
+          type = "checkbox";
+		  caption = "";
           name = "checkbox";
 		  caption = "";
 		  items.add(T(""));
 		  sliderRange = 1;
 		  min = 0;
 		  max = 1;
-		  type = name;
 		  shape = "circle";
           name.append(String(ID), 1024);
 		  //default colour for toggles
@@ -184,6 +185,19 @@ CabbageGUIClass::CabbageGUIClass(String compStr, int ID):
           fontcolour = Colours::white;
           text = "hello";
           name = "label";
+		  type = name;
+          name.append(String(ID), 1024);
+	}
+    else if(strTokens[0].indexOfIgnoreCase("snapshot")!=-1){
+          top = 10;
+          left = 10;
+          width = 200;
+          height = 20;
+          channel = "snapshot";
+		  colour = CabbageUtils::getComponentFontColour();
+          fontcolour = Colours::white;
+          text = "Snap";
+          name = "snapshot";
 		  type = name;
           name.append(String(ID), 1024);
 	}
@@ -405,6 +419,7 @@ int CabbageGUIClass::parse(String str)
 	identArray.add("pluginid(");
 	identArray.add("rctrls(");
 	identArray.add("tracker(");
+	identArray.add("preset(");
 	//add a few dummy identifiers so we can catch bogus one in the Cabbage code
 	identArray.add("");
 	identArray.add("");
@@ -538,6 +553,10 @@ int CabbageGUIClass::parse(String str)
 				String test = strTokens[i]; 
 				items.add(strTokens[i]);	
 				}
+			}
+
+			else if(identArray.getReference(indx).toLowerCase().equalsIgnoreCase("preset(")){
+				preset = strTokens[0].trim();
 			}
 
 			//numeric paramters
@@ -851,9 +870,12 @@ String CabbageGUIClass::getStringProp(String prop, int index)
 {
 		if(prop.equalsIgnoreCase(T("channel")))
 			return channels[index].trim();
-		else 
-			return "";
+		else if(prop.equalsIgnoreCase(T("snapshotData")))
+			return snapshotData[index].trim();
+		else	
+		return "";
 }
+
 String CabbageGUIClass::getStringProp(String prop)
 {
 		if(prop.equalsIgnoreCase(T("channel")))
@@ -900,25 +922,27 @@ String CabbageGUIClass::getStringProp(String prop)
 			return reltoplant.trim();
 		else if(prop.equalsIgnoreCase(T("debugmessage")))
 			return debugMessage;
+		else if(prop.equalsIgnoreCase(T("preset")))
+			return preset.trim();
 		else if(prop.equalsIgnoreCase(T("pluginID")))
 			return pluginID;
+		else if(prop.equalsIgnoreCase(T("snapshotData"))){
+			String data;
+			data << "------------------------ Instrument ID: " << preset << "\n";
+			data << snapshotData.joinIntoString("\n") << "------------------------ End of Instrument ID: " << preset << "\n";
+			return data;
+		}
 		else return "";
 }
 
-String CabbageGUIClass::getColourProp(String prop)
-{
-		if(prop.equalsIgnoreCase(T("textcolour")))
-			return textcolour.toString();
-		else if(prop.equalsIgnoreCase(T("fontcolour")))
-			return fontcolour.toString();
-		else if(prop.equalsIgnoreCase(T("colour")))
-			return colour.toString();
-		else if(prop.equalsIgnoreCase(T("fill")))
-			return fill.toString();
-		else if(prop.equalsIgnoreCase(T("outline")))
-			return outline.toString();
-		else return "";
-
+void CabbageGUIClass::setStringProp(String prop, int index, String value)
+{		
+			if(prop.equalsIgnoreCase(T("channel"))){
+				channels.set(index, value);
+			}
+			else if(prop.equalsIgnoreCase(T("snapshotData"))){
+				snapshotData.set(index, value);
+			}
 }
 
 void CabbageGUIClass::setStringProp(String prop, String val)
@@ -957,6 +981,26 @@ void CabbageGUIClass::setStringProp(String prop, String val)
 			exit = val;
 		else if(prop.equalsIgnoreCase(T("plant")))
 			plant = val;
+		else if(prop.equalsIgnoreCase(T("preset")))
+			preset = val;
+		else if(prop.equalsIgnoreCase(T("snapshotData")))
+			snapshotData.addLines(val);
 		else if(prop.equalsIgnoreCase(T("reltoplant")))
 			reltoplant = val;
+}
+
+String CabbageGUIClass::getColourProp(String prop)
+{
+		if(prop.equalsIgnoreCase(T("textcolour")))
+			return textcolour.toString();
+		else if(prop.equalsIgnoreCase(T("fontcolour")))
+			return fontcolour.toString();
+		else if(prop.equalsIgnoreCase(T("colour")))
+			return colour.toString();
+		else if(prop.equalsIgnoreCase(T("fill")))
+			return fill.toString();
+		else if(prop.equalsIgnoreCase(T("outline")))
+			return outline.toString();
+		else return "";
+
 }

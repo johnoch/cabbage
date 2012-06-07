@@ -1,6 +1,6 @@
 <Cabbage>
 form size(410, 360), caption("EQynox")
-groupbox bounds(0, 0, 390, 335), text("Bandpass Filters"), plant("filters"){
+groupbox bounds(10, 10, 390, 335), text("Bandpass Filters"), plant("filters"){
 vslider bounds(15, 15, 60, 200), caption("Freq1"), channel("rand_filter_1"), range(0, 3, .24)
 vslider bounds(75, 15, 60, 200), caption("Freq2"), channel("rand_filter_2"), range(0, 3, .24)
 vslider bounds(135, 15, 60, 200), caption("Freq3"), channel("rand_filter_3"), range(0, 3, .24)

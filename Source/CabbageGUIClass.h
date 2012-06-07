@@ -39,15 +39,12 @@ class CabbageGUIClass : public CabbageUtils
         double width, height, top, left, isRect, min, max, tabpage, minX, minY, maxX, maxY, comboRange, trackerFill,
 		noOfMenus, onoff, midiChan, midiCtrl, sliderRange, xypadRangeY, xypadRangeX, noSteps, noPatterns,
 		line, anchor, linkTo, scaleX, scaleY, value, valueX, valueY, maxItems, sliderIncr, sliderSkew, rCtrls, lineIsVertical;
-        StringArray items;
-        StringArray onoffcaptions;
-		StringArray key;
-		StringArray channels;
+        StringArray items, onoffcaptions, key, channels, snapshotData;
         String channel, name, sizeText, posText, boundsText, text, type, plant, reltoplant, bounds, range,
         shape, beveltype, caption, kind, topitem, yChannel, xChannel,
-        exit, csstdout, cssetup, file, debugMessage, xyChannel, pluginID;
+        exit, csstdout, cssetup, file, debugMessage, xyChannel, pluginID, preset;
 		Colour outline, fill, fontcolour, textcolour, colour;
-		int tableNum, textBox;
+		int tableNum, textBox, numPresets;
 		Array<int> vuConfig;
 
 public:
@@ -59,11 +56,19 @@ public:
 	double getNumProp(String prop, int index);
 	void setNumProp(String prop, float val);
 	void setStringProp(String prop, String val);
+	void setStringProp(String prop, int index, String value);
 	String getStringProp(String prop);
 	String getStringProp(String prop, int index);
 	String getPropsString();
 	String getColourProp(String prop);
 
+	inline int getNumPresets(){
+		return snapshotData.size();
+	}
+
+	inline void clearPresets(){
+		snapshotData.clear();
+	}
 
 	inline String setOnOffcaptions(int index, String str){
 		if(index<=onoffcaptions.size())

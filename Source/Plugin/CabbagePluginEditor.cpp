@@ -56,7 +56,7 @@ componentPanel->addKeyListener(this);
 componentPanel->setInterceptsMouseClicks(false, true);	
 setSize (400, 400);
 InsertGUIControls();
-startTimer(5);
+startTimer(20);
 
 #ifdef Cabbage_GUI_Editor
 componentPanel->addChangeListener(this);
@@ -372,6 +372,9 @@ for(int i=0;i<getFilter()->getGUILayoutCtrlsSize();i++){
 	else if(getFilter()->getGUILayoutCtrls(i).getStringProp("type")==T("vumeter")){
 		InsertVUMeter(getFilter()->getGUILayoutCtrls(i));   
 		}
+	else if(getFilter()->getGUILayoutCtrls(i).getStringProp("type")==T("snapshot")){
+		InsertSnapshot(getFilter()->getGUILayoutCtrls(i));   
+		}
 	else if(getFilter()->getGUILayoutCtrls(i).getStringProp("type")==T("source")){
 		InsertSourceButton(getFilter()->getGUILayoutCtrls(i));   
 		}
@@ -415,7 +418,7 @@ for(int i=0;i<getFilter()->getGUICtrlsSize();i++){
 //+++++++++++++++++++++++++++++++++++++++++++
 //					groupbox
 //+++++++++++++++++++++++++++++++++++++++++++
-void CabbagePluginAudioProcessorEditor::InsertGroupBox(CabbageGUIClass cAttr)
+void CabbagePluginAudioProcessorEditor::InsertGroupBox(CabbageGUIClass &cAttr)
 {
 try{
 	layoutComps.add(new CabbageGroupbox(cAttr.getStringProp("name"), 
@@ -460,7 +463,7 @@ catch(...){
 //+++++++++++++++++++++++++++++++++++++++++++
 //					image
 //+++++++++++++++++++++++++++++++++++++++++++
-void CabbagePluginAudioProcessorEditor::InsertImage(CabbageGUIClass cAttr)
+void CabbagePluginAudioProcessorEditor::InsertImage(CabbageGUIClass &cAttr)
 {
 try{
 	String pic;
@@ -549,7 +552,7 @@ catch(...){
 //+++++++++++++++++++++++++++++++++++++++++++
 //					line separator
 //+++++++++++++++++++++++++++++++++++++++++++
-void CabbagePluginAudioProcessorEditor::InsertLineSeparator(CabbageGUIClass cAttr)
+void CabbagePluginAudioProcessorEditor::InsertLineSeparator(CabbageGUIClass &cAttr)
 {
 try{
 	if(cAttr.getNumProp("isLineVertical"))
@@ -597,7 +600,7 @@ catch(...){
 //+++++++++++++++++++++++++++++++++++++++++++
 //					label
 //+++++++++++++++++++++++++++++++++++++++++++
-void CabbagePluginAudioProcessorEditor::InsertLabel(CabbageGUIClass cAttr)
+void CabbagePluginAudioProcessorEditor::InsertLabel(CabbageGUIClass &cAttr)
 {
 try{
 	layoutComps.add(new CabbageLabel(cAttr.getStringProp("text"), cAttr.getColourProp("colour")));	
@@ -649,7 +652,7 @@ catch(...){
 //+++++++++++++++++++++++++++++++++++++++++++
 //					window
 //+++++++++++++++++++++++++++++++++++++++++++
-void CabbagePluginAudioProcessorEditor::SetupWindow(CabbageGUIClass cAttr)
+void CabbagePluginAudioProcessorEditor::SetupWindow(CabbageGUIClass &cAttr)
 {
 try{
 	setName(cAttr.getStringProp("caption"));
@@ -704,7 +707,7 @@ catch(...){
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //	Csound output widget. 
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-void CabbagePluginAudioProcessorEditor::InsertCsoundOutput(CabbageGUIClass cAttr)
+void CabbagePluginAudioProcessorEditor::InsertCsoundOutput(CabbageGUIClass &cAttr)
 {
 try{
 
@@ -756,7 +759,7 @@ catch(...){
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //	Source button. 
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-void CabbagePluginAudioProcessorEditor::InsertSourceButton(CabbageGUIClass cAttr)
+void CabbagePluginAudioProcessorEditor::InsertSourceButton(CabbageGUIClass &cAttr)
 {
 try{
 
@@ -811,7 +814,7 @@ catch(...){
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //	VU widget. 
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-void CabbagePluginAudioProcessorEditor::InsertVUMeter(CabbageGUIClass cAttr)
+void CabbagePluginAudioProcessorEditor::InsertVUMeter(CabbageGUIClass &cAttr)
 {
 try{
 	float left = cAttr.getNumProp("left");
@@ -880,11 +883,107 @@ catch(...){
     Logger::writeToLog(T("Syntax error: 'vu meter..."));
     }
 }
+
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//	Snapshot control for saving and recalling pre-sets
+// 
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+void CabbagePluginAudioProcessorEditor::InsertSnapshot(CabbageGUIClass &cAttr)
+{
+try{
+	layoutComps.add(new CabbageSnapshot(cAttr.getStringProp("name"), cAttr.getColourProp("caption"), cAttr.getStringProp("preset")));	
+	int idx = layoutComps.size()-1;
+
+	float left = cAttr.getNumProp("left");
+	float top = cAttr.getNumProp("top");
+	float width = cAttr.getNumProp("width");
+	float height = cAttr.getNumProp("height");
+	int relY=0,relX=0;
+	for(int y=0;y<layoutComps.size();y++){
+	if(cAttr.getStringProp("reltoplant").length()>0){
+	if(layoutComps[y]->getProperties().getWithDefault(String("plant"), -99).toString().equalsIgnoreCase(cAttr.getStringProp("reltoplant")))
+	{
+		width = width*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
+		height = height*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
+		top = top*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
+		left = left*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
+
+		if(layoutComps[y]->getName().containsIgnoreCase("groupbox")||
+			layoutComps[y]->getName().containsIgnoreCase("image"))
+			{			
+			layoutComps[idx]->setBounds(left, top, width, height);
+			//if component is a member of a plant add it directly to the plant
+			layoutComps[y]->addAndMakeVisible(layoutComps[idx]);
+			}
+	}
+	}
+	else{
+	layoutComps[idx]->setBounds(left+relX, top+relY, width, height);
+	componentPanel->addAndMakeVisible(layoutComps[idx]);
+	}
+	}
+
+	((CabbageSnapshot*)layoutComps[idx])->addActionListener(this);
+	
+    for(int i=1;i<(int)cAttr.getItemsSize()+1;i++){
+		String test  = cAttr.getItems(i-1);
+		((CabbageSnapshot*)layoutComps[idx])->combobox->addItem(cAttr.getItems(i-1), i);
+		cAttr.setNumProp("maxItems", i);
+	}
+
+	//((CabbageSnapshot*)layoutComps[idx])->combobox->setSelectedItemIndex(0);
+	//Load any snapshot files that already exist for this instrument
+	String snapshotFile = getFilter()->getCsoundInputFile().withFileExtension(".snaps").getFullPathName();
+	StringArray data;
+	String presetText="";
+	cAttr.clearPresets();
+	String openBlock, endBlock;
+	//showMessage(cAttr.getStringProp("preset"));
+
+	//I should be using the preset name here and not the instrument name as it gets
+	//	changed whenever the order of the code changes. The presets will always be the same
+
+	openBlock << "------------------------ Instrument ID: " << cAttr.getStringProp("preset");
+	endBlock << "------------------------ End of Instrument ID: " << cAttr.getStringProp("preset");
+	File dataFile(snapshotFile);
+	if(dataFile.exists()){
+		data.addLines(dataFile.loadFileAsString());
+		for(int i=0;i<data.size();i++)
+			//if we find the snapshot name load the data
+			if(data[i].contains(openBlock)){
+				//read all lines of preset data until end of instrument ID
+				for(int y=1;y<data.size()-i;y++){
+					if(data[y+i].contains(endBlock)){
+						y=data.size();
+						i=y;						
+						break;
+					}
+
+					presetText = presetText + data[y+i] << "\n";
+					if(data[y+i].contains("-------- End of Preset:")){
+						cAttr.setStringProp("snapshotData", y-1, presetText);
+						//showMessage(presetText);
+						presetText = "";
+						}
+				}
+
+			}
+		}
+	//showMessage(cAttr.getStringProp("snapshotData"));
+	//cAttr.setStringProp("snapshotData", presetText);
+	cAttr.setStringProp("type", "snapshot");
+	
+}
+catch(...){
+	Logger::writeToLog(T("Syntax error: 'label..."));
+    }
+}
+
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //	MIDI keyboard, I've this listed as non-interactive
 // as it only sends MIDI, it doesn't communicate over the software bus
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-void CabbagePluginAudioProcessorEditor::InsertMIDIKeyboard(CabbageGUIClass cAttr)
+void CabbagePluginAudioProcessorEditor::InsertMIDIKeyboard(CabbageGUIClass &cAttr)
 {
 try{
 
@@ -943,7 +1042,7 @@ catch(...){
 //+++++++++++++++++++++++++++++++++++++++++++
 //                                      slider
 //+++++++++++++++++++++++++++++++++++++++++++
-void CabbagePluginAudioProcessorEditor::InsertSlider(CabbageGUIClass cAttr)
+void CabbagePluginAudioProcessorEditor::InsertSlider(CabbageGUIClass &cAttr)
 {
 try{
         float left = cAttr.getNumProp("left");
@@ -1052,7 +1151,10 @@ void CabbagePluginAudioProcessorEditor::sliderValueChanged (Slider* sliderThatWa
 						//Logger::writeToLog(String((float)((sliderThatWasMoved->getValue()-min)/range)));
 #else
 						//Logger::writeToLog("Current Slider Value"+String(sliderThatWasMoved->getValue()));
-						getFilter()->setParameterNotifyingHost(i, (float)sliderThatWasMoved->getValue());
+						getFilter()->getGUICtrls(i).setNumProp("value",	(float)sliderThatWasMoved->getValue());
+						getFilter()->beginParameterChangeGesture(i);
+						getFilter()->setParameterNotifyingHost(i, (float)getFilter()->getGUICtrls(i).getNumProp("value"));
+						getFilter()->endParameterChangeGesture(i);
 #endif
                         }
      else{// The next bit of code lets us change channel data even if Csound is not running
@@ -1070,7 +1172,7 @@ void CabbagePluginAudioProcessorEditor::sliderValueChanged (Slider* sliderThatWa
 //+++++++++++++++++++++++++++++++++++++++++++
 //					button
 //+++++++++++++++++++++++++++++++++++++++++++
-void CabbagePluginAudioProcessorEditor::InsertButton(CabbageGUIClass cAttr)
+void CabbagePluginAudioProcessorEditor::InsertButton(CabbageGUIClass &cAttr)
 {
 try{
 	controls.add(new CabbageButton(cAttr.getStringProp("name"),
@@ -1092,11 +1194,6 @@ try{
 	if(cAttr.getStringProp("reltoplant").length()>0){
 	if(layoutComps[y]->getProperties().getWithDefault(String("plant"), -99).toString().equalsIgnoreCase(cAttr.getStringProp("reltoplant")))
 		{
-		//width = width*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
-		//height = height*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
-		//top = top*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
-		//left = left*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
-
 		width = width*layoutComps[y]->getWidth();
 		height = height*layoutComps[y]->getHeight();
         top = (top*layoutComps[y]->getHeight());
@@ -1134,7 +1231,7 @@ catch(...){
 //+++++++++++++++++++++++++++++++++++++++++++
 //					checkbox
 //+++++++++++++++++++++++++++++++++++++++++++
-void CabbagePluginAudioProcessorEditor::InsertCheckBox(CabbageGUIClass cAttr)
+void CabbagePluginAudioProcessorEditor::InsertCheckBox(CabbageGUIClass &cAttr)
 {
 try{
 	bool RECT = cAttr.getStringProp("shape").equalsIgnoreCase("square");
@@ -1203,7 +1300,7 @@ try{
 #ifdef Cabbage_Build_Standalone
 	((CabbageCheckbox*)controls[idx])->button->setWantsKeyboardFocus(true);
 #endif
-	Logger::writeToLog(cAttr.getPropsString());
+	
 }
 catch(...){
     Logger::writeToLog(T("Syntax error: 'checkbox..."));
@@ -1280,7 +1377,7 @@ if(!getFilter()->isGuiEnabled()){
 //+++++++++++++++++++++++++++++++++++++++++++
 //					combobox
 //+++++++++++++++++++++++++++++++++++++++++++
-void CabbagePluginAudioProcessorEditor::InsertComboBox(CabbageGUIClass cAttr)
+void CabbagePluginAudioProcessorEditor::InsertComboBox(CabbageGUIClass &cAttr)
 {
 try{
 	controls.add(new CabbageComboBox(cAttr.getStringProp("name"),
@@ -1393,7 +1490,7 @@ if(combo->isEnabled()) // before sending data to on named channel
 //+++++++++++++++++++++++++++++++++++++++++++
 //					xypad
 //+++++++++++++++++++++++++++++++++++++++++++
-void CabbagePluginAudioProcessorEditor::InsertXYPad(CabbageGUIClass cAttr)
+void CabbagePluginAudioProcessorEditor::InsertXYPad(CabbageGUIClass &cAttr)
 {
 /*
 Our filters control vector contains two xypads, one for the X channel and one for the Y
@@ -1482,7 +1579,7 @@ catch(...){
 //+++++++++++++++++++++++++++++++++++++++++++
 //					table
 //+++++++++++++++++++++++++++++++++++++++++++
-void CabbagePluginAudioProcessorEditor::InsertTable(CabbageGUIClass cAttr)
+void CabbagePluginAudioProcessorEditor::InsertTable(CabbageGUIClass &cAttr)
 {
 int tableSize=0;
 Array <float> tableValues;
@@ -1553,14 +1650,16 @@ catch(...){
 	
 }
 
-					/******************************************/
-					/*     actionlistener method (xypad/table)      */
-					/******************************************/
+					/*********************************************************/
+					/*     actionlistener method (xypad/table/snapshot)      */
+					/*********************************************************/
 void CabbagePluginAudioProcessorEditor::actionListenerCallback (const String& message){
-//this event recieves action messages from custom components. For now it's only
-//needed for the xypad but could potentially be used later for other custom controls
-String type = message.substring(message.indexOf(T("|"))+1, 100);
+//this event recieves action messages from custom components. 
 String name = message.substring(0, message.indexOf(T("|"))); 
+String type = message.substring(message.indexOf(T("|"))+1, message.indexOf(T(":")));
+String action = message.substring(message.indexOf(T(":"))+1, message.indexOf(T(";")));
+String preset = message.substring(message.indexOf(T(";"))+1, 100); 
+
 
 for(int i=0;i<(int)getFilter()->getGUICtrlsSize();i++)//find correct control from vector
 	//if message came from an XY pad...
@@ -1595,6 +1694,151 @@ for(int i=0;i<(int)getFilter()->getGUICtrlsSize();i++)//find correct control fro
 #endif
 		}
 	}
+	//if message has come from the snapshot control 
+	//============================================================================================
+	else if(type.equalsIgnoreCase(T("snapshot"))){
+		String str, presetData = "";
+		String snapshotFile = getFilter()->getCsoundInputFile().withFileExtension(".snaps").getFullPathName();
+		File file(snapshotFile);
+		//save presets to .snaps file
+		//showMessage(String("preset name:")+name);
+		if(action=="save"){
+			//when we save we need to save all preset to disk, not just the selected ones.
+		for(int i=0;i<getFilter()->getGUILayoutCtrlsSize();i++)
+			if(getFilter()->getGUILayoutCtrls(i).getStringProp("preset").equalsIgnoreCase(name))
+			{
+				//showMessage(getFilter()->getGUILayoutCtrls(i).getStringProp("name"));
+				//showMessage(getFilter()->getGUILayoutCtrls(i).getStringProp("snapshotData"));
+				//showMessage(getFilter()->getGUILayoutCtrls(i).getNumPresets());
+				for(int x=0;x<getFilter()->getGUILayoutCtrls(i).getItemsSize();x++){
+						//showMessage(String(x));
+
+					if(getFilter()->getGUILayoutCtrls(i).getItems(x).trim().equalsIgnoreCase(preset.trim()))
+					{
+						//showMessage(String(x));
+						str << "-------- Start of Preset: " << preset.trim() << "\n";
+						for(int n=0;n<getFilter()->getGUICtrlsSize();n++){
+							String comp1 = getFilter()->getGUICtrls(n).getStringProp("preset");
+							//showMessage(comp1);
+							if(comp1.trim().equalsIgnoreCase(name.trim()))
+							{
+								//showMessage(getFilter()->getGUILayoutCtrls(i).getStringProp("preset"));
+								
+								str = str << getFilter()->getGUICtrls(n).getStringProp("channel") << ":\t\t\t" << getFilter()->getGUICtrls(n).getNumProp("value") << "\n";	
+
+							}
+						}
+						
+						str = str << "-------- End of Preset: " << preset.trim() << "\n";
+						//showMessage(str);
+						//showMessage(str);
+						getFilter()->getGUILayoutCtrls(i).setStringProp("snapshotData", x, str);
+						str = "";
+					}
+				//showMessage(getFilter()->getGUILayoutCtrls(i).getStringProp("snapshotData"));	
+				}
+				
+				for(int u=0;u<getFilter()->getGUILayoutCtrlsSize();u++)
+					if(getFilter()->getGUILayoutCtrls(u).getNumPresets()>0)
+						presetData = presetData + getFilter()->getGUILayoutCtrls(u).getStringProp("snapshotData");
+
+				file.replaceWithText(presetData);
+				presetData = "";
+			}
+		
+		}
+		//load presets from .snaps file
+		else if(action=="load"){
+		str = file.loadFileAsString();
+		int presetIndex = 0; 
+		StringArray values;
+		String snapshotData, channel, start="";
+		
+		//if we find our preset instrument ID
+		for(int i=0;i<getFilter()->getGUILayoutCtrlsSize();i++)
+			if(getFilter()->getGUILayoutCtrls(i).getStringProp("preset").equalsIgnoreCase(name))
+				for(int x=0;x<getFilter()->getGUILayoutCtrls(i).getItemsSize();x++){
+					//showMessage(preset);
+					snapshotData = getFilter()->getGUILayoutCtrls(i).getStringProp("snapshotData", x);
+					//showMessage(snapshotData);
+					start << "-------- Start of Preset: " << preset.trim() << "\n";
+					//showMessage(start);
+					if(snapshotData.contains(start)){
+						//showMessage(getFilter()->getGUILayoutCtrls(i).getStringProp("snapshotData", x));
+						values.addLines(getFilter()->getGUILayoutCtrls(i).getStringProp("snapshotData", x));
+						for(int z=1;z<values.size()-1;z++){
+							channel = values[z].substring(0, values[z].indexOf(":"));
+							for(int u=0;u<getFilter()->getGUICtrlsSize();u++)
+								if(getFilter()->getGUICtrls(u).getStringProp("channel").equalsIgnoreCase(channel)){
+									double val = values[z].substring(values[z].indexOf(":")+1, 100).getDoubleValue();
+									//showMessage(String(val));
+									getFilter()->getGUICtrls(u).setNumProp("value", val);
+									if(getFilter()->getGUICtrls(i).getStringProp("type")==T("hslider")||
+									getFilter()->getGUICtrls(u).getStringProp("type")==T("rslider")||
+									getFilter()->getGUICtrls(u).getStringProp("type")==T("vslider")){
+									if(controls[u])
+									((CabbageSlider*)controls[u])->slider->setValue(val, false);
+									}
+									else if(getFilter()->getGUICtrls(u).getStringProp("type")==T("checkbox")){
+									if(controls[u])
+									((CabbageCheckbox*)controls[u])->button->setToggleState((bool)val, true);
+									}
+									else if(getFilter()->getGUICtrls(u).getStringProp("type")==T("combobox")){
+									if(controls[u])
+									((CabbageComboBox*)controls[u])->combo->setSelectedItemIndex(val);
+									}
+									//update host when preset ares recalled
+									getFilter()->setParameterNotifyingHost(u, val);
+
+
+
+								}
+
+
+						}
+						start = "";
+					}
+					else
+						start = "";
+					//showMessage(values.joinIntoString(","));
+				}
+				values.clear();
+		}
+	}
+
+							
+						
+					
+/*
+		for(int i=0;i<getFilter()->getGUICtrlsSize();i++)
+			
+				
+				//;index should only start from the first instance of the preset name
+				if(values[i].contains(preset)){
+				Logger::writeToLog(values[i+presetIndex]);
+				String val = values[presetIndex].substring(values[presetIndex].indexOf(":")+1, 100); 
+				presetIndex++;
+				getFilter()->getGUICtrls(i).setNumProp("value", val.getDoubleValue());
+				if(getFilter()->getGUICtrls(i).getStringProp("type")==T("hslider")||
+				getFilter()->getGUICtrls(i).getStringProp("type")==T("rslider")||
+				getFilter()->getGUICtrls(i).getStringProp("type")==T("vslider")){
+					if(controls[i])
+					((CabbageSlider*)controls[i])->slider->setValue(val.getDoubleValue(), false);					
+				}
+				else if(getFilter()->getGUICtrls(i).getStringProp("type")==T("checkbox")){
+				if(controls[i])
+					((CabbageCheckbox*)controls[i])->button->setToggleState((bool)val.getIntValue(), true);
+					}
+				else if(getFilter()->getGUICtrls(i).getStringProp("type")==T("combobox")){
+				if(controls[i])
+					((CabbageComboBox*)controls[i])->combo->setSelectedItemIndex(val.getIntValue());
+					}*/
+				
+
+	
+		
+	//============================================================================================
+
 	//if message comes from a table
 /*
 	else if(type.equalsIgnoreCase(T("table"))){
@@ -1618,7 +1862,7 @@ for(int i=0;i<(int)getFilter()->getGUICtrlsSize();i++)//find correct control fro
 //+++++++++++++++++++++++++++++++++++++++++++
 //					pattern matrix
 //+++++++++++++++++++++++++++++++++++++++++++
-void CabbagePluginAudioProcessorEditor::InsertPatternMatrix(CabbageGUIClass cAttr)
+void CabbagePluginAudioProcessorEditor::InsertPatternMatrix(CabbageGUIClass &cAttr)
 {
 int tableSize=0;
 //getFilter()->patStepMatrix.clear();
@@ -1719,16 +1963,20 @@ void CabbagePluginAudioProcessorEditor::timerCallback()
 // signals from Csound. I've removed this for now as most host allow automation.
 // It may prove useful however when running Cabbage in standalone mode...
 #ifndef Cabbage_No_Csound	
-#ifndef Cabbage_Build_Standalone
+//#ifndef Cabbage_Build_Standalone
 for(int i=0;i<(int)getFilter()->getGUICtrlsSize();i++){
-	//inValue = getFilter()->getParameter(i);
+	inValue = getFilter()->getParameter(i);
+	//Logger::writeToLog(getFilter()->getGUICtrls(i).getStringProp("type"));
 	if(getFilter()->getGUICtrls(i).getStringProp("type")==T("hslider")||
 			getFilter()->getGUICtrls(i).getStringProp("type")==T("rslider")||
 			getFilter()->getGUICtrls(i).getStringProp("type")==T("vslider")){
 	if(controls[i]){
-		//if(getFilter()->getGUICtrls(i).getNumProp("value")!= getFilter()->getParameter(i))
+#ifndef Cabbage_Build_Standalone
 		float val = getFilter()->getGUICtrls(i).getNumProp("sliderRange")*getFilter()->getParameter(i);
 		((CabbageSlider*)controls[i])->slider->setValue(val, false);
+#else
+		((CabbageSlider*)controls[i])->slider->setValue(inValue, false);
+#endif
 	}
 	}
 	
@@ -1747,7 +1995,7 @@ for(int i=0;i<(int)getFilter()->getGUICtrlsSize();i++){
 	else if(getFilter()->getGUICtrls(i).getStringProp("type")==T("combobox")){
 	//if(controls[i])
 #ifdef Cabbage_Build_Standalone
-	//	((CabbageComboBox*)controls[i])->combo->setSelectedId((int)getFilter()->getParameter(i), false);
+		((CabbageComboBox*)controls[i])->combo->setSelectedId((int)getFilter()->getParameter(i), false);
 #else
 		//Logger::writeToLog(T("timerCallback():")+String(getFilter()->getParameter(i)));
 		((CabbageComboBox*)controls[i])->combo->setSelectedId(int(getFilter()->getParameter(i)+.5), false);
@@ -1756,12 +2004,12 @@ for(int i=0;i<(int)getFilter()->getGUICtrlsSize();i++){
 
 	else if(getFilter()->getGUICtrls(i).getStringProp("type")==T("checkbox")){
 	if(controls[i]){
-	//		((CabbageCheckbox*)controls[i])->button->setToggleState((bool)inValue, false);
-	//		getFilter()->getCsound()->SetChannel(getFilter()->getGUICtrls(i).getStringProp("channel").toUTF8(), inValue);
+			((CabbageCheckbox*)controls[i])->button->setToggleState((bool)inValue, false);
+			getFilter()->getCsound()->SetChannel(getFilter()->getGUICtrls(i).getStringProp("channel").toUTF8(), inValue);
 			}
 		}
 }
-
+#ifndef Cabbage_Build_Standalone
 for(int i=0;i<(int)getFilter()->getGUILayoutCtrlsSize();i++){
 	if(getFilter()->getGUILayoutCtrls(i).getStringProp("type")==T("hostbpm")){	    
     if (getFilter()->getPlayHead() != 0 && getFilter()->getPlayHead()->getCurrentPosition (hostInfo))

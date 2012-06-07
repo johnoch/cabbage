@@ -76,10 +76,11 @@ class CabbagePluginAudioProcessor  : public AudioProcessor,
 	static int WriteMidiData(CSOUND *csound, void *userData, const unsigned char *mbuf, int nbytes);
 #endif
 	StringArray debugInfo;
+	//these need to change to OwnedArrays, but check it first on another demo app
 	Array<CabbageGUIClass, CriticalSection> guiLayoutCtrls;
 	Array<CabbageGUIClass, CriticalSection> guiCtrls;
 	
-	String plantFlag;
+	String plantFlag, presetFlag;
 	String debugMessage;
 	StringArray debugMessageArray;
 	
@@ -233,11 +234,11 @@ public:
 		return (int)guiLayoutCtrls.size();
 	}
 
-	inline CabbageGUIClass getGUILayoutCtrls(int index){
+	inline CabbageGUIClass &getGUILayoutCtrls(int index){
 		return guiLayoutCtrls.getReference(index);
 	}
 
-	inline CabbageGUIClass getGUICtrls(int index){
+	inline CabbageGUIClass &getGUICtrls(int index){
 		return guiCtrls.getReference(index);
 	}
 

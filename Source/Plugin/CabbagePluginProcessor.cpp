@@ -277,6 +277,7 @@ void CabbagePluginAudioProcessor::createGUI(String source)
 						}
 						else if(tokes.getReference(0).containsIgnoreCase(T("}"))){
 						plantFlag = "";	//reset plantFlag when a closing bracket is found
+						presetFlag = "";
 						}
 
 						if(!multiComment)
@@ -297,16 +298,22 @@ void CabbagePluginAudioProcessor::createGUI(String source)
 								||tokes.getReference(0).equalsIgnoreCase(T("vumeter"))
 								||tokes.getReference(0).equalsIgnoreCase(T("patmatrix"))
 								||tokes.getReference(0).equalsIgnoreCase(T("source"))
+								||tokes.getReference(0).equalsIgnoreCase(T("snapshot"))
 								||tokes.getReference(0).equalsIgnoreCase(T("hostrecording"))
-								||tokes.getReference(0).equalsIgnoreCase(T("groupbox"))){
+								||tokes.getReference(0).equalsIgnoreCase(T("groupbox")))
+						{
 							CabbageGUIClass cAttr(csdLine.trimEnd(), guiID);
+							//showMessage(cAttr.getStringProp("type"));
 							csdLine = "";
 							//set up plant flag if needed for other widgets
-							if(cAttr.getStringProp(T("plant")).isNotEmpty())
+							if(cAttr.getStringProp(T("plant")).isNotEmpty()){
 								plantFlag = cAttr.getStringProp(T("plant"));
+								presetFlag = cAttr.getStringProp(T("preset"));
+							}
 							else if(cAttr.getStringProp(T("relToPlant")).equalsIgnoreCase(T("")))
 								cAttr.setStringProp(T("relToPlant"), plantFlag);
 							guiLayoutCtrls.add(cAttr);
+							
 							guiID++;
 
 							if(cAttr.getStringProp("type").containsIgnoreCase("form"))
@@ -339,8 +346,15 @@ void CabbagePluginAudioProcessor::createGUI(String source)
 							CabbageGUIClass cAttr(csdLine.trimEnd(), guiID);
 							csdLine = "";
 							//attach widget to plant if need be
-							if(cAttr.getStringProp(T("relToPlant")).equalsIgnoreCase(T("")))
+							if(cAttr.getStringProp(T("relToPlant")).equalsIgnoreCase(T(""))){
+								//showMessage(cAttr.getStringProp(T("relToPlant")));
 								cAttr.setStringProp(T("relToPlant"), plantFlag);
+								//showMessage(String("presetFlag:")+presetFlag);
+								//showMessage(cAttr.getStringProp("name"));
+								if(cAttr.getStringProp("preset").length()<1)
+									cAttr.setStringProp(T("preset"), presetFlag.trim());
+								//showMessage(cAttr.getStringProp("preset"));
+							}
 	//xypad contain two control paramters, one for x axis and another for y. As such we add two 
 	//to our contorl vector so that plugin hosts display two sliders. We name one of the xypad pads
 	// 'dummy' so that our editor doesn't display it. Our editor only needs to show one xypad. 
@@ -496,8 +510,8 @@ message back to the GUI to notify it to update controls */
 float range, min, max;
 if(index<(int)guiCtrls.size())//make sure index isn't out of range
    {
-  if(guiCtrls.getReference(index).getNumProp("value") != newValue)
-     {
+ // if(guiCtrls.getReference(index).getNumProp("value") != newValue)
+ //    {
 #ifndef Cabbage_Build_Standalone        
         //scaling in here because incoming values in plugin mode range from 0-1
 		range = getGUICtrls(index).getNumProp("sliderRange");
@@ -509,7 +523,7 @@ if(index<(int)guiCtrls.size())//make sure index isn't out of range
         guiCtrls.getReference(index).setNumProp("value", newValue);
         csound->SetChannel(guiCtrls.getReference(index).getStringProp("channel").toUTF8(), newValue);		
 #endif
-     }
+ //    }
    }
 }
 

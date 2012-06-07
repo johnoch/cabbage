@@ -35,7 +35,7 @@ keyboard bounds(0, 220, 750, 70)
 </Cabbage>
 <CsoundSynthesizer>
 <CsOptions>
--n -d -m0d -+rtmidi=NULL -M0 
+-d -n -+rtmidi=null -M0 -b1024
 </CsOptions>
 <CsInstruments>
 sr = 44100 
