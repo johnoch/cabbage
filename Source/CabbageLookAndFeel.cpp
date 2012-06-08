@@ -1138,7 +1138,7 @@ void CabbageLookAndFeel::drawGroupComponentOutline (Graphics &g, int w, int h, c
 	String bgColour = group.getProperties().getWithDefault("colour", "").toString();
 	String fontColour = group.getProperties().getWithDefault("fontcolour", "").toString();
 	//Logger::writeToLog(bgColour);
-	Logger::writeToLog(fontColour);
+	//Logger::writeToLog(fontColour);
 
 	if (bgColour.length()>1){
 		col = Colour::fromString(bgColour);
