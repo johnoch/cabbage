@@ -13,7 +13,7 @@ CabbageLookAndFeel::~CabbageLookAndFeel()
 }
 
 //========= Rotary slider image ==============================================================================
-Image CabbageLookAndFeel::drawRotaryImage(int diameter, const Colour circleFill, float sliderPosProportional, 
+Image CabbageLookAndFeel::drawRotaryImage(int diameter, const Colour circleFill, const Colour trackerCol, float sliderPosProportional, 
 																							float zeroPosProportional, 
 																							bool useTrackerFill,
 																							bool useBigImage)
@@ -38,8 +38,7 @@ Image CabbageLookAndFeel::drawRotaryImage(int diameter, const Colour circleFill,
 			path.addArc (diameter*0.075, diameter*0.075, diameter*0.85, diameter*0.85, -2.6167 + (zeroPosProportional*numRadians), 
 													(sliderPosProportional-0.5)*numRadians, true);
 			PathStrokeType type (diameter*0.05);
-
-			g.setColour(Colours::lime);
+			g.setColour(trackerCol);
 			g.setOpacity (0.7);
 			g.strokePath (path, type, tnsForm);
 		}
@@ -115,7 +114,8 @@ Image CabbageLookAndFeel::drawRotaryImage(int diameter, const Colour circleFill,
 Image CabbageLookAndFeel::drawLinearBgImage (float width, float height, float sliderPosProportional, 
 																					float zeroPosProportional,
 																					bool useTrackerFill,
-																					bool isVertical)
+																					bool isVertical,
+																					const Colour trackerFill)
 {
 	Image img = Image::Image(Image::ARGB, width, height, true);
 	Graphics g (img);
@@ -141,17 +141,20 @@ Image CabbageLookAndFeel::drawLinearBgImage (float width, float height, float sl
 		g.setColour (Colour::fromRGBA(5, 5, 5, 255));
 		g.fillRoundedRectangle (0, height*0.425, width*0.99, height*0.15, height*0.05); //main rectangle
 
+
+
+
 		//----- Green tracker fill. 
 		if (useTrackerFill == true) {
 			ColourGradient fill;
 			if (zeroPosProportional != 0) {
-				fill = ColourGradient (Colours::lime, 0, 0, Colours::lime, width, 0, false);
+				fill = ColourGradient (trackerFill, 0, 0, trackerFill, width, 0, false);
 				fill.addColour(zeroPosProportional, Colours::transparentBlack);
-				fill.addColour(zeroPosProportional+0.05, Colours::lime);
-				fill.addColour(zeroPosProportional-0.05, Colours::lime);
+				fill.addColour(zeroPosProportional+0.05, trackerFill);
+				fill.addColour(zeroPosProportional-0.05, trackerFill);
 			}
 			else
-				fill = ColourGradient (Colours::transparentBlack, 0, 0, Colours::lime, width*0.1, 0, false);
+				fill = ColourGradient (Colours::transparentBlack, 0, 0, trackerFill, width*0.1, 0, false);
 
 			g.setGradientFill (fill);
 			g.setOpacity(0.9);
@@ -183,13 +186,13 @@ Image CabbageLookAndFeel::drawLinearBgImage (float width, float height, float sl
 		if (useTrackerFill == true) {
 			ColourGradient fill;
 			if (zeroPosProportional != 0) {
-				fill = ColourGradient (Colours::lime, 0, height, Colours::lime, 0, 0, false);
+				fill = ColourGradient (trackerFill, 0, height, trackerFill, 0, 0, false);
 				fill.addColour(zeroPosProportional, Colours::transparentBlack);
-				fill.addColour(zeroPosProportional+0.05, Colours::lime);
-				fill.addColour(zeroPosProportional-0.05, Colours::lime);
+				fill.addColour(zeroPosProportional+0.05, trackerFill);
+				fill.addColour(zeroPosProportional-0.05,trackerFill);
 			}
 			else
-				fill = ColourGradient (Colours::transparentBlack, 0, height, Colours::lime, 0, height*0.9, false);
+				fill = ColourGradient (Colours::transparentBlack, 0, height, trackerFill, 0, height*0.9, false);
 
 			g.setGradientFill (fill);
 			g.setOpacity(0.9);
@@ -461,12 +464,15 @@ void CabbageLookAndFeel::drawRotarySlider(Graphics& g, int /*x*/, int /*y*/, int
 
 	//----- If using a tracker fill
 	bool useTracker = true;
-	int test = slider.getProperties().getWithDefault(String("tracker"), -99);
-	if (test == 0)
+	String trackColour = slider.getProperties().getWithDefault(String("tracker"), "");
+	if(trackColour.length()<2){
+		trackColour = Colours::lime.toString();
 		useTracker = false;
+	}
+
 
 	//----- Creating slider image
-	Image newSlider = drawRotaryImage(destWidth, circleFill, sliderPosProportional, zeroPosProportional, useTracker, useBigImage);
+	Image newSlider = drawRotaryImage(destWidth, circleFill, Colour::fromString(trackColour), sliderPosProportional, zeroPosProportional, useTracker, useBigImage);
 	g.setOpacity (1);
 	g.drawImage (newSlider, destX, destY, destWidth, destHeight, 0, 0, destWidth, destWidth, false);
 
@@ -586,12 +592,6 @@ void CabbageLookAndFeel::drawLinearSliderBackground (Graphics &g, int /*x*/, int
     if (slider.getMinimum() < 0)
         zeroPosProportional = (abs(slider.getMinimum())) / range;
 
-    //----- If using a tracker fill
-    bool useTracker = true;
-    int trackerFlag = slider.getProperties().getWithDefault(String("tracker"), -99);
-    if (trackerFlag == 0)
-        useTracker = false;
-
     Image newBackground;
 
     //----- Variables for determining new destination width, height, position etc...
@@ -613,6 +613,15 @@ void CabbageLookAndFeel::drawLinearSliderBackground (Graphics &g, int /*x*/, int
         g.setColour (fontcolour);
         showName = true; //setting flag to true
     }
+
+	//----- If using a tracker fill
+	
+	bool useTracker = true;
+	String trackColour = slider.getProperties().getWithDefault(String("tracker"), "");
+	if(trackColour.length()<2){
+		trackColour = Colours::lime.toString();
+		useTracker = false;
+	}
 
     //----- If Horizontal Slider --------------------------------------------------------------------------
     if (style == Slider::LinearHorizontal) {
@@ -664,7 +673,7 @@ void CabbageLookAndFeel::drawLinearSliderBackground (Graphics &g, int /*x*/, int
         slider.setEnabled (false); //setting it back to disabled. Otherwise the slider would move slightly.
         
         //----- Getting image
-        newBackground = drawLinearBgImage (destWidth, destHeight, sliderPosProportional, zeroPosProportional, useTracker, false);
+		newBackground = drawLinearBgImage (destWidth, destHeight, sliderPosProportional, zeroPosProportional, useTracker, false, Colour::fromString(trackColour));
     }
 
     //----- If Vertical Slider ---------------------------------------------------------------------------
@@ -725,7 +734,7 @@ void CabbageLookAndFeel::drawLinearSliderBackground (Graphics &g, int /*x*/, int
         slider.setEnabled (false); //setting it back to disabled. Otherwise the slider would move slightly.
 
         //----- Getting image
-        newBackground = drawLinearBgImage (destWidth, destHeight, sliderPosProportional, zeroPosProportional, useTracker, true);
+		newBackground = drawLinearBgImage (destWidth, destHeight, sliderPosProportional, zeroPosProportional, useTracker, true, Colour::fromString(trackColour));
     }
     
     //----- Drawing Image. 
@@ -742,6 +751,7 @@ void CabbageLookAndFeel::drawLinearSliderThumb (Graphics &g, int /*x*/, int /*y*
 																								Slider &slider)
 {
 	float destX, destY, destWidth, destHeight, sliderStart, sliderEnd;
+
 	Colour thumbFill = slider.findColour(Slider::ColourIds::thumbColourId, false);
 	Image newThumb;
 

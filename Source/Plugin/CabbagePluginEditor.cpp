@@ -1055,7 +1055,7 @@ try{
                                             cAttr.getColourProp("colour"),
 											cAttr.getColourProp("fontcolour"),
                                             cAttr.getNumProp("textbox"),
-											cAttr.getNumProp("tracker")
+											cAttr.getColourProp("tracker")
                                             ));   
         int idx = controls.size()-1;
  

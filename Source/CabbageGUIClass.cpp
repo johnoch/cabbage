@@ -31,7 +31,8 @@ CabbageGUIClass::CabbageGUIClass(String compStr, int ID):
 								boundsText(""),
 								posText(""),
 								sizeText(""),
-								preset("")
+								preset(""),
+								trackerFill()
 {
 //Default values are assigned to all attributres 
 //before parsing begins
@@ -42,7 +43,6 @@ CabbageGUIClass::CabbageGUIClass(String compStr, int ID):
 	max=1;
 	sliderIncr = 0.01;
 	sliderSkew = 1;
-	trackerFill = 1;
 	value = 0;
 	StringArray strTokens;
 	strTokens.addTokens(compStr, " ", "\"");
@@ -63,6 +63,7 @@ CabbageGUIClass::CabbageGUIClass(String compStr, int ID):
           name.append(String(ID), 1024);
 		  textBox = 0;
 		  colour = Colours::white;
+		  trackerFill = Colours::lime;
 	}
     else if(strTokens[0].indexOfIgnoreCase("vslider")!=-1){
           top = 10;
@@ -79,6 +80,7 @@ CabbageGUIClass::CabbageGUIClass(String compStr, int ID):
           name.append(String(ID), 1024);
 		  textBox = 0;
 		  colour = Colours::white;
+		  trackerFill = Colours::lime;
 	}
     else if(strTokens[0].indexOfIgnoreCase("rslider")!=-1){
           top = 10;
@@ -95,6 +97,7 @@ CabbageGUIClass::CabbageGUIClass(String compStr, int ID):
           name.append(String(ID), 1024);
 		  textBox = 0;
 		  colour = Colours::white;
+		  trackerFill = Colours::lime;
 	}
 
     else if(strTokens[0].indexOfIgnoreCase("source")!=-1){
@@ -447,6 +450,22 @@ int CabbageGUIClass::parse(String str)
 					}
 					else channels.add(strTokens[0].trim());
 			}
+			//don't be so LAZY! Look at all the repeated code!!
+            else if(identArray.getReference(indx).toLowerCase().equalsIgnoreCase(" colour(")||
+				identArray.getReference(indx).toLowerCase().equalsIgnoreCase(",colour(")){
+					if(strTokens.size()<2)
+						colour = Colours::findColourForName(strTokens[0].trim(), Colours::white);
+					else if(strTokens.size()==4)
+						colour = Colour::fromRGBA (strTokens[0].getIntValue(),
+															strTokens[1].getIntValue(), 
+															strTokens[2].getIntValue(),
+															strTokens[3].getIntValue());
+					else if(strTokens.size()==3)
+						colour = Colour::fromRGB (strTokens[0].getIntValue(),
+									strTokens[1].getIntValue(), 
+									strTokens[2].getIntValue());
+			}
+
             else if(identArray.getReference(indx).toLowerCase().equalsIgnoreCase(" colour(")||
 				identArray.getReference(indx).toLowerCase().equalsIgnoreCase(",colour(")){
 					if(strTokens.size()<2)
@@ -472,6 +491,20 @@ int CabbageGUIClass::parse(String str)
 															strTokens[3].getIntValue());
 					else if(strTokens.size()==3)
 						fontcolour = Colour::fromRGB (strTokens[0].getIntValue(),
+									strTokens[1].getIntValue(), 
+									strTokens[2].getIntValue());
+			}
+
+            else if(identArray.getReference(indx).toLowerCase().equalsIgnoreCase("tracker(")){
+					if(strTokens.size()<2)
+						trackerFill = Colours::findColourForName(strTokens[0].trim(), Colours::white);
+					else if(strTokens.size()==4)
+						trackerFill = Colour::fromRGBA (strTokens[0].getIntValue(),
+															strTokens[1].getIntValue(), 
+															strTokens[2].getIntValue(),
+															strTokens[3].getIntValue());
+					else if(strTokens.size()==3)
+						trackerFill = Colour::fromRGB (strTokens[0].getIntValue(),
 									strTokens[1].getIntValue(), 
 									strTokens[2].getIntValue());
 			}
@@ -682,9 +715,7 @@ int CabbageGUIClass::parse(String str)
 			else if(identArray.getReference(indx).toLowerCase().equalsIgnoreCase("steps(")){
 				noSteps = strTokens[0].trim().getFloatValue();  
 			}
-			else if(identArray.getReference(indx).toLowerCase().equalsIgnoreCase("tracker(")){
-				trackerFill = strTokens[0].trim().getFloatValue();  
-			}
+
             else if(identArray.getReference(indx).toLowerCase().equalsIgnoreCase("textbox(")){
 				textBox = strTokens[0].trim().getFloatValue();  
 			}
@@ -795,8 +826,6 @@ double CabbageGUIClass::getNumProp(String prop)
 			return lineIsVertical;
 		else if(prop.equalsIgnoreCase(T("noPatterns")))
 			return items.size(); 
-		else if(prop.equalsIgnoreCase(T("tracker")))
-			return trackerFill; 
 		else return -9999;
 }
 
@@ -1008,6 +1037,8 @@ String CabbageGUIClass::getColourProp(String prop)
 			return fill.toString();
 		else if(prop.equalsIgnoreCase(T("outline")))
 			return outline.toString();
+		else if(prop.equalsIgnoreCase(T("tracker")))
+			return trackerFill.toString();
 		else return "";
 
 }

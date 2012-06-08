@@ -36,14 +36,15 @@ using namespace std;
 
 class CabbageGUIClass : public CabbageUtils
 {
-        double width, height, top, left, isRect, min, max, tabpage, minX, minY, maxX, maxY, comboRange, trackerFill,
+        double width, height, top, left, isRect, min, max, tabpage, minX, minY, maxX, maxY, comboRange, 
 		noOfMenus, onoff, midiChan, midiCtrl, sliderRange, xypadRangeY, xypadRangeX, noSteps, noPatterns,
 		line, anchor, linkTo, scaleX, scaleY, value, valueX, valueY, maxItems, sliderIncr, sliderSkew, rCtrls, lineIsVertical;
         StringArray items, onoffcaptions, key, channels, snapshotData;
+
         String channel, name, sizeText, posText, boundsText, text, type, plant, reltoplant, bounds, range,
         shape, beveltype, caption, kind, topitem, yChannel, xChannel,
         exit, csstdout, cssetup, file, debugMessage, xyChannel, pluginID, preset;
-		Colour outline, fill, fontcolour, textcolour, colour;
+		Colour outline, fill, fontcolour, textcolour, colour, trackerFill;
 		int tableNum, textBox, numPresets;
 		Array<int> vuConfig;
 
