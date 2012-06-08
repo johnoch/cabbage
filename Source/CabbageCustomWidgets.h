@@ -91,7 +91,7 @@ public:
 ScopedPointer<GroupComponent> groupbox;
 ScopedPointer<Slider> slider;
 //---- constructor -----
-CabbageSlider(String name, String text, String caption, String kind, String colour, int textBox, int trackerFill)
+CabbageSlider(String name, String text, String caption, String kind, String colour, String fontColour, int textBox, int trackerFill)
 	: plantX(-99), plantY(-99), sliderType(kind), compName(caption), cl(colour), tracker(trackerFill)
 {
 	setName(name);
@@ -104,6 +104,7 @@ CabbageSlider(String name, String text, String caption, String kind, String colo
 	groupbox->setVisible(false);
 	groupbox->getProperties().set("groupLine", var(1));
 	slider->getProperties().set("tracker", tracker);
+	slider->getProperties().set("fontcolour", fontColour);
 	
 	if(textBox<1) 
 		slider->setTextBoxStyle (Slider::NoTextBox, true, 0, 0);
@@ -404,9 +405,9 @@ OwnedArray<Component> comps;
 int offX, offY, offWidth, offHeight;
 public:
 //---- constructor -----
-CabbageGroupbox(String name, String caption, String text, String colour, int line):GroupComponent(name)
+CabbageGroupbox(String name, String caption, String text, String colour, String fontColour, int line):GroupComponent(name)
 {
-        toBack();
+		toBack();
         offX=offY=offWidth=offHeight=0;
         if(colour.length()>0){
 		//outline colour iD
@@ -416,6 +417,10 @@ CabbageGroupbox(String name, String caption, String text, String colour, int lin
         setColour(0x1005410,
                 Colour::fromString(colour));
         }
+		this->getProperties().set("colour", colour);
+		Logger::writeToLog("FonrColour:"+(fontColour));
+		this->getProperties().set("fontcolour", fontColour);
+
         this->setText(text);
 		this->setWantsKeyboardFocus(false);
 		if(line==0)
@@ -1775,8 +1780,8 @@ ScopedPointer<ComboBox> combobox;
 	void resized()
 	{
 	groupbox->setBounds(0, 0, getWidth(), getHeight()); 
-	combobox->setBounds(offX, offY, (getWidth()+offWidth)*.60, getHeight()+offHeight); 
-	button->setBounds(offX+(getWidth()+offWidth)*.60, offY, (getWidth()+offWidth)*.40, getHeight()+offHeight);
+	combobox->setBounds(offX, offY+2, (getWidth()+offWidth)*.60, (getHeight()+offHeight)*.8); 
+	button->setBounds(offX+(getWidth()+offWidth)*.60+5, offY, (getWidth()+offWidth)*.35, getHeight()+offHeight);
 	}
 
 };

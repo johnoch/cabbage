@@ -387,6 +387,13 @@ void CabbageLookAndFeel::drawRotarySlider(Graphics& g, int /*x*/, int /*y*/, int
 																	float /*endAngle*/,
 																	Slider& slider)
 {
+	String fontColour = slider.getProperties().getWithDefault("fontcolour", "").toString();
+	Colour fontcolour;
+	if(fontColour.length()>1)
+		fontcolour = Colour::fromString(fontColour);
+	else
+		fontcolour = CabbageUtils::getComponentFontColour();
+
 	//----- Getting the original width of slider.  This means that the same image will be used
 	//if it needs to be resized.  Smaller images don't use the green fill.
 	bool useBigImage = true;
@@ -420,7 +427,7 @@ void CabbageLookAndFeel::drawRotarySlider(Graphics& g, int /*x*/, int /*y*/, int
 
 		//Name label goes at bottom
 		if (slider.getName().length() > 0) {
-			g.setColour (CabbageUtils::getComponentFontColour());
+			g.setColour (fontcolour);
 			g.setFont (fontName);
 			g.drawText (name, (slider.getWidth()/2) - (nameWidth/2), slider.getHeight() - 14, 
 															(int)nameWidth, 14, justName, false);
@@ -433,7 +440,7 @@ void CabbageLookAndFeel::drawRotarySlider(Graphics& g, int /*x*/, int /*y*/, int
 		sliderBottom -= 15; //gap for textbox
 		//Name label goes at top...
 		if (slider.getName().length() > 0) {
-			g.setColour (CabbageUtils::getComponentFontColour());
+			g.setColour (fontcolour);
 			g.setFont (fontName);
 			g.drawText (name, (slider.getWidth()/2) - (nameWidth/2), 0, (int)nameWidth, 14, justName, false);
 			destY += 15; //gap for name label
@@ -561,7 +568,15 @@ void CabbageLookAndFeel::drawLinearSliderBackground (Graphics &g, int /*x*/, int
                                                                                                 const Slider::SliderStyle style, 
                                                                                                 Slider &slider)
 {
-    float range = slider.getMaximum() - slider.getMinimum();
+    String fontColour = slider.getProperties().getWithDefault("fontcolour", "").toString();
+	Colour fontcolour;
+	if(fontColour.length()>1)
+		fontcolour = Colour::fromString(fontColour);
+	else
+		fontcolour = CabbageUtils::getComponentFontColour();
+	
+	
+	float range = slider.getMaximum() - slider.getMinimum();
 
     //----- Getting the proportional position that the current value has in relation to the range
     float sliderPosProportional = (slider.getValue()-slider.getMinimum()) / range;
@@ -595,7 +610,7 @@ void CabbageLookAndFeel::drawLinearSliderBackground (Graphics &g, int /*x*/, int
         fontName = CabbageUtils::getComponentFont();
         g.setFont (fontName);
         nameWidth = fontName.getStringWidth(name);
-        g.setColour (CabbageUtils::getComponentFontColour());
+        g.setColour (fontcolour);
         showName = true; //setting flag to true
     }
 
@@ -917,7 +932,6 @@ void CabbageLookAndFeel::drawLinearSliderThumb (Graphics &g, int /*x*/, int /*y*
 		//----- Creating image
 		newThumb = drawLinearThumbImage (destWidth, destHeight, thumbFill, true);
 	}
-	
 	g.drawImage (newThumb, destX, destY, destWidth, destHeight, 0, 0, destWidth, destHeight, false);
 }
 
@@ -1120,8 +1134,19 @@ void CabbageLookAndFeel::drawGroupComponentOutline (Graphics &g, int w, int h, c
 																		GroupComponent &group)
 {
 	//----- Background
-	Colour bg = CabbageUtils::getComponentSkin();
-	g.setColour (bg);
+	Colour col;
+	String bgColour = group.getProperties().getWithDefault("colour", "").toString();
+	String fontColour = group.getProperties().getWithDefault("fontcolour", "").toString();
+	//Logger::writeToLog(bgColour);
+	Logger::writeToLog(fontColour);
+
+	if (bgColour.length()>1){
+		col = Colour::fromString(bgColour);
+		g.setColour (col);
+	}
+	else
+		g.setColour (CabbageUtils::getComponentSkin());
+
 	g.fillRoundedRectangle (0, 0, w, h, 5);
 
 	//----- Outline
@@ -1134,7 +1159,14 @@ void CabbageLookAndFeel::drawGroupComponentOutline (Graphics &g, int w, int h, c
 	Font font = CabbageUtils::getTitleFont();
 	font.setFallbackFontName (T("Verdana")); //in case the user doesn't have the first font installed
 	g.setFont (font);
-	g.setColour (CabbageUtils::getComponentFontColour());
+
+	if (fontColour.length()>1){
+		col = Colour::fromString(fontColour);
+		g.setColour (col);
+	}
+	else 
+		g.setColour (CabbageUtils::getComponentFontColour());
+
 	name = CabbageUtils::cabbageString (name, font, group.getWidth());
 	g.drawText (name, 0, 5, w, font.getHeight(), 36, false);
 	if(!group.getProperties().getWithDefault("groupLine", 0).equals(var(0))){

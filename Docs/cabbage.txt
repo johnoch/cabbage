@@ -338,42 +338,25 @@ image bounds(30, 30, 200, 150), file("logo_cabbage_sw_no_text.png")
 
 image:images.png[image]
 
-VLine
+Line
 ~~~~~~~~~~~~~
 --------------
-vline bounds(x, y, width, height)
+line bounds(x, y, width, height)
 -------------
 
-vline is a very simple widget that lets you create a vertical line separator. It is useful for placing on group components and images to help with layout design. 
+line is a very simple widget that lets you create a vertical line separator(or box). It is useful for placing on group components and images to help with layout design. 
 
 'bounds(x, y, width, height)': integer values that set position and size on screen(in pixels). Width is usually set to 3.
 
 
 Example:
 -----------------
-vline bounds(0, 0, 3, 10)
+line bounds(0, 0, 3, 10)
 ------------------
 
-image:vline.png[csound output]
+image:line.png[csound output]
 
 
-HLine
-~~~~~~~~~~~~~
---------------
-hline bounds(x, y, width, height)
--------------
-
-hline is a very simple widget that lets you create a horizontal line separator. It is useful for placing on group components and images to help with layout design. 
-
-'bounds(x, y, width, height)': integer values that set position and size on screen(in pixels). Height is usually set to 3.
-
-
-Example:
------------------
-hline bounds(0, 0, 3, 10)
-------------------
-
-image:hline.png[csound output]
 
 Label
 ~~~~~~~~~~~~~

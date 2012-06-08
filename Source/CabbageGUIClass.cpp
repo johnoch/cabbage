@@ -182,7 +182,7 @@ CabbageGUIClass::CabbageGUIClass(String compStr, int ID):
           channel = "label";
           beveltype = "none";
 		  colour = CabbageUtils::getComponentFontColour();
-          fontcolour = Colours::white;
+          fontcolour = CabbageUtils::getComponentFontColour();
           text = "hello";
           name = "label";
 		  type = name;
@@ -224,32 +224,23 @@ CabbageGUIClass::CabbageGUIClass(String compStr, int ID):
           left = 10;
           width = 80;
           height = 22;
-          colour = Colours::white;
+          colour = CabbageUtils::getComponentSkin();
+		  //fontcolour = CabbageUtils::getComponentFontColour();
           name = "groupbox";
 		  type = name;
           name.append(String(ID), 1024);
 		  line = 1;
 	}
-    else if(strTokens[0].indexOfIgnoreCase("vline")!=-1){
+    else if(strTokens[0].indexOfIgnoreCase("line")!=-1){
           top = 10;
           left = 10;
           width = 180;
           height = 2;
-          name = "vline";
+          name = "line";
 		  type = name;
-		  lineIsVertical = 1;
           name.append(String(ID), 1024);
 	}
-    else if(strTokens[0].indexOfIgnoreCase("hline")!=-1){
-          top = 10;
-          left = 10;
-          width = 2;
-          height = 180;
-          name = "hline";
-		  type = name;
-		  lineIsVertical = 0;
-          name.append(String(ID), 1024);
-	}
+
     else if(strTokens[0].indexOfIgnoreCase("csoundoutput")!=-1){
           top = 10;
           left = 10;
@@ -469,6 +460,21 @@ int CabbageGUIClass::parse(String str)
 									strTokens[1].getIntValue(), 
 									strTokens[2].getIntValue());
 			}
+
+            else if(identArray.getReference(indx).toLowerCase().equalsIgnoreCase("fontcolour(")){
+					if(strTokens.size()<2)
+						fontcolour = Colours::findColourForName(strTokens[0].trim(), Colours::white);
+					else if(strTokens.size()==4)
+						fontcolour = Colour::fromRGBA (strTokens[0].getIntValue(),
+															strTokens[1].getIntValue(), 
+															strTokens[2].getIntValue(),
+															strTokens[3].getIntValue());
+					else if(strTokens.size()==3)
+						fontcolour = Colour::fromRGB (strTokens[0].getIntValue(),
+									strTokens[1].getIntValue(), 
+									strTokens[2].getIntValue());
+			}
+
 			else if(identArray.getReference(indx).toLowerCase().equalsIgnoreCase("kind(")) kind = strTokens[0].trim();
 			else if(identArray.getReference(indx).toLowerCase().equalsIgnoreCase("file(")) file = strTokens[0].trim();
 			else if(identArray.getReference(indx).toLowerCase().equalsIgnoreCase("fill(")){

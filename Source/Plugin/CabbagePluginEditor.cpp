@@ -378,8 +378,7 @@ for(int i=0;i<getFilter()->getGUILayoutCtrlsSize();i++){
 	else if(getFilter()->getGUILayoutCtrls(i).getStringProp("type")==T("source")){
 		InsertSourceButton(getFilter()->getGUILayoutCtrls(i));   
 		}
-	else if(getFilter()->getGUILayoutCtrls(i).getStringProp("type")==T("vline")
-		|| getFilter()->getGUILayoutCtrls(i).getStringProp("type")==T("hline")){
+	else if(getFilter()->getGUILayoutCtrls(i).getStringProp("type")==T("line")){
 		InsertLineSeparator(getFilter()->getGUILayoutCtrls(i));   
 		}
 }
@@ -425,6 +424,7 @@ try{
 										 cAttr.getStringProp("caption"), 
 										 cAttr.getItems(0), 
 										 cAttr.getColourProp("colour"),
+										 cAttr.getColourProp("fontcolour"),
 										 cAttr.getNumProp("line")));
 	int idx = layoutComps.size()-1;
 
@@ -555,9 +555,6 @@ catch(...){
 void CabbagePluginAudioProcessorEditor::InsertLineSeparator(CabbageGUIClass &cAttr)
 {
 try{
-	if(cAttr.getNumProp("isLineVertical"))
-	layoutComps.add(new CabbageLine(false));
-	else
 	layoutComps.add(new CabbageLine(true));
 	int idx = layoutComps.size()-1;
 
@@ -931,7 +928,7 @@ try{
 		cAttr.setNumProp("maxItems", i);
 	}
 
-	//((CabbageSnapshot*)layoutComps[idx])->combobox->setSelectedItemIndex(0);
+	((CabbageSnapshot*)layoutComps[idx])->combobox->setSelectedItemIndex(cAttr.getNumProp("value"));
 	//Load any snapshot files that already exist for this instrument
 	String snapshotFile = getFilter()->getCsoundInputFile().withFileExtension(".snaps").getFullPathName();
 	StringArray data;
@@ -1054,6 +1051,7 @@ try{
                                             cAttr.getStringProp("caption"),
                                             cAttr.getStringProp("kind"),
                                             cAttr.getColourProp("colour"),
+											cAttr.getColourProp("fontcolour"),
                                             cAttr.getNumProp("textbox"),
 											cAttr.getNumProp("tracker")
                                             ));   
@@ -1111,8 +1109,7 @@ try{
         ((CabbageSlider*)controls[idx])->slider->setRange(cAttr.getNumProp("min"), cAttr.getNumProp("max"), (double)cAttr.getNumProp("sliderIncr"));
         ((CabbageSlider*)controls[idx])->slider->setValue(cAttr.getNumProp("value"));
         ((CabbageSlider*)controls[idx])->slider->addListener(this);
- 
- 
+
         controls[idx]->getProperties().set(String("midiChan"), cAttr.getNumProp("midiChan"));
         controls[idx]->getProperties().set(String("midiCtrl"), cAttr.getNumProp("midiCtrl")); 
 }
@@ -1992,10 +1989,11 @@ for(int i=0;i<(int)getFilter()->getGUICtrlsSize();i++){
 		}
 	}
 
+	//no automation for comboboxes, still problematic!" 
 	else if(getFilter()->getGUICtrls(i).getStringProp("type")==T("combobox")){
 	//if(controls[i])
 #ifdef Cabbage_Build_Standalone
-		((CabbageComboBox*)controls[i])->combo->setSelectedId((int)getFilter()->getParameter(i), false);
+		//((CabbageComboBox*)controls[i])->combo->setSelectedId((int)getFilter()->getParameter(i), false);
 #else
 		//Logger::writeToLog(T("timerCallback():")+String(getFilter()->getParameter(i)));
 		((CabbageComboBox*)controls[i])->combo->setSelectedId(int(getFilter()->getParameter(i)+.5), false);

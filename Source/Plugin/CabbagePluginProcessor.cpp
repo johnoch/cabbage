@@ -20,7 +20,7 @@
 #include "CabbagePluginProcessor.h"   
 #include "CabbagePluginEditor.h"
 
-#define VERSION "Cabbage v0.02.1 BETA"
+#define VERSION "Cabbage v0.03.0 BETA"
 
 #define MAX_BUFFER_SIZE 1024
 //==============================================================================
@@ -288,8 +288,7 @@ void CabbagePluginAudioProcessor::createGUI(String source)
 								||tokes.getReference(0).equalsIgnoreCase(T("image"))
 								||tokes.getReference(0).equalsIgnoreCase(T("keyboard"))
 								||tokes.getReference(0).equalsIgnoreCase(T("csoundoutput"))
-								||tokes.getReference(0).equalsIgnoreCase(T("vline"))
-								||tokes.getReference(0).equalsIgnoreCase(T("hline"))
+								||tokes.getReference(0).equalsIgnoreCase(T("line"))
 								||tokes.getReference(0).equalsIgnoreCase(T("label"))
 								||tokes.getReference(0).equalsIgnoreCase(T("hostbpm"))
 								||tokes.getReference(0).equalsIgnoreCase(T("hosttime"))
