@@ -1020,6 +1020,8 @@ try{
 	}
 	}
 
+	((MidiKeyboardComponent*)layoutComps[idx])->setLowestVisibleKey(cAttr.getNumProp("value"));
+
 	layoutComps[idx]->getProperties().set(String("plant"), var(cAttr.getStringProp("plant")));
 #ifdef Cabbage_Build_Standalone
 	layoutComps[idx]->setWantsKeyboardFocus(true);

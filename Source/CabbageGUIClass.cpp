@@ -43,7 +43,7 @@ CabbageGUIClass::CabbageGUIClass(String compStr, int ID):
 	sliderIncr = 0.01;
 	sliderSkew = 1;
 	trackerFill = 1;
-
+	value = 0;
 	StringArray strTokens;
 	strTokens.addTokens(compStr, " ", "\"");
 
@@ -303,6 +303,7 @@ CabbageGUIClass::CabbageGUIClass(String compStr, int ID):
           name = "keyboard";
 		  type = name;
           name.append(String(ID), 1024);
+		  value=60;
 	}
     else if(strTokens[0].indexOfIgnoreCase("form")!=-1){
           top = 10;
@@ -341,7 +342,7 @@ CabbageGUIClass::CabbageGUIClass(String compStr, int ID):
 	}
 
 	tabpage = 0;
-	value = 0;
+	
 //parse the text now that all default values ahve been assigned
 parse(compStr);
 }
