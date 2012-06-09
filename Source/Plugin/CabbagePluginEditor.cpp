@@ -89,6 +89,11 @@ layoutEditor->updateFrames();
 CabbagePluginAudioProcessorEditor::~CabbagePluginAudioProcessorEditor()
 {
 getFilter()->editorBeingDeleted(this);
+if(presetFileText.length()>1)
+{
+	SnapShotFile.replaceWithText(presetFileText);
+	showMessage(presetFileText);
+}
 #ifdef Cabbage_GUI_Editor
 //delete componentPanel;
 //delete layoutEditor;
@@ -509,10 +514,16 @@ try{
 		//top = top*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
 		//left = left*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
 
-		width = width*layoutComps[y]->getWidth();
+	/*	width = width*layoutComps[y]->getWidth();
 		height = height*layoutComps[y]->getHeight();
         top = (top*layoutComps[y]->getHeight());
+		left = (left*layoutComps[y]->getWidth());*/
+
+		width = width*layoutComps[y]->getWidth();
+		height = height*layoutComps[y]->getHeight();
+		top = (top*layoutComps[y]->getHeight());
 		left = (left*layoutComps[y]->getWidth());
+
 		if(layoutComps[y]->getName().containsIgnoreCase("groupbox")||
 			layoutComps[y]->getName().containsIgnoreCase("image"))
 			{			
@@ -612,10 +623,15 @@ try{
 	if(cAttr.getStringProp("reltoplant").length()>0){
 	if(layoutComps[y]->getProperties().getWithDefault(String("plant"), -99).toString().equalsIgnoreCase(cAttr.getStringProp("reltoplant")))
 	{
-		width = width*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
-		height = height*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
-		top = top*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
-		left = left*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
+		//width = width*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
+		//height = height*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
+		//top = top*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
+		//left = left*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
+
+		width = width*layoutComps[y]->getWidth();
+		height = height*layoutComps[y]->getHeight();
+        top = (top*layoutComps[y]->getHeight());
+		left = (left*layoutComps[y]->getWidth());
 
 		if(layoutComps[y]->getName().containsIgnoreCase("groupbox")||
 			layoutComps[y]->getName().containsIgnoreCase("image"))
@@ -891,6 +907,9 @@ try{
 	layoutComps.add(new CabbageSnapshot(cAttr.getStringProp("name"), cAttr.getColourProp("caption"), cAttr.getStringProp("preset")));	
 	int idx = layoutComps.size()-1;
 
+	String snap= getFilter()->getCsoundInputFile().withFileExtension(".snaps").getFullPathName();
+	SnapShotFile = File(snap);
+
 	float left = cAttr.getNumProp("left");
 	float top = cAttr.getNumProp("top");
 	float width = cAttr.getNumProp("width");
@@ -900,10 +919,10 @@ try{
 	if(cAttr.getStringProp("reltoplant").length()>0){
 	if(layoutComps[y]->getProperties().getWithDefault(String("plant"), -99).toString().equalsIgnoreCase(cAttr.getStringProp("reltoplant")))
 	{
-		width = width*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
-		height = height*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
-		top = top*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
-		left = left*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
+		//width = width*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
+		//height = height*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
+		//top = top*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
+		//left = left*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
 
 		if(layoutComps[y]->getName().containsIgnoreCase("groupbox")||
 			layoutComps[y]->getName().containsIgnoreCase("image"))
@@ -1382,7 +1401,8 @@ try{
 	controls.add(new CabbageComboBox(cAttr.getStringProp("name"),
 		cAttr.getStringProp("caption"),
 		cAttr.getItems(0),
-		cAttr.getColourProp("colour")));
+		cAttr.getColourProp("colour"),
+		cAttr.getColourProp("fontcolour")));
 
 	int idx = controls.size()-1;
 	
@@ -1434,6 +1454,8 @@ try{
 		((CabbageComboBox*)controls[idx])->combo->addItem(cAttr.getItems(i-1), i);
 		cAttr.setNumProp("maxItems", i);
 	}
+
+	lookAndFeel->setColour(ComboBox::ColourIds::textColourId, Colour::fromString(cAttr.getColourProp("fontcolour")));
 
 	((CabbageComboBox*)controls[idx])->combo->setSelectedId(cAttr.getNumProp("value"));
 	componentPanel->addAndMakeVisible(((CabbageComboBox*)controls[idx]));
@@ -1697,8 +1719,7 @@ for(int i=0;i<(int)getFilter()->getGUICtrlsSize();i++)//find correct control fro
 	//============================================================================================
 	else if(type.equalsIgnoreCase(T("snapshot"))){
 		String str, presetData = "";
-		String snapshotFile = getFilter()->getCsoundInputFile().withFileExtension(".snaps").getFullPathName();
-		File file(snapshotFile);
+		
 		//save presets to .snaps file
 		//showMessage(String("preset name:")+name);
 		if(action=="save"){
@@ -1741,14 +1762,15 @@ for(int i=0;i<(int)getFilter()->getGUICtrlsSize();i++)//find correct control fro
 					if(getFilter()->getGUILayoutCtrls(u).getNumPresets()>0)
 						presetData = presetData + getFilter()->getGUILayoutCtrls(u).getStringProp("snapshotData");
 
-				file.replaceWithText(presetData);
+				presetFileText = presetData;
+				//showMessage(presetData);
 				presetData = "";
 			}
 		
 		}
 		//load presets from .snaps file
 		else if(action=="load"){
-		str = file.loadFileAsString();
+		//str = SnapShotFile.loadFileAsString();
 		int presetIndex = 0; 
 		StringArray values;
 		String snapshotData, channel, start="";

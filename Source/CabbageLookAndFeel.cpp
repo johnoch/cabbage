@@ -1046,7 +1046,22 @@ void CabbageLookAndFeel::drawComboBox(Graphics& g, int width, int height, bool /
 																	ComboBox& box)
 {
 	//----- For the main background
-	g.setColour(CabbageUtils::getBackgroundSkin());
+	//----- If using a tracker fill
+	String bgColour = box.getProperties().getWithDefault(String("colour"), "");
+	Logger::writeToLog(bgColour);
+	String fontColour = box.getProperties().getWithDefault(String("fontcolour"), "");
+	Colour bgCol, fCol;
+	if(bgColour.length()>2){
+		bgCol = Colour::fromString(bgColour);
+	}
+	else
+		bgCol = CabbageUtils::getBackgroundSkin();
+
+	if(fontColour.length()<2){
+		fCol = Colour::fromString(fontColour);
+	}
+
+	g.setColour(bgCol);
 	g.fillRoundedRectangle (0, 0, width, height, height*0.1);
 	
 	//----- The box that contains the arrow

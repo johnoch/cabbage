@@ -284,7 +284,7 @@ public:
 ScopedPointer<GroupComponent> groupbox;
 ScopedPointer<ComboBox> combo;
 //---- constructor -----
-CabbageComboBox(String name, String caption, String text, String colour)
+CabbageComboBox(String name, String caption, String text, String colour, String fontColour)
 {
 	setName(name);
 	offX=offY=offWidth=offHeight=0;
@@ -296,7 +296,9 @@ CabbageComboBox(String name, String caption, String text, String colour)
 	addAndMakeVisible(combo);
 	groupbox->setVisible(false);
 	groupbox->getProperties().set("groupLine", var(1));
-	
+	combo->getProperties().set("colour", colour);
+	combo->getProperties().set("fontcolour", fontColour);
+	//combo->setColour(ComboBox::ColourIds::textColourId, Colour::fromString(fontColour));
 	//outline colour IDE
 	groupbox->setColour(0x1005400,
 		Colour::fromString(colour));
@@ -494,6 +496,8 @@ public:
 		//----- ToggleButton
 		autoToggle = new ToggleButton (T("Off"));
 		autoToggle->setToggleState(false, true);
+		autoToggle->getProperties().set("isRect", 1);
+		autoToggle->getProperties().set("colour", Colours::lime.toString());
 		autoToggle->addListener (this);
 		addAndMakeVisible (autoToggle);
 
@@ -1728,7 +1732,7 @@ class CabbageSnapshot : public Component,
 
 ScopedPointer<TextButton> button;
 ScopedPointer<GroupComponent> groupbox;
-String name, preset;
+String name, preset, presetFileText;
 int offX, offY, offWidth, offHeight;
 
 public:
@@ -1746,6 +1750,7 @@ ScopedPointer<ComboBox> combobox;
 	button = new TextButton("Snapshot");
 	button->addButtonListener(this);
 	
+
 
 	addAndMakeVisible(combobox);
 	addAndMakeVisible(groupbox);

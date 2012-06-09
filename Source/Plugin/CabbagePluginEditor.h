@@ -79,6 +79,8 @@ private:
 	bool LOCKED;
 	void insertCabbageText(String text);
 	int lineNumber;
+	File SnapShotFile;
+	String presetFileText;
 	void actionListenerCallback (const String& message);
 	int zero_dbfs;
 

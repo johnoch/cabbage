@@ -532,11 +532,13 @@ void StandaloneFilterWindow::buttonClicked (Button*)
 	if(!cabbageCsoundEditor){
 	cabbageCsoundEditor = new CabbageEditorWindow(lookAndFeel);
 	cabbageCsoundEditor->setVisible(false);
+	cabbageCsoundEditor->setFullScreen(true);
 	cabbageCsoundEditor->addActionListener(this);
 	}
 	cabbageCsoundEditor->setCsoundFile(csdFile);
 	this->toBehind(cabbageCsoundEditor);
 	cabbageCsoundEditor->setVisible(true);
+	cabbageCsoundEditor->setFullScreen(true);
 	cabbageCsoundEditor->toFront(true);
 	cabbageCsoundEditor->setCsoundOutputText(consoleMessages);
 	cabbageCsoundEditor->csoundEditor->textEditor->grabKeyboardFocus();
