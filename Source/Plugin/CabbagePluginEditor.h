@@ -106,8 +106,9 @@ private:
 
 	OwnedArray<Component> controls;
 	OwnedArray<Component> layoutComps;
-	ScopedPointer<CabbagePlantWindow> subPatch;
+	//ScopedPointer<CabbagePlantWindow> subPatch;
 	OwnedArray<CabbageButton> plantButton;
+	OwnedArray<CabbagePlantWindow> subPatch;
 #ifdef Cabbage_GUI_Editor
 	ScopedPointer<CabbageMainPanel> componentPanel;
 	ScopedPointer<ComponentLayoutEditor> layoutEditor;

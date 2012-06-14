@@ -455,6 +455,7 @@ try{
 
 	((GroupComponent*)layoutComps[idx])->setBounds (left+relX, top+relY, width, height);
 	layoutComps[idx]->toBack();
+
 	if(cAttr.getNumProp("button")==0){
 	componentPanel->addAndMakeVisible(layoutComps[idx]);
 	}
@@ -463,6 +464,15 @@ try{
 		plantButton[plantButton.size()-1]->setBounds(cAttr.getNumProp("left"), cAttr.getNumProp("top"), 100, 30);
 		plantButton[plantButton.size()-1]->button->addButtonListener(this);
 		componentPanel->addAndMakeVisible(plantButton[plantButton.size()-1]);
+		plantButton[plantButton.size()-1]->button->getProperties().set(String("index"), plantButton.size()-1); 
+
+		layoutComps[idx]->setLookAndFeel(lookAndFeel);
+		subPatch.add(new CabbagePlantWindow(getFilter()->getGUILayoutCtrls(idx).getStringProp("plant"), Colours::black));
+		subPatch[subPatch.size()-1]->setAlwaysOnTop(true);
+
+		subPatch[subPatch.size()-1]->centreWithSize(layoutComps[idx]->getWidth(), layoutComps[idx]->getHeight()+18);
+		subPatch[subPatch.size()-1]->setContentNonOwned(layoutComps[idx], true);
+		subPatch[subPatch.size()-1]->setTitleBarHeight(18);
 	}
 	layoutComps[idx]->getProperties().set(String("plant"), var(cAttr.getStringProp("plant")));
 	layoutComps[idx]->getProperties().set(String("groupLine"), cAttr.getNumProp("line"));
@@ -1372,18 +1382,8 @@ if(!getFilter()->isGuiEnabled()){
 				//setProperties to say if window is open...
 				for(int p=0;p<getFilter()->getGUILayoutCtrlsSize();p++){
 				if(getFilter()->getGUILayoutCtrls(p).getStringProp("plant") ==button->getName()){
-				layoutComps[p]->setLookAndFeel(lookAndFeel);
-
-				subPatch = new CabbagePlantWindow(getFilter()->getGUILayoutCtrls(p).getStringProp("plant"), Colours::black);
-				//subPatch->setSize(layoutComps[p]->getWidth(), layoutComps[p]->getHeight()+18);
-				subPatch->setAlwaysOnTop(true);
-
-				subPatch->centreWithSize(layoutComps[p]->getWidth(), layoutComps[p]->getHeight()+18);
-				//	setSize(layoutComps[p]->getWidth(), layoutComps[p]->getHeight()+18);
-
-				subPatch->setContentNonOwned(layoutComps[p], true);
-				subPatch->setTitleBarHeight(18);
-				subPatch->setVisible(true);
+				int index = button->getProperties().getWithDefault(String("index"), 0);
+				subPatch[index]->setVisible(true);
 				i=getFilter()->getGUICtrlsSize();
 				break;
 				}
