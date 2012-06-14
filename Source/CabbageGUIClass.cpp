@@ -32,7 +32,8 @@ CabbageGUIClass::CabbageGUIClass(String compStr, int ID):
 								posText(""),
 								sizeText(""),
 								preset(""),
-								trackerFill()
+								trackerFill(),
+								masterSnap(0)
 {
 //Default values are assigned to all attributres 
 //before parsing begins
@@ -46,7 +47,6 @@ CabbageGUIClass::CabbageGUIClass(String compStr, int ID):
 	value = 0;
 	StringArray strTokens;
 	strTokens.addTokens(compStr, " ", "\"");
-
 	//changing case to lower to make syntax non case-sensitive
 	if(strTokens[0].indexOfIgnoreCase("hslider")!=-1){
           top = 10;
@@ -156,13 +156,13 @@ CabbageGUIClass::CabbageGUIClass(String compStr, int ID):
 		  sliderRange = 1;
 		  min = 0;
 		  max = 1;
-		  shape = "circle";
+		  shape = "square";
           name.append(String(ID), 1024);
 		  //default colour for toggles
 		  colour = Colours::lime;
 	}
     else if(strTokens[0].indexOfIgnoreCase("combobox")!=-1){
-		
+		  items.clear();
           top = 10;
           left = 10;
           width = 80;
@@ -170,11 +170,16 @@ CabbageGUIClass::CabbageGUIClass(String compStr, int ID):
           channel = "combochan";
           caption = "";
 		  //add one item by befault, will be overwritten by users values
-          items.add(T("item1"));
+          items.add(T("Item 1"));
+		  items.add(T("Item 2"));
+		  items.add(T("Item 3"));
+		  items.add(T("Item 4"));
+		  items.add(T("Item 5"));
           name = "combobox";
 		  type = name;
           name.append(String(ID), 1024);
 		  min=1;
+		  value = 1;
 		 
 	} 
     else if(strTokens[0].indexOfIgnoreCase("label")!=-1){
@@ -192,7 +197,8 @@ CabbageGUIClass::CabbageGUIClass(String compStr, int ID):
           name.append(String(ID), 1024);
 	}
     else if(strTokens[0].indexOfIgnoreCase("snapshot")!=-1){
-          top = 10;
+		  items.clear();
+		  top = 10;
           left = 10;
           width = 200;
           height = 20;
@@ -203,6 +209,12 @@ CabbageGUIClass::CabbageGUIClass(String compStr, int ID):
           name = "snapshot";
 		  type = name;
           name.append(String(ID), 1024);
+		  items.add(T("One"));
+		  items.add(T("Two"));
+		  items.add(T("Three"));
+		  items.add(T("Four"));
+		  min=1;
+		  value=1;
 	}
     else if(strTokens[0].indexOfIgnoreCase("image")!=-1){
           top = 10;
@@ -221,6 +233,7 @@ CabbageGUIClass::CabbageGUIClass(String compStr, int ID):
 		  outline = Colours::black;
 		  colour = Colours::white;
           name.append(String(ID), 1024);
+		  plantButton = 0;
 	}
     else if(strTokens[0].indexOfIgnoreCase("groupbox")!=-1){
           top = 10;
@@ -233,6 +246,7 @@ CabbageGUIClass::CabbageGUIClass(String compStr, int ID):
 		  type = name;
           name.append(String(ID), 1024);
 		  line = 1;
+		  plantButton = 0;
 	}
     else if(strTokens[0].indexOfIgnoreCase("line")!=-1){
           top = 10;
@@ -382,6 +396,7 @@ int CabbageGUIClass::parse(String str)
 	identArray.add("rangey(");
 	identArray.add("plant(");
     identArray.add("channel(");
+	identArray.add("chan(");
     identArray.add("name(");
     identArray.add("textbox(");
 	identArray.add("instrs(");
@@ -405,6 +420,7 @@ int CabbageGUIClass::parse(String str)
 	identArray.add("fill(");
 	identArray.add("file(");
 	identArray.add("outline(");
+	identArray.add("master(");
 	identArray.add("shape("); 
 	identArray.add("textcolour("); 
 	identArray.add("scale(");
@@ -415,6 +431,7 @@ int CabbageGUIClass::parse(String str)
 	identArray.add("rctrls(");
 	identArray.add("tracker(");
 	identArray.add("preset(");
+	identArray.add("button(");
 	//add a few dummy identifiers so we can catch bogus one in the Cabbage code
 	identArray.add("");
 	identArray.add("");
@@ -599,8 +616,11 @@ int CabbageGUIClass::parse(String str)
 				preset = strTokens[0].trim();
 			}
 
-			//numeric paramters
 
+			//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+			//numeric paramters
+			//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+			
 			else if(identArray.getReference(indx).toLowerCase().equalsIgnoreCase("size(")){
 				if(strTokens.size()<2){
 					debugMessage =T("WARNING: Not enough paramters passed to size(): usage pos(width, height\")");
@@ -715,13 +735,20 @@ int CabbageGUIClass::parse(String str)
 			else if(identArray.getReference(indx).toLowerCase().equalsIgnoreCase("steps(")){
 				noSteps = strTokens[0].trim().getFloatValue();  
 			}
-
+            else if(identArray.getReference(indx).toLowerCase().equalsIgnoreCase("master(")){
+				masterSnap = strTokens[0].trim().getFloatValue();  
+			}
             else if(identArray.getReference(indx).toLowerCase().equalsIgnoreCase("textbox(")){
 				textBox = strTokens[0].trim().getFloatValue();  
 			}
             else if(identArray.getReference(indx).toLowerCase().equalsIgnoreCase("tablenumber(")){
 				tableNum = strTokens[0].trim().getFloatValue();  
 			}
+            else if(identArray.getReference(indx).toLowerCase().equalsIgnoreCase("button(")){
+				plantButton = strTokens[0].trim().getIntValue();  
+			}
+			
+
 			else if(identArray.getReference(indx).toLowerCase().equalsIgnoreCase(",line(")||
 					identArray.getReference(indx).toLowerCase().equalsIgnoreCase(" line(")) line = strTokens[0].trim().getFloatValue();  
             else if(identArray.getReference(indx).toLowerCase().equalsIgnoreCase("value(")) value = strTokens[0].trim().getFloatValue();  
@@ -822,8 +849,12 @@ double CabbageGUIClass::getNumProp(String prop)
 			return noSteps;
 		else if(prop.equalsIgnoreCase(T("rCtrls")))
 			return rCtrls;
+		else if(prop.equalsIgnoreCase(T("masterSnap")))
+			return masterSnap;
 		else if(prop.equalsIgnoreCase(T("lineIsVertical")))
 			return lineIsVertical;
+		else if(prop.equalsIgnoreCase(T("button")))
+			return plantButton;
 		else if(prop.equalsIgnoreCase(T("noPatterns")))
 			return items.size(); 
 		else return -9999;
@@ -892,6 +923,8 @@ void CabbageGUIClass::setNumProp(String prop, float val)
 			 valueX = val;
 		else if(prop.equalsIgnoreCase(T("valueY")))
 			 valueY = val;
+		else if(prop.equalsIgnoreCase(T("button")))
+			 plantButton = val;
 }
 
 String CabbageGUIClass::getPropsString()

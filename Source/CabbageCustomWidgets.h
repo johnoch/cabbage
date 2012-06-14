@@ -43,6 +43,7 @@ CabbageButton(String name, String caption, String buttonText, String colour)
 	offX=offY=offWidth=offHeight=0;
 	groupbox = new GroupComponent(String("groupbox_")+name);
 	button = new TextButton(name);
+	button->setName(buttonText);
 	addAndMakeVisible(groupbox);
 	addAndMakeVisible(button);
 	groupbox->setVisible(false);
@@ -219,7 +220,7 @@ public:
 ScopedPointer<GroupComponent> groupbox;
 ScopedPointer<ToggleButton> button;
 //---- constructor -----
-CabbageCheckbox(String name, String caption, String buttonText, String colour, bool isRect)
+CabbageCheckbox(String name, String caption, String buttonText, String colour, String fontcolour, bool isRect)
 {
 	setName(name);
 	offX=offY=offWidth=offHeight=0;
@@ -250,6 +251,7 @@ CabbageCheckbox(String name, String caption, String buttonText, String colour, b
 
 	button->getProperties().set("isRect", isRect);
 	button->getProperties().set("colour", colour);
+	button->getProperties().set("fontcolour", fontcolour);
 	//text colour id
 	button->setColour(0x1006501,
 			Colour::fromString(colour));
@@ -353,7 +355,7 @@ public:
 		//toBack();
 		img = ImageCache::getFromFile (File (file));
 		this->setWantsKeyboardFocus(false);
-		this->setInterceptsMouseClicks(false, true);
+		//this->setInterceptsMouseClicks(false, true);
 	}
 	~CabbageImage(){
 	}
@@ -390,6 +392,17 @@ private:
 		}
 
 	}
+
+	//void mouseDown(const MouseEvent &e){
+	//	this->setInterceptsMouseClicks(false, true);
+	//DialogWindow::showDialog("test", //title
+	//								this, //comp
+	//								this,
+	//								Colours::aliceblue,
+	//								true);
+	//}
+
+
 
 	void resized(){
 	top = getY();
@@ -432,6 +445,8 @@ CabbageGroupbox(String name, String caption, String text, String colour, String 
 		else
 		this->getProperties().set("groupLine", var(1));
 		this->repaint();
+
+		setName(name);
 
 }
 //---------------------------------------------
@@ -1734,11 +1749,12 @@ ScopedPointer<TextButton> button;
 ScopedPointer<GroupComponent> groupbox;
 String name, preset, presetFileText;
 int offX, offY, offWidth, offHeight;
+bool masterSnapshot;
 
 public:
 ScopedPointer<ComboBox> combobox;
 		
-	CabbageSnapshot(String compName, String caption, String presetName):name(compName), preset(presetName){
+	CabbageSnapshot(String compName, String caption, String presetName, bool master):masterSnapshot(master), name(compName), preset(presetName){
 	name << T("|snapshot:");
 	preset << T("|snapshot:");
 	setName(name);
@@ -1777,11 +1793,11 @@ ScopedPointer<ComboBox> combobox;
 
 	void buttonClicked(Button* button){
 	//CabbageUtils::showMessage(name+"save;"+String(combobox->getText().trim()));
-		sendActionMessage(preset+"save;"+String(combobox->getText()));
+		sendActionMessage(preset+"save;"+String(combobox->getText().trim())+String("?")+String(masterSnapshot));
 	}
 
 	void comboBoxChanged(ComboBox* combo){
-		sendActionMessage(preset+"load;"+String(combobox->getText().trim()));
+		sendActionMessage(preset+"load;"+String(combobox->getText().trim())+String("?")+String(masterSnapshot));
 	}
 	//---------------------------------------------
 	void resized()
@@ -1910,7 +1926,7 @@ CabbagePluginAudioProcessor* myFilter;
 								updateVar(0),
 								rCtrls(rctrls)
 	{
-		onoffButton = new CabbageCheckbox("Active", "", "", Colours::red.toString(), true);
+		onoffButton = new CabbageCheckbox("Active", "", "", Colours::red.toString(), CabbageUtils::getComponentFontColour().toString(), true);
 
 		onoffButton->button->setButtonText("");
 		onoffButton->button->addListener(this);
@@ -2188,10 +2204,12 @@ private:
 //==============================================================================
 class CabbageLine	:	public Component
 {
+Colour col;
 public:
-	CabbageLine (bool isHorizontal)
+	CabbageLine (bool isHorizontal, String colour)
 		: isHorizontal(isHorizontal)
 	{
+		col = Colour::fromString(colour);
 	}
 
 	~CabbageLine()
@@ -2210,7 +2228,7 @@ public:
 
 	void paint(Graphics& g)
 	{
-		g.setColour (Colour::fromRGBA(150, 150, 150, 75));
+		g.setColour (col);
 		g.fillRoundedRectangle(0, 0, getWidth(), getHeight(), 1);
 
 		g.setColour (CabbageUtils::getBackgroundSkin());

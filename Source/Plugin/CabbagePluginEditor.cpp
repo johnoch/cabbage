@@ -92,7 +92,6 @@ getFilter()->editorBeingDeleted(this);
 if(presetFileText.length()>1)
 {
 	SnapShotFile.replaceWithText(presetFileText);
-	showMessage(presetFileText);
 }
 #ifdef Cabbage_GUI_Editor
 //delete componentPanel;
@@ -413,6 +412,7 @@ for(int i=0;i<getFilter()->getGUICtrlsSize();i++){
 
 
 
+
 }
 
 
@@ -455,10 +455,17 @@ try{
 
 	((GroupComponent*)layoutComps[idx])->setBounds (left+relX, top+relY, width, height);
 	layoutComps[idx]->toBack();
+	if(cAttr.getNumProp("button")==0){
 	componentPanel->addAndMakeVisible(layoutComps[idx]);
+	}
+	else{
+		plantButton.add(new CabbageButton(cAttr.getStringProp("name"), "", cAttr.getStringProp("plant"), CabbageUtils::getComponentSkin().toString()));
+		plantButton[plantButton.size()-1]->setBounds(cAttr.getNumProp("left"), cAttr.getNumProp("top"), 100, 30);
+		plantButton[plantButton.size()-1]->button->addButtonListener(this);
+		componentPanel->addAndMakeVisible(plantButton[plantButton.size()-1]);
+	}
 	layoutComps[idx]->getProperties().set(String("plant"), var(cAttr.getStringProp("plant")));
 	layoutComps[idx]->getProperties().set(String("groupLine"), cAttr.getNumProp("line"));
-
 }
 catch(...){
     Logger::writeToLog(T("Syntax error: 'groupbox..."));
@@ -566,7 +573,7 @@ catch(...){
 void CabbagePluginAudioProcessorEditor::InsertLineSeparator(CabbageGUIClass &cAttr)
 {
 try{
-	layoutComps.add(new CabbageLine(true));
+	layoutComps.add(new CabbageLine(true, cAttr.getColourProp("colour")));
 	int idx = layoutComps.size()-1;
 
 	float left = cAttr.getNumProp("left");
@@ -611,7 +618,7 @@ catch(...){
 void CabbagePluginAudioProcessorEditor::InsertLabel(CabbageGUIClass &cAttr)
 {
 try{
-	layoutComps.add(new CabbageLabel(cAttr.getStringProp("text"), cAttr.getColourProp("colour")));	
+	layoutComps.add(new CabbageLabel(cAttr.getStringProp("text"), cAttr.getColourProp("fontcolour")));	
 	int idx = layoutComps.size()-1;
 
 	float left = cAttr.getNumProp("left");
@@ -649,13 +656,6 @@ try{
 	}
 
 	cAttr.setStringProp("type", "label");
-//	((Label*)layoutComps[idx])->setFont(Font(height));
-//
-//if(cAttr.getColourProp("colour").length()>0){
-//	//text colour
-//	layoutComps[idx]->getProperties().set("textColour",  cAttr.getColourProp("colour"));
-//	}
-//	layoutComps[idx]->getProperties().set(String("plant"), var(cAttr.getStringProp("plant")));
 }
 catch(...){
 	Logger::writeToLog(T("Syntax error: 'label..."));
@@ -904,7 +904,7 @@ catch(...){
 void CabbagePluginAudioProcessorEditor::InsertSnapshot(CabbageGUIClass &cAttr)
 {
 try{
-	layoutComps.add(new CabbageSnapshot(cAttr.getStringProp("name"), cAttr.getColourProp("caption"), cAttr.getStringProp("preset")));	
+	layoutComps.add(new CabbageSnapshot(cAttr.getStringProp("name"), cAttr.getColourProp("caption"), cAttr.getStringProp("preset"), cAttr.getNumProp("masterSnap")));	
 	int idx = layoutComps.size()-1;
 
 	String snap= getFilter()->getCsoundInputFile().withFileExtension(".snaps").getFullPathName();
@@ -943,11 +943,13 @@ try{
 	
     for(int i=1;i<(int)cAttr.getItemsSize()+1;i++){
 		String test  = cAttr.getItems(i-1);
+		//showMessage(test);
 		((CabbageSnapshot*)layoutComps[idx])->combobox->addItem(cAttr.getItems(i-1), i);
 		cAttr.setNumProp("maxItems", i);
 	}
 
-	((CabbageSnapshot*)layoutComps[idx])->combobox->setSelectedItemIndex(cAttr.getNumProp("value"));
+	((CabbageSnapshot*)layoutComps[idx])->combobox->setSelectedItemIndex(cAttr.getNumProp("value")-1);
+	
 	//Load any snapshot files that already exist for this instrument
 	String snapshotFile = getFilter()->getCsoundInputFile().withFileExtension(".snaps").getFullPathName();
 	StringArray data;
@@ -1258,6 +1260,7 @@ try{
 		cAttr.getStringProp("caption"),
 		cAttr.getItems(0),
 		cAttr.getColourProp("colour"),
+		cAttr.getColourProp("fontcolour"),
 		RECT));	
 	int idx = controls.size()-1;
 	float left = cAttr.getNumProp("left");
@@ -1365,8 +1368,31 @@ if(!getFilter()->isGuiEnabled()){
 			else if(button->getName()=="source"){
 				getFilter()->createAndShowSourceEditor(lookAndFeel);
 			}
+			else{
+				//setProperties to say if window is open...
+				for(int p=0;p<getFilter()->getGUILayoutCtrlsSize();p++){
+				if(getFilter()->getGUILayoutCtrls(p).getStringProp("plant") ==button->getName()){
+				layoutComps[p]->setLookAndFeel(lookAndFeel);
+
+				subPatch = new CabbagePlantWindow(getFilter()->getGUILayoutCtrls(p).getStringProp("plant"), Colours::black);
+				//subPatch->setSize(layoutComps[p]->getWidth(), layoutComps[p]->getHeight()+18);
+				subPatch->setAlwaysOnTop(true);
+
+				subPatch->centreWithSize(layoutComps[p]->getWidth(), layoutComps[p]->getHeight()+18);
+				//	setSize(layoutComps[p]->getWidth(), layoutComps[p]->getHeight()+18);
+
+				subPatch->setContentNonOwned(layoutComps[p], true);
+				subPatch->setTitleBarHeight(18);
+				subPatch->setVisible(true);
+				i=getFilter()->getGUICtrlsSize();
+				break;
+				}
+
+			}
+			}
 		}
 	}
+	
 	else if(dynamic_cast<ToggleButton*>(button)){
      	for(int i=0;i<(int)getFilter()->getGUICtrlsSize();i++)//find correct control from vector
 			if(getFilter()->getGUICtrls(i).getStringProp("name")==button->getName()){
@@ -1449,9 +1475,9 @@ try{
 //this needs some attention. 
 //At present comboxbox colours can't be changed...
 
-    for(int i=1;i<(int)cAttr.getItemsSize()+1;i++){
-		String test  = cAttr.getItems(i-1);
-		((CabbageComboBox*)controls[idx])->combo->addItem(cAttr.getItems(i-1), i);
+    for(int i=0;i<(int)cAttr.getItemsSize();i++){
+		String test  = cAttr.getItems(i);
+		((CabbageComboBox*)controls[idx])->combo->addItem(cAttr.getItems(i), i+1);
 		cAttr.setNumProp("maxItems", i);
 	}
 
@@ -1489,7 +1515,7 @@ if(combo->isEnabled()) // before sending data to on named channel
 						Logger::writeToLog(String("comboEvent():")+String(getFilter()->getGUICtrls(i).getNumProp("comboRange")));
 						getFilter()->setParameterNotifyingHost(i, (float)(combo->getSelectedItemIndex())/(getFilter()->getGUICtrls(i).getNumProp("comboRange")-1));
 #else
-						getFilter()->setParameterNotifyingHost(i, (float)(combo->getSelectedItemIndex()+1));
+						getFilter()->setParameterNotifyingHost(i, (float)(combo->getSelectedItemIndex()));
 #endif
 					}
 			}
@@ -1679,8 +1705,8 @@ void CabbagePluginAudioProcessorEditor::actionListenerCallback (const String& me
 String name = message.substring(0, message.indexOf(T("|"))); 
 String type = message.substring(message.indexOf(T("|"))+1, message.indexOf(T(":")));
 String action = message.substring(message.indexOf(T(":"))+1, message.indexOf(T(";")));
-String preset = message.substring(message.indexOf(T(";"))+1, 100); 
-
+String preset = message.substring(message.indexOf(T(";"))+1, message.indexOf(T("?"))); 
+int masterSnap = message.substring(message.indexOf(T("?"))+1, 100).getIntValue(); 
 
 for(int i=0;i<(int)getFilter()->getGUICtrlsSize();i++)//find correct control from vector
 	//if message came from an XY pad...
@@ -1739,8 +1765,11 @@ for(int i=0;i<(int)getFilter()->getGUICtrlsSize();i++)//find correct control fro
 						str << "-------- Start of Preset: " << preset.trim() << "\n";
 						for(int n=0;n<getFilter()->getGUICtrlsSize();n++){
 							String comp1 = getFilter()->getGUICtrls(n).getStringProp("preset");
-							//showMessage(comp1);
-							if(comp1.trim().equalsIgnoreCase(name.trim()))
+							//checks if all widgets are being controlled by this preset, or just some
+							if(masterSnap)
+								str = str << getFilter()->getGUICtrls(n).getStringProp("channel") << ":\t\t\t" << getFilter()->getGUICtrls(n).getNumProp("value") << "\n";	
+
+							else if(comp1.trim().equalsIgnoreCase(name.trim()))
 							{
 								//showMessage(getFilter()->getGUILayoutCtrls(i).getStringProp("preset"));
 								
@@ -1805,8 +1834,8 @@ for(int i=0;i<(int)getFilter()->getGUICtrlsSize();i++)//find correct control fro
 									((CabbageCheckbox*)controls[u])->button->setToggleState((bool)val, true);
 									}
 									else if(getFilter()->getGUICtrls(u).getStringProp("type")==T("combobox")){
-									if(controls[u])
-									((CabbageComboBox*)controls[u])->combo->setSelectedItemIndex(val);
+									//if(controls[u])
+									//((CabbageComboBox*)controls[u])->combo->setSelectedItemIndex(val);
 									}
 									//update host when preset ares recalled
 									getFilter()->setParameterNotifyingHost(u, val);
@@ -2009,7 +2038,7 @@ for(int i=0;i<(int)getFilter()->getGUICtrlsSize();i++){
 	else if(getFilter()->getGUICtrls(i).getStringProp("type")==T("xypad") &&
 		getFilter()->getGUICtrls(i).getStringProp("xyChannel").equalsIgnoreCase("X")){
 	if(controls[i]){
-		((CabbageXYController*)controls[i])->xypad->setBallXY(getFilter()->getParameter(i), getFilter()->getParameter(i+1), false);
+		//((CabbageXYController*)controls[i])->xypad->setBallXY(getFilter()->getParameter(i), getFilter()->getParameter(i), false);
 		}
 	}
 
@@ -2017,7 +2046,7 @@ for(int i=0;i<(int)getFilter()->getGUICtrlsSize();i++){
 	else if(getFilter()->getGUICtrls(i).getStringProp("type")==T("combobox")){
 	//if(controls[i])
 #ifdef Cabbage_Build_Standalone
-		//((CabbageComboBox*)controls[i])->combo->setSelectedId((int)getFilter()->getParameter(i), false);
+		((CabbageComboBox*)controls[i])->combo->setSelectedId((int)getFilter()->getParameter(i), false);
 #else
 		//Logger::writeToLog(T("timerCallback():")+String(getFilter()->getParameter(i)));
 		((CabbageComboBox*)controls[i])->combo->setSelectedId(int(getFilter()->getParameter(i)+.5), false);

@@ -20,7 +20,7 @@
 #ifndef __PLUGINEDITOR_H_F4EBBBA1__
 #define __PLUGINEDITOR_H_F4EBBBA1__
 
-
+#include  "../CabbageCustomWidgets.h"
 #include "../../JuceLibraryCode/JuceHeader.h"
 #include "../../JuceLibraryCode/JucePluginCharacteristics.h"
 #include "CabbagePluginProcessor.h"
@@ -31,6 +31,20 @@
 class CabbageMainPanel;
 class ComponentLayoutEditor;
 //==============================================================================
+class CabbagePlantWindow  : public DocumentWindow
+{
+
+public:
+	CabbagePlantWindow(const String& title, const Colour& backgroundColour)
+		: DocumentWindow (title, backgroundColour, DocumentWindow::closeButton){};
+	~CabbagePlantWindow(){
+	};
+
+	void closeButtonPressed(){
+	setVisible(false);
+	};
+};
+
 class CabbagePluginAudioProcessorEditor  : public AudioProcessorEditor,
 								public CabbageUtils,
 								public SliderListener,
@@ -92,6 +106,8 @@ private:
 
 	OwnedArray<Component> controls;
 	OwnedArray<Component> layoutComps;
+	ScopedPointer<CabbagePlantWindow> subPatch;
+	OwnedArray<CabbageButton> plantButton;
 #ifdef Cabbage_GUI_Editor
 	ScopedPointer<CabbageMainPanel> componentPanel;
 	ScopedPointer<ComponentLayoutEditor> layoutEditor;
@@ -100,6 +116,7 @@ private:
 #endif
 	ScopedPointer<MidiKeyboardComponent> midiKeyboard;
 	ScopedPointer<LookAndFeel> feely;
+
 	AudioPlayHead::CurrentPositionInfo hostInfo;
     void changeListenerCallback (ChangeBroadcaster *source);
 	Colour formColour;

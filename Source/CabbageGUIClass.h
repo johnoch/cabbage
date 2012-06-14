@@ -45,7 +45,7 @@ class CabbageGUIClass : public CabbageUtils
         shape, beveltype, caption, kind, topitem, yChannel, xChannel,
         exit, csstdout, cssetup, file, debugMessage, xyChannel, pluginID, preset;
 		Colour outline, fill, fontcolour, textcolour, colour, trackerFill;
-		int tableNum, textBox, numPresets;
+		int tableNum, textBox, numPresets, masterSnap, plantButton;
 		Array<int> vuConfig;
 
 public:

@@ -216,10 +216,10 @@ private:
         break;
 
 	case T('"'):
-    case T('\''):
-		skipQuotedString (source);
-        result = tokenType_stringLiteral;
-        break;
+ //   case T('\''):
+    	skipQuotedString (source);
+       result = tokenType_stringLiteral;
+       break;
 
 	case T('<'):
 		source.skip();

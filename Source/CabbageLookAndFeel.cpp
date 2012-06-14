@@ -964,14 +964,22 @@ void CabbageLookAndFeel::drawToggleButton (Graphics &g, ToggleButton &button, bo
 	else
 		isToggleOn = false;
 
-	//----- Getting the colour...
-	Colour col;
+	//----- Getting the colours...
+	Colour col, fcol;
 	if (button.getProperties().getWithDefault("colour", "").toString().length()<1){
         for (float i=0.01; i<0.03; i+=0.01)
 			col = Colour::fromRGBA (0, 0, 0, 255/(i*100));
     }
     else
 		col = Colour::fromString(button.getProperties().getWithDefault("colour", "lime"));
+	
+	if (button.getProperties().getWithDefault("fontcolour", "").toString().length()<2){
+		fcol = CabbageUtils::getComponentFontColour();
+    }
+    else
+		fcol = Colour::fromString(button.getProperties().getWithDefault("fontcolour", "lime"));
+
+
 
 	bool isRECT = button.getProperties().getWithDefault("isRect", 0);
 
@@ -985,7 +993,7 @@ void CabbageLookAndFeel::drawToggleButton (Graphics &g, ToggleButton &button, bo
 	if (button.getButtonText().length() > 0) {
 		Justification just (1); //left
 		g.setFont (CabbageUtils::getComponentFont());
-		g.setColour (CabbageUtils::getComponentFontColour());
+		g.setColour (fcol);
 
 		String name;
 		name << button.getButtonText();
