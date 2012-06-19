@@ -1,1 +1,0 @@
-google_code_wiki_download.bat rapid-framework
