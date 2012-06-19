@@ -1,4 +1,0 @@
-﻿  MainHostWindow.cpp
-  LINK : .\Debug\Plugin Host.exe not found or not built by the last incremental link; performing full link
-     Creating library .\Debug\Plugin Host.lib and object .\Debug\Plugin Host.exp
-  Plugin Host.vcxproj -> C:\MyDocuments\CabbageLatestSVN\Builds\VisualStudio2010\.\Debug\Plugin Host.exe
