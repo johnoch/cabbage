@@ -1,0 +1,68 @@
+﻿  CabbagePluginEditor.cpp
+  CabbagePluginProcessor.cpp
+c:\documents and settings\rory\desktop\cabbage\source\cabbagecustomwidgets.h(1765): warning C4996: 'juce::Button::addButtonListener': was declared deprecated
+          c:\documents and settings\rory\desktop\cabbage\jucelibrarycode\modules\juce_gui_basics\buttons\juce_button.h(383) : see declaration of 'juce::Button::addButtonListener'
+c:\documents and settings\rory\desktop\cabbage\source\cabbagecustomwidgets.h(1978): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
+c:\documents and settings\rory\desktop\cabbage\source\plugin\cabbageplugineditor.cpp(467): warning C4996: 'juce::Button::addButtonListener': was declared deprecated
+          c:\documents and settings\rory\desktop\cabbage\jucelibrarycode\modules\juce_gui_basics\buttons\juce_button.h(383) : see declaration of 'juce::Button::addButtonListener'
+c:\documents and settings\rory\desktop\cabbage\source\plugin\cabbageplugineditor.cpp(920): warning C4800: 'double' : forcing value to bool 'true' or 'false' (performance warning)
+c:\documents and settings\rory\desktop\cabbage\source\plugin\cabbageplugineditor.cpp(993): warning C4239: nonstandard extension used : 'argument' : conversion from 'juce::String' to 'juce::String &'
+          A non-const reference may only be bound to an lvalue
+c:\documents and settings\rory\desktop\cabbage\source\plugin\cabbageplugineditor.cpp(1488): warning C4482: nonstandard extension used: enum 'juce::ComboBox::ColourIds' used in qualified name
+c:\documents and settings\rory\desktop\cabbage\source\plugin\cabbageplugineditor.cpp(1842): warning C4800: 'double' : forcing value to bool 'true' or 'false' (performance warning)
+c:\documents and settings\rory\desktop\cabbage\source\plugin\cabbageplugineditor.cpp(1811): warning C4189: 'presetIndex' : local variable is initialized but not referenced
+c:\documents and settings\rory\desktop\cabbage\source\plugin\cabbageplugineditor.cpp(1925): warning C4189: 'tableSize' : local variable is initialized but not referenced
+c:\documents and settings\rory\desktop\cabbage\source\plugin\cabbageplugineditor.cpp(2066): warning C4800: 'float' : forcing value to bool 'true' or 'false' (performance warning)
+c:\documents and settings\rory\desktop\cabbage\source\cabbagecustomwidgets.h(1306): warning C4701: potentially uninitialized local variable 'startText' used
+c:\documents and settings\rory\desktop\cabbage\source\cabbagecustomwidgets.h(1765): warning C4996: 'juce::Button::addButtonListener': was declared deprecated
+          c:\documents and settings\rory\desktop\cabbage\jucelibrarycode\modules\juce_gui_basics\buttons\juce_button.h(383) : see declaration of 'juce::Button::addButtonListener'
+c:\documents and settings\rory\desktop\cabbage\source\cabbagecustomwidgets.h(1978): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
+c:\documents and settings\rory\desktop\cabbage\source\plugin\cabbagepluginprocessor.cpp(23): warning C4005: 'VERSION' : macro redefinition
+          c:\mydocuments\sourcecode\csound5\csound5\h\version.h(27) : see previous definition of 'VERSION'
+c:\documents and settings\rory\desktop\cabbage\source\plugin\cabbagepluginprocessor.cpp(428): warning C4996: 'vsnprintf': This function or variable may be unsafe. Consider using vsnprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+          c:\program files\microsoft visual studio 10.0\vc\include\stdio.h(354) : see declaration of 'vsnprintf'
+c:\documents and settings\rory\desktop\cabbage\source\plugin\cabbagepluginprocessor.cpp(518): warning C4101: 'max' : unreferenced local variable
+  BinaryData.cpp
+  CabbageGUIClass.cpp
+c:\documents and settings\rory\desktop\cabbage\source\plugin\cabbagepluginprocessor.cpp(827): warning C4715: 'CabbagePluginAudioProcessor::ReadMidiData' : not all control paths return a value
+  CabbageLookAndFeel.cpp
+  CabbageMainPanel.cpp
+c:\documents and settings\rory\desktop\cabbage\source\cabbagelookandfeel.cpp(755): warning C4482: nonstandard extension used: enum 'juce::Slider::ColourIds' used in qualified name
+c:\documents and settings\rory\desktop\cabbage\source\cabbagelookandfeel.cpp(1315): warning C4138: '*/' found outside of comment
+c:\documents and settings\rory\desktop\cabbage\source\cabbagelookandfeel.cpp(1316): warning C4138: '*/' found outside of comment
+c:\documents and settings\rory\desktop\cabbage\source\cabbagelookandfeel.cpp(1375): warning C4138: '*/' found outside of comment
+c:\documents and settings\rory\desktop\cabbage\source\cabbagelookandfeel.cpp(365): warning C4701: potentially uninitialized local variable 'opacity' used
+c:\documents and settings\rory\desktop\cabbage\source\cabbagelookandfeel.cpp(697): warning C4701: potentially uninitialized local variable 'nameWidth' used
+c:\documents and settings\rory\desktop\cabbage\source\cabbagelookandfeel.cpp(742): warning C4701: potentially uninitialized local variable 'destX' used
+c:\documents and settings\rory\desktop\cabbage\source\cabbagelookandfeel.cpp(742): warning C4701: potentially uninitialized local variable 'destY' used
+c:\documents and settings\rory\desktop\cabbage\source\cabbagelookandfeel.cpp(823): warning C4701: potentially uninitialized local variable 'strWidth' used
+c:\documents and settings\rory\desktop\cabbage\source\cabbagelookandfeel.cpp(945): warning C4701: potentially uninitialized local variable 'destWidth' used
+c:\documents and settings\rory\desktop\cabbage\source\cabbagelookandfeel.cpp(945): warning C4701: potentially uninitialized local variable 'destHeight' used
+c:\documents and settings\rory\desktop\cabbage\source\cabbagelookandfeel.cpp(945): warning C4701: potentially uninitialized local variable 'destY' used
+c:\documents and settings\rory\desktop\cabbage\source\cabbagelookandfeel.cpp(945): warning C4701: potentially uninitialized local variable 'destX' used
+  CabbageTable.cpp
+  ComponentLayoutEditor.cpp
+c:\documents and settings\rory\desktop\cabbage\source\cabbagetable.cpp(242): warning C4701: potentially uninitialized local variable 'viewStart' used
+c:\documents and settings\rory\desktop\cabbage\source\cabbagetable.cpp(251): warning C4701: potentially uninitialized local variable 'viewWidth' used
+  juce_AAX_Wrapper.cpp
+  juce_audio_basics.cpp
+  juce_audio_devices.cpp
+  juce_audio_formats.cpp
+  juce_audio_processors.cpp
+  juce_audio_utils.cpp
+  juce_core.cpp
+  juce_cryptography.cpp
+  juce_data_structures.cpp
+  juce_events.cpp
+  juce_graphics.cpp
+  juce_gui_basics.cpp
+  juce_gui_extra.cpp
+  juce_opengl.cpp
+  juce_VST_Wrapper.cpp
+  juce_RTAS_DigiCode1.cpp
+  juce_RTAS_DigiCode2.cpp
+  juce_RTAS_DigiCode3.cpp
+  juce_RTAS_WinUtilities.cpp
+  juce_RTAS_Wrapper.cpp
+     Creating library .\Debug\CabbagePlugin.lib and object .\Debug\CabbagePlugin.exp
+  CabbagePlugin.vcxproj -> C:\Documents and Settings\Rory\Desktop\Cabbage\Builds\VisualStudio2010\.\Debug\CabbagePlugin.dll

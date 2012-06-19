@@ -1,0 +1,17 @@
+﻿  CabbagePluginProcessor.cpp
+c:\documents and settings\rory\desktop\cabbage\source\cabbagecustomwidgets.h(1765): warning C4996: 'juce::Button::addButtonListener': was declared deprecated
+          c:\documents and settings\rory\desktop\cabbage\jucelibrarycode\modules\juce_gui_basics\buttons\juce_button.h(383) : see declaration of 'juce::Button::addButtonListener'
+c:\documents and settings\rory\desktop\cabbage\source\cabbagecustomwidgets.h(1978): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
+c:\documents and settings\rory\desktop\cabbage\source\plugin\cabbagepluginprocessor.cpp(23): warning C4005: 'VERSION' : macro redefinition
+          c:\mydocuments\sourcecode\csound5\csound5\h\version.h(27) : see previous definition of 'VERSION'
+c:\documents and settings\rory\desktop\cabbage\source\plugin\cabbagepluginprocessor.cpp(84): warning C4390: ';' : empty controlled statement found; is this the intent?
+c:\documents and settings\rory\desktop\cabbage\source\plugin\cabbagepluginprocessor.cpp(431): warning C4996: 'vsnprintf': This function or variable may be unsafe. Consider using vsnprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+          c:\program files\microsoft visual studio 10.0\vc\include\stdio.h(354) : see declaration of 'vsnprintf'
+c:\documents and settings\rory\desktop\cabbage\source\plugin\cabbagepluginprocessor.cpp(495): warning C4189: 'range' : local variable is initialized but not referenced
+c:\documents and settings\rory\desktop\cabbage\source\plugin\cabbagepluginprocessor.cpp(521): warning C4101: 'min' : unreferenced local variable
+c:\documents and settings\rory\desktop\cabbage\source\plugin\cabbagepluginprocessor.cpp(521): warning C4101: 'range' : unreferenced local variable
+c:\documents and settings\rory\desktop\cabbage\source\plugin\cabbagepluginprocessor.cpp(521): warning C4101: 'max' : unreferenced local variable
+c:\documents and settings\rory\desktop\cabbage\source\plugin\cabbagepluginprocessor.cpp(830): warning C4715: 'CabbagePluginAudioProcessor::ReadMidiData' : not all control paths return a value
+  LINK : .\Debug\\Cabbage.exe not found or not built by the last incremental link; performing full link
+     Creating library .\Debug\Cabbage.lib and object .\Debug\Cabbage.exp
+  Cabbage.vcxproj -> C:\Documents and Settings\Rory\Desktop\Cabbage\Builds\VisualStudio2010\.\Debug\Cabbage.exe

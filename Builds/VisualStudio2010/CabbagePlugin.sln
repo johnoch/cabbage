@@ -1,0 +1,19 @@
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{46580D98-80E4-CC14-01D2-0A3AB12D1377}") = "CabbagePlugin", "CabbagePlugin.vcxproj", "{A7F8BA4C-EEFC-EEEB-8464-631B08004B4A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A7F8BA4C-EEFC-EEEB-8464-631B08004B4A}.Debug|Win32.ActiveCfg = Debug|Win32
+		{A7F8BA4C-EEFC-EEEB-8464-631B08004B4A}.Debug|Win32.Build.0 = Debug|Win32
+		{A7F8BA4C-EEFC-EEEB-8464-631B08004B4A}.Release|Win32.ActiveCfg = Release|Win32
+		{A7F8BA4C-EEFC-EEEB-8464-631B08004B4A}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
