@@ -5,7 +5,6 @@
 
 */
 
-
 namespace BinaryData
 {
     extern const char*   opcodes_txt;

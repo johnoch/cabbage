@@ -1816,7 +1816,7 @@ String name;
 Colour colour;
 ScopedPointer<Label> label;
 int width, height, value, lastValue;
-bool buttonState;
+bool buttonState, mouseButtonState;
 public:
 	  CabbageNumToggle(String name, int width, int height): 
 					width(width),
@@ -1824,6 +1824,7 @@ public:
 					value(0),
 					lastValue(0),
 					buttonState(false),
+					mouseButtonState(false),
 					colour(Colours::lime)
 	  {
 		setBounds(0, 0, width, height);

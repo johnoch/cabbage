@@ -47,6 +47,7 @@ class CabbageGUIClass : public CabbageUtils
 		int tableNum, textBox, numPresets, masterSnap, plantButton;
 		Array<int> vuConfig;
 
+		//JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CabbageGUIClass);
 public:
 	//constructor
 	CabbageGUIClass(String str, int ID);
@@ -119,7 +120,8 @@ public:
 	inline String getkey(int index){
 		return key.getReference(index);
 	}
-	//JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CabbageGUIClass);
+
+	
 };
 
 #endif
