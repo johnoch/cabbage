@@ -340,9 +340,12 @@ void CabbagePluginAudioProcessorEditor::paint (Graphics& g)
 //componentPanel->toFront(true);
 //componentPanel->grabKeyboardFocus();
 #else
-	Colour bg = CabbageUtils::getBackgroundSkin();
-	g.setColour (bg);
-	g.fillAll();
+		g.setColour(CabbageUtils::getBackgroundSkin());
+		g.fillAll();
+		g.setColour (CabbageUtils::getTitleFontColour());
+		Image logo = ImageCache::getFromMemory (BinaryData::logo1_png, BinaryData::logo1_pngSize);
+		g.drawImage (logo, (getWidth()) - (logo.getWidth()*.75), getHeight()-25, logo.getWidth()*0.65, logo.getHeight()*0.65, 
+			0, 0, logo.getWidth(), logo.getHeight(), true);
 #endif
 }
 
@@ -1478,12 +1481,15 @@ try{
 
 //this needs some attention. 
 //At present comboxbox colours can't be changed...
-
+	int items;
     for(int i=0;i<(int)cAttr.getItemsSize();i++){
 		String test  = cAttr.getItems(i);
 		((CabbageComboBox*)controls[idx])->combo->addItem(cAttr.getItems(i), i+1);
 		cAttr.setNumProp("maxItems", i);
+		items=i;
 	}
+	//showMessage(String(cAttr.getItemsSize()));
+	cAttr.setNumProp("sliderRange", cAttr.getItemsSize());
 
 	lookAndFeel->setColour(ComboBox::ColourIds::textColourId, Colour::fromString(cAttr.getColourProp("fontcolour")));
 
@@ -1512,14 +1518,15 @@ if(combo->isEnabled()) // before sending data to on named channel
 				for(int y=0;y<(int)getFilter()->getGUICtrls(i).getItemsSize();y++)
 					if(getFilter()->getGUICtrls(i).getItems(y).equalsIgnoreCase(combo->getItemText(combo->getSelectedItemIndex()))){
 						getFilter()->getCsound()->SetChannel(getFilter()->getGUICtrls(i).getStringProp("channel").toUTF8(), (float)combo->getSelectedItemIndex()+1);
- 						getFilter()->getGUICtrls(i).setNumProp("value", (int)combo->getSelectedItemIndex()+1);
+ 						
 #ifndef Cabbage_Build_Standalone
-
+						getFilter()->getGUICtrls(i).setNumProp("value", (int)combo->getSelectedItemIndex());
 						getFilter()->getCsound()->SetChannel(getFilter()->getGUICtrls(i).getStringProp("channel").toUTF8(), combo->getSelectedItemIndex());
-						Logger::writeToLog(String("comboEvent():")+String(getFilter()->getGUICtrls(i).getNumProp("comboRange")));
-						getFilter()->setParameterNotifyingHost(i, (float)(combo->getSelectedItemIndex())/(getFilter()->getGUICtrls(i).getNumProp("comboRange")-1));
+						//Logger::writeToLog(String("comboEvent():")+String(getFilter()->getGUICtrls(i).getNumProp("sliderRange")));
+						getFilter()->setParameterNotifyingHost(i, (float)(combo->getSelectedItemIndex())/(getFilter()->getGUICtrls(i).getNumProp("sliderRange")));
 #else
-						getFilter()->setParameterNotifyingHost(i, (float)(combo->getSelectedItemIndex()));
+						getFilter()->getGUICtrls(i).setNumProp("value", (int)combo->getSelectedItemIndex()+1);
+						getFilter()->setParameterNotifyingHost(i, (float)(combo->getSelectedItemIndex()+1));
 #endif
 					}
 			}
@@ -2054,10 +2061,11 @@ for(int i=0;i<(int)getFilter()->getGUICtrlsSize();i++){
 	else if(getFilter()->getGUICtrls(i).getStringProp("type")==String("combobox")){
 	//if(controls[i])
 #ifdef Cabbage_Build_Standalone
-		//((CabbageComboBox*)controls[i])->combo->setSelectedId((int)getFilter()->getParameter(i), false);
+		((CabbageComboBox*)controls[i])->combo->setSelectedId((int)getFilter()->getParameter(i), false);
 #else
-		//Logger::writeToLog(String("timerCallback():")+String(getFilter()->getParameter(i)));
-		((CabbageComboBox*)controls[i])->combo->setSelectedId(int(getFilter()->getParameter(i)+.5), false);
+		Logger::writeToLog(String("timerCallback():")+String(getFilter()->getParameter(i)));
+		float val = getFilter()->getGUICtrls(i).getNumProp("sliderRange")*getFilter()->getParameter(i);
+		((CabbageComboBox*)controls[i])->combo->setSelectedId(int(val), false);
 #endif
 	}
 

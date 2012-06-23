@@ -26,7 +26,7 @@
 //#include "../Editor/CabbageEditorWindow.h"
 
 
-#ifndef Cabbage_No_Csound
+#ifndef Cabbage_No_Csound1
 #include "csound.hpp"
 #endif
 
@@ -60,7 +60,7 @@ class CabbagePluginAudioProcessor  : public AudioProcessor,
 #ifndef Cabbage_No_Csound
 	MYFLT cs_scale;
 	ScopedPointer<Csound> csound;				//Csound instance
-	ScopedPointer<MYFLT> CSspin, CSspout;	//Csound audio IO pointers
+	MYFLT *CSspin, *CSspout;	//Csound audio IO pointers
 	int csndIndex;				//Csound sample counter
 	int CSCompResult;			//result of Csound performKsmps
 	CsoundChannelListEntry* csoundChanList;  	// list of all available channels...

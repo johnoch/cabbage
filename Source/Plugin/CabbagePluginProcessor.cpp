@@ -117,7 +117,7 @@ csoundStatus(false),
 showMIDI(false), 
 csCompileResult(1), 
 changeMessageType(""), 
-guiOnOff(guiOnOff),
+guiOnOff(0),
 currentLine(-99),
 noSteps(0),
 noPatterns(0),
@@ -200,7 +200,6 @@ else{
 CabbagePluginAudioProcessor::~CabbagePluginAudioProcessor()
 {
 #ifndef Cabbage_No_Csound
-suspendProcessing (true);
 patStepMatrix.clear();
 patternNames.clear();
 patPfieldMatrix.clear();
@@ -211,12 +210,10 @@ if(!isGuiEnabled()){
 		Logger::writeToLog("about to cleanup Csound");
 		csound->Cleanup();
 		csound->Reset();
-		CabbageUtils::cabbageSleep(1000);
-		//csoundDestroy(csound->GetCsound());
+		csound = nullptr;
 		Logger::writeToLog("Csound cleaned up");
 	}
 }//end of gui enabled check
-//showMessage("Exiting Destructor");
 #endif
 }
 
@@ -674,8 +671,8 @@ void CabbagePluginAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiB
 float* audioBuffer;
 #ifndef Cabbage_No_Csound
 
-
 try{
+
 if(csCompileResult==0){
 keyboardState.processNextMidiBuffer (midiMessages, 0, buffer.getNumSamples(), true);
 midiBuffer = midiMessages;
@@ -685,29 +682,28 @@ ccBuffer = midiMessages;
 				{
 					if(patMatrixActive==1)
 					{
-					if(timeCounter==(int)(this->getSampleRate()/(bpm/60.f))){
-				    timeCounter=0;
-					for(int y=0;y<noPatterns;y++){
-					if(patStepMatrix[beat+(y*noSteps)].state==1){
-					String scoreEv;
-					scoreEv << "i \"" << patternNames[y].trim()
-					<< "\" 0 .5 " << patStepMatrix[beat+(y*noSteps)].p4
-					<< " "	<< patPfieldMatrix[y].p5 
-					<< " " << patPfieldMatrix[y].p6 
-					<< " " << patPfieldMatrix[y].p7
-					<< " " << patPfieldMatrix[y].p8
-					<< " " << patPfieldMatrix[y].p9;
-					Logger::writeToLog(scoreEv);
-					csound->InputMessage(scoreEv.toUTF8());
-					}
-					}
-					beat++;
-					if(beat==noSteps)
-					beat=0;
-					}
+						if(timeCounter==(int)(this->getSampleRate()/(bpm/60.f))){
+							timeCounter=0;
+							for(int y=0;y<noPatterns;y++){
+							if(patStepMatrix[beat+(y*noSteps)].state==1){
+								String scoreEv;
+								scoreEv << "i \"" << patternNames[y].trim()
+								<< "\" 0 .5 " << patStepMatrix[beat+(y*noSteps)].p4
+								<< " "	<< patPfieldMatrix[y].p5 
+								<< " " << patPfieldMatrix[y].p6 
+								<< " " << patPfieldMatrix[y].p7
+								<< " " << patPfieldMatrix[y].p8
+								<< " " << patPfieldMatrix[y].p9;
+								csound->InputMessage(scoreEv.toUTF8());
+								}
+							}
+						beat++;
+						if(beat==noSteps)
+						beat=0;
+						}
 
 					timeCounter++;   
-				}
+					}
 				
 
 				 for(int channel = 0; channel < getNumInputChannels(); channel++ )
@@ -763,6 +759,7 @@ catch(...){
 //==============================================================================
 // MIDI functions
 //==============================================================================
+
 #ifndef Cabbage_No_Csound
 int CabbagePluginAudioProcessor::OpenMidiInputDevice(CSOUND * csound, void **userData, const char* /*devName*/)
 {
