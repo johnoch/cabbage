@@ -25,6 +25,32 @@
 #include "CabbageUtils.h"
 #include "CabbageTable.h"
 
+class InfoWindow   : public DocumentWindow
+{
+ScopedPointer<WebBrowserComponent> htmlInfo;
+
+public:
+    //==============================================================================
+    InfoWindow(LookAndFeel* look, String file)  : DocumentWindow (String("Information"),
+                      Colours::black,
+                      DocumentWindow::allButtons)
+	{
+	setSize(600, 400);
+	this->setTitleBarHeight(20);
+	htmlInfo = new WebBrowserComponent(false);
+	htmlInfo->setBounds(0, 0, 600, 400);
+	setContentOwned(htmlInfo, true);
+	htmlInfo->goToURL(file);
+	}
+
+    ~InfoWindow(){};
+
+	void closeButtonPressed(){
+	setVisible(false);
+	};
+
+};
+
 //==============================================================================
 // custom button component with optional surrounding groupbox
 //==============================================================================
@@ -433,7 +459,7 @@ CabbageGroupbox(String name, String caption, String text, String colour, String 
                 Colour::fromString(colour));
         }
 		this->getProperties().set("colour", colour);
-		Logger::writeToLog("FonrColour:"+(fontColour));
+		
 		this->getProperties().set("fontcolour", fontColour);
 
         this->setText(text);
@@ -2016,7 +2042,6 @@ CabbagePluginAudioProcessor* myFilter;
 			String buttonState(value.substring(value.indexOf("|state:")+7, value.indexOf("|val")));
 			String buttonValue(value.substring(value.indexOf("|value:")+7, value.length()));
 			if(buttonState.getIntValue()==1){
-				Logger::writeToLog(buttonNum);
 				myFilter->patStepMatrix.getReference(buttonNum.getIntValue()).state = buttonState.getIntValue();
 				myFilter->patStepMatrix.getReference(buttonNum.getIntValue()).p4 = buttonValue.getIntValue();
 			}
@@ -2078,7 +2103,7 @@ CabbagePluginAudioProcessor* myFilter;
 			}
 	
 			for(int y=0;y<noPatterns;y++){
-			Logger::writeToLog(String(myFilter->beat+(y*noSteps)));
+			//Logger::writeToLog(String(myFilter->beat+(y*noSteps)));
 			if(stepButton[myFilter->beat+(y*noSteps)]->getToggleState()==1){			
 			stepButton[myFilter->beat+(y*noSteps)]->setActiveColour("yellow");
 			stepButton[myFilter->beat+(y*noSteps)]->repaint();

@@ -264,7 +264,7 @@ void CabbagePluginAudioProcessor::createGUI(String source)
 						csdLine = csdLine.trimStart();
 						//csdLine = csdLine.removeCharacters(" \\");
 						//csdLine = csdLine.removeCharacters(",\\");
-						Logger::writeToLog(csdLine);
+						//Logger::writeToLog(csdLine);
 						StringArray tokes;
 						tokes.addTokens(csdLine.trimEnd(), ", ", "\"");
 						
@@ -300,6 +300,7 @@ void CabbagePluginAudioProcessor::createGUI(String source)
 								||tokes.getReference(0).equalsIgnoreCase(String("vumeter"))
 								||tokes.getReference(0).equalsIgnoreCase(String("patmatrix"))
 								||tokes.getReference(0).equalsIgnoreCase(String("source"))
+								||tokes.getReference(0).equalsIgnoreCase(String("infobutton"))
 								||tokes.getReference(0).equalsIgnoreCase(String("snapshot"))
 								||tokes.getReference(0).equalsIgnoreCase(String("hostrecording"))
 								||tokes.getReference(0).equalsIgnoreCase(String("groupbox")))

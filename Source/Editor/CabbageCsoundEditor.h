@@ -380,6 +380,36 @@ public:
 		}
 	};
 
+	class helpPopup : public Component
+	{
+	String helpText;
+	Colour background, text, outline;
+	Font font;
+	public:
+		helpPopup(){}
+		~helpPopup(){}
+
+		void paint(Graphics& g){
+                       g.fillAll(background);
+                       g.setColour(outline);
+                       int width = getWidth();
+                       int height = getHeight();
+                       g.drawRect(1, 1, getWidth()-2, getHeight()-2);
+					   g.setColour(Colours::black);
+                       Justification just(33);
+                       g.drawFittedText(helpText, 10, 10, width-10, height-25, just, 5, 0.2);
+			}
+
+		void resized(){
+			repaint();
+		}
+
+		void setPopupText(String textString){
+			helpText = textString;
+			repaint();
+		}
+
+	};
 
 	int fontSize;
 	ScopedPointer<TabbedComponent> tabComp;
@@ -390,6 +420,7 @@ public:
 	ScopedPointer<TextEditor> output;
 	ScopedPointer<CabbageLookAndFeel> lookAndFeel;
 	ScopedPointer<helpContext> helpLabel;
+	ScopedPointer<helpPopup> helpPopupMenu;
 	StretchableLayoutManager horizontalLayout;
     ScopedPointer<StretchableLayoutResizerBar> horizontalDividerBar;
 	void setFontSize(String zoom);

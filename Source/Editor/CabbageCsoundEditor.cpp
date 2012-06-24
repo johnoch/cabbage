@@ -12,6 +12,7 @@ lookAndFeel = new CabbageLookAndFeel();
 opcodes.addLines(String((BinaryData::opcodes_txt)));
 csoundDoc.addListener(this);
 textEditor = new CodeEditorExtended(csoundDoc, &csoundToker);
+
 textEditor->setBounds(0, 0, getWidth(), getHeight());
 textEditor->editor->setFont(Font(String("Courier New"), 15, 1));
 //appProperties->testWriteAccess(true, true, true);
@@ -46,9 +47,16 @@ output->setColour(0x1000200, col);
 output->setColour(0x1000201, Colours::white);
 
 horizontalDividerBar = new StretchableLayoutResizerBar(&horizontalLayout, 1, false);
+oldLookAndFeel = new OldSchoolLookAndFeel();
+
+helpPopupMenu = new helpPopup();
+helpPopupMenu->setLookAndFeel(oldLookAndFeel);
+helpPopupMenu->setBounds(0, 0, 100, 50);
+helpPopupMenu->setAlwaysOnTop(true);
+
+textEditor->addAndMakeVisible(helpPopupMenu);
 
 helpLabel = new helpContext();
-oldLookAndFeel = new OldSchoolLookAndFeel();
 helpLabel->setLookAndFeel(oldLookAndFeel);
 helpLabel->setBackgroundColour(CabbageUtils::getComponentSkin());
 helpLabel->setOutlineColour(Colours::grey);
@@ -357,10 +365,10 @@ if(topLevelMenuIndex==0)
 	 m1.addCommandItem(&commandManager, CommandIDs::fileOpen);
 	 m1.addCommandItem(&commandManager, CommandIDs::fileSave);
 	 m1.addCommandItem(&commandManager, CommandIDs::fileSaveAs);
-	 m1.addSeparator();
-	 m2.addCommandItem(&commandManager, CommandIDs::fileExportSynth);
-	 m2.addCommandItem(&commandManager, CommandIDs::fileExportEffect);
-	 m1.addSubMenu(String("Export Plugin"), m2);
+	 //m1.addSeparator();
+	 //m2.addCommandItem(&commandManager, CommandIDs::fileExportSynth);
+	 //m2.addCommandItem(&commandManager, CommandIDs::fileExportEffect);
+	 //m1.addSubMenu(String("Export Plugin"), m2);
 	 return m1;
 	}
 else if(topLevelMenuIndex==1)
@@ -370,10 +378,10 @@ else if(topLevelMenuIndex==1)
 	m1.addCommandItem(&commandManager, CommandIDs::editCut);
 	m1.addCommandItem(&commandManager, CommandIDs::editCopy);
 	m1.addCommandItem(&commandManager, CommandIDs::editPaste);
-	m1.addSeparator();
-	m2.addCommandItem(&commandManager, CommandIDs::editZoomIn);
-	m2.addCommandItem(&commandManager, CommandIDs::editZoomOut);
-	m1.addSubMenu(String("Font Size"), m2);
+	//m1.addSeparator();
+	//m2.addCommandItem(&commandManager, CommandIDs::editZoomIn);
+	//m2.addCommandItem(&commandManager, CommandIDs::editZoomOut);
+	//m1.addSubMenu(String("Font Size"), m2);
 	return m1;
 	}
 

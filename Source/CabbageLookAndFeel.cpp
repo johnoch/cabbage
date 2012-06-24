@@ -1063,7 +1063,6 @@ void CabbageLookAndFeel::drawComboBox(Graphics& g, int width, int height, bool /
 	//----- For the main background
 	//----- If using a tracker fill
 	String bgColour = box.getProperties().getWithDefault(String("colour"), "");
-	Logger::writeToLog(bgColour);
 	String fontColour = box.getProperties().getWithDefault(String("fontcolour"), "");
 	Colour bgCol, fCol;
 	if(bgColour.length()>2){

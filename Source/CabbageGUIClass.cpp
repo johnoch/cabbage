@@ -112,6 +112,18 @@ CabbageGUIClass::CabbageGUIClass(String compStr, int ID):
           //name.append(String(ID), 1024);
 	}
 
+    else if(strTokens[0].indexOfIgnoreCase("infobutton")!=-1){
+          top = 10;
+          left = 10;
+          width = 600;
+          height = 440;
+          channel = "";
+          name = "infobutton";
+		  caption = "";
+		  type = name;
+          //name.append(String(ID), 1024);
+	}
+
     else if(strTokens[0].indexOfIgnoreCase("patmatrix")!=-1){
           top = 10;
           left = 10;
@@ -637,10 +649,8 @@ int CabbageGUIClass::parse(String str)
 				else{
               scaleX = strTokens[0].trim().getFloatValue();  
 			  scaleX = scaleX/width;
-			  Logger::writeToLog("ScaleX:"+String(scaleX));
               scaleY = strTokens[1].trim().getFloatValue();  
 			  scaleY = scaleY/height;
-			  Logger::writeToLog("ScaleY:"+String(scaleY));
 				}
             }
 			else if(identArray.getReference(indx).toLowerCase().equalsIgnoreCase("bounds(")){

@@ -26,7 +26,7 @@
 //#include "../Editor/CabbageEditorWindow.h"
 
 
-#ifndef Cabbage_No_Csound1
+#ifndef Cabbage_No_Csound
 #include "csound.hpp"
 #endif
 

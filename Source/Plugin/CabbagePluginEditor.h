@@ -84,6 +84,7 @@ private:
 	void InsertImage(CabbageGUIClass &cAttr);
 	void InsertLabel(CabbageGUIClass &cAttr);
 	void InsertTable(CabbageGUIClass &cAttr);
+	void InsertInfoButton(CabbageGUIClass &cAttr);
 	void InsertLineSeparator(CabbageGUIClass &cAttr);
 	void InsertPatternMatrix(CabbageGUIClass &cAttr);
 	void InsertSnapshot(CabbageGUIClass &cAttr);
@@ -110,6 +111,7 @@ private:
 	//ScopedPointer<CabbagePlantWindow> subPatch;
 	OwnedArray<CabbageButton> plantButton;
 	OwnedArray<CabbagePlantWindow> subPatch;
+	ScopedPointer<InfoWindow> infoWindow;
 #ifdef Cabbage_GUI_Editor
 	ScopedPointer<CabbageMainPanel> componentPanel;
 	ScopedPointer<ComponentLayoutEditor> layoutEditor;

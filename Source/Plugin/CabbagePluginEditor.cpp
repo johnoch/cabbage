@@ -387,6 +387,9 @@ for(int i=0;i<getFilter()->getGUILayoutCtrlsSize();i++){
 	else if(getFilter()->getGUILayoutCtrls(i).getStringProp("type")==String("source")){
 		InsertSourceButton(getFilter()->getGUILayoutCtrls(i));   
 		}
+	else if(getFilter()->getGUILayoutCtrls(i).getStringProp("type")==String("infobutton")){
+		InsertInfoButton(getFilter()->getGUILayoutCtrls(i));   
+		}
 	else if(getFilter()->getGUILayoutCtrls(i).getStringProp("type")==String("line")){
 		InsertLineSeparator(getFilter()->getGUILayoutCtrls(i));   
 		}
@@ -841,6 +844,63 @@ catch(...){
 }
 
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//	Info button. 
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+void CabbagePluginAudioProcessorEditor::InsertInfoButton(CabbageGUIClass &cAttr)
+{
+try{
+
+	layoutComps.add(new CabbageButton(cAttr.getStringProp("name"),
+		cAttr.getStringProp("caption"),
+		cAttr.getItems(1-(int)cAttr.getNumProp("value")),
+		cAttr.getColourProp("colour"),
+		cAttr.getColourProp("fontcolour")));	
+	int idx = layoutComps.size()-1;
+
+	float left = cAttr.getNumProp("left");
+	float top = cAttr.getNumProp("top");
+	float width = cAttr.getNumProp("width");
+	float height = cAttr.getNumProp("height");
+
+	//check to see if widgets is anchored
+	//if it is offset it's position accordingly. 
+	int relY=0,relX=0;
+	for(int y=0;y<layoutComps.size();y++){
+	if(cAttr.getStringProp("reltoplant").length()>0){
+	if(layoutComps[y]->getProperties().getWithDefault(String("plant"), -99).toString().equalsIgnoreCase(cAttr.getStringProp("reltoplant")))
+	{
+		width = width*layoutComps[y]->getWidth();
+		height = height*layoutComps[y]->getHeight();
+        top = (top*layoutComps[y]->getHeight());
+		left = (left*layoutComps[y]->getWidth());
+
+		if(layoutComps[y]->getName().containsIgnoreCase("groupbox")||
+			layoutComps[y]->getName().containsIgnoreCase("image"))
+			{			
+			layoutComps[idx]->setBounds(left, top, width, height);
+			//if component is a member of a plant add it directly to the plant
+			layoutComps[y]->addAndMakeVisible(layoutComps[idx]);
+			}
+	}
+	}
+	else{
+	((CabbageButton*)layoutComps[idx])->setBounds(left+relX, top+relY, width, height);
+	componentPanel->addAndMakeVisible(layoutComps[idx]);
+	}
+	}
+	((CabbageButton*)layoutComps[idx])->button->setName("infobutton");
+	((CabbageButton*)layoutComps[idx])->button->getProperties().set(String("filename"), cAttr.getStringProp("file"));
+	layoutComps[idx]->getProperties().set(String("plant"), var(cAttr.getStringProp("plant")));
+	((CabbageButton*)layoutComps[idx])->button->addListener(this);
+	((CabbageButton*)layoutComps[idx])->button->setButtonText(cAttr.getItems(0));
+
+}
+catch(...){
+    Logger::writeToLog(String("Syntax error: 'info button..."));
+    }
+}
+
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //	VU widget. 
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 void CabbagePluginAudioProcessorEditor::InsertVUMeter(CabbageGUIClass &cAttr)
@@ -935,11 +995,6 @@ try{
 	if(cAttr.getStringProp("reltoplant").length()>0){
 	if(layoutComps[y]->getProperties().getWithDefault(String("plant"), -99).toString().equalsIgnoreCase(cAttr.getStringProp("reltoplant")))
 	{
-		//width = width*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
-		//height = height*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
-		//top = top*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
-		//left = left*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
-
 		if(layoutComps[y]->getName().containsIgnoreCase("groupbox")||
 			layoutComps[y]->getName().containsIgnoreCase("image"))
 			{			
@@ -1103,21 +1158,16 @@ try{
         if(cAttr.getStringProp("reltoplant").length()>0){
         if(layoutComps[y]->getProperties().getWithDefault(String("plant"), -99).toString().equalsIgnoreCase(cAttr.getStringProp("reltoplant")))
                 {
- /*               width = width*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
-                height = height*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
-                top = top*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
-                left = left*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
- */
-		
-		width = width*layoutComps[y]->getWidth();
-		height = height*layoutComps[y]->getHeight();
+ 
+				width = width*layoutComps[y]->getWidth();
+				height = height*layoutComps[y]->getHeight();
 
-		if(cAttr.getStringProp("type").equalsIgnoreCase("rslider"))
-		if(width<height) height = width;
-		else if(height<width) width = height;
+				if(cAttr.getStringProp("type").equalsIgnoreCase("rslider"))
+				if(width<height) height = width;
+				else if(height<width) width = height;
 
-        top = (top*layoutComps[y]->getHeight());
-		left = (left*layoutComps[y]->getWidth());
+				top = (top*layoutComps[y]->getHeight());
+				left = (left*layoutComps[y]->getWidth());
 				if(layoutComps[y]->getName().containsIgnoreCase("groupbox")||
                         layoutComps[y]->getName().containsIgnoreCase("image"))
                         {                      
@@ -1355,6 +1405,26 @@ void CabbagePluginAudioProcessorEditor::buttonClicked(Button* button)
 if(!getFilter()->isGuiEnabled()){
 	if(button->isEnabled()){     // check button is ok before sending data to on named channel
 	if(dynamic_cast<TextButton*>(button)){//check what type of button it is
+		//deal with non-interactive buttons first..
+			if(button->getName()=="source"){
+				getFilter()->createAndShowSourceEditor(lookAndFeel);
+			}
+			else if(button->getName()=="infobutton"){
+				if(!infoWindow){
+				String file = getFilter()->getCsoundInputFile().getParentDirectory().getFullPathName();
+				file.append("\\", 5);
+				file.append(button->getProperties().getWithDefault("filename", ""), 1024);
+				showMessage(file);
+				infoWindow = new InfoWindow(lookAndFeel, file);
+				infoWindow->centreWithSize(600, 400);
+				infoWindow->toFront(true);
+				infoWindow->setVisible(true);
+				}
+				else
+					infoWindow->setVisible(true);
+			}
+
+
 		for(int i=0;i<(int)getFilter()->getGUICtrlsSize();i++){//find correct control from vector
 			if(getFilter()->getGUICtrls(i).getStringProp("type")==String("button"))
 			{
@@ -1382,9 +1452,6 @@ if(!getFilter()->isGuiEnabled()){
 			}
 			}
 			//source button to show editor when in plugin mode
-			else if(button->getName()=="source"){
-				getFilter()->createAndShowSourceEditor(lookAndFeel);
-			}
 			else{
 				//setProperties to say if window is open...
 				for(int p=0;p<getFilter()->getGUILayoutCtrlsSize();p++){
@@ -1983,7 +2050,7 @@ try{
 		componentPanel->addAndMakeVisible(controls[idx]);		
 	}
 
-	Logger::writeToLog(cAttr.getPropsString());
+	//Logger::writeToLog(cAttr.getPropsString());
 }
 catch(...){
     Logger::writeToLog(String("Syntax error: 'pattern matrix..."));
