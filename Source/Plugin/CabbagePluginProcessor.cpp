@@ -77,8 +77,8 @@ csCompileResult = csound->Compile( const_cast<char*>(inputfile.toUTF8().getAddre
 if(csCompileResult==0){
 	//simple hack to allow tables to be set up correctly. 
 	csound->PerformKsmps();
-	//csound->SetScoreOffsetSeconds(0);
-	//csound->RewindScore();
+	csound->SetScoreOffsetSeconds(0);
+	csound->RewindScore();
 	csound->SetMessageCallback(CabbagePluginAudioProcessor::messageCallback);
 	if(csound->GetSpout()==nullptr);
 	CSspout = csound->GetSpout();
@@ -248,8 +248,8 @@ void CabbagePluginAudioProcessor::createGUI(String source)
 							lines=0;
 							while(multiLine){
 							if(csdText[i+lines].contains("), \\")||
-											csdText[i].contains("),\\")||
-											csdText[i].contains(") \\"))
+											csdText[i+lines].contains("),\\")||
+											csdText[i+lines].contains(") \\"))
 								lines++;
 							else multiLine=false;
 							}
@@ -302,6 +302,7 @@ void CabbagePluginAudioProcessor::createGUI(String source)
 								||tokes.getReference(0).equalsIgnoreCase(String("source"))
 								||tokes.getReference(0).equalsIgnoreCase(String("infobutton"))
 								||tokes.getReference(0).equalsIgnoreCase(String("snapshot"))
+								||tokes.getReference(0).equalsIgnoreCase(String("table"))
 								||tokes.getReference(0).equalsIgnoreCase(String("hostrecording"))
 								||tokes.getReference(0).equalsIgnoreCase(String("groupbox")))
 						{
@@ -342,7 +343,6 @@ void CabbagePluginAudioProcessor::createGUI(String source)
 								||tokes.getReference(0).equalsIgnoreCase(String("vslider"))
 								||tokes.getReference(0).equalsIgnoreCase(String("rslider"))
 								||tokes.getReference(0).equalsIgnoreCase(String("combobox"))
-								||tokes.getReference(0).equalsIgnoreCase(String("table"))
 								||tokes.getReference(0).equalsIgnoreCase(String("checkbox"))
 								||tokes.getReference(0).equalsIgnoreCase(String("xypad"))
 								||tokes.getReference(0).equalsIgnoreCase(String("button"))){

@@ -1744,6 +1744,7 @@ CabbageTable(String name, String text, String caption, int tblSize): tableSize(t
 
 //---------------------------------------------
 void fillTable(int ID, Array<float> yValues){
+	if(yValues.size()>1)
 	table->fillTable(ID, yValues);
 }
 

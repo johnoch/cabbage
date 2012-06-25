@@ -393,6 +393,9 @@ for(int i=0;i<getFilter()->getGUILayoutCtrlsSize();i++){
 	else if(getFilter()->getGUILayoutCtrls(i).getStringProp("type")==String("line")){
 		InsertLineSeparator(getFilter()->getGUILayoutCtrls(i));   
 		}
+	else if(getFilter()->getGUILayoutCtrls(i).getStringProp("type")==String("table")){	
+		InsertTable(getFilter()->getGUILayoutCtrls(i));       //insert xypad	
+		}
 }
 //add interactive controls
 for(int i=0;i<getFilter()->getGUICtrlsSize();i++){
@@ -1720,11 +1723,11 @@ try{
 		//if table is not valid fill our array with at least one dummy point
 		tableValues.add(0); 
 	}
-	controls.add(new CabbageTable(cAttr.getStringProp("name"),
+	layoutComps.add(new CabbageTable(cAttr.getStringProp("name"),
 		cAttr.getStringProp("caption"),
 		cAttr.getItems(0),
 		tableSize));	
-	int idx = controls.size()-1;
+	int idx = layoutComps.size()-1;
 	float left = cAttr.getNumProp("left");
 	float top = cAttr.getNumProp("top");
 	float width = cAttr.getNumProp("width");
@@ -1749,24 +1752,24 @@ try{
 		if(layoutComps[y]->getName().containsIgnoreCase("groupbox")||
 			layoutComps[y]->getName().containsIgnoreCase("image"))
 			{			
-			controls[idx]->setBounds(left, top, width, height);
+			layoutComps[idx]->setBounds(left, top, width, height);
 			//if component is a member of a plant add it directly to the plant
-			layoutComps[y]->addAndMakeVisible(controls[idx]);
+			layoutComps[y]->addAndMakeVisible(layoutComps[idx]);
 			}
 		}
 	}
 		else{
-	    controls[idx]->setBounds(left+relX, top+relY, width, height);
-		componentPanel->addAndMakeVisible(controls[idx]);		
+	    layoutComps[idx]->setBounds(left+relX, top+relY, width, height);
+		componentPanel->addAndMakeVisible(layoutComps[idx]);		
 		}
 	}
 	}
 	else{
-	    controls[idx]->setBounds(left+relX, top+relY, width, height);
-		componentPanel->addAndMakeVisible(controls[idx]);		
+	    layoutComps[idx]->setBounds(left+relX, top+relY, width, height);
+		componentPanel->addAndMakeVisible(layoutComps[idx]);		
 	}
 	
-	((CabbageTable*)controls[idx])->fillTable(0, tableValues);
+	((CabbageTable*)layoutComps[idx])->fillTable(0, tableValues);
 //	((CabbageTable*)controls[idx])->table->addActionListener(this);
 
 	Logger::writeToLog(cAttr.getPropsString());

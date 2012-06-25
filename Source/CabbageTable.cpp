@@ -148,7 +148,7 @@ void Table::createAmpOverviews (Array<float> csndInputData)
 	}
 	setDataSource (zoom);
 	createEnvPath();
-	makeTableEditable();
+	//makeTableEditable();
 }
 
 //==============================================================
