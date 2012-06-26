@@ -41,7 +41,7 @@ class CabbageGUIClass : public CabbageUtils
         StringArray items, onoffcaptions, key, channels, snapshotData;
 
         String channel, name, sizeText, posText, boundsText, text, type, plant, reltoplant, bounds, range,
-        shape, beveltype, caption, kind, topitem, yChannel, xChannel,
+        shape, beveltype, caption, kind, topitem, yChannel, xChannel, author,
         exit, csstdout, cssetup, file, debugMessage, xyChannel, pluginID, preset;
 		Colour outline, fill, fontcolour, textcolour, colour, trackerFill;
 		int tableNum, textBox, numPresets, masterSnap, plantButton;

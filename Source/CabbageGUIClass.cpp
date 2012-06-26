@@ -443,6 +443,7 @@ int CabbageGUIClass::parse(String str)
 	identArray.add("tracker(");
 	identArray.add("preset(");
 	identArray.add("popup(");
+	identArray.add("author(");
 	//add a few dummy identifiers so we can catch bogus one in the Cabbage code
 	identArray.add("");
 	identArray.add("");
@@ -627,7 +628,10 @@ int CabbageGUIClass::parse(String str)
 				preset = strTokens[0].trim();
 			}
 
-
+			else if(identArray.getReference(indx).toLowerCase().equalsIgnoreCase("author(")){
+				author = strTokens[0].trim();
+				//CabbageUtils::showMessage(author);
+			}
 			//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 			//numeric paramters
 			//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -750,7 +754,7 @@ int CabbageGUIClass::parse(String str)
             else if(identArray.getReference(indx).toLowerCase().equalsIgnoreCase("textbox(")){
 				textBox = strTokens[0].trim().getFloatValue();  
 			}
-            else if(identArray.getReference(indx).toLowerCase().equalsIgnoreCase("tablenumber(")){
+            else if(identArray.getReference(indx).toLowerCase().equalsIgnoreCase("tablenum(")){
 				tableNum = strTokens[0].trim().getFloatValue();  
 			}
             else if(identArray.getReference(indx).toLowerCase().equalsIgnoreCase("popup(")){
@@ -858,6 +862,8 @@ double CabbageGUIClass::getNumProp(String prop)
 			return noSteps;
 		else if(prop.equalsIgnoreCase("rCtrls"))
 			return rCtrls;
+		else if(prop.equalsIgnoreCase("tableNum"))
+			return tableNum;
 		else if(prop.equalsIgnoreCase("masterSnap"))
 			return masterSnap;
 		else if(prop.equalsIgnoreCase("lineIsVertical"))
@@ -1004,6 +1010,8 @@ String CabbageGUIClass::getStringProp(String prop)
 			return preset.trim();
 		else if(prop.equalsIgnoreCase("pluginID"))
 			return pluginID;
+		else if(prop.equalsIgnoreCase("author"))
+			return author;
 		else if(prop.equalsIgnoreCase("snapshotData")){
 			String data;
 			data << "------------------------ Instrument ID: " << preset << "\n";

@@ -31,7 +31,7 @@
 
 //==============================================================================
 CabbagePluginAudioProcessorEditor::CabbagePluginAudioProcessorEditor (CabbagePluginAudioProcessor* ownerFilter)
-: AudioProcessorEditor (ownerFilter), lineNumber(0), inValue(0)
+: AudioProcessorEditor (ownerFilter), lineNumber(0), inValue(0), authorText("")
 {
 //set custom skin yo use
 lookAndFeel = new CabbageLookAndFeel(); 
@@ -326,7 +326,7 @@ void CabbagePluginAudioProcessorEditor::paint (Graphics& g)
 
 	}
 	else {
-		g.setColour(CabbageUtils::getBackgroundSkin());
+		g.setColour(formColour);
 		g.fillAll();
 
 		g.setColour (CabbageUtils::getTitleFontColour());
@@ -335,17 +335,21 @@ void CabbagePluginAudioProcessorEditor::paint (Graphics& g)
 		//	0, 0, logo.getWidth(), logo.getHeight(), true);
 		g.drawImage (logo, (getWidth()) - (logo.getWidth()*.75), getHeight()-25, logo.getWidth()*0.65, logo.getHeight()*0.65, 
 			0, 0, logo.getWidth(), logo.getHeight(), true);
+		g.setColour(fontColour);
+		g.drawFittedText(authorText, 10, getHeight()-30, getWidth()*.65, logo.getHeight(), 1, 1);   
 		//g.drawLine(10, getHeight()-27, getWidth()-10, getHeight()-27, 0.2);
 	}
 //componentPanel->toFront(true);
 //componentPanel->grabKeyboardFocus();
 #else
-		g.setColour(CabbageUtils::getBackgroundSkin());
+		g.setColour(formColour);
 		g.fillAll();
 		g.setColour (CabbageUtils::getTitleFontColour());
 		Image logo = ImageCache::getFromMemory (BinaryData::logo1_png, BinaryData::logo1_pngSize);
 		g.drawImage (logo, (getWidth()) - (logo.getWidth()*.75), getHeight()-25, logo.getWidth()*0.65, logo.getHeight()*0.65, 
 			0, 0, logo.getWidth(), logo.getHeight(), true);
+		g.setColour(fontColour);
+		g.drawFittedText(authorText, 10, getHeight()-30, getWidth()*.65, logo.getHeight(), 1, 1);  
 #endif
 }
 
@@ -697,14 +701,25 @@ try{
 	int height = cAttr.getNumProp("height");
 	setSize(width, height);
 	componentPanel->setBounds(left, top, width, height);
-	formColour = Colour::fromString(cAttr.getStringProp("colour"));
+	if(cAttr.getColourProp("colour").length()>2)
+	formColour = Colour::fromString(cAttr.getColourProp("colour"));
+	else
+	formColour = CabbageUtils::getBackgroundSkin();
+
+	if(cAttr.getColourProp("fontcolour").length()>2)
+	fontColour = Colour::fromString(cAttr.getColourProp("fontcolour"));
+	else
+	fontColour = CabbageUtils::getComponentFontColour();
+
+	authorText = cAttr.getStringProp("author");
+
 #ifdef Cabbage_GUI_Editor
 	componentPanel->setCompColour(cAttr.getStringProp("colour"));
 #else
-	formColour = Colour::fromString(cAttr.getStringProp("colour"));
+	formColour = Colour::fromString(cAttr.getColourProp("colour"));
 #endif
 
-	
+
 #ifdef Cabbage_Build_Standalone
 	formPic = getFilter()->getCsoundInputFile().getParentDirectory().getFullPathName();
 
@@ -2097,6 +2112,7 @@ void CabbagePluginAudioProcessorEditor::timerCallback()
 // It is possible in here to update our GUI controls with control
 // signals from Csound. I've removed this for now as most host allow automation.
 // It may prove useful however when running Cabbage in standalone mode...
+
 #ifndef Cabbage_No_Csound	
 //#ifndef Cabbage_Build_Standalone
 for(int i=0;i<(int)getFilter()->getGUICtrlsSize();i++){
@@ -2187,6 +2203,19 @@ for(int i=0;i<getFilter()->getGUILayoutCtrlsSize();i++){
 		((CabbageVUMeter*)layoutComps[i])->vuMeter->setVULevel(y, val);
 		}
 	}
+	else if(getFilter()->getGUILayoutCtrls(i).getStringProp("type").containsIgnoreCase("table")){
+		int	tableSize = getFilter()->getCsound()->TableLength(getFilter()->getGUILayoutCtrls(i).getNumProp("tableNum"));
+		float val = getFilter()->getCsound()->GetChannel(getFilter()->getGUILayoutCtrls(i).getStringProp("channel").toUTF8());
+		
+		if(val<0){
+		Array <float> tableValues = getFilter()->getTable(1, tableSize);
+		((CabbageTable*)layoutComps[i])->fillTable(0, tableValues);
+		getFilter()->getCsound()->SetChannel(getFilter()->getGUILayoutCtrls(i).getStringProp("channel").toUTF8(), "");
+		getFilter()->getCsound()->SetChannel(getFilter()->getGUILayoutCtrls(i).getStringProp("channel").toUTF8(), 0.f);
+		}
+
+	}
+
 	
 }
 

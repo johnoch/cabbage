@@ -123,7 +123,8 @@ private:
 
 	AudioPlayHead::CurrentPositionInfo hostInfo;
     void changeListenerCallback (ChangeBroadcaster *source);
-	Colour formColour;
+	Colour formColour, fontColour;
+	String authorText;
 	String formPic;
 	float inValue;
 	ScopedPointer<CabbageLookAndFeel> lookAndFeel;
