@@ -88,6 +88,7 @@ private:
 	void InsertLineSeparator(CabbageGUIClass &cAttr);
 	void InsertPatternMatrix(CabbageGUIClass &cAttr);
 	void InsertSnapshot(CabbageGUIClass &cAttr);
+	void InsertPVSViewer(CabbageGUIClass &cAttr);
 	void buttonClicked (Button*);
 	void timerCallback();
 	void mouseDown(const MouseEvent &e);

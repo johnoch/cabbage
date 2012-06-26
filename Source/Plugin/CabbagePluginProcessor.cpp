@@ -79,6 +79,14 @@ if(csCompileResult==0){
 	csound->PerformKsmps();
 	csound->SetScoreOffsetSeconds(0);
 	csound->RewindScore();
+	//set up PVS struct
+    dataout = new PVSDATEXT;
+    dataout->N = 1024;
+    dataout->format = 0;
+    dataout->overlap = 256;
+    dataout->winsize = 1024;
+    dataout->frame = (float *) calloc(sizeof(float),(dataout->N+2));
+
 	csound->SetMessageCallback(CabbagePluginAudioProcessor::messageCallback);
 	if(csound->GetSpout()==nullptr);
 	CSspout = csound->GetSpout();
@@ -165,10 +173,20 @@ patPfieldMatrix.clear();
 csoundChanList = NULL;
 numCsoundChannels = 0;
 csndIndex = 32;
-csound->SetMessageCallback(CabbagePluginAudioProcessor::messageCallback);
 startTimer(15);
 csCompileResult = csound->Compile( const_cast<char*>(csdFile.getFullPathName().toUTF8().getAddress()));
 if(csCompileResult==0){
+	//simple hack to allow tables to be set up correctly. 
+	csound->PerformKsmps();
+	csound->SetScoreOffsetSeconds(0);
+	csound->RewindScore();
+	//set up PVS struct
+    dataout = new PVSDATEXT;
+    dataout->N = 1024;
+    dataout->format = 0;
+    dataout->overlap = 256;
+    dataout->winsize = 1024;
+	csound->SetMessageCallback(CabbagePluginAudioProcessor::messageCallback);
 	CSspout = csound->GetSpout();
 	CSspin  = csound->GetSpin();
 	cs_scale = csound->Get0dBFS();
@@ -303,6 +321,7 @@ void CabbagePluginAudioProcessor::createGUI(String source)
 								||tokes.getReference(0).equalsIgnoreCase(String("infobutton"))
 								||tokes.getReference(0).equalsIgnoreCase(String("snapshot"))
 								||tokes.getReference(0).equalsIgnoreCase(String("table"))
+								||tokes.getReference(0).equalsIgnoreCase(String("pvsview"))
 								||tokes.getReference(0).equalsIgnoreCase(String("hostrecording"))
 								||tokes.getReference(0).equalsIgnoreCase(String("groupbox")))
 						{

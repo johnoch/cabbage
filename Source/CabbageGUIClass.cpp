@@ -302,6 +302,21 @@ CabbageGUIClass::CabbageGUIClass(String compStr, int ID):
 		  tableNum = 1;
           name.append(String(ID), 1024);
 	}
+    else if(strTokens[0].indexOfIgnoreCase("pvsview")!=-1){
+          top = 10;
+          left = 10;
+          width = 400;
+          height = 200;
+          colour = Colours::white;
+          name = "pvsview";
+		  type = name;
+		  value = 1;
+		  tableNum = 1;
+          name.append(String(ID), 1024);
+		  overlapSize = 256;
+		  fftSize = 1024;
+		  frameSize = 1024;
+	}
     else if(strTokens[0].indexOfIgnoreCase("xypad")!=-1){
           top = 10;
           left = 10;
@@ -407,7 +422,7 @@ int CabbageGUIClass::parse(String str)
 	identArray.add("rangey(");
 	identArray.add("plant(");
     identArray.add("channel(");
-	identArray.add("chan(");
+	identArray.add(" chan(");
     identArray.add("name(");
     identArray.add("textbox(");
 	identArray.add("instrs(");
@@ -443,6 +458,10 @@ int CabbageGUIClass::parse(String str)
 	identArray.add("tracker(");
 	identArray.add("preset(");
 	identArray.add("popup(");
+	identArray.add("fftsize(");
+	identArray.add("overlap(");
+	identArray.add("framesize(");
+	identArray.add("pvschan(");
 	identArray.add("author(");
 	//add a few dummy identifiers so we can catch bogus one in the Cabbage code
 	identArray.add("");
@@ -465,7 +484,7 @@ int CabbageGUIClass::parse(String str)
 			else if(identArray.getReference(indx).toLowerCase().equalsIgnoreCase("plant(")) plant = strTokens[0].trim();
 			else if(identArray.getReference(indx).toLowerCase().equalsIgnoreCase("caption(")) caption = strTokens[0].trim();
             else if(identArray.getReference(indx).toLowerCase().equalsIgnoreCase("channel(")||
-				identArray.getReference(indx).toLowerCase().equalsIgnoreCase("chan(")){
+				identArray.getReference(indx).toLowerCase().equalsIgnoreCase(" chan(")){
 					channel = strTokens[0].trim();
 					if(str.containsIgnoreCase("xypad")){
 					xChannel = strTokens[0].trim();
@@ -760,6 +779,18 @@ int CabbageGUIClass::parse(String str)
             else if(identArray.getReference(indx).toLowerCase().equalsIgnoreCase("popup(")){
 				plantButton = strTokens[0].trim().getIntValue();  
 			}
+            else if(identArray.getReference(indx).toLowerCase().equalsIgnoreCase("fftsize(")){
+				fftSize = strTokens[0].trim().getIntValue();  
+			}
+            else if(identArray.getReference(indx).toLowerCase().equalsIgnoreCase("framesize(")){
+				frameSize = strTokens[0].trim().getIntValue();  
+			}
+            else if(identArray.getReference(indx).toLowerCase().equalsIgnoreCase("overlap(")){
+				overlapSize = strTokens[0].trim().getIntValue();  
+			}
+            else if(identArray.getReference(indx).toLowerCase().equalsIgnoreCase("pvschan(")){
+				pvsChannel = strTokens[0].trim().getIntValue();  
+			}
 			
 
 			else if(identArray.getReference(indx).toLowerCase().equalsIgnoreCase(",line(")||
@@ -871,7 +902,15 @@ double CabbageGUIClass::getNumProp(String prop)
 		else if(prop.equalsIgnoreCase("button"))
 			return plantButton;
 		else if(prop.equalsIgnoreCase("noPatterns"))
-			return items.size(); 
+			return items.size();
+		else if(prop.equalsIgnoreCase("fftSize"))
+			return fftSize; 
+		else if(prop.equalsIgnoreCase("overlapSize"))
+			return overlapSize; 
+		else if(prop.equalsIgnoreCase("frameSize"))
+			return frameSize; 
+		else if(prop.equalsIgnoreCase("pvsChannel"))
+			return pvsChannel; 
 		else return -9999;
 }
 
@@ -940,6 +979,14 @@ void CabbageGUIClass::setNumProp(String prop, float val)
 			 valueY = val;
 		else if(prop.equalsIgnoreCase("button"))
 			 plantButton = val;
+		else if(prop.equalsIgnoreCase("fftSize"))
+			 fftSize = val;
+		else if(prop.equalsIgnoreCase("frameSize"))
+			 frameSize = val;
+		else if(prop.equalsIgnoreCase("overlapSize"))
+			 overlapSize = val;
+		else if(prop.equalsIgnoreCase("pvsChannel"))
+			 pvsChannel = val;
 }
 
 String CabbageGUIClass::getPropsString()

@@ -58,6 +58,7 @@ class CabbagePluginAudioProcessor  : public AudioProcessor,
 
 	//============== Csound related variables/methods ==============================
 #ifndef Cabbage_No_Csound
+	PVSDATEXT* dataout;
 	MYFLT cs_scale;
 	ScopedPointer<Csound> csound;				//Csound instance
 	MYFLT *CSspin, *CSspout;	//Csound audio IO pointers
@@ -274,6 +275,10 @@ public:
 
 	MYFLT getCSScale(){
 		return cs_scale;
+	}
+
+	PVSDATEXT* getPVSDataOut(){
+		return dataout;
 	}
 
 #endif

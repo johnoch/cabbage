@@ -98,7 +98,7 @@ File thisFile(File::getSpecialLocation(File::currentApplicationFile));
 	alert.showMessageBox(AlertWindow::NoIcon, thisFile.getFullPathName() , message, "Ok");
 }
 //===========================================================================================
-static void showMessage(float num){
+static void showMessage(double num){
 	String str(num);
 	File thisFile(File::getSpecialLocation(File::currentApplicationFile));
 

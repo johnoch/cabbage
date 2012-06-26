@@ -400,6 +400,9 @@ for(int i=0;i<getFilter()->getGUILayoutCtrlsSize();i++){
 	else if(getFilter()->getGUILayoutCtrls(i).getStringProp("type")==String("table")){	
 		InsertTable(getFilter()->getGUILayoutCtrls(i));       //insert xypad	
 		}
+	else if(getFilter()->getGUILayoutCtrls(i).getStringProp("type")==String("pvsview")){	
+		InsertPVSViewer(getFilter()->getGUILayoutCtrls(i));       //insert xypad	
+		}
 }
 //add interactive controls
 for(int i=0;i<getFilter()->getGUICtrlsSize();i++){
@@ -1720,6 +1723,60 @@ catch(...){
 }
 
 //+++++++++++++++++++++++++++++++++++++++++++
+//					pvs viewer
+//+++++++++++++++++++++++++++++++++++++++++++
+void CabbagePluginAudioProcessorEditor::InsertPVSViewer(CabbageGUIClass &cAttr)
+{
+	layoutComps.add(new CabbagePVSView(cAttr.getStringProp("name"),
+		cAttr.getStringProp("caption"),
+		cAttr.getStringProp("text"),
+		cAttr.getNumProp("frameSize"),
+		cAttr.getNumProp("fftSize"),
+		cAttr.getNumProp("overlapSize"),
+		getFilter()->getPVSDataOut()));	
+	int idx = layoutComps.size()-1;
+	float left = cAttr.getNumProp("left");
+	float top = cAttr.getNumProp("top");
+	float width = cAttr.getNumProp("width");
+	float height = cAttr.getNumProp("height");
+
+
+	int relY=0,relX=0;
+	if(layoutComps.size()>0){
+	for(int y=0;y<layoutComps.size();y++){
+	if(cAttr.getStringProp("reltoplant").length()>0){
+	if(layoutComps[y]->getProperties().getWithDefault(String("plant"), -99).toString().equalsIgnoreCase(cAttr.getStringProp("reltoplant")))
+		{
+		width = width*layoutComps[y]->getWidth();
+		height = height*layoutComps[y]->getHeight();
+        top = (top*layoutComps[y]->getHeight());
+		left = (left*layoutComps[y]->getWidth());
+
+		if(layoutComps[y]->getName().containsIgnoreCase("groupbox")||
+			layoutComps[y]->getName().containsIgnoreCase("image"))
+			{			
+			layoutComps[idx]->setBounds(left, top, width, height);
+			//if component is a member of a plant add it directly to the plant
+			layoutComps[y]->addAndMakeVisible(layoutComps[idx]);
+			}
+		}
+	}
+		else{
+	    layoutComps[idx]->setBounds(left+relX, top+relY, width, height);
+		componentPanel->addAndMakeVisible(layoutComps[idx]);		
+		}
+	}
+	}
+	else{
+	    layoutComps[idx]->setBounds(left+relX, top+relY, width, height);
+		componentPanel->addAndMakeVisible(layoutComps[idx]);		
+	}
+
+
+	
+}
+
+//+++++++++++++++++++++++++++++++++++++++++++
 //					table
 //+++++++++++++++++++++++++++++++++++++++++++
 void CabbagePluginAudioProcessorEditor::InsertTable(CabbageGUIClass &cAttr)
@@ -2210,10 +2267,18 @@ for(int i=0;i<getFilter()->getGUILayoutCtrlsSize();i++){
 		if(val<0){
 		Array <float> tableValues = getFilter()->getTable(1, tableSize);
 		((CabbageTable*)layoutComps[i])->fillTable(0, tableValues);
-		getFilter()->getCsound()->SetChannel(getFilter()->getGUILayoutCtrls(i).getStringProp("channel").toUTF8(), "");
 		getFilter()->getCsound()->SetChannel(getFilter()->getGUILayoutCtrls(i).getStringProp("channel").toUTF8(), 0.f);
 		}
 
+	}
+	else if(getFilter()->getGUILayoutCtrls(i).getStringProp("type").containsIgnoreCase("pvsview")){
+		float val = getFilter()->getCsound()->GetChannel(getFilter()->getGUILayoutCtrls(i).getStringProp("channel").toUTF8());
+		//Logger::writeToLog(String(getFilter()->getGUILayoutCtrls(i).getNumProp("pvsChannel")));
+		if(val<0){
+		getFilter()->getCsound()->PvsoutGet(getFilter()->getPVSDataOut(), getFilter()->getGUILayoutCtrls(i).getNumProp("pvsChannel"));
+		((CabbagePVSView*)layoutComps[i])->updatePVSStruct();
+		getFilter()->getCsound()->SetChannel(getFilter()->getGUILayoutCtrls(i).getStringProp("channel").toUTF8(), 0.f);
+		}
 	}
 
 	

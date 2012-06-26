@@ -49,12 +49,6 @@ output->setColour(0x1000201, Colours::white);
 horizontalDividerBar = new StretchableLayoutResizerBar(&horizontalLayout, 1, false);
 oldLookAndFeel = new OldSchoolLookAndFeel();
 
-helpPopupMenu = new helpPopup();
-helpPopupMenu->setLookAndFeel(oldLookAndFeel);
-helpPopupMenu->setBounds(0, 0, 100, 50);
-helpPopupMenu->setAlwaysOnTop(true);
-
-textEditor->addAndMakeVisible(helpPopupMenu);
 
 helpLabel = new helpContext();
 helpLabel->setLookAndFeel(oldLookAndFeel);

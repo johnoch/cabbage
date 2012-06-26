@@ -1159,7 +1159,6 @@ CabbageMessageConsole(String name, String caption, String text):
 		  offHeight(0),
 		  text(text)
 {	
-	String message("sdgsdfgdf\nsdgsdfgdf\nsdgsdfgdf\nsdgsdfgdf\nsdgsdfgdf\nsdgsdfgdf\nsdgsdfgdf\nsdgsdfgdf\nsdgsdfgdf\nsdgsdfgdf\nsdgsdfgdf\nsdgsdfgdf\nsdgsdfgdf\nsdgsdfgdf\nsdgsdfgdf\nsdgsdfgdf\nsdgsdfgdf\nsdgsdfgdf\nsdgsdfgdf\nsdgsdfgdf\nsdgsdfgdf\nsdgsdfgdf\nsdgsdfgdf\nsdgsdfgdf\nsdgsdfgdf\nsdgsdfgdf\nsdgsdfgdf\n");
 	editor->setLookAndFeel(lookAndFeel);
 	addAndMakeVisible(editor);
 	editor->setMultiLine(true);
@@ -1170,7 +1169,7 @@ CabbageMessageConsole(String name, String caption, String text):
 	editor->setColour(0x1000200, Colours::black);
 	//text colour ID
 	editor->setColour(0x1000201, Colours::green);
-	editor->setText(message);
+
 	if(caption.length()>0){
 		offX=10;
 		offY=15;
@@ -1188,11 +1187,10 @@ CabbageMessageConsole(String name, String caption, String text):
 
 void paint(Graphics &g){
 	//----- For drawing the border 
-	g.setColour (Colours::black);
-	g.setOpacity (0.4f);
+	g.setColour(CabbageUtils::getComponentSkin());
 	g.fillRoundedRectangle (0, 0, getWidth(), getHeight(), (getWidth()/25));
-	g.setOpacity(1);
-	g.fillRoundedRectangle (5, getHeight()-47, getWidth()-11, 40, (getWidth()/25));
+	g.setColour(Colours::black);
+	g.fillRoundedRectangle (3, getHeight()-47, getWidth()-6, 40, (getWidth()/25));
 
 	//----- For drawing the title
 	g.setColour (Colours::whitesmoke);
@@ -1200,7 +1198,7 @@ void paint(Graphics &g){
 	g.setFont (15, 0);
 	Justification just(1);
 	g.drawText (text, 20, 0, getWidth()-20, 30, just, false); 
-	//g.fillRect (0, 30, getWidth(), getHeight()-40);
+
 }
 
 //---------------------------------------------
@@ -1760,6 +1758,96 @@ this->setWantsKeyboardFocus(false);
 
 JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CabbageTable);
 };
+
+//==============================================================================
+// custom PVSView, for viewing pvs
+//==============================================================================
+
+class CabbagePVSView : public Component,
+						public SliderListener
+						
+{
+//ScopedPointer<LookAndFeel> lookFeel;
+PVSDATEXT* specData;
+String text;
+int offX, offY, offWidth, offHeight, frameSize, zoom;
+public:
+ScopedPointer<CabbageSlider> zoomSlider;
+ScopedPointer<CabbageTableViewer> table;
+//---- constructor -----
+CabbagePVSView(String name, String caption,  String text, int frameSize, int fftsize, int overlap, PVSDATEXT* inSpecData): 
+															text(text),
+															frameSize(frameSize),
+															specData(inSpecData)
+
+{
+	setName(name);
+	zoomSlider = new CabbageSlider("zoomSlider",
+                                            "Zoom",
+                                            "",
+                                            "horizontal",
+											CabbageUtils::getBackgroundSkin().toString(),
+											"",
+                                            0,
+											Colours::lime.toString()
+                                            );
+	zoomSlider->setBounds(10, getHeight()-50, getWidth()-10, 40);
+	addAndMakeVisible(zoomSlider);
+	zoomSlider->slider->setRange(0.1f, 0.9f, 0.01);
+	zoomSlider->slider->addListener(this);
+	
+}
+//---------------------------------------------
+~CabbagePVSView(){
+
+}
+
+void sliderValueChanged(Slider *slider){
+	zoom = 22050-(slider->getValue()*22050);
+}
+
+void paint(Graphics &g){ 
+	//----- For drawing the border 
+	g.setColour(CabbageUtils::getComponentSkin());
+	g.fillRoundedRectangle (0, 0, getWidth(), getHeight(), (getWidth()/25));
+	g.setColour(Colours::black);
+	g.fillRoundedRectangle (3, 20, getWidth()-6, getHeight()-30, (getWidth()/25));
+
+	//----- For drawing the title
+	g.setColour (Colours::whitesmoke);
+	g.setOpacity (0.8);
+	g.setFont (15, 0);
+	Justification just(1);
+	g.drawText (text, 20, -5, getWidth()-20, 30, just, false); 
+	//draw PVS data. 
+	for(int k=2;k<1026; k+=2)
+		{
+		g.setColour(Colours::lime);
+		if(specData->frame[k])
+			{
+			Random rnd(12);
+			//float amp = rnd.nextFloat();
+			float amp = specData->frame[k];
+			float freq = int(specData->frame[k+1]);
+			if(amp>0.001 && amp<1)
+				g.drawLine((freq/zoom)*getWidth(), (getHeight()-40)-(amp*getHeight()*.8f), (freq/zoom)*getWidth(), getHeight()-40, 2);
+			}
+		 }
+}
+//---------------------------------------------
+void resized()
+{
+zoomSlider->setBounds(10, getHeight()-50, getWidth()-10, 40);
+this->setWantsKeyboardFocus(false);
+}
+
+void updatePVSStruct(){
+repaint();
+}
+
+JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CabbagePVSView);
+};
+
 
 //==============================================================================
 // custom SnapshotControl, used for saving and recalling presets
