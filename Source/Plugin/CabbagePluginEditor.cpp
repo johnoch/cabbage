@@ -478,7 +478,7 @@ try{
 	componentPanel->addAndMakeVisible(layoutComps[idx]);
 	}
 	else{
-		plantButton.add(new CabbageButton(cAttr.getStringProp("name"), "", cAttr.getStringProp("plant"), CabbageUtils::getComponentSkin().toString(), ""));
+		plantButton.add(new CabbageButton(cAttr.getStringProp("plant"), "", cAttr.getStringProp("plant"), CabbageUtils::getComponentSkin().toString(), ""));
 		plantButton[plantButton.size()-1]->setBounds(cAttr.getNumProp("left"), cAttr.getNumProp("top"), 100, 30);
 		plantButton[plantButton.size()-1]->button->addButtonListener(this);
 		componentPanel->addAndMakeVisible(plantButton[plantButton.size()-1]);
@@ -871,7 +871,7 @@ void CabbagePluginAudioProcessorEditor::InsertInfoButton(CabbageGUIClass &cAttr)
 {
 try{
 
-	layoutComps.add(new CabbageButton(cAttr.getStringProp("name"),
+	layoutComps.add(new CabbageButton("infoButton",
 		cAttr.getStringProp("caption"),
 		cAttr.getItems(1-(int)cAttr.getNumProp("value")),
 		cAttr.getColourProp("colour"),
@@ -1324,6 +1324,7 @@ try{
 		componentPanel->addAndMakeVisible(controls[idx]);		
 	}
 	((CabbageButton*)controls[idx])->button->addListener(this);
+	//((CabbageButton*)controls[idx])->button->setName("button");
 	if(cAttr.getItemsSize()>0)
 	((CabbageButton*)controls[idx])->button->setButtonText(cAttr.getItems(cAttr.getNumProp("value")));
 #ifdef Cabbage_Build_Standalone
@@ -1447,15 +1448,16 @@ if(!getFilter()->isGuiEnabled()){
 
 
 		for(int i=0;i<(int)getFilter()->getGUICtrlsSize();i++){//find correct control from vector
+			
 			if(getFilter()->getGUICtrls(i).getStringProp("type")==String("button"))
-			{
+			{				
 			//+++++++++++++button+++++++++++++
+				Logger::writeToLog(getFilter()->getGUICtrls(i).getStringProp("name"));
+				Logger::writeToLog(button->getName());
 				if(getFilter()->getGUICtrls(i).getStringProp("name")==button->getName()){
 				//toggle button values
 				if(getFilter()->getGUICtrls(i).getNumProp("value")==0){
 				getFilter()->setParameterNotifyingHost(i, 1.f);
-				//for(int p=0;p<1024;p++)
-				//getFilter()->getCsound()->TableSet(1, p, 0);
 				getFilter()->getCsound()->SetChannel(getFilter()->getGUICtrls(i).getStringProp("channel").toUTF8(), 1.f);
 				getFilter()->getGUICtrls(i).setNumProp("value", 1);
 				}
@@ -1472,9 +1474,8 @@ if(!getFilter()->isGuiEnabled()){
 
 			}
 			}
-			//source button to show editor when in plugin mode
+			//show plants as popup window
 			else{
-				//setProperties to say if window is open...
 				for(int p=0;p<getFilter()->getGUILayoutCtrlsSize();p++){
 				if(getFilter()->getGUILayoutCtrls(p).getStringProp("plant") ==button->getName()){
 				int index = button->getProperties().getWithDefault(String("index"), 0);
@@ -2204,7 +2205,7 @@ for(int i=0;i<(int)getFilter()->getGUICtrlsSize();i++){
 	else if(getFilter()->getGUICtrls(i).getStringProp("type")==String("combobox")){
 	//if(controls[i])
 #ifdef Cabbage_Build_Standalone
-		((CabbageComboBox*)controls[i])->combo->setSelectedId((int)getFilter()->getParameter(i), false);
+		//((CabbageComboBox*)controls[i])->combo->setSelectedId((int)getFilter()->getParameter(i), false);
 #else
 		Logger::writeToLog(String("timerCallback():")+String(getFilter()->getParameter(i)));
 		float val = getFilter()->getGUICtrls(i).getNumProp("sliderRange")*getFilter()->getParameter(i);

@@ -69,7 +69,6 @@ CabbageButton(String name, String caption, String buttonText, String colour, Str
 	offX=offY=offWidth=offHeight=0;
 	groupbox = new GroupComponent(String("groupbox_")+name);
 	button = new TextButton(name);
-	button->setName(buttonText);
 	addAndMakeVisible(groupbox);
 	addAndMakeVisible(button);
 	groupbox->setVisible(false);
@@ -1771,12 +1770,15 @@ class CabbagePVSView : public Component,
 PVSDATEXT* specData;
 String text;
 int offX, offY, offWidth, offHeight, frameSize, zoom;
+float prevX, prevY;
 public:
 ScopedPointer<CabbageSlider> zoomSlider;
 ScopedPointer<CabbageTableViewer> table;
 //---- constructor -----
 CabbagePVSView(String name, String caption,  String text, int frameSize, int fftsize, int overlap, PVSDATEXT* inSpecData): 
 															text(text),
+																prevX(0),
+																prevY(0),
 															frameSize(frameSize),
 															specData(inSpecData)
 
@@ -1803,10 +1805,11 @@ CabbagePVSView(String name, String caption,  String text, int frameSize, int fft
 }
 
 void sliderValueChanged(Slider *slider){
-	zoom = 22050-(slider->getValue()*22050);
+	zoom = 22050-(slider->getValue()*22050)+2000;
 }
 
 void paint(Graphics &g){ 
+	const int h = getHeight();
 	//----- For drawing the border 
 	g.setColour(CabbageUtils::getComponentSkin());
 	g.fillRoundedRectangle (0, 0, getWidth(), getHeight(), (getWidth()/25));
@@ -1819,18 +1822,21 @@ void paint(Graphics &g){
 	g.setFont (15, 0);
 	Justification just(1);
 	g.drawText (text, 20, -5, getWidth()-20, 30, just, false); 
-	//draw PVS data. 
+	//draw PVS data.
 	for(int k=2;k<1026; k+=2)
 		{
 		g.setColour(Colours::lime);
 		if(specData->frame[k])
 			{
-			Random rnd(12);
+			//Random rnd(12);
 			//float amp = rnd.nextFloat();
 			float amp = specData->frame[k];
+			amp = (getHeight()-40)-(amp*getHeight()*.8f);
 			float freq = int(specData->frame[k+1]);
+			//Logger::writeToLog(String("Amp:")+String(amp)+String(" Freq:")+String(freq));
 			if(amp>0.001 && amp<1)
-				g.drawLine((freq/zoom)*getWidth(), (getHeight()-40)-(amp*getHeight()*.8f), (freq/zoom)*getWidth(), getHeight()-40, 2);
+				g.drawLine((freq/2200)*getWidth(), prevY, (freq/2200)*getWidth(), amp, 1);
+				prevY = amp;
 			}
 		 }
 }
@@ -1838,7 +1844,6 @@ void paint(Graphics &g){
 void resized()
 {
 zoomSlider->setBounds(10, getHeight()-50, getWidth()-10, 40);
-this->setWantsKeyboardFocus(false);
 }
 
 void updatePVSStruct(){
