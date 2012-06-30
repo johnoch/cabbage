@@ -1,17 +1,65 @@
-﻿  CabbagePluginProcessor.cpp
-c:\documents and settings\rory\desktop\cabbage\source\cabbagecustomwidgets.h(1765): warning C4996: 'juce::Button::addButtonListener': was declared deprecated
-          c:\documents and settings\rory\desktop\cabbage\jucelibrarycode\modules\juce_gui_basics\buttons\juce_button.h(383) : see declaration of 'juce::Button::addButtonListener'
-c:\documents and settings\rory\desktop\cabbage\source\cabbagecustomwidgets.h(1978): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
-c:\documents and settings\rory\desktop\cabbage\source\plugin\cabbagepluginprocessor.cpp(23): warning C4005: 'VERSION' : macro redefinition
-          c:\mydocuments\sourcecode\csound5\csound5\h\version.h(27) : see previous definition of 'VERSION'
-c:\documents and settings\rory\desktop\cabbage\source\plugin\cabbagepluginprocessor.cpp(84): warning C4390: ';' : empty controlled statement found; is this the intent?
-c:\documents and settings\rory\desktop\cabbage\source\plugin\cabbagepluginprocessor.cpp(431): warning C4996: 'vsnprintf': This function or variable may be unsafe. Consider using vsnprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-          c:\program files\microsoft visual studio 10.0\vc\include\stdio.h(354) : see declaration of 'vsnprintf'
-c:\documents and settings\rory\desktop\cabbage\source\plugin\cabbagepluginprocessor.cpp(495): warning C4189: 'range' : local variable is initialized but not referenced
-c:\documents and settings\rory\desktop\cabbage\source\plugin\cabbagepluginprocessor.cpp(521): warning C4101: 'min' : unreferenced local variable
-c:\documents and settings\rory\desktop\cabbage\source\plugin\cabbagepluginprocessor.cpp(521): warning C4101: 'range' : unreferenced local variable
-c:\documents and settings\rory\desktop\cabbage\source\plugin\cabbagepluginprocessor.cpp(521): warning C4101: 'max' : unreferenced local variable
-c:\documents and settings\rory\desktop\cabbage\source\plugin\cabbagepluginprocessor.cpp(830): warning C4715: 'CabbagePluginAudioProcessor::ReadMidiData' : not all control paths return a value
-  LINK : .\Debug\\Cabbage.exe not found or not built by the last incremental link; performing full link
-     Creating library .\Debug\Cabbage.lib and object .\Debug\Cabbage.exp
-  Cabbage.vcxproj -> C:\Documents and Settings\Rory\Desktop\Cabbage\Builds\VisualStudio2010\.\Debug\Cabbage.exe
+﻿Build started 30/06/2012 13:35:20.
+     1>Project "C:\Users\Rory\Documents\SourceCode\cabbage-svn\Builds\VisualStudio2010\Cabbage.vcxproj" on node 2 (build target(s)).
+     1>InitializeBuildStatus:
+         Creating ".\Debug\Cabbage.unsuccessfulbuild" because "AlwaysCreate" was specified.
+       ClCompile:
+         c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /IC:\Users\Rory\Documents\SourceCode\CsoundInstall\Csound\include /IC:\SDKs\vstsdk2.4 /I..\..\JuceLibraryCode /ZI /nologo /W4 /WX- /MP /Od /Oy- /D WIN32 /D _WINDOWS /D DEBUG /D _DEBUG /D MSVC /D USE_DOUBLE /D Cabbage_Build_Standalone /D JUCER_VS2010_78A501D=1 /D _MBCS /Gm- /EHsc /MTd /GS /fp:precise /Zc:wchar_t /Zc:forScope /GR /Fo".\Debug\\" /Fd".\Debug\\vc100.pdb" /Gd /TP /analyze- /errorReport:prompt ..\..\Source\Plugin\CabbagePluginProcessor.cpp
+         CabbagePluginProcessor.cpp
+     1>c:\users\rory\documents\sourcecode\cabbage-svn\source\cabbagecustomwidgets.h(1812): warning C4189: 'h' : local variable is initialized but not referenced
+     1>c:\users\rory\documents\sourcecode\cabbage-svn\source\cabbagecustomwidgets.h(1885): warning C4996: 'juce::Button::addButtonListener': was declared deprecated
+                 c:\users\rory\documents\sourcecode\cabbage-svn\jucelibrarycode\modules\juce_gui_basics\buttons\juce_button.h(383) : see declaration of 'juce::Button::addButtonListener'
+     1>c:\users\rory\documents\sourcecode\cabbage-svn\source\cabbagecustomwidgets.h(2099): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
+     1>c:\users\rory\documents\sourcecode\cabbage-svn\source\plugin\cabbagepluginprocessor.cpp(23): warning C4005: 'VERSION' : macro redefinition
+                 c:\users\rory\documents\sourcecode\csoundinstall\csound\include\version.h(27) : see previous definition of 'VERSION'
+     1>c:\users\rory\documents\sourcecode\cabbage-svn\source\plugin\cabbagepluginprocessor.cpp(92): warning C4390: ';' : empty controlled statement found; is this the intent?
+     1>c:\users\rory\documents\sourcecode\cabbage-svn\source\plugin\cabbagepluginprocessor.cpp(448): warning C4996: 'vsnprintf': This function or variable may be unsafe. Consider using vsnprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 c:\program files (x86)\microsoft visual studio 10.0\vc\include\stdio.h(354) : see declaration of 'vsnprintf'
+     1>c:\users\rory\documents\sourcecode\cabbage-svn\source\plugin\cabbagepluginprocessor.cpp(512): warning C4189: 'range' : local variable is initialized but not referenced
+     1>c:\users\rory\documents\sourcecode\cabbage-svn\source\plugin\cabbagepluginprocessor.cpp(538): warning C4101: 'min' : unreferenced local variable
+     1>c:\users\rory\documents\sourcecode\cabbage-svn\source\plugin\cabbagepluginprocessor.cpp(538): warning C4101: 'range' : unreferenced local variable
+     1>c:\users\rory\documents\sourcecode\cabbage-svn\source\plugin\cabbagepluginprocessor.cpp(538): warning C4101: 'max' : unreferenced local variable
+     1>c:\users\rory\documents\sourcecode\cabbage-svn\source\plugin\cabbagepluginprocessor.cpp(847): warning C4715: 'CabbagePluginAudioProcessor::ReadMidiData' : not all control paths return a value
+       ResourceCompile:
+         All outputs are up-to-date.
+       Link:
+         c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:".\Debug\\Cabbage.exe" /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /NODEFAULTLIB:libcmt.lib /NODEFAULTLIB:msvcrt.lib /MANIFEST /ManifestFile:".\Debug\Cabbage.exe.intermediate.manifest" /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /DEBUG /PDB:".\Debug\\Cabbage.pdb" /SUBSYSTEM:WINDOWS /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:".\Debug\Cabbage.lib" /MACHINE:X86 .\Debug\resources.res
+         .\Debug\\CabbageCsoundEditor.obj
+         .\Debug\\CabbageEditorCommandManager.obj
+         .\Debug\\CabbageEditorWindow.obj
+         .\Debug\\CabbagePluginEditor.obj
+         .\Debug\\CabbagePluginProcessor.obj
+         .\Debug\\CabbageStandaloneDialog.obj
+         .\Debug\\StandaloneFilterApp.obj
+         .\Debug\\BinaryData.obj
+         .\Debug\\CabbageGUIClass.obj
+         .\Debug\\CabbageLookAndFeel.obj
+         .\Debug\\CabbageMainPanel.obj
+         .\Debug\\CabbageTable.obj
+         .\Debug\\ComponentLayoutEditor.obj
+         .\Debug\\juce_AAX_Wrapper.obj
+         .\Debug\\juce_audio_basics.obj
+         .\Debug\\juce_audio_devices.obj
+         .\Debug\\juce_audio_formats.obj
+         .\Debug\\juce_audio_processors.obj
+         .\Debug\\juce_audio_utils.obj
+         .\Debug\\juce_core.obj
+         .\Debug\\juce_cryptography.obj
+         .\Debug\\juce_data_structures.obj
+         .\Debug\\juce_events.obj
+         .\Debug\\juce_graphics.obj
+         .\Debug\\juce_gui_basics.obj
+         .\Debug\\juce_gui_extra.obj
+         .\Debug\\juce_opengl.obj "C:\Users\Rory\Documents\SourceCode\CsoundInstall\Csound\bin\csound64.lib" 
+         LINK : .\Debug\\Cabbage.exe not found or not built by the last incremental link; performing full link
+            Creating library .\Debug\Cabbage.lib and object .\Debug\Cabbage.exp
+         Cabbage.vcxproj -> C:\Users\Rory\Documents\SourceCode\cabbage-svn\Builds\VisualStudio2010\.\Debug\Cabbage.exe
+       Manifest:
+         C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\bin\mt.exe /nologo /verbose /outputresource:".\Debug\\Cabbage.exe;#1" /manifest .\Debug\Cabbage.exe.intermediate.manifest
+       FinalizeBuildStatus:
+         Deleting file ".\Debug\Cabbage.unsuccessfulbuild".
+         Touching ".\Debug\Cabbage.lastbuildstate".
+     1>Done Building Project "C:\Users\Rory\Documents\SourceCode\cabbage-svn\Builds\VisualStudio2010\Cabbage.vcxproj" (build target(s)).
+
+Build succeeded.
+
+Time Elapsed 00:00:05.63

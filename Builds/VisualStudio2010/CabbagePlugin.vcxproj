@@ -53,8 +53,8 @@
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
-      <AdditionalIncludeDirectories>..\..\JuceLibraryCode;c:\SDKs\vstsdk2.4;C:\MyDocuments\SourceCode\Csound5\csound5\H;C:\MyDocuments\SourceCode\Csound5\csound5;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;_WINDOWS;DEBUG;_DEBUG;MSVC;Cabbage_Plugin_Synth;USE_DOUBLE;JUCER_VS2010_78A501D=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\JuceLibraryCode;c:\SDKs\vstsdk2.4;C:\Users\Rory\Documents\SourceCode\CsoundInstall\Csound\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;DEBUG;_DEBUG;MSVC;USE_DOUBLE;JUCER_VS2010_78A501D=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <PrecompiledHeader />
@@ -76,7 +76,7 @@
       <ProgramDatabaseFile>$(IntDir)\CabbagePlugin.pdb</ProgramDatabaseFile>
       <SubSystem>Windows</SubSystem>
       <TargetMachine>MachineX86</TargetMachine>
-      <AdditionalOptions>"C:\MyDocuments\SourceCode\Csound5\csound5\csound32.lib" %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>"C:\Users\Rory\Documents\SourceCode\CsoundInstall\Csound\bin\csound64.lib" %(AdditionalOptions)</AdditionalOptions>
     </Link>
     <Bscmake>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -93,7 +93,7 @@
     </Midl>
     <ClCompile>
       <Optimization>MaxSpeed</Optimization>
-      <AdditionalIncludeDirectories>..\..\JuceLibraryCode;c:\SDKs\vstsdk2.4;C:\MyDocuments\SourceCode\Csound5\csound5\H;C:\MyDocuments\SourceCode\Csound5\csound5;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>\vstsdk2.4;C:\Users\Rory\Documents\SourceCode\CsoundInstall\Csound\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;MSVC;Cabbage_Plugin_Synth;USE_DOUBLE;JUCER_VS2010_78A501D=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
@@ -118,7 +118,7 @@
       <TargetMachine>MachineX86</TargetMachine>
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <AdditionalOptions>"C:\MyDocuments\SourceCode\Csound5\csound5\csound32.lib" %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>"C:\Users\Rory\Documents\SourceCode\CsoundInstall\Csound\bin\csound64.lib" %(AdditionalOptions)</AdditionalOptions>
     </Link>
     <Bscmake>
       <SuppressStartupBanner>true</SuppressStartupBanner>

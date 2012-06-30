@@ -618,7 +618,7 @@ combobox bounds(0, 110, 120, 70), channel"freq"), caption("Freq"), items("200Hz"
 image:combobox.png[Combo]
 
 [icon="smallLogo.png"]
-NOTE: Combo boxes are proving a little troublesome when used in plugin hosts. We hope to resolve this issue shortly. In the mean time one can use a slider and split it into different regions.      
+NOTE: Combo boxes are proving difficult when it comes to controlling them with Csound. So for now Csound can't be used to change the value of a combobox.       
 
 XYPad
 ~~~~~

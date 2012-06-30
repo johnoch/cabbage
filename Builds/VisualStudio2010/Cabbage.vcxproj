@@ -53,7 +53,7 @@
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
-      <AdditionalIncludeDirectories>C:\MyDocuments\SourceCode\Csound5\csound5\H;C:\MyDocuments\SourceCode\Csound5\csound5;C:\SDKs\vstsdk2.4;..\..\JuceLibraryCode;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\Rory\Documents\SourceCode\CsoundInstall\Csound\include;C:\SDKs\vstsdk2.4;..\..\JuceLibraryCode;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_WINDOWS;DEBUG;_DEBUG;MSVC;USE_DOUBLE;Cabbage_Build_Standalone;JUCER_VS2010_78A501D=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
@@ -76,7 +76,7 @@
       <ProgramDatabaseFile>$(IntDir)\Cabbage.pdb</ProgramDatabaseFile>
       <SubSystem>Windows</SubSystem>
       <TargetMachine>MachineX86</TargetMachine>
-      <AdditionalOptions>"C:\MyDocuments\SourceCode\Csound5\csound5\csound32.lib" %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>"C:\Users\Rory\Documents\SourceCode\CsoundInstall\Csound\bin\csound64.lib" %(AdditionalOptions)</AdditionalOptions>
     </Link>
     <Bscmake>
       <SuppressStartupBanner>true</SuppressStartupBanner>
