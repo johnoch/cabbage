@@ -248,13 +248,42 @@ class CodeEditorExtended : public Component
 {
 
 public:
+		class CodeEditor : public CodeEditorComponent
+		{
+		public:
+			CodeEditor(CodeDocument &document, CodeTokeniser *codeTokeniser)
+				: CodeEditorComponent(document, codeTokeniser)
+			{
+				firstLine = 0;
+			}
+
+			~CodeEditor (){};
+
+			void scrollBarMoved (ScrollBar *scrollBarThatHasMoved, double newRangeStart)
+			{
+				CodeEditorComponent::scrollBarMoved(scrollBarThatHasMoved, newRangeStart);
+
+				if(scrollBarThatHasMoved->isVertical())
+				{
+					firstLine = scrollBarThatHasMoved->getCurrentRangeStart();
+					this->getParentComponent()->repaint();
+				}
+			}
+
+			int getFirstVisibleLine()
+			{
+				return firstLine;
+			}
+
+		private:
+			int firstLine;
+		};
+
    CodeEditorExtended(CodeDocument &document, CodeTokeniser *codeTokeniser)
    {
-		editor = new CodeEditorComponent(document, codeTokeniser);
+		editor = new CodeEditor(document, codeTokeniser);
 		editor->setColour (CaretComponent::caretColourId, Colours::black);
 		editor->setColour (CodeEditorComponent::highlightColourId,  Colour::fromRGBA (145, 155, 160, 255));
-		//editor->setColour (CodeEditorComponent::highlightedTextColourId, Colours::black);
-
 		//background colour ID
 		editor->setColour(0x1004500, Colours::white);	   
 		editor->setWantsKeyboardFocus(true);
@@ -262,26 +291,10 @@ public:
 
 	   firstLine = 0;
    }
-
+   
    ~CodeEditorExtended (){};
 
-   void scrollBarMoved (ScrollBar *scrollBarThatHasMoved, double newRangeStart)
-   {
-       editor->scrollBarMoved(scrollBarThatHasMoved, newRangeStart);
-
-       if(scrollBarThatHasMoved->isVertical())
-       {
-           firstLine = scrollBarThatHasMoved->getCurrentRangeStart();
-           this->getParentComponent()->repaint();
-       }
-   }
-
-   int getFirstVisibleLine()
-   {
-       return firstLine;
-   }
-
-ScopedPointer<CodeEditorComponent> editor;
+ScopedPointer<CodeEditor> editor;
 
 private:
    int firstLine;
@@ -295,7 +308,7 @@ private:
 			   g.setFont(editor->getFont());
 			  
 
-			   int firstLineToDraw = this->getFirstVisibleLine();
+			   int firstLineToDraw = editor->getFirstVisibleLine();
 			   int lastLineToDraw = firstLineToDraw + editor->getNumLinesOnScreen() + 2;
 
 			   int index = 0;

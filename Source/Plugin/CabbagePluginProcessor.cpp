@@ -20,7 +20,7 @@
 #include "CabbagePluginProcessor.h"   
 #include "CabbagePluginEditor.h"
 
-#define VERSION "Cabbage v0.03.0 BETA"
+#define VERSION "Cabbage v0.03.02 BETA"
 
 #define MAX_BUFFER_SIZE 1024
 //==============================================================================
