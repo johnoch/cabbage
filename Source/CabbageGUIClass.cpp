@@ -907,7 +907,7 @@ double CabbageGUIClass::getNumProp(String prop)
 			return fftSize; 
 		else if(prop.equalsIgnoreCase("overlapSize"))
 			return overlapSize; 
-		else if(prop.equalsIgnoreCase("frameSize"))
+		else if(prop.equalsIgnoreCase("winSize"))
 			return frameSize; 
 		else if(prop.equalsIgnoreCase("pvsChannel"))
 			return pvsChannel; 
@@ -979,7 +979,7 @@ void CabbageGUIClass::setNumProp(String prop, float val)
 			 valueY = val;
 		else if(prop.equalsIgnoreCase("button"))
 			 plantButton = val;
-		else if(prop.equalsIgnoreCase("fftSize"))
+		else if(prop.equalsIgnoreCase("winSize"))
 			 fftSize = val;
 		else if(prop.equalsIgnoreCase("frameSize"))
 			 frameSize = val;

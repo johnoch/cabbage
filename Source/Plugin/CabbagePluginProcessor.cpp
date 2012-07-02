@@ -20,7 +20,7 @@
 #include "CabbagePluginProcessor.h"   
 #include "CabbagePluginEditor.h"
 
-#define VERSION "Cabbage v0.03.02 BETA"
+#define VERSION "Cabbage v0.03.03 BETA"
 
 #define MAX_BUFFER_SIZE 1024
 //==============================================================================
@@ -70,6 +70,9 @@ csoundChanList = NULL;
 numCsoundChannels = 0;
 csndIndex = 32;
 
+//set up PVS struct
+dataout = new PVSDATEXT;
+
 //if(!csdFile.exists())showMessage("Csound file doesn't exist? The file should be in the same directory as the plugin");
 
 if(!inputfile.isEmpty()){
@@ -79,14 +82,7 @@ if(csCompileResult==0){
 	csound->PerformKsmps();
 	csound->SetScoreOffsetSeconds(0);
 	csound->RewindScore();
-	//set up PVS struct
-    dataout = new PVSDATEXT;
-    dataout->N = 1024;
-    dataout->format = 0;
-    dataout->overlap = 256;
-    dataout->winsize = 1024;
-    dataout->frame = (float *) calloc(sizeof(float),(dataout->N+2));
-
+	
 	csound->SetMessageCallback(CabbagePluginAudioProcessor::messageCallback);
 	if(csound->GetSpout()==nullptr);
 	CSspout = csound->GetSpout();
@@ -182,10 +178,6 @@ if(csCompileResult==0){
 	csound->RewindScore();
 	//set up PVS struct
     dataout = new PVSDATEXT;
-    dataout->N = 1024;
-    dataout->format = 0;
-    dataout->overlap = 256;
-    dataout->winsize = 1024;
 	csound->SetMessageCallback(CabbagePluginAudioProcessor::messageCallback);
 	CSspout = csound->GetSpout();
 	CSspin  = csound->GetSpin();

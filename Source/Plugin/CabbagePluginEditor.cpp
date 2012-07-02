@@ -544,16 +544,6 @@ try{
 
 	if(layoutComps[y]->getProperties().getWithDefault(String("plant"), -99).toString().equalsIgnoreCase(cAttr.getStringProp("reltoplant")))
 		{
-		//width = width*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
-		//height = height*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
-		//top = top*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
-		//left = left*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
-
-	/*	width = width*layoutComps[y]->getWidth();
-		height = height*layoutComps[y]->getHeight();
-        top = (top*layoutComps[y]->getHeight());
-		left = (left*layoutComps[y]->getWidth());*/
-
 		width = width*layoutComps[y]->getWidth();
 		height = height*layoutComps[y]->getHeight();
 		top = (top*layoutComps[y]->getHeight());
@@ -1728,13 +1718,22 @@ catch(...){
 //+++++++++++++++++++++++++++++++++++++++++++
 void CabbagePluginAudioProcessorEditor::InsertPVSViewer(CabbageGUIClass &cAttr)
 {
+	//set up PVS struct
+	getFilter()->getPVSDataOut()->N = cAttr.getNumProp("fftSize");
+	getFilter()->getPVSDataOut()->format = 0;
+	getFilter()->getPVSDataOut()->winsize = cAttr.getNumProp("fftSize");
+	getFilter()->getPVSDataOut()->overlap = cAttr.getNumProp("fftSize")/4;
+	getFilter()->getPVSDataOut()->frame = (float *) calloc(sizeof(float),(getFilter()->getPVSDataOut()->N+2));
+
 	layoutComps.add(new CabbagePVSView(cAttr.getStringProp("name"),
 		cAttr.getStringProp("caption"),
 		cAttr.getStringProp("text"),
-		cAttr.getNumProp("frameSize"),
+		cAttr.getNumProp("winSize"),
 		cAttr.getNumProp("fftSize"),
 		cAttr.getNumProp("overlapSize"),
 		getFilter()->getPVSDataOut()));	
+
+
 	int idx = layoutComps.size()-1;
 	float left = cAttr.getNumProp("left");
 	float top = cAttr.getNumProp("top");

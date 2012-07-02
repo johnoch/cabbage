@@ -1761,97 +1761,162 @@ JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CabbageTable);
 //==============================================================================
 // custom PVSView, for viewing pvs
 //==============================================================================
-
-class CabbagePVSView : public Component,
-						public SliderListener
-						
+class CabbagePVSData	:	public Component
 {
-//ScopedPointer<LookAndFeel> lookFeel;
-PVSDATEXT* specData;
-String text;
-int offX, offY, offWidth, offHeight, frameSize, zoom;
-float prevX, prevY;
-public:
-ScopedPointer<CabbageSlider> zoomSlider;
-ScopedPointer<CabbageTableViewer> table;
-//---- constructor -----
-CabbagePVSView(String name, String caption,  String text, int frameSize, int fftsize, int overlap, PVSDATEXT* inSpecData): 
-															text(text),
-																prevX(0),
-																prevY(0),
-															frameSize(frameSize),
-															specData(inSpecData)
+	PVSDATEXT* specData;
+	String text;
+	int offX, offY, offWidth, offHeight, frameSize, zoom, originalWidth, maxFreq;
+	bool isSonogram;
+	public:
+	float timePos;
+	ScopedPointer<CabbageTableViewer> table;
+	Image img;
 
-{
-	setName(name);
-	zoomSlider = new CabbageSlider("zoomSlider",
-                                            "Zoom",
-                                            "",
-                                            "horizontal",
-											CabbageUtils::getBackgroundSkin().toString(),
-											"",
-                                            0,
-											Colours::lime.toString()
-                                            );
-	zoomSlider->setBounds(10, getHeight()-50, getWidth()-10, 40);
-	addAndMakeVisible(zoomSlider);
-	zoomSlider->slider->setRange(0.1f, 0.9f, 0.01);
-	zoomSlider->slider->addListener(this);
-	
-}
-//---------------------------------------------
-~CabbagePVSView(){
+	//---- constructor -----
+	CabbagePVSData(String name, String caption, String text, int frameSize, int fftsize, int overlap, 
+																				PVSDATEXT* inSpecData): 
+																				text(text),
+																				frameSize(frameSize),
+																				specData(inSpecData),
+																				isSonogram(false),
+																				timePos(0.f)
 
-}
+	{
+		setName(name);
+		maxFreq = 22050;
+		zoom = 1;
+	}
 
-void sliderValueChanged(Slider *slider){
-	zoom = 22050-(slider->getValue()*22050)+2000;
-}
+	~CabbagePVSData()
+	{
 
-void paint(Graphics &g){ 
-	const int h = getHeight();
-	//----- For drawing the border 
-	g.setColour(CabbageUtils::getComponentSkin());
-	g.fillRoundedRectangle (0, 0, getWidth(), getHeight(), (getWidth()/25));
-	g.setColour(Colours::black);
-	g.fillRoundedRectangle (3, 20, getWidth()-6, getHeight()-30, (getWidth()/25));
+	}
 
-	//----- For drawing the title
-	g.setColour (Colours::whitesmoke);
-	g.setOpacity (0.8);
-	g.setFont (15, 0);
-	Justification just(1);
-	g.drawText (text, 20, -5, getWidth()-20, 30, just, false); 
-	//draw PVS data.
-	for(int k=2;k<1026; k+=2)
-		{
-		g.setColour(Colours::lime);
-		if(specData->frame[k])
-			{
-			//Random rnd(12);
-			//float amp = rnd.nextFloat();
-			float amp = specData->frame[k];
-			amp = (getHeight()-40)-(amp*getHeight()*.8f);
-			float freq = int(specData->frame[k+1]);
-			//Logger::writeToLog(String("Amp:")+String(amp)+String(" Freq:")+String(freq));
-			if(amp>0.001 && amp<1)
-				g.drawLine((freq/2200)*getWidth(), prevY, (freq/2200)*getWidth(), amp, 1);
-				prevY = amp;
+	void resized()
+	{
+		img = Image(Image::ARGB, getWidth(), getHeight(), true);
+		this->setWantsKeyboardFocus(false);
+	}
+
+	void setOriginalWidth(int w)
+	{
+		originalWidth = w;
+	}
+
+	void drawSonogram(){
+		if(!img.isNull()){
+		Graphics g(img);
+	for (int k=2;k<1026; k+=2) {
+			g.setColour(Colours::lime);
+			//ColourGradient cg = ColourGradient(Colours::white, 0, 0, Colours::aqua, 0, getHeight(), false);
+			//g.setGradientFill(cg);
+			if (specData->frame[k]) {
+				float amp = specData->frame[k];
+				float freq = int(specData->frame[k+1]);
+			if(isSonogram){
+				maxFreq = 2000;
+				
+					if (amp>0.001 && amp<1){
+						g.setOpacity(1-amp);
+						g.drawLine(int(timePos), getHeight()-(freq/(float)maxFreq)*getHeight(), int(timePos+2), getHeight()-(freq/(float)maxFreq)*getHeight()); 
+					}
+			}	
 			}
-		 }
-}
-//---------------------------------------------
-void resized()
-{
-zoomSlider->setBounds(10, getHeight()-50, getWidth()-10, 40);
-}
+		}
+		}
+		timePos+=1;
+	}
 
-void updatePVSStruct(){
-repaint();
-}
+	void paint(Graphics &g)
+	{ 
+		//background
+		g.setColour(CabbageUtils::getDarkerBackgroundSkin());
+		g.fillRoundedRectangle (0, 0, getWidth(), getHeight(), 5);
 
-JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CabbagePVSView);
+		//border
+		g.setColour (CabbageUtils::getComponentFontColour());
+		g.drawRoundedRectangle (1, 1, getWidth()-2, getHeight()-2, 5, 2);
+			if(isSonogram){
+				 g.drawImageAt(img, 0, 0);
+			}
+			else{
+		//draw PVS data. 
+		for (int k=2;k<1026; k+=2) {
+			//g.setColour(Colours::lime);
+			ColourGradient cg = ColourGradient(Colours::red, 0, 0, Colours::aqua, 0, getHeight(), false);
+			g.setGradientFill(cg);
+			if (specData->frame[k]) {
+				float amp = specData->frame[k];
+				float freq = int(specData->frame[k+1]);
+				if (amp>0.001 && amp<1)
+					g.drawLine((freq/(float)maxFreq)*getWidth(), (getHeight()-40)-(amp*getHeight()*.8f), 
+					(freq/(float)maxFreq)*getWidth(), getHeight()-40, getWidth()/(float)maxFreq);
+				}
+			}
+		}	
+	}
+
+	void mouseDown (const MouseEvent& e)
+	{
+		Viewport* const viewport = this->findParentComponentOfClass<Viewport> ();
+		float viewStart = viewport->getViewPositionX();
+		float x = e.getPosition().getX();
+		float diff = x-viewStart;
+
+		if ((e.mods.isLeftButtonDown() == true) && (zoom < 256))
+			zoom *= 2;
+		else if ((e.mods.isRightButtonDown() == true) && (zoom > 1))
+			zoom /= 2;
+
+		this->setBounds (0, 0, originalWidth*zoom, getHeight());
+		viewport->setViewPosition (x-(diff), 0);
+	}
+
+	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CabbagePVSData);
 };
+
+//---------------------------------------------------------------------
+
+class CabbagePVSView : public Viewport	
+{
+public:
+	CabbagePVSView(String name, String caption, String text, int winSize, int fftsize, int overlap, 
+																				PVSDATEXT* inSpecData)
+
+	{
+		pvsData = new CabbagePVSData (name, caption, text, winSize, fftsize, overlap, inSpecData);
+		count = 0;
+	}
+
+	~CabbagePVSView()
+	{
+	}
+
+	void resized()
+	{
+		if (count == 0)
+			pvsData->setOriginalWidth(getWidth());
+
+		count++;
+
+		pvsData->setBounds(getX(), getY(), getWidth(), getHeight());
+		this->setViewedComponent (pvsData);
+		this->setScrollBarsShown(false, true);
+	}
+
+	void updatePVSStruct()
+	{
+	//	pvsData->drawSonogram();
+		pvsData->repaint();
+	}
+
+private:
+	ScopedPointer<CabbagePVSData> pvsData;
+	int count;
+
+	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CabbagePVSView);
+};
+
 
 
 //==============================================================================
