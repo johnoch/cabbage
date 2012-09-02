@@ -23,7 +23,7 @@
 #include "../../JuceLibraryCode/JuceHeader.h"
 #include "../CabbageUtils.h"
 #include "../CabbageGUIClass.h"
-//#include "../Editor/CabbageEditorWindow.h"
+#include "../Editor/CabbageEditorWindow.h"
 
 
 #ifndef Cabbage_No_Csound
@@ -136,7 +136,7 @@ public:
 	int patMatrixActive;
 	float bpm;
 
-	void createAndShowSourceEditor(LookAndFeel* looky);
+	//void createAndShowSourceEditor(LookAndFeel* looky);
 	//CabbageEditorWindow* getCsoundEditor(){
 	//	return cabbageCsoundEditor;
 	//}

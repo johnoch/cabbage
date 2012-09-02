@@ -11,10 +11,12 @@ lookAndFeel = new CabbageLookAndFeel();
 //textEditor = new CodeEditorComponent(csoundDoc, &csoundToker);
 opcodes.addLines(String((BinaryData::opcodes_txt)));
 csoundDoc.addListener(this);
-textEditor = new CodeEditorExtended(csoundDoc, &csoundToker);
+textEditor = new CodeEditorComponent(csoundDoc, &csoundToker);
+textEditor->setColour(CodeEditorComponent::ColourIds::lineNumberTextId, Colours::white);
+textEditor->setColour(CodeEditorComponent::ColourIds::lineNumberBackgroundId, Colours::black);
 
 textEditor->setBounds(0, 0, getWidth(), getHeight());
-textEditor->editor->setFont(Font(String("Courier New"), 15, 1));
+textEditor->setFont(Font(String("Courier New"), 15, 1));
 //appProperties->testWriteAccess(true, true, true);
 
 htmlHelp = new WebBrowserComponent(false);
@@ -31,6 +33,7 @@ htmlHelp->goToURL(path+"/Docs/cabbage.html");
 
 
 setApplicationCommandManagerToWatch(&commandManager);
+
 output = new TextEditor("output");
 output->setMultiLine(true);
 output->setScrollbarsShown(true);
@@ -113,9 +116,9 @@ horizontalLayout.layOutComponents (comps, 4, 0, 0, getWidth(), getHeight(), true
 void CsoundEditor::setFontSize(String zoom)
 {
 if(zoom==String("in"))
-textEditor->editor->setFont(Font::Font(String("Courier New"), ++fontSize, 1));
+textEditor->setFont(Font::Font(String("Courier New"), ++fontSize, 1));
 else
-textEditor->editor->setFont(Font::Font(String("Courier New"), --fontSize, 1));
+textEditor->setFont(Font::Font(String("Courier New"), --fontSize, 1));
 
 }
 
@@ -259,28 +262,28 @@ bool CsoundEditor::perform (const InvocationInfo& info)
 
 	case CommandIDs::editUndo:
 		{			
-			textEditor->editor->undo();
+			textEditor->undo();
 			break;
 		}
 	case CommandIDs::editCut:
 		{			
-			textEditor->editor->cutToClipboard();
+			textEditor->cutToClipboard();
 			break;
 		}
 	case CommandIDs::editCopy:
 		{			
-			textEditor->editor->copyToClipboard();
+			textEditor->copyToClipboard();
 			break;
 		}
 	case CommandIDs::editPaste:
 		{			
-			textEditor->editor->pasteFromClipboard();
+			textEditor->pasteFromClipboard();
 			break;
 		}
 
 	case CommandIDs::editRedo:
 		{			
-			textEditor->editor->redo();
+			textEditor->redo();
 			break;
 		}
 
@@ -297,14 +300,15 @@ bool CsoundEditor::perform (const InvocationInfo& info)
 	case CommandIDs::viewHelp:
 		{			
 			//showMessage(appProperties->getUserSettings()->getValue("htmlHelp", "string"), lookAndFeel);
+#ifdef Cabbage_Build_Standalone
 			String helpDir = appProperties->getUserSettings()->getValue("CsoundHelpDir", "");
 			if(helpDir.length()<2)
 				showMessage("Please set the Csound manual directory in the Preference menu", lookAndFeel);		
 			else{
 			
 			CodeDocument::Position pos1, pos2;
-			pos1 = textEditor->editor->getDocument().findWordBreakBefore(textEditor->editor->getCaretPos());
-			pos2 = textEditor->editor->getDocument().findWordBreakAfter(textEditor->editor->getCaretPos());
+			pos1 = textEditor->getDocument().findWordBreakBefore(textEditor->getCaretPos());
+			pos2 = textEditor->getDocument().findWordBreakAfter(textEditor->getCaretPos());
 			String opcode = csoundDoc.getTextBetween(pos1, pos2);
 			URL urlCsound(helpDir+"/"+opcode.trim()+String(".html"));
 			String urlCabbage;
@@ -342,6 +346,7 @@ bool CsoundEditor::perform (const InvocationInfo& info)
 				}
 			}
 			break;
+#endif
 		}
 
 	}
@@ -391,7 +396,7 @@ else return m1;
 void CsoundEditor::codeDocumentChanged (const CodeDocument::Position &affectedTextStart, const CodeDocument::Position &affectedTextEnd)
 {
 hasChanged = true;
-String lineFromCsd = textEditor->editor->getDocument().getLine(affectedTextStart.getLineNumber());
+String lineFromCsd = textEditor->getDocument().getLine(affectedTextStart.getLineNumber());
 String test1, test2, opcodeName, opcodeInfo, opcodeSyntax;
 for(int i=0;i<opcodes.size();i++){
 	test1 = opcodes[i].substring(1, 20);

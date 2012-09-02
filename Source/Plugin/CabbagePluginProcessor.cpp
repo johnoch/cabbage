@@ -47,6 +47,11 @@ beat(0),
 bpm(120),
 patMatrixActive(0)
 {
+//check that Csound is installed on the system
+String opcodeDir = SystemStats::getEnvironmentVariable("OPCODEDIR64", "");
+if(opcodeDir.isEmpty())
+showMessage("You don't seem to have Csound installed? Please installed Csound first before using a Cabbage based plugin or application");
+
 //reset patMatrix. If this has more than one we know that
 //pattern matrix object is being used
 patStepMatrix.clear();
@@ -418,15 +423,15 @@ void CabbagePluginAudioProcessor::createGUI(String source)
 //===========================================================
 // SHOW SOURCE EDITOR
 //===========================================================
-void CabbagePluginAudioProcessor::createAndShowSourceEditor(LookAndFeel* looky)
-{
+//void CabbagePluginAudioProcessor::createAndShowSourceEditor(LookAndFeel* looky)
+//{
 //if(!cabbageCsoundEditor){
 //cabbageCsoundEditor = new CabbageEditorWindow(looky);
 //cabbageCsoundEditor->setCsoundFile(csdFile);
 //cabbageCsoundEditor->setCsoundOutputText(csoundOutput);
 //}
 //cabbageCsoundEditor->setVisible(true);
-}
+//}
 
 //===========================================================
 // CALLBACKS FOR STANDALONE

@@ -30,7 +30,9 @@
 #include "../BinaryData.h"
 #include "CabbageEditorCommandManager.h"
 
+#ifdef Cabbage_Build_Standalone
 extern ApplicationProperties* appProperties;
+#endif
 
 class CsoundTokeniser : public CodeTokeniser
 {
@@ -73,6 +75,39 @@ private:
     s.add ("Preprocessor line");
 	s.add ("CSD Tag");
     return s;
+	}
+
+
+	CodeEditorComponent::ColourScheme getDefaultColourScheme()
+	{
+		struct Type
+		{
+			const char* name;
+			uint32 colour;
+		};
+
+		const Type types[] =
+		{
+			{ "Error",              Colours::black.getARGB() },
+			{ "Comment",            Colours::green.getARGB() },
+			{ "Keyword",            Colours::blue.getARGB() },
+			{ "Identifier",         Colours::black.getARGB() },
+			{ "Integer",            Colours::orange.getARGB() },
+			{ "Float",              Colours::black.getARGB() },
+			{ "String",             Colours::red.getARGB() },
+			{ "Operator",           Colours::pink.getARGB() },
+			{ "Bracket",            Colours::darkgreen.getARGB() },
+			{ "Punctuation",        Colours::black.getARGB() },
+			{ "Preprocessor Text",  Colours::green.getARGB() },
+			{ "Csd Tag",			Colours::brown.getARGB() }
+		};
+
+		CodeEditorComponent::ColourScheme cs;
+
+		for (int i = 0; i < sizeof (types) / sizeof (types[0]); ++i)  // (NB: numElementsInArray doesn't work here in GCC4.2)
+			cs.set (types[i].name, Colour (types[i].colour));
+
+		return cs;
 	}
 
 	Colour getDefaultColour (int tokenType)
@@ -191,10 +226,10 @@ private:
             possible.writeNull();
 
             if (isReservedKeyword (String::CharPointerType (possibleIdentifier), tokenLength))
-                return CPlusPlusCodeTokeniser::tokenType_builtInKeyword;
+                return CsoundTokeniser::tokenType_builtInKeyword;
         }
 
-        return CPlusPlusCodeTokeniser::tokenType_identifier;
+        return CsoundTokeniser::tokenType_identifier;
     }
 
    //==============================================================================
@@ -241,96 +276,6 @@ private:
     //jassert (result != tokenType_unknown);
     return result;
 	}
-};
-
-//==============================================================================
-class CodeEditorExtended : public Component
-{
-
-public:
-		class CodeEditor : public CodeEditorComponent
-		{
-		public:
-			CodeEditor(CodeDocument &document, CodeTokeniser *codeTokeniser)
-				: CodeEditorComponent(document, codeTokeniser)
-			{
-				firstLine = 0;
-			}
-
-			~CodeEditor (){};
-
-			void scrollBarMoved (ScrollBar *scrollBarThatHasMoved, double newRangeStart)
-			{
-				CodeEditorComponent::scrollBarMoved(scrollBarThatHasMoved, newRangeStart);
-
-				if(scrollBarThatHasMoved->isVertical())
-				{
-					firstLine = scrollBarThatHasMoved->getCurrentRangeStart();
-					this->getParentComponent()->repaint();
-				}
-			}
-
-			int getFirstVisibleLine()
-			{
-				return firstLine;
-			}
-
-		private:
-			int firstLine;
-		};
-
-   CodeEditorExtended(CodeDocument &document, CodeTokeniser *codeTokeniser)
-   {
-		editor = new CodeEditor(document, codeTokeniser);
-		editor->setColour (CaretComponent::caretColourId, Colours::black);
-		editor->setColour (CodeEditorComponent::highlightColourId,  Colour::fromRGBA (145, 155, 160, 255));
-		//background colour ID
-		editor->setColour(0x1004500, Colours::white);	   
-		editor->setWantsKeyboardFocus(true);
-		addAndMakeVisible(editor);
-
-	   firstLine = 0;
-   }
-   
-   ~CodeEditorExtended (){};
-
-ScopedPointer<CodeEditor> editor;
-
-private:
-   int firstLine;
-
-	//==============================================================================
-	void paint(Graphics& g)
-	   {
-		   if(editor != 0)
-		   {
-			   g.fillAll(Colours::black);
-			   g.setFont(editor->getFont());
-			  
-
-			   int firstLineToDraw = editor->getFirstVisibleLine();
-			   int lastLineToDraw = firstLineToDraw + editor->getNumLinesOnScreen() + 2;
-
-			   int index = 0;
-			   for (int j = firstLineToDraw; j < lastLineToDraw; ++j)
-			   {
-				   g.setColour(juce::Colours::white);
-				   g.drawText(String(j+1), 0, editor->getLineHeight() * index, 25, editor->getLineHeight(),
-							  juce::Justification::centredRight, false);
-				   index += 1;
-
-			   }
-			   g.setColour(Colours::green);
-			   g.drawLine(27, 0, 27, editor->getHeight());
-
-
-		   }
-	   }
-
-	void resized (){
-		editor->setBounds(30, 0, getWidth() - 30, getHeight());
-	}
-  
 };
 
 //==============================================================================
@@ -429,7 +374,7 @@ public:
 	ScopedPointer<WebBrowserComponent> htmlHelp;
 	CodeDocument csoundDoc;
 	CsoundTokeniser csoundToker;
-	ScopedPointer<CodeEditorExtended> textEditor;
+	ScopedPointer<CodeEditorComponent> textEditor;
 	ScopedPointer<TextEditor> output;
 	ScopedPointer<CabbageLookAndFeel> lookAndFeel;
 	ScopedPointer<helpContext> helpLabel;

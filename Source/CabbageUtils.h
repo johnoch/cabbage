@@ -161,6 +161,13 @@ static Font getValueFont()
 	return font;
 }
 
+//======= For spectrograms and tables etc ============================================
+static Font getSmallerValueFont()
+{
+	Font font = Font ("Helvetica", 10, 0);
+	return font;
+}
+
 //======= For titles etc ============================================================
 static Font getTitleFont()
 {

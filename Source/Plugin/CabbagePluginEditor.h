@@ -24,7 +24,7 @@
 #include "../../JuceLibraryCode/JuceHeader.h"
 #include "CabbagePluginProcessor.h"
 #include "../CabbageLookAndFeel.h"
-#include "../BinaryData.h"
+
 
 
 class CabbageMainPanel;

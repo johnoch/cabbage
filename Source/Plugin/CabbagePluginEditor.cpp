@@ -706,13 +706,6 @@ try{
 
 	authorText = cAttr.getStringProp("author");
 
-#ifdef Cabbage_GUI_Editor
-	componentPanel->setCompColour(cAttr.getStringProp("colour"));
-#else
-	formColour = Colour::fromString(cAttr.getColourProp("colour"));
-#endif
-
-
 #ifdef Cabbage_Build_Standalone
 	formPic = getFilter()->getCsoundInputFile().getParentDirectory().getFullPathName();
 
@@ -1419,7 +1412,7 @@ if(!getFilter()->isGuiEnabled()){
 	if(dynamic_cast<TextButton*>(button)){//check what type of button it is
 		//deal with non-interactive buttons first..
 			if(button->getName()=="source"){
-				getFilter()->createAndShowSourceEditor(lookAndFeel);
+//				getFilter()->createAndShowSourceEditor(lookAndFeel);
 			}
 			else if(button->getName()=="infobutton"){
 				if(!infoWindow){

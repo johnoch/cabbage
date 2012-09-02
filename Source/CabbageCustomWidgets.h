@@ -1194,7 +1194,7 @@ void paint(Graphics &g){
 	//----- For drawing the title
 	g.setColour (Colours::whitesmoke);
 	g.setOpacity (0.8);
-	g.setFont (15, 0);
+	g.setFont (15);
 	Justification just(1);
 	g.drawText (text, 20, 0, getWidth()-20, 30, just, false); 
 
@@ -1317,7 +1317,7 @@ public:
 			int fontSize = getHeight()*0.05;
 			if (fontSize > 15)
 				fontSize = 15;
-			g.setFont (fontSize, 0);
+			g.setFont (fontSize);
 
 			int startText;	//starting x value
 			if (type == 1)
@@ -1761,131 +1761,124 @@ JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CabbageTable);
 //==============================================================================
 // custom PVSView, for viewing pvs
 //==============================================================================
-class CabbagePVSData	:	public Component
+
+//==============================================================================
+// custom PVSView, for viewing pvs
+//==============================================================================
+class CabbagePVSTableData	:	public Component
 {
-	PVSDATEXT* specData;
-	String text;
-	int offX, offY, offWidth, offHeight, frameSize, zoom, originalWidth, maxFreq;
-	bool isSonogram;
-	public:
-	float timePos;
-	ScopedPointer<CabbageTableViewer> table;
-	Image img;
-
-	//---- constructor -----
-	CabbagePVSData(String name, String caption, String text, int frameSize, int fftsize, int overlap, 
-																				PVSDATEXT* inSpecData): 
-																				text(text),
-																				frameSize(frameSize),
-																				specData(inSpecData),
-																				isSonogram(false),
-																				timePos(0.f)
-
+public:
+	CabbagePVSTableData(int frameSize, int fftsize, int overlap, PVSDATEXT* inSpecData, int minFreq, int maxFreq) :
+																							specData(inSpecData),
+																							frameSize(frameSize),
+																							minFreq(minFreq),
+																							maxFreq(maxFreq)
 	{
-		setName(name);
-		maxFreq = 22050;
-		zoom = 1;
+		freqRange = (maxFreq-minFreq);
 	}
 
-	~CabbagePVSData()
+	~CabbagePVSTableData()
 	{
-
 	}
 
 	void resized()
 	{
-		img = Image(Image::ARGB, getWidth(), getHeight(), true);
-		this->setWantsKeyboardFocus(false);
+		if (freqRange >= getWidth())
+			lineThickness = 1;
+		else
+			lineThickness = getWidth() / (float)freqRange;
+
+		cg = ColourGradient (Colours::transparentBlack, 0, getHeight(), 
+								Colours::transparentBlack, 0, 0, false);
+		cg.addColour (0.07, Colours::aqua);
+		cg.addColour (0.2, Colours::lime);
+		cg.addColour (0.5, Colours::lime);
+		cg.addColour (0.6, Colours::yellow);
+		cg.addColour (0.75, Colours::yellow);
+		cg.addColour (0.85, Colours::orange);
+		cg.addColour (0.999, Colours::orangered);
+
+		cacheGridImage();
+
+		currPoint.setXY(0, getHeight());
+
+		frameSize = maxFreq/getWidth();
 	}
 
-	void setOriginalWidth(int w)
+	void cacheGridImage()
 	{
-		originalWidth = w;
+		//----- This method stores the grid in cache
+		grid = Image::Image(Image::ARGB, getWidth(), getHeight(), true);
+			
+		Graphics g (grid);
+		g.setColour(CabbageUtils::getComponentFontColour());
+		for (float i=0.0; i<=1.0; i+=0.125) {
+			g.drawLine(getWidth()*i, 0, getWidth()*i, getHeight(), .1);
+			g.drawLine(0, getHeight()*i, getWidth(), getHeight()*i, .1);
+		}
+
+		ImageCache::addImageToCache(grid, 19);
 	}
 
-	void drawSonogram(){
-		if(!img.isNull()){
-		Graphics g(img);
-	for (int k=2;k<1026; k+=2) {
-			g.setColour(Colours::lime);
-			//ColourGradient cg = ColourGradient(Colours::white, 0, 0, Colours::aqua, 0, getHeight(), false);
-			//g.setGradientFill(cg);
-			if (specData->frame[k]) {
-				float amp = specData->frame[k];
-				float freq = int(specData->frame[k+1]);
-			if(isSonogram){
-				maxFreq = 2000;
-				
-					if (amp>0.001 && amp<1){
-						g.setOpacity(1-amp);
-						g.drawLine(int(timePos), getHeight()-(freq/(float)maxFreq)*getHeight(), int(timePos+2), getHeight()-(freq/(float)maxFreq)*getHeight()); 
-					}
-			}	
-			}
-		}
-		}
-		timePos+=1;
-	}
+	void paint(Graphics& g)
+	{
+		Image bgGrid = ImageCache::getFromHashCode(19);
+		g.drawImage(bgGrid, 0, 0, getWidth(), getHeight(), 0, 0, bgGrid.getWidth(), bgGrid.getHeight(), false);
 
-	void paint(Graphics &g)
-	{ 
-		//background
-		g.setColour(CabbageUtils::getDarkerBackgroundSkin());
-		g.fillRoundedRectangle (0, 0, getWidth(), getHeight(), 5);
+		g.setGradientFill(cg);
 
-		//border
-		g.setColour (CabbageUtils::getComponentFontColour());
-		g.drawRoundedRectangle (1, 1, getWidth()-2, getHeight()-2, 5, 2);
-			if(isSonogram){
-				 g.drawImageAt(img, 0, 0);
-			}
-			else{
-		//draw PVS data. 
-		for (int k=2;k<1026; k+=2) {
-			//g.setColour(Colours::lime);
-			ColourGradient cg = ColourGradient(Colours::red, 0, 0, Colours::aqua, 0, getHeight(), false);
-			g.setGradientFill(cg);
-			if (specData->frame[k]) {
-				float amp = specData->frame[k];
-				float freq = int(specData->frame[k+1]);
-				if (amp>0.001 && amp<1)
-					g.drawLine((freq/(float)maxFreq)*getWidth(), (getHeight()-40)-(amp*getHeight()*.8f), 
-					(freq/(float)maxFreq)*getWidth(), getHeight()-40, getWidth()/(float)maxFreq);
+		//draw PVS data
+		for (int i=0; i<specData->N*2; i+=2) {
+			if (specData->frame[i]) {
+				amp = specData->frame[i];
+				freq = int(specData->frame[i+1]);
+			
+				if ((amp > 0) && (amp <= 1) && (freq >= minFreq) && (freq <= maxFreq)) {
+					//	g.fillEllipse ((((freq-minFreq)/(float)freqRange)*getWidth())-1, 
+					//	(getHeight()-(amp*getHeight()))-1, 2, 2);
+
+					g.drawLine(((freq-minFreq)/(float)freqRange)*getWidth(), getHeight()-(amp*getHeight()), 
+						((freq-minFreq)/(float)freqRange)*getWidth(), getHeight(), 1);
+
+					//prevPoint = currPoint;
+					//currPoint.setXY(((freq-minFreq)/(float)freqRange)*getWidth(), getHeight()-(amp*getHeight()));
+					//if (currPoint.getX() > prevPoint.getX())
+					//	g.drawLine(prevPoint.getX(), prevPoint.getY(), currPoint.getX(), currPoint.getY(), 2);
+
 				}
+
 			}
-		}	
+		}
 	}
 
-	void mouseDown (const MouseEvent& e)
-	{
-		Viewport* const viewport = this->findParentComponentOfClass<Viewport> ();
-		float viewStart = viewport->getViewPositionX();
-		float x = e.getPosition().getX();
-		float diff = x-viewStart;
+private:
+	PVSDATEXT* specData;
+	Array<int> freqValues;
+	Array<float> ampValues;
+	int frameSize, minFreq, maxFreq, freqRange;
+	float lineThickness;
+	ColourGradient cg;
+	Image grid;
+	float amp, maxAmp, freq;
+	Point<float> currPoint, prevPoint;
 
-		if ((e.mods.isLeftButtonDown() == true) && (zoom < 256))
-			zoom *= 2;
-		else if ((e.mods.isRightButtonDown() == true) && (zoom > 1))
-			zoom /= 2;
-
-		this->setBounds (0, 0, originalWidth*zoom, getHeight());
-		viewport->setViewPosition (x-(diff), 0);
-	}
-
-	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CabbagePVSData);
+	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CabbagePVSTableData);
 };
 
 //---------------------------------------------------------------------
-
-class CabbagePVSView : public Viewport	
+class CabbagePVSView	:	public Component
 {
 public:
-	CabbagePVSView(String name, String caption, String text, int winSize, int fftsize, int overlap, 
-																				PVSDATEXT* inSpecData)
+	CabbagePVSView(String name, String caption, String text, int frameSize, int fftsize, int overlap, 
+																				PVSDATEXT* inSpecData): 
+																				text(text)
 
 	{
-		pvsData = new CabbagePVSData (name, caption, text, winSize, fftsize, overlap, inSpecData);
-		count = 0;
+		setName(name);
+		maxFreq = 2000;
+		minFreq = 0;
+		maxAmp = 1.0;
+		pvsTableData = new CabbagePVSTableData (frameSize, fftsize, overlap, inSpecData, minFreq, maxFreq);		
 	}
 
 	~CabbagePVSView()
@@ -1894,29 +1887,83 @@ public:
 
 	void resized()
 	{
-		if (count == 0)
-			pvsData->setOriginalWidth(getWidth());
+		this->setWantsKeyboardFocus(false);
+		pvsTableData->setBounds(getWidth()*0.2, getHeight()*0.1, getWidth()*0.7, getHeight()*0.7);
+		addAndMakeVisible(pvsTableData);
 
-		count++;
-
-		pvsData->setBounds(getX(), getY(), getWidth(), getHeight());
-		this->setViewedComponent (pvsData);
-		this->setScrollBarsShown(false, true);
+		cacheBackground();
 	}
 
 	void updatePVSStruct()
 	{
-	//	pvsData->drawSonogram();
-		pvsData->repaint();
+		pvsTableData->repaint();
 	}
 
+	void cacheBackground()
+	{
+		bg = Image::Image(Image::ARGB, getWidth(), getHeight(), true);
+		Graphics g (bg);
+
+		//background
+		g.setColour(CabbageUtils::getDarkerBackgroundSkin());
+		g.fillRoundedRectangle (0, 0, getWidth(), getHeight(), 5);
+
+		//border
+		g.setColour (CabbageUtils::getComponentSkin());
+		g.drawRoundedRectangle (.5, .5, getWidth()-1, getHeight()-1, 5, 1);
+
+		//Markers etc...
+		g.setColour (Colours::lime);
+		Font font = CabbageUtils::getSmallerValueFont();
+		g.setFont(font);
+		String strX, strY;
+		float strWidth;
+		for (float i=0.0; i<=1.0; i+=0.25) {
+			//x-axis markers
+			strX = String(maxFreq*i);
+			strWidth = font.getStringWidthFloat(strX);
+			g.drawText(strX, pvsTableData->getX()+((pvsTableData->getWidth()*i)-(strWidth/2)), pvsTableData->getBottom()+10,
+				strWidth, font.getHeight(), 36, false);
+
+			//y-axis markers
+			strY = String(maxAmp*i);
+			strWidth = font.getStringWidthFloat(strY); 
+			g.drawText(strY, pvsTableData->getX()-(strWidth+10), 
+				(pvsTableData->getBottom()-(pvsTableData->getHeight()*i)) - (font.getHeight()/2),
+				strWidth, font.getHeight(), 36, false);
+		}		
+
+		g.setColour (CabbageUtils::getComponentFontColour());
+		Font labelFont = CabbageUtils::getComponentFont();
+		String xLabel = "Frequency (Hz)";
+		strWidth = labelFont.getStringWidthFloat(xLabel);
+		g.setFont(labelFont);
+		g.drawText(xLabel, pvsTableData->getX()+((pvsTableData->getWidth()/2)-strWidth/2), getHeight()-(labelFont.getHeight()+10), 
+			strWidth, labelFont.getHeight(), 36, false);
+
+		String yLabel = "Amplitude";
+		strWidth = labelFont.getStringWidthFloat(yLabel);
+		g.drawTextAsPath(yLabel, AffineTransform::identity.rotated(4.7, 150, pvsTableData->getHeight()*0.66));
+
+		ImageCache::addImageToCache(bg, 20);
+	}
+
+	void paint(Graphics &g)
+	{ 
+		Image img = ImageCache::getFromHashCode(20);
+		g.drawImage(img, 0, 0, getWidth(), getHeight(), 0, 0, img.getWidth(), img.getHeight(), false);
+	}
+
+	
 private:
-	ScopedPointer<CabbagePVSData> pvsData;
-	int count;
+	ScopedPointer<CabbagePVSTableData> pvsTableData;
+	String text;
+	int minFreq, maxFreq;
+	float maxAmp;
+	Image bg;
 
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CabbagePVSView);
 };
-
 
 
 //==============================================================================
@@ -2371,7 +2418,7 @@ public:
 	{
 		g.setColour(Colour::fromString(colour));
 		g.setFont(CabbageUtils::getComponentFont());
-		g.setFont(getHeight(), 1);
+		g.setFont(getHeight());
 		g.drawFittedText(text, 0, 0, getWidth(), getHeight(), Justification::left, 1, 1);
 	}
 
