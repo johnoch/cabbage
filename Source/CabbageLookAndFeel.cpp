@@ -581,7 +581,6 @@ void CabbageLookAndFeel::drawLinearSliderBackground (Graphics &g, int /*x*/, int
 	else
 		fontcolour = CabbageUtils::getComponentFontColour();
 	
-	
 	float range = slider.getMaximum() - slider.getMinimum();
 
     //----- Getting the proportional position that the current value has in relation to the range
@@ -594,7 +593,6 @@ void CabbageLookAndFeel::drawLinearSliderBackground (Graphics &g, int /*x*/, int
 
     Image newBackground;
 
-    //----- Variables for determining new destination width, height, position etc...
     float destX, destY, sliderEnd;
     float destHeight = slider.getHeight(); 
     float destWidth = slider.getWidth();
@@ -602,20 +600,15 @@ void CabbageLookAndFeel::drawLinearSliderBackground (Graphics &g, int /*x*/, int
     //----- Determining if the user wants a name label displayed......
     bool showName = false;
     String name;
-    Font fontName;
     float nameWidth;
-    Justification just (36); //centered
     if (slider.getName().length() > 0) {
         name << slider.getName();
-        fontName = CabbageUtils::getComponentFont();
-        g.setFont (fontName);
-        nameWidth = fontName.getStringWidth(name);
+        g.setFont (CabbageUtils::getComponentFont());
         g.setColour (fontcolour);
         showName = true; //setting flag to true
     }
 
 	//----- If using a tracker fill
-	
 	bool useTracker = true;
 	String trackColour = slider.getProperties().getWithDefault(String("tracker"), "");
 	if(trackColour.length()<2){
@@ -625,6 +618,18 @@ void CabbageLookAndFeel::drawLinearSliderBackground (Graphics &g, int /*x*/, int
 
     //----- If Horizontal Slider --------------------------------------------------------------------------
     if (style == Slider::LinearHorizontal) {
+		//for name alignment
+		String alignment = slider.getProperties().getWithDefault("align", "").toString();
+		Justification just(1);
+		if (alignment.length()>1) {
+			if (alignment.compare("left") == 0)
+				just.left;
+			else if (alignment.compare("right") == 0)
+				just.right;
+			else if (alignment.compare("centre") == 0)
+				just.centred;
+		}
+
         //setting the available space for the name
         nameWidth = slider.getWidth() * 0.2; 
 
@@ -637,16 +642,16 @@ void CabbageLookAndFeel::drawLinearSliderBackground (Graphics &g, int /*x*/, int
         //a maximum or minimum
         destX = slider.getHeight()*0.25; 
         sliderEnd = slider.getWidth() - destX; 
-        //----- starting y position
-        destY = 0;//(slider.getHeight()/2) - (destHeight/2);
+    
+        destY = 0;
 
         //----- If there is a name label it will be shown at the start while the value will be at the end when 
         //the mouse hovers over the slider. 
-        Justification justLeft (1); //left
         if (showName == true) { //if the name should be displayed
-            name = CabbageUtils::cabbageString (name, fontName, nameWidth); //shortening string if too long
-            g.drawText (name, 0, (slider.getHeight()/2) - 6, (int)nameWidth, 13, justLeft, false);
-            destX += nameWidth+2; //adjusting destX to accomodate slider name
+            name = CabbageUtils::cabbageString (name, CabbageUtils::getComponentFont(), nameWidth); //shortening string if too long
+			g.drawText (name, 0, (slider.getHeight()/2) - (CabbageUtils::getComponentFont().getHeight()/2), 
+				(int)nameWidth, CabbageUtils::getComponentFont().getHeight(), just, false);
+            destX += nameWidth; //adjusting destX to accomodate slider name
         }
 
         //----- If textbox IS NOT to be displayed!!!!!! 
@@ -659,8 +664,7 @@ void CabbageLookAndFeel::drawLinearSliderBackground (Graphics &g, int /*x*/, int
             sliderEnd -= len;
         }
 
-        //Getting the new destination width of image
-        destWidth = sliderEnd - destX;
+        destWidth = sliderEnd - destX; //destination width of image
 
         //----- Slider is enabled and value changed if mouse click is within the actual slider image....
         if (slider.isMouseButtonDown() == true) {
@@ -678,30 +682,29 @@ void CabbageLookAndFeel::drawLinearSliderBackground (Graphics &g, int /*x*/, int
 
     //----- If Vertical Slider ---------------------------------------------------------------------------
     if (style == Slider::LinearVertical) {
-
-        //----- starting x position
+		nameWidth = slider.getWidth();
         destX = ((slider.getWidth() - destWidth) / 2);    
-        //----- starting y position, width*0.25 is to make room for the edge of the slider thumb when at a 
+        //----- starting y position, width*0.25 is to make room for the edge of the thumb when at a 
         //maximum or minimum
         destY = slider.getWidth()*0.25; 
         sliderEnd = slider.getHeight() - destY;
 
         //----- If textbox IS NOT to be displayed!!!!!! 
-        //If there is a name label it will be shown at the bottom    while the value will be at the top when 
+        //If there is a name label it will be shown at the bottom while the value will be at the top when 
         //the mouse hovers over the slider. 
         if (slider.getTextBoxPosition() == Slider::NoTextBox) {
             slider.setTextBoxStyle (Slider::NoTextBox, true, 0, 0);
             if (showName == true) { //if the name should be displayed
-                name = CabbageUtils::cabbageString (name, fontName, slider.getWidth()); //shortening string if too long
+                name = CabbageUtils::cabbageString (name, CabbageUtils::getComponentFont(), slider.getWidth()); 
                 g.drawText (name, (slider.getWidth()/2) - (nameWidth/2), slider.getHeight() - 13, 
-                                                            (int)nameWidth, 13,    just, false);
+                                                            (int)nameWidth, 13, 36, false);
                 sliderEnd -= 21; //name label(11) + space(10) between image and text
             }
             destY += 15; //value(15)
         }
 
         //----- If textbox IS to be displayed!!!!  
-        //This means that if the user wants a label it will automatically    go at the top. 
+        //This means that if the user wants a label it will automatically go at the top. 
         else {
             String str;
             str << slider.getMaximum() << slider.getInterval();
@@ -710,17 +713,15 @@ void CabbageLookAndFeel::drawLinearSliderBackground (Graphics &g, int /*x*/, int
             sliderEnd -= 30; //textbox height(15) plus gap(15)
 
             if (showName == true) { //if name label is to be displayed
-                name = CabbageUtils::cabbageString (name, fontName, slider.getWidth()); //shortening string if too long
-                g.drawText (name, (slider.getWidth()/2) - (nameWidth/2), 0, (int)nameWidth, 13, 
-                                                                                just, false);
+                name = CabbageUtils::cabbageString (name, CabbageUtils::getComponentFont(), slider.getWidth());
+                g.drawText (name, (slider.getWidth()/2) - (nameWidth/2), 0, (int)nameWidth, 13, 36, false);
                 destY += 15; //name(15)
                 //sliderEnd -= 0; Having a textbox will automatically adjust slider.getHeight() so no need to 
                 //subtract anything here
             }
         }
 
-        //Getting the new destination height of image
-        destHeight = sliderEnd - destY;
+        destHeight = sliderEnd - destY; //destination height of image
 
         //----- Slider is enabled and value changed if mouse click is within the actual slider image....
         if (slider.isMouseButtonDown() == true) {
@@ -741,6 +742,7 @@ void CabbageLookAndFeel::drawLinearSliderBackground (Graphics &g, int /*x*/, int
     g.setOpacity (1);
     g.drawImage(newBackground, destX, destY, destWidth, destHeight, 0, 0, destWidth, destHeight, false);
 }
+
 
 
 //========== Linear Slider Thumb =========================================================================
