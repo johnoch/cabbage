@@ -17,13 +17,13 @@ ifeq ($(CONFIG),Debug)
   LIBDIR := build
   OBJDIR := build/intermediate/Debug
   OUTDIR := build
-  CPPFLAGS := $(DEPFLAGS) -D "LINUX=1" -D "DEBUG=1" -D "_DEBUG=1" -D "JUCER_LINUX_MAKE_7346DA2A=1" -I /usr/include -I /usr/include/freetype2 -I ../../JuceLibraryCode
+  CPPFLAGS := $(DEPFLAGS) -D "LINUX=1" -D "DEBUG=1" -D "_DEBUG=1" -D "USE_DOUBLE=1" -D "Cabbage_Build_Standalone=1" -D "JUCER_LINUX_MAKE_7346DA2A=1" -I /usr/include -I /usr/include/freetype2 -I ../../JuceLibraryCode -I -I "/usr/local/include/csound"
   CFLAGS += $(CPPFLAGS) $(TARGET_ARCH) -g -ggdb -O0
-  CXXFLAGS += $(CFLAGS) 
-  LDFLAGS += -L$(BINDIR) -L$(LIBDIR) -L/usr/X11R6/lib/ -lGL -lX11 -lXext -lXinerama -lasound -ldl -lfreetype -lpthread -lrt 
+  CXXFLAGS += $(CFLAGS) -I "/usr/local/include/csound"
+  LDFLAGS += -L$(BINDIR) -L$(LIBDIR) -L/usr/X11R6/lib/ -ldl -lfreetype -lpthread -lrt -lX11 -lGL -lGLU -lXinerama -lasound -lXext -lasound -lcsound64 -lm -lsndfile
   LDDEPS :=
-  RESFLAGS :=  -D "LINUX=1" -D "DEBUG=1" -D "_DEBUG=1" -D "JUCER_LINUX_MAKE_7346DA2A=1" -I /usr/include -I /usr/include/freetype2 -I ../../JuceLibraryCode
-  TARGET := NewProject
+  RESFLAGS :=  -D "LINUX=1" -D "DEBUG=1" -D "_DEBUG=1" -D "USE_DOUBLE=1" -D "Cabbage_Build_Standalone=1" -D "JUCER_LINUX_MAKE_7346DA2A=1" -I /usr/include -I /usr/include/freetype2 -I ../../JuceLibraryCode -I -I "/usr/local/include/csound"
+  TARGET := CabbageLinux
   BLDCMD = $(CXX) -o $(OUTDIR)/$(TARGET) $(OBJECTS) $(LDFLAGS) $(RESOURCES) $(TARGET_ARCH)
 endif
 
@@ -32,22 +32,36 @@ ifeq ($(CONFIG),Release)
   LIBDIR := build
   OBJDIR := build/intermediate/Release
   OUTDIR := build
-  CPPFLAGS := $(DEPFLAGS) -D "LINUX=1" -D "NDEBUG=1" -D "JUCER_LINUX_MAKE_7346DA2A=1" -I /usr/include -I /usr/include/freetype2 -I ../../JuceLibraryCode
+  CPPFLAGS := $(DEPFLAGS) -D "LINUX=1" -D "NDEBUG=1" -D "USE_DOUBLE=1" -D "Cabbage_Build_Standalone=1" -D "JUCER_LINUX_MAKE_7346DA2A=1" -I /usr/include -I /usr/include/freetype2 -I ../../JuceLibraryCode -I -I "/usr/local/include/csound"
   CFLAGS += $(CPPFLAGS) $(TARGET_ARCH) -Os
-  CXXFLAGS += $(CFLAGS) 
-  LDFLAGS += -L$(BINDIR) -L$(LIBDIR) -L/usr/X11R6/lib/ -lGL -lX11 -lXext -lXinerama -lasound -ldl -lfreetype -lpthread -lrt 
+  CXXFLAGS += $(CFLAGS) -I "/usr/local/include/csound"
+  LDFLAGS += -L$(BINDIR) -L$(LIBDIR) -L/usr/X11R6/lib/ -ldl -lfreetype -lpthread -lrt -lX11 -lGL -lGLU -lXinerama -lasound -lXext -lasound -lcsound64 -lm -lsndfile
   LDDEPS :=
-  RESFLAGS :=  -D "LINUX=1" -D "NDEBUG=1" -D "JUCER_LINUX_MAKE_7346DA2A=1" -I /usr/include -I /usr/include/freetype2 -I ../../JuceLibraryCode
-  TARGET := NewProject
+  RESFLAGS :=  -D "LINUX=1" -D "NDEBUG=1" -D "USE_DOUBLE=1" -D "Cabbage_Build_Standalone=1" -D "JUCER_LINUX_MAKE_7346DA2A=1" -I /usr/include -I /usr/include/freetype2 -I ../../JuceLibraryCode -I -I "/usr/local/include/csound"
+  TARGET := CabbageLinux
   BLDCMD = $(CXX) -o $(OUTDIR)/$(TARGET) $(OBJECTS) $(LDFLAGS) $(RESOURCES) $(TARGET_ARCH)
 endif
 
 OBJECTS := \
-  $(OBJDIR)/Main_90ebc5c2.o \
+  $(OBJDIR)/CabbageGUIClass_79b9049f.o \
+  $(OBJDIR)/BinaryData_5ba7f54.o \
+  $(OBJDIR)/CabbageLookAndFeel_220a01a6.o \
+  $(OBJDIR)/CabbageMainPanel_12c1333.o \
+  $(OBJDIR)/CabbageTable_d003e736.o \
+  $(OBJDIR)/ComponentLayoutEditor_aa38c835.o \
+  $(OBJDIR)/CabbageCsoundEditor_d96a9ea1.o \
+  $(OBJDIR)/CabbageEditorCommandManager_7b31d637.o \
+  $(OBJDIR)/CabbageEditorWindow_16f98d45.o \
+  $(OBJDIR)/CabbagePluginEditor_5a11f64e.o \
+  $(OBJDIR)/CabbagePluginProcessor_73d6661b.o \
+  $(OBJDIR)/CabbageStandaloneDialog_72d272cd.o \
+  $(OBJDIR)/StandaloneFilterApp_d9ee3663.o \
+  $(OBJDIR)/juce_AAX_Wrapper_6b508a5d.o \
   $(OBJDIR)/juce_audio_basics_2442e4ea.o \
   $(OBJDIR)/juce_audio_devices_a4c8a728.o \
   $(OBJDIR)/juce_audio_formats_d349f0c8.o \
   $(OBJDIR)/juce_audio_processors_44a134a2.o \
+  $(OBJDIR)/juce_audio_utils_f63b12e8.o \
   $(OBJDIR)/juce_core_aff681cc.o \
   $(OBJDIR)/juce_cryptography_25c7e826.o \
   $(OBJDIR)/juce_data_structures_bdd6d488.o \
@@ -56,26 +70,91 @@ OBJECTS := \
   $(OBJDIR)/juce_gui_basics_a630dd20.o \
   $(OBJDIR)/juce_gui_extra_7767d6a8.o \
   $(OBJDIR)/juce_opengl_c7e3506c.o \
-  $(OBJDIR)/juce_video_184321c8.o \
+  
 
 .PHONY: clean
 
 $(OUTDIR)/$(TARGET): $(OBJECTS) $(LDDEPS) $(RESOURCES)
-	@echo Linking NewProject
+	@echo Linking CabbageLinux
 	-@mkdir -p $(BINDIR)
 	-@mkdir -p $(LIBDIR)
 	-@mkdir -p $(OUTDIR)
 	@$(BLDCMD)
 
 clean:
-	@echo Cleaning NewProject
+	@echo Cleaning CabbageLinux
 	-@rm -f $(OUTDIR)/$(TARGET)
 	-@rm -rf $(OBJDIR)/*
 	-@rm -rf $(OBJDIR)
 
-$(OBJDIR)/Main_90ebc5c2.o: ../../Source/Main.cpp
+$(OBJDIR)/BinaryData_5ba7f54.o: ../../Source/BinaryData.cpp
 	-@mkdir -p $(OBJDIR)
-	@echo "Compiling Main.cpp"
+	@echo "Compiling BinaryData.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
+$(OBJDIR)/CabbageGUIClass_79b9049f.o: ../../Source/CabbageGUIClass.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling CabbageGUIClass.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
+$(OBJDIR)/CabbageLookAndFeel_220a01a6.o: ../../Source/CabbageLookAndFeel.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling CabbageLookAndFeel.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
+$(OBJDIR)/CabbageMainPanel_12c1333.o: ../../Source/CabbageMainPanel.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling CabbageMainPanel.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
+$(OBJDIR)/CabbageTable_d003e736.o: ../../Source/CabbageTable.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling CabbageTable.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
+$(OBJDIR)/ComponentLayoutEditor_aa38c835.o: ../../Source/ComponentLayoutEditor.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling ComponentLayoutEditor.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
+$(OBJDIR)/CabbageCsoundEditor_d96a9ea1.o: ../../Source/Editor/CabbageCsoundEditor.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling CabbageCsoundEditor.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
+$(OBJDIR)/CabbageEditorCommandManager_7b31d637.o: ../../Source/Editor/CabbageEditorCommandManager.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling CabbageEditorCommandManager.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
+$(OBJDIR)/CabbageEditorWindow_16f98d45.o: ../../Source/Editor/CabbageEditorWindow.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling CabbageEditorWindow.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
+$(OBJDIR)/CabbagePluginEditor_5a11f64e.o: ../../Source/Plugin/CabbagePluginEditor.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling CabbagePluginEditor.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
+$(OBJDIR)/CabbagePluginProcessor_73d6661b.o: ../../Source/Plugin/CabbagePluginProcessor.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling CabbagePluginProcessor.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
+$(OBJDIR)/CabbageStandaloneDialog_72d272cd.o: ../../Source/Standalone/CabbageStandaloneDialog.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling CabbageStandaloneDialog.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
+$(OBJDIR)/StandaloneFilterApp_d9ee3663.o: ../../Source/Standalone/StandaloneFilterApp.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling StandaloneFilterApp.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
+$(OBJDIR)/juce_AAX_Wrapper_6b508a5d.o: ../../JuceLibraryCode/modules/juce_audio_plugin_client/AAX/juce_AAX_Wrapper.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling juce_AAX_Wrapper.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/juce_audio_basics_2442e4ea.o: ../../JuceLibraryCode/modules/juce_audio_basics/juce_audio_basics.cpp
@@ -96,6 +175,11 @@ $(OBJDIR)/juce_audio_formats_d349f0c8.o: ../../JuceLibraryCode/modules/juce_audi
 $(OBJDIR)/juce_audio_processors_44a134a2.o: ../../JuceLibraryCode/modules/juce_audio_processors/juce_audio_processors.cpp
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling juce_audio_processors.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
+$(OBJDIR)/juce_audio_utils_f63b12e8.o: ../../JuceLibraryCode/modules/juce_audio_utils/juce_audio_utils.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling juce_audio_utils.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/juce_core_aff681cc.o: ../../JuceLibraryCode/modules/juce_core/juce_core.cpp
@@ -138,9 +222,34 @@ $(OBJDIR)/juce_opengl_c7e3506c.o: ../../JuceLibraryCode/modules/juce_opengl/juce
 	@echo "Compiling juce_opengl.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
+$(OBJDIR)/juce_RTAS_DigiCode1_fd8f0f15.o: ../../JuceLibraryCode/modules/juce_audio_plugin_client/RTAS/juce_RTAS_DigiCode1.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling juce_RTAS_DigiCode1.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
+$(OBJDIR)/juce_RTAS_DigiCode2_fd9d2696.o: ../../JuceLibraryCode/modules/juce_audio_plugin_client/RTAS/juce_RTAS_DigiCode2.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling juce_RTAS_DigiCode2.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
+$(OBJDIR)/juce_RTAS_DigiCode3_fdab3e17.o: ../../JuceLibraryCode/modules/juce_audio_plugin_client/RTAS/juce_RTAS_DigiCode3.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling juce_RTAS_DigiCode3.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
+$(OBJDIR)/juce_RTAS_Wrapper_6747216b.o: ../../JuceLibraryCode/modules/juce_audio_plugin_client/RTAS/juce_RTAS_Wrapper.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling juce_RTAS_Wrapper.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
 $(OBJDIR)/juce_video_184321c8.o: ../../JuceLibraryCode/modules/juce_video/juce_video.cpp
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling juce_video.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
+$(OBJDIR)/juce_VST_Wrapper_bb62e93d.o: ../../JuceLibraryCode/modules/juce_audio_plugin_client/VST/juce_VST_Wrapper.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling juce_VST_Wrapper.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 -include $(OBJECTS:%.o=%.d)
