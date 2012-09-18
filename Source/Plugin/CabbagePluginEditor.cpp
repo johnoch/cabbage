@@ -1053,7 +1053,8 @@ try{
                                                 break;
                                         }
 
-                                        presetText = presetText + data[y+i] << "\n";
+                                        presetText = presetText + data[y+i];
+                                        presetText.append("\n", 10);
                                         if(data[y+i].contains("-------- End of Preset:")){
                                                 cAttr.setStringProp("snapshotData", y-1, presetText);
                                                 //showMessage(presetText);
@@ -1564,7 +1565,7 @@ try{
         //showMessage(String(cAttr.getItemsSize()));
         cAttr.setNumProp("sliderRange", cAttr.getItemsSize());
 
-        lookAndFeel->setColour(ComboBox::ColourIds::textColourId, Colour::fromString(cAttr.getColourProp("fontcolour")));
+        lookAndFeel->setColour(ComboBox::textColourId, Colour::fromString(cAttr.getColourProp("fontcolour")));
 
         ((CabbageComboBox*)controls[idx])->combo->setSelectedId(cAttr.getNumProp("value"));
         componentPanel->addAndMakeVisible(((CabbageComboBox*)controls[idx]));

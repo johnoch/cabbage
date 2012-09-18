@@ -204,7 +204,7 @@ void Table::backgroundImage()
 	//This method creates the background image that the table data will be
 	//painted on to.  It is then stored in cache.
 
-	img = Image::Image(Image::ARGB, origWidth, getHeight(), true);
+	img = Image(Image::ARGB, origWidth, getHeight(), true);
 	Graphics g (img);
 		
 	//----- For drawing the actual canvas area

@@ -12,8 +12,8 @@ lookAndFeel = new CabbageLookAndFeel();
 opcodes.addLines(String((BinaryData::opcodes_txt)));
 csoundDoc.addListener(this);
 textEditor = new CodeEditorComponent(csoundDoc, &csoundToker);
-textEditor->setColour(CodeEditorComponent::ColourIds::lineNumberTextId, Colours::white);
-textEditor->setColour(CodeEditorComponent::ColourIds::lineNumberBackgroundId, Colours::black);
+textEditor->setColour(CodeEditorComponent::lineNumberTextId, Colours::white);
+textEditor->setColour(CodeEditorComponent::lineNumberBackgroundId, Colours::black);
 
 textEditor->setBounds(0, 0, getWidth(), getHeight());
 textEditor->setFont(Font(String("Courier New"), 15, 1));
@@ -116,9 +116,9 @@ horizontalLayout.layOutComponents (comps, 4, 0, 0, getWidth(), getHeight(), true
 void CsoundEditor::setFontSize(String zoom)
 {
 if(zoom==String("in"))
-textEditor->setFont(Font::Font(String("Courier New"), ++fontSize, 1));
+textEditor->setFont(Font(String("Courier New"), ++fontSize, 1));
 else
-textEditor->setFont(Font::Font(String("Courier New"), --fontSize, 1));
+textEditor->setFont(Font(String("Courier New"), --fontSize, 1));
 
 }
 

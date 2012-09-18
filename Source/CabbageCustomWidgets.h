@@ -690,7 +690,7 @@ public:
 		//that is static. 
 
 		// Creating a blank canvas
-		img = Image::Image(Image::ARGB, totalWidth, totalHeight, true);
+		img = Image(Image::ARGB, totalWidth, totalHeight, true);
 			
 		Graphics g (img);
 
@@ -1306,7 +1306,7 @@ public:
 			//that is static. 
 
 			// Creating a blank canvas
-			img = Image::Image(Image::ARGB, getWidth(), getHeight(), true);
+			img = Image(Image::ARGB, getWidth(), getHeight(), true);
 			
 			Graphics g (img);
 			Colour bg = Colour::fromRGBA (10, 10, 15, 255);
@@ -1804,7 +1804,7 @@ public:
         void cacheGridImage()
         {
                 //----- This method stores the grid in cache
-                grid = Image::Image(Image::ARGB, getWidth(), getHeight(), true);
+                grid = Image(Image::ARGB, getWidth(), getHeight(), true);
                         
                 Graphics g (grid);
                 g.setColour(CabbageUtils::getComponentFontColour());
@@ -1897,7 +1897,7 @@ public:
 
         void cacheBackground()
         {
-                bg = Image::Image(Image::ARGB, getWidth(), getHeight(), true);
+                bg = Image(Image::ARGB, getWidth(), getHeight(), true);
                 Graphics g (bg);
 
                 //background

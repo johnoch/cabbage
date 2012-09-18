@@ -47,11 +47,6 @@ beat(0),
 bpm(120),
 patMatrixActive(0)
 {
-//check that Csound is installed on the system
-String opcodeDir = SystemStats::getEnvironmentVariable("OPCODEDIR64", "");
-if(opcodeDir.isEmpty())
-showMessage("You don't seem to have Csound installed? Please installed Csound first before using a Cabbage based plugin or application");
-
 //reset patMatrix. If this has more than one we know that
 //pattern matrix object is being used
 patStepMatrix.clear();

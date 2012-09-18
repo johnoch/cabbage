@@ -20,7 +20,7 @@ Image CabbageLookAndFeel::drawRotaryImage(int diameter, const Colour circleFill,
 {
 	//A simpler slider is created if the diameter is 25 or less.
 
-	Image img = Image::Image(Image::ARGB, diameter, diameter, true);
+	Image img = Image(Image::ARGB, diameter, diameter, true);
 	Graphics g (img);
 
 	//----- Calculating number of radians for 300 degrees.  This is because the slider goes from -150 to 150 degrees 
@@ -117,7 +117,7 @@ Image CabbageLookAndFeel::drawLinearBgImage (float width, float height, float sl
 																					bool isVertical,
 																					const Colour trackerFill)
 {
-	Image img = Image::Image(Image::ARGB, width, height, true);
+	Image img = Image(Image::ARGB, width, height, true);
 	Graphics g (img);
 	
 	//----- For horizontal sliders ---------------------------------------------------
@@ -209,7 +209,7 @@ Image CabbageLookAndFeel::drawLinearBgImage (float width, float height, float sl
 Image CabbageLookAndFeel::drawLinearThumbImage (float width, float height, const Colour thumbFill, 
 																					bool isVertical)
 {
-	Image img = Image::Image(Image::ARGB, width, height, true);
+	Image img = Image(Image::ARGB, width, height, true);
 	Graphics g (img);
 
 	//----- Setting colour of thumb.
@@ -251,7 +251,7 @@ Image CabbageLookAndFeel::drawLinearThumbImage (float width, float height, const
 //========= Toggle Button image ========================================================
 Image CabbageLookAndFeel::drawToggleImage (float width, float height, bool isToggleOn, Colour colour, bool isRect)
 {
-    Image img = Image::Image(Image::ARGB, width, height, true);
+    Image img = Image(Image::ARGB, width, height, true);
     Graphics g (img);
 	float opacity = 0;
     //base
@@ -330,7 +330,7 @@ Image CabbageLookAndFeel::drawToggleImage (float width, float height, bool isTog
 //========= Text button image ========================================================
 Image CabbageLookAndFeel::drawTextButtonImage (float width, float height, bool isButtonDown)
 {
-	Image img = Image::Image(Image::ARGB, width, height, true);
+	Image img = Image(Image::ARGB, width, height, true);
 	Graphics g (img);
 	float opacity;
 
@@ -754,7 +754,7 @@ void CabbageLookAndFeel::drawLinearSliderThumb (Graphics &g, int /*x*/, int /*y*
 {
 	float destX, destY, destWidth, destHeight, sliderStart, sliderEnd;
 
-	Colour thumbFill = slider.findColour(Slider::ColourIds::thumbColourId, false);
+	Colour thumbFill = slider.findColour(Slider::thumbColourId, false);
 	Image newThumb;
 
 
@@ -1293,7 +1293,7 @@ void CabbageLookAndFeel::drawPopupMenuBackground(Graphics &g, int width, int hei
 //====== Returns image of a check mark ==============================================
 Image CabbageLookAndFeel::drawCheckMark()
 {
-	Image img = Image::Image(Image::ARGB, 10, 10, true);
+	Image img = Image(Image::ARGB, 10, 10, true);
 	Graphics g(img);
 
 	Path path;
@@ -1395,7 +1395,7 @@ Image CabbageLookAndFeel::drawWindowButtonNormal(int buttonType)
 {
 	int width, height;
 	width = height = 20;
-	Image img = Image::Image(Image::ARGB, width, height, true);
+	Image img = Image(Image::ARGB, width, height, true);
 	Graphics g (img);
 
 	String str;
@@ -1426,7 +1426,7 @@ Image CabbageLookAndFeel::drawWindowButtonIsOver(int buttonType)
 {
 	int width, height;
 	width = height = 20;
-	Image img = Image::Image(Image::ARGB, width, height, true);
+	Image img = Image(Image::ARGB, width, height, true);
 	Graphics g (img);
 
 	String str;
