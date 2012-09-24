@@ -1,0 +1,11 @@
+#!/bin/bash  
+
+echo "Building Cabbage! "
+
+make -f MakefileStandalone clean
+make -f MakefileStandalone
+make -f MakefilePluginEffect clean
+make -f MakefilePluginEffect
+make -f MakefilePluginEffect cleanObj
+make -f MakefilePluginSynth
+make -f MakefilePluginSynth cleanObj
