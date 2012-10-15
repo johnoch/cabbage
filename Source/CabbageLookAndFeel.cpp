@@ -1101,10 +1101,13 @@ void CabbageLookAndFeel::drawComboBox(Graphics& g, int width, int height, bool /
 
 
 //============= TextEditor Outline ======================================================================
-void CabbageLookAndFeel::drawTextEditorOutline (Graphics &g, int width, int height, TextEditor &/*textEditor*/)
+void CabbageLookAndFeel::drawTextEditorOutline (Graphics &g, int width, int height, TextEditor &textEditor)
 {
 	g.setColour (Colours::transparentBlack);
 	g.drawRoundedRectangle (0, 0, width, height, height/3, 1);
+	textEditor.setColour(TextEditor::textColourId, Colours::lime);
+	textEditor.setColour(TextEditor::highlightColourId, Colours::white);
+
 }
 
 

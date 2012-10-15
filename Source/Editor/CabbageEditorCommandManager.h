@@ -12,6 +12,7 @@ namespace CommandIDs
     static const int fileSaveAll		= 0x2004;
 	static const int fileExportSynth	= 0x2005;
 	static const int fileExportEffect	= 0x2006;
+	static const int fileUpdateGUI		= 0x2007;
 
 	static const int editUndo			= 0x2011;
 	static const int editRedo			= 0x2012;

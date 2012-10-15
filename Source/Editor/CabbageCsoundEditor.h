@@ -29,6 +29,7 @@
 #include "../CabbageLookAndFeel.h"
 #include "../BinaryData.h"
 #include "CabbageEditorCommandManager.h"
+#include "../CabbageGUIClass.h"
 
 #ifdef Cabbage_Build_Standalone
 extern ApplicationProperties* appProperties;
@@ -369,12 +370,85 @@ public:
 
 	};
 
+	class CsoundCodeEditor : public CodeEditorComponent
+	{
+	public:
+			CsoundCodeEditor(CodeDocument &document, CodeTokeniser *codeTokeniser)
+					: CodeEditorComponent(document, codeTokeniser)
+			{
+				setColour(CodeEditorComponent::highlightColourId, Colours::cornflowerblue); 	
+			}
+/*
+		void addPopupMenuItems(PopupMenu &menuToAddTo, const MouseEvent *mouseClickEvent)
+			{		
+			menuToAddTo.addItem(100, "Cut"); 
+			menuToAddTo.addItem(101, "Copy"); 
+			menuToAddTo.addItem(102, "Paste"); 
+			menuToAddTo.addItem(103, "Select All"); 
+			menuToAddTo.addSeparator();
+			menuToAddTo.addItem(104, "Undo"); 
+			menuToAddTo.addItem(105, "Redo");
+			menuToAddTo.addSeparator();
+			menuToAddTo.addItem(106, "Add Plant to Garden");
+			menuToAddTo.addItem(107, "Use Plant from Garden"); 
+			}
+
+
+		void performPopupMenuAction(int menuItemID){
+			ScopedPointer<XmlElement> xmlElem1;
+			ScopedPointer<XmlElement> xmlElem2;
+
+				switch (menuItemID)
+					{
+					  case 100:
+						 cutToClipboard();
+						 break;
+					  case 101:
+						 copyToClipboard();
+						 break;
+					  case 102:
+						 pasteFromClipboard();
+						 break;
+					  case 103:
+						 selectAll();
+						 break;
+					  case 104:
+						 undo();
+						 break;
+					  case 105:
+						 redo();
+						 break;
+					  case 106:
+					//	 xmlElem1 = new XmlElement("plantData");
+						 //showMessage(xmlElem->getAllSubText();
+					//	 xmlElem2 = appProperties->getUserSettings()->getXmlValue("plantData");
+					//	 xmlElem2->addChildElement(xmlElem1);
+						 //appProperties->getUserSettings()->setValue("plantData", xmlElem2);
+						 break;
+					  case 107:
+						 showMessage("retreiving plant");
+						 break;
+					  default:
+						 showMessage("Whoops");
+					}
+			}
+			*/
+
+			~CsoundCodeEditor(){};
+
+
+	private:
+
+	};
+
+
+
 	int fontSize;
 	ScopedPointer<TabbedComponent> tabComp;
 	ScopedPointer<WebBrowserComponent> htmlHelp;
 	CodeDocument csoundDoc;
 	CsoundTokeniser csoundToker;
-	ScopedPointer<CodeEditorComponent> textEditor;
+	ScopedPointer<CsoundCodeEditor> textEditor;
 	ScopedPointer<TextEditor> output;
 	ScopedPointer<CabbageLookAndFeel> lookAndFeel;
 	ScopedPointer<helpContext> helpLabel;
@@ -394,9 +468,16 @@ public:
     ~CsoundEditor ();
     //==============================================================================
 	void codeDocumentChanged (const CodeDocument::Position &affectedTextStart, const CodeDocument::Position &affectedTextEnd);
-	//==============================================================================
+	//=============================================================================
 	void resized ();
 	void setCurrentFile(File input);
+	void highlightLine(String line){
+		String temp = textEditor->getDocument().getAllContent();
+		Range<int> range;
+		range.setStart(temp.indexOf(line));
+		range.setEnd(temp.indexOf(line)+line.length());
+		textEditor->setHighlightedRegion(range);
+	}
 	String getCurrentText();
 	void newFile(String type);
 	bool hasChanged;

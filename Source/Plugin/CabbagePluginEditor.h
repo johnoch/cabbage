@@ -56,6 +56,7 @@ class CabbagePluginAudioProcessorEditor  : public AudioProcessorEditor,
                                                                 public ChangeBroadcaster,
                                                                 public ChangeListener,
                                                                 public ActionListener
+																
 {
 public:
     CabbagePluginAudioProcessorEditor (CabbagePluginAudioProcessor* ownerFilter);
@@ -64,9 +65,12 @@ public:
     //==============================================================================
     // This is just a standard Juce paint method...
     void paint (Graphics& g);
-        void resized();
+    void resized();
+	void setEditMode(bool on);
+	void InsertGUIControls();
+
 private:
-        void InsertGUIControls();
+        
         bool keyPressed(const juce::KeyPress &,Component *);
         void InsertGroupBox(CabbageGUIClass &cAttr);
         void comboBoxChanged (ComboBox* combo);
@@ -100,6 +104,7 @@ private:
         String presetFileText;
         void actionListenerCallback (const String& message);
         int zero_dbfs;
+		StringArray tempArray;
 
         //CabbagePluginAudioProcessor* filter;
         CabbagePluginAudioProcessor* getFilter() const
@@ -137,6 +142,7 @@ private:
         ScopedPointer<CabbageLookAndFeel> lookAndFeel;
         ScopedPointer<Label> debugLabel;
         JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CabbagePluginAudioProcessorEditor);
+
 };
 
 

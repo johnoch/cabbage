@@ -24,8 +24,8 @@
 
 
 #ifdef Cabbage_GUI_Editor
-#include "ComponentLayoutEditor.h"
-#include "CabbageMainPanel.h"
+#include "../ComponentLayoutEditor.h"
+#include "../CabbageMainPanel.h"
 #endif
 
 
@@ -40,8 +40,10 @@ Component::setLookAndFeel(lookAndFeel);
 //determine whether instrument should be opened in GUI mode or not
 addChangeListener(ownerFilter);
 componentPanel = new CabbageMainPanel();
+componentPanel->setLookAndFeel(lookAndFeel);
 componentPanel->setBounds(0, 0, getWidth(), getHeight());
 layoutEditor = new ComponentLayoutEditor();
+layoutEditor->setLookAndFeel(lookAndFeel);
 layoutEditor->setBounds(0, 0, getWidth(), getHeight());
 addAndMakeVisible(layoutEditor);
 addAndMakeVisible(componentPanel);
@@ -61,7 +63,7 @@ InsertGUIControls();
 startTimer(20);
 
 #ifdef Cabbage_GUI_Editor
-componentPanel->addChangeListener(this);
+componentPanel->addActionListener(this);
 if(!ownerFilter->isGuiEnabled()){
 layoutEditor->setEnabled(false);
 layoutEditor->toFront(false); 
@@ -103,73 +105,13 @@ if(presetFileText.length()>1)
 
 //===========================================================================
 //WHEN IN GUI EDITOR MODE THIS CALLBACK WILL NOTIFIY THE HOST IF A MOUSE UP
-//HAS BEEN TRIGGERED BY ANY OF THE INSTRUMENTS WIDGETS, THIS IN TURN UPDATED
-//WINXOUND WITH THE NEW COORDINATES AND SIZE
+//HAS BEEN TRIGGERED BY ANY OF THE INSTRUMENTS WIDGETS, THIS IN TURN UPDATES
+//THE SOURCE WITH THE NEW COORDINATES AND SIZE
 //===========================================================================
 void CabbagePluginAudioProcessorEditor::changeListenerCallback(ChangeBroadcaster *source)
 {
 
-#ifdef Cabbage_GUI_Editor
-/*
-StringArray csdArray;
-String temp;
-//break up lines in csd file into a string array
-csdArray.addLines(getFilter()->getCsoundInputFileText());
 
-if(componentPanel->getMouseState().equalsIgnoreCase("down")){
-for(int i=0; i<csdArray.size(); i++){
-                CabbageGUIClass cAttr(csdArray[i], 0);
-                Logger::writeToLog(csdArray[i]);
-                if(cAttr.getNumProp(String("top"))==componentPanel->getCurrentTop() &&
-                        cAttr.getNumProp(String("left"))==componentPanel->getCurrentLeft() &&
-                        cAttr.getNumProp(String("width"))==componentPanel->getCurrentWidth() &&
-                        cAttr.getNumProp(String("height"))==componentPanel->getCurrentHeight())
-                {
-                        temp = csdArray[i].replace(componentPanel->getCurrentBounds(), String("bounds()"), true);
-                        csdArray.set(i, temp);
-                        Logger::writeToLog(temp);
-                        getFilter()->updateCsoundFile(csdArray.joinIntoString("\n"));
-                        lineNumber = i;                                 
-                }
-                getFilter()->setCurrentLine(lineNumber);
-                }
-}
-*/
-
-/*                                                                                      
-        for(int i=0; i<csdArray.size(); i++){
-        if(csdArray[i].containsIgnoreCase(componentPanel->getCurrentBounds())||
-        (csdArray[i].containsIgnoreCase(componentPanel->getCurrentPos())&&
-        csdArray[i].containsIgnoreCase(componentPanel->getCurrentPos())))
-        {
-                if(csdArray[i].containsIgnoreCase(componentPanel->getCurrentBounds()))
-                        temp = csdArray[i].replace(componentPanel->getCurrentBounds(), String("bounds()"), true);
-                else if(csdArray[i].containsIgnoreCase(componentPanel->getCurrentSize())&&
-                        csdArray[i].containsIgnoreCase(componentPanel->getCurrentPos())){
-                        String temp1 = csdArray[i].replace(componentPanel->getCurrentSize()+String(","), String(""), true);
-                        temp = temp1.replace(componentPanel->getCurrentPos(), String("bounds()"), true);
-                }
-        csdArray.set(i, temp);
-        Logger::writeToLog(temp);
-        getFilter()->updateCsoundFile(csdArray.joinIntoString("\n"));
-        lineNumber = i;
-        getFilter()->setCurrentLine(lineNumber);
-        }
-}
-}*/
-/*
-else if(componentPanel->getMouseState().equalsIgnoreCase("up")){
-//ONLY SEND UPDATED INFO ON A MOUSE UP
-Logger::writeToLog(componentPanel->getCurrentBounds());
-temp = csdArray[lineNumber].replace(String("bounds()"), componentPanel->getCurrentBounds());
-csdArray.set(lineNumber, temp);
-getFilter()->updateCsoundFile(csdArray.joinIntoString("\n"));
-getFilter()->setGuiEnabled(true);
-getFilter()->setChangeMessageType("GUI_edit");  
-getFilter()->sendChangeMessage();
-}
-*/
-#endif
 }
 //==============================================================================
 // this function will display a context menu on right mouse click. The menu 
@@ -181,87 +123,79 @@ getFilter()->sendChangeMessage();
 void CabbagePluginAudioProcessorEditor::mouseDown(const MouseEvent &e)
 {
 #ifdef Cabbage_GUI_Editor
+ScopedPointer<XmlElement> xml = new XmlElement("PLANTS");
 PopupMenu m;
-PopupMenu sm;
-sm.addItem(1, "5_vsliders");
-sm.addItem(2, "green_rslider");
-if(!getFilter()->isGuiEnabled())
-m.addItem(11, "Edit-mode");
-else{
-m.addItem(10, "Play-mode");
-m.addSeparator();
-m.addSubMenu(String("Plants"), sm); 
+m.setLookAndFeel(lookAndFeel);
+if(getFilter()->isGuiEnabled()){
+PopupMenu subm;
+subm.setLookAndFeel(&this->getLookAndFeel());
+subm.addItem(2, "rslider");
+subm.addItem(3, "vslider");
+subm.addItem(4, "hslider");
+subm.addItem(5, "combobox");
+subm.addItem(6, "checkbox");
+subm.addItem(7, "groupbox");
+subm.addItem(8, "image");
+subm.addItem(9, "keyboard");
+m.addSubMenu(String("Insert Native"), subm);
+subm.clear();
 
-m.addItem(1, "Insert button");
-m.addItem(2, "Insert rslider");
-m.addItem(3, "Insert vslider");
-m.addItem(4, "Insert hslider");
-m.addItem(5, "Insert combobox");
-m.addItem(6, "Insert checkbox");
-m.addItem(7, "Insert groupbox");
-m.addItem(8, "Insert image");
-m.addItem(9, "Insert keyboard");
+
+PropertySet pSet;
+pSet.setValue("PlantRepository", xml);
+appProperties->getUserSettings()->setFallbackPropertySet(&pSet);	
+xml = appProperties->getUserSettings()->getXmlValue("PlantRepository");
+for(int i=0;i<xml->getNumAttributes();i++)
+	subm.addItem(100+i, xml->getAttributeName(i));
+
+m.addSubMenu(String("Insert Custom"), subm);
 }
 
 if (e.mods.isRightButtonDown())
  {
- switch(m.show()){
+ int choice = m.show();
          /* the plan here is to simply send text to WinXound and get it
          to update the instrument. This way Cabbage don't have to keep track of 
          anything as all controls will automatically get added to the GUI controls vector
          when Cabbage is updated */
- case 1:
-         insertCabbageText(String("button bounds(")+String(e.getPosition().getX())+(", ")+String(e.getPosition().getY())+String(", 60, 25), channel(\"but1\"), text(\"on\", \"off\")"));
-         break;
- case 2:
-         insertCabbageText(String("rslider bounds(")+String(e.getPosition().getX())+(", ")+String(e.getPosition().getY())+String(", 90, 90), channel(\"rslider\"), caption(\"\"), range(0, 100, 0)"));
-         break;
- case 3:
-         insertCabbageText(String("vslider bounds(")+String(e.getPosition().getX())+(", ")+String(e.getPosition().getY())+String(", 50, 125), channel(\"vslider\"), caption(\"\"), range(0, 100, 0)"));
-         break;
- case 4:
-         insertCabbageText(String("hslider bounds(")+String(e.getPosition().getX())+(", ")+String(e.getPosition().getY())+String(", 225, 30), channel(\"hslider\"), caption(\"\"), range(0, 100, 0)"));
-         break;
- case 5:
-         insertCabbageText(String("combobox bounds(")+String(e.getPosition().getX())+(", ")+String(e.getPosition().getY())+String(", 100, 30), channel(\"combobox\"), items(\"1\", \"2\", \"3\")"));
-         break;
- case 6:
-         insertCabbageText(String("checkbox bounds(")+String(e.getPosition().getX())+(", ")+String(e.getPosition().getY())+String(", 100, 40), channel(\"checkbox\"), text(\"checkbox\")"));
-         break;
- case 7:
-         insertCabbageText(String("groupbox bounds(")+String(e.getPosition().getX())+(", ")+String(e.getPosition().getY())+String(", 200, 150), text(\"checkbox\"), colour(\"black\"), caption(\"groupbBox\")"));
-         break;
- case 8:
-         insertCabbageText(String("image bounds(")+String(e.getPosition().getX())+(", ")+String(e.getPosition().getY())+String(", 200, 150), text(\"checkbox\"), colour(\"white\"), caption(\"\"), outline(\"black\"), line(3)"));
-         break;
- case 9:
-         insertCabbageText(String("keyboard bounds(")+String(e.getPosition().getX())+(", ")+String(e.getPosition().getY())+String(", 150, 60)"));
-         break;
- case 10:
-         //Play-mode     
-         layoutEditor->setEnabled(false);
-         componentPanel->toFront(true);
-         componentPanel->setInterceptsMouseClicks(false, true); 
-         getFilter()->setGuiEnabled(false);
-         getFilter()->setChangeMessageType("GUI_lock");
-         getFilter()->sendChangeMessage();
-         break;
- case 11:
-         //Edit-mode
-         layoutEditor->setEnabled(true);
-         layoutEditor->updateFrames();
-         layoutEditor->toFront(true); 
-         getFilter()->setGuiEnabled(true);
-         getFilter()->setChangeMessageType("GUI_edit");
-         getFilter()->sendChangeMessage();
-         break;
- default:
-         break;
+	 if(choice==1)
+			 insertCabbageText(String("button bounds(")+String(e.getPosition().getX())+(", ")+String(e.getPosition().getY())+String(", 60, 25), channel(\"but1\"), text(\"on\", \"off\")"));
+	 else if(choice==2)
+			 insertCabbageText(String("rslider bounds(")+String(e.getPosition().getX())+(", ")+String(e.getPosition().getY())+String(", 60, 60), channel(\"rslider\"), caption(\"\"), range(0, 100, 0)"));
+	 else if(choice==3)
+			 insertCabbageText(String("vslider bounds(")+String(e.getPosition().getX())+(", ")+String(e.getPosition().getY())+String(", 50, 125), channel(\"vslider\"), caption(\"\"), range(0, 100, 0)"));
+ 	 else if(choice==4)
+			 insertCabbageText(String("hslider bounds(")+String(e.getPosition().getX())+(", ")+String(e.getPosition().getY())+String(", 225, 30), channel(\"hslider\"), caption(\"\"), range(0, 100, 0)"));
+ 	 else if(choice==5)
+ 			 insertCabbageText(String("combobox bounds(")+String(e.getPosition().getX())+(", ")+String(e.getPosition().getY())+String(", 100, 30), channel(\"combobox\"), items(\"1\", \"2\", \"3\")"));
+	 else if(choice==6)
+	 		 insertCabbageText(String("checkbox bounds(")+String(e.getPosition().getX())+(", ")+String(e.getPosition().getY())+String(", 80, 30), channel(\"checkbox\"), text(\"checkbox\")"));
+	 else if(choice==7)
+			 insertCabbageText(String("groupbox bounds(")+String(e.getPosition().getX())+(", ")+String(e.getPosition().getY())+String(", 200, 150), text(\"checkbox\"), colour(\"black\"), caption(\"groupbBox\")"));
+	 else if(choice==8)
+			 insertCabbageText(String("image bounds(")+String(e.getPosition().getX())+(", ")+String(e.getPosition().getY())+String(", 200, 150), text(\"checkbox\"), colour(\"white\"), caption(\"\"), outline(\"black\"), line(3)"));
+	 else if(choice==9)
+			 insertCabbageText(String("keyboard bounds(")+String(e.getPosition().getX())+(", ")+String(e.getPosition().getY())+String(", 150, 60)"));
+	 else if(choice>=100){
+		 showMessage(xml->getAttributeValue(100-choice));
+	 }
 
-
- }
-
+	}
+#endif
 }
+
+void CabbagePluginAudioProcessorEditor::setEditMode(bool on){
+#ifdef Cabbage_GUI_Editor
+		if(on){
+			layoutEditor->setEnabled(true);
+			layoutEditor->updateFrames();
+			layoutEditor->toFront(true); 
+		}
+		else{
+			layoutEditor->setEnabled(false);
+			componentPanel->toFront(true);
+			componentPanel->setInterceptsMouseClicks(false, true); 
+			}
 #endif
 }
 
@@ -286,9 +220,11 @@ void CabbagePluginAudioProcessorEditor::insertCabbageText(String text)
                  }
                 // Logger::writeToLog(String(getFilter()->getCurrentLine()));
 
-         getFilter()->updateCsoundFile(csdArray.joinIntoString("\n"));
-         getFilter()->setChangeMessageType("GUI_edit");
-         getFilter()->sendChangeMessage();
+	//Logger::writeToLog(String(lineNumber));
+	getFilter()->updateCsoundFile(csdArray.joinIntoString("\n"));
+	getFilter()->setGuiEnabled(true);
+	getFilter()->setChangeMessageType("GUI_edit");  
+	getFilter()->sendActionMessage("GUI Updated, controls added");
 }
 
 //==============================================================================
@@ -357,6 +293,8 @@ void CabbagePluginAudioProcessorEditor::paint (Graphics& g)
 //==============================================================================
 void CabbagePluginAudioProcessorEditor::InsertGUIControls()
 {
+controls.clear();
+layoutComps.clear();
 //add layout controls, non interactive..
 for(int i=0;i<getFilter()->getGUILayoutCtrlsSize();i++){
 
@@ -604,10 +542,19 @@ try{
         if(cAttr.getStringProp("reltoplant").length()>0){
         if(layoutComps[y]->getProperties().getWithDefault(String("plant"), -99).toString().equalsIgnoreCase(cAttr.getStringProp("reltoplant")))
         {
-                width = width*layoutComps[y]->getWidth();
-                height = height*layoutComps[y]->getHeight();
-        top = (top*layoutComps[y]->getHeight());
-                left = (left*layoutComps[y]->getWidth());
+				//if left is < 1 then the user is using the new system
+				if(left>1){
+                width = width*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
+                height = height*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
+                top = top*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
+                left = left*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
+				}
+				else{    
+					width = (width>1 ? .5 : width*layoutComps[y]->getWidth());
+                    height = (height>1 ? .5 : height*layoutComps[y]->getHeight());
+					top = (top*layoutComps[y]->getHeight());
+					left = (left*layoutComps[y]->getWidth());
+				}
 
                 if(layoutComps[y]->getName().containsIgnoreCase("groupbox")||
                         layoutComps[y]->getName().containsIgnoreCase("image"))
@@ -649,15 +596,19 @@ try{
         if(cAttr.getStringProp("reltoplant").length()>0){
         if(layoutComps[y]->getProperties().getWithDefault(String("plant"), -99).toString().equalsIgnoreCase(cAttr.getStringProp("reltoplant")))
         {
-                //width = width*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
-                //height = height*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
-                //top = top*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
-                //left = left*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
-
-                width = width*layoutComps[y]->getWidth();
-                height = height*layoutComps[y]->getHeight();
-        top = (top*layoutComps[y]->getHeight());
-                left = (left*layoutComps[y]->getWidth());
+				//if left is < 1 then the user is using the new system
+				if(left>1){
+                width = width*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
+                height = height*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
+                top = top*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
+                left = left*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
+				}
+				else{    
+					width = (width>1 ? .5 : width*layoutComps[y]->getWidth());
+                    height = (height>1 ? .5 : height*layoutComps[y]->getHeight());
+					top = (top*layoutComps[y]->getHeight());
+					left = (left*layoutComps[y]->getWidth());
+				}
 
                 if(layoutComps[y]->getName().containsIgnoreCase("groupbox")||
                         layoutComps[y]->getName().containsIgnoreCase("image"))
@@ -818,11 +769,19 @@ try{
         if(cAttr.getStringProp("reltoplant").length()>0){
         if(layoutComps[y]->getProperties().getWithDefault(String("plant"), -99).toString().equalsIgnoreCase(cAttr.getStringProp("reltoplant")))
         {
+				//if left is < 1 then the user is using the new system
+				if(left>1){
                 width = width*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
                 height = height*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
                 top = top*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
                 left = left*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
-
+				}
+				else{    
+					width = (width>1 ? .5 : width*layoutComps[y]->getWidth());
+                    height = (height>1 ? .5 : height*layoutComps[y]->getHeight());
+					top = (top*layoutComps[y]->getHeight());
+					left = (left*layoutComps[y]->getWidth());
+				}
                 if(layoutComps[y]->getName().containsIgnoreCase("groupbox")||
                         layoutComps[y]->getName().containsIgnoreCase("image"))
                         {                       
@@ -874,10 +833,19 @@ try{
         if(cAttr.getStringProp("reltoplant").length()>0){
         if(layoutComps[y]->getProperties().getWithDefault(String("plant"), -99).toString().equalsIgnoreCase(cAttr.getStringProp("reltoplant")))
         {
-                width = width*layoutComps[y]->getWidth();
-                height = height*layoutComps[y]->getHeight();
-        top = (top*layoutComps[y]->getHeight());
-                left = (left*layoutComps[y]->getWidth());
+				//if left is < 1 then the user is using the new system
+				if(left>1){
+                width = width*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
+                height = height*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
+                top = top*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
+                left = left*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
+				}
+				else{    
+					width = (width>1 ? .5 : width*layoutComps[y]->getWidth());
+                    height = (height>1 ? .5 : height*layoutComps[y]->getHeight());
+					top = (top*layoutComps[y]->getHeight());
+					left = (left*layoutComps[y]->getWidth());
+				}
 
                 if(layoutComps[y]->getName().containsIgnoreCase("groupbox")||
                         layoutComps[y]->getName().containsIgnoreCase("image"))
@@ -950,10 +918,19 @@ try{
         if(cAttr.getStringProp("reltoplant").length()>0){
         if(layoutComps[y]->getProperties().getWithDefault(String("plant"), -99).toString().equalsIgnoreCase(cAttr.getStringProp("reltoplant")))
         {
+				//if left is < 1 then the user is using the new system
+				if(left>1){
                 width = width*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
                 height = height*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
                 top = top*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
                 left = left*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
+				}
+				else{    
+					width = (width>1 ? .5 : width*layoutComps[y]->getWidth());
+                    height = (height>1 ? .5 : height*layoutComps[y]->getHeight());
+					top = (top*layoutComps[y]->getHeight());
+					left = (left*layoutComps[y]->getWidth());
+				}
 
                 if(layoutComps[y]->getName().containsIgnoreCase("groupbox")||
                         layoutComps[y]->getName().containsIgnoreCase("image"))
@@ -1000,6 +977,20 @@ try{
         if(cAttr.getStringProp("reltoplant").length()>0){
         if(layoutComps[y]->getProperties().getWithDefault(String("plant"), -99).toString().equalsIgnoreCase(cAttr.getStringProp("reltoplant")))
         {
+				//if left is < 1 then the user is using the new system
+				if(left>1){
+                width = width*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
+                height = height*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
+                top = top*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
+                left = left*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
+				}
+				else{    
+					width = (width>1 ? .5 : width*layoutComps[y]->getWidth());
+                    height = (height>1 ? .5 : height*layoutComps[y]->getHeight());
+					top = (top*layoutComps[y]->getHeight());
+					left = (left*layoutComps[y]->getWidth());
+				}
+
                 if(layoutComps[y]->getName().containsIgnoreCase("groupbox")||
                         layoutComps[y]->getName().containsIgnoreCase("image"))
                         {                       
@@ -1098,10 +1089,19 @@ try{
         if(cAttr.getStringProp("reltoplant").length()>0){
         if(layoutComps[y]->getProperties().getWithDefault(String("plant"), -99).toString().equalsIgnoreCase(cAttr.getStringProp("reltoplant")))
         {
+				//if left is < 1 then the user is using the new system
+				if(left>1){
                 width = width*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
                 height = height*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
                 top = top*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
                 left = left*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
+				}
+				else{    
+					width = (width>1 ? .5 : width*layoutComps[y]->getWidth());
+                    height = (height>1 ? .5 : height*layoutComps[y]->getHeight());
+					top = (top*layoutComps[y]->getHeight());
+					left = (left*layoutComps[y]->getWidth());
+				}
 
                 if(layoutComps[y]->getName().containsIgnoreCase("groupbox")||
                         layoutComps[y]->getName().containsIgnoreCase("image"))
@@ -1164,17 +1164,25 @@ try{
         if(cAttr.getStringProp("reltoplant").length()>0){
         if(layoutComps[y]->getProperties().getWithDefault(String("plant"), -99).toString().equalsIgnoreCase(cAttr.getStringProp("reltoplant")))
                 {
- 
-                                width = width*layoutComps[y]->getWidth();
-                                height = height*layoutComps[y]->getHeight();
-
+				//if left is < 1 then the user is using the new system
+				if(left>1){
+                width = width*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
+                height = height*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
+                top = top*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
+                left = left*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
+				}
+				else{    
+					width = (width>1 ? .5 : width*layoutComps[y]->getWidth());
+                    height = (height>1 ? .5 : height*layoutComps[y]->getHeight());
+					top = (top*layoutComps[y]->getHeight());
+					left = (left*layoutComps[y]->getWidth());
+				}
                                 if(cAttr.getStringProp("type").equalsIgnoreCase("rslider"))
                                 if(width<height) height = width;
                                 else if(height<width) width = height;
 
-                                top = (top*layoutComps[y]->getHeight());
-                                left = (left*layoutComps[y]->getWidth());
-                                if(layoutComps[y]->getName().containsIgnoreCase("groupbox")||
+
+                        if(layoutComps[y]->getName().containsIgnoreCase("groupbox")||
                         layoutComps[y]->getName().containsIgnoreCase("image"))
                         {                      
                         controls[idx]->setBounds(left, top, width, height);
@@ -1287,10 +1295,19 @@ try{
         if(cAttr.getStringProp("reltoplant").length()>0){
         if(layoutComps[y]->getProperties().getWithDefault(String("plant"), -99).toString().equalsIgnoreCase(cAttr.getStringProp("reltoplant")))
                 {
-                width = width*layoutComps[y]->getWidth();
-                height = height*layoutComps[y]->getHeight();
-        top = (top*layoutComps[y]->getHeight());
-                left = (left*layoutComps[y]->getWidth());
+				//if left is < 1 then the user is using the new system
+				if(left>1){
+                width = width*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
+                height = height*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
+                top = top*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
+                left = left*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
+				}
+				else{    
+					width = (width>1 ? .5 : width*layoutComps[y]->getWidth());
+                    height = (height>1 ? .5 : height*layoutComps[y]->getHeight());
+					top = (top*layoutComps[y]->getHeight());
+					left = (left*layoutComps[y]->getWidth());
+				}
                 if(layoutComps[y]->getName().containsIgnoreCase("groupbox")||
                         layoutComps[y]->getName().containsIgnoreCase("image"))
                         {                       
@@ -1349,14 +1366,19 @@ try{
         if(cAttr.getStringProp("reltoplant").length()>0){
         if(layoutComps[y]->getProperties().getWithDefault(String("plant"), -99).toString().equalsIgnoreCase(cAttr.getStringProp("reltoplant")))
                 {
-                //width = width*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
-                //height = height*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
-                //top = top*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
-                //left = left*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
-                width = width*layoutComps[y]->getWidth();
-                height = height*layoutComps[y]->getHeight();
-        top = (top*layoutComps[y]->getHeight());
-                left = (left*layoutComps[y]->getWidth());
+				//if left is < 1 then the user is using the new system
+				if(left>1){
+                width = width*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
+                height = height*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
+                top = top*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
+                left = left*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
+				}
+				else{    
+					width = (width>1 ? .5 : width*layoutComps[y]->getWidth());
+                    height = (height>1 ? .5 : height*layoutComps[y]->getHeight());
+					top = (top*layoutComps[y]->getHeight());
+					left = (left*layoutComps[y]->getWidth());
+				}
 
                 if(layoutComps[y]->getName().containsIgnoreCase("groupbox")||
                         layoutComps[y]->getName().containsIgnoreCase("image"))
@@ -1524,14 +1546,20 @@ try{
         if(cAttr.getStringProp("reltoplant").length()>0){
         if(layoutComps[y]->getProperties().getWithDefault(String("plant"), -99).toString().equalsIgnoreCase(cAttr.getStringProp("reltoplant")))
                 {
-                //width = width*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
-                //height = height*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
-                //top = top*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
-                //left = left*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
-                width = width*layoutComps[y]->getWidth();
-                height = height*layoutComps[y]->getHeight();
-        top = (top*layoutComps[y]->getHeight())+layoutComps[y]->getY();
-                left = (left*layoutComps[y]->getWidth())+layoutComps[y]->getX();
+				//if left is < 1 then the user is using the new system
+				if(left>1){
+                width = width*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
+                height = height*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
+                top = top*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
+                left = left*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
+				}
+				else{    
+					width = (width>1 ? .5 : width*layoutComps[y]->getWidth());
+                    height = (height>1 ? .5 : height*layoutComps[y]->getHeight());
+					top = (top*layoutComps[y]->getHeight())+layoutComps[y]->getY();
+					left = (left*layoutComps[y]->getWidth())+layoutComps[y]->getX();
+				}
+
 
                 if(layoutComps[y]->getName().containsIgnoreCase("groupbox")||
                         layoutComps[y]->getName().containsIgnoreCase("image"))
@@ -1654,14 +1682,19 @@ try{
         if(cAttr.getStringProp("reltoplant").length()>0){
         if(layoutComps[y]->getProperties().getWithDefault(String("plant"), -99).toString().equalsIgnoreCase(cAttr.getStringProp("reltoplant")))
                 {
-                //width = width*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
-                //height = height*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
-                //top = top*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
-                //left = left*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
-                width = width*layoutComps[y]->getWidth();
-                height = height*layoutComps[y]->getHeight();
-        top = (top*layoutComps[y]->getHeight());
-                left = (left*layoutComps[y]->getWidth());
+				//if left is < 1 then the user is using the new system
+				if(left>1){
+                width = width*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
+                height = height*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
+                top = top*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
+                left = left*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
+				}
+				else{    
+					width = (width>1 ? .5 : width*layoutComps[y]->getWidth());
+                    height = (height>1 ? .5 : height*layoutComps[y]->getHeight());
+					top = (top*layoutComps[y]->getHeight());
+					left = (left*layoutComps[y]->getWidth());
+				}
 
                 if(layoutComps[y]->getName().containsIgnoreCase("groupbox")||
                         layoutComps[y]->getName().containsIgnoreCase("image"))
@@ -1742,10 +1775,19 @@ void CabbagePluginAudioProcessorEditor::InsertPVSViewer(CabbageGUIClass &cAttr)
         if(cAttr.getStringProp("reltoplant").length()>0){
         if(layoutComps[y]->getProperties().getWithDefault(String("plant"), -99).toString().equalsIgnoreCase(cAttr.getStringProp("reltoplant")))
                 {
-                width = width*layoutComps[y]->getWidth();
-                height = height*layoutComps[y]->getHeight();
-        top = (top*layoutComps[y]->getHeight());
-                left = (left*layoutComps[y]->getWidth());
+				//if left is < 1 then the user is using the new system
+				if(left>1){
+                width = width*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
+                height = height*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
+                top = top*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
+                left = left*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
+				}
+				else{    
+					width = (width>1 ? .5 : width*layoutComps[y]->getWidth());
+                    height = (height>1 ? .5 : height*layoutComps[y]->getHeight());
+					top = (top*layoutComps[y]->getHeight());
+					left = (left*layoutComps[y]->getWidth());
+				}
 
                 if(layoutComps[y]->getName().containsIgnoreCase("groupbox")||
                         layoutComps[y]->getName().containsIgnoreCase("image"))
@@ -1807,14 +1849,19 @@ try{
         if(cAttr.getStringProp("reltoplant").length()>0){
         if(layoutComps[y]->getProperties().getWithDefault(String("plant"), -99).toString().equalsIgnoreCase(cAttr.getStringProp("reltoplant")))
                 {
-                //width = width*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
-                //height = height*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
-                //top = top*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
-                //left = left*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
-                width = width*layoutComps[y]->getWidth();
-                height = height*layoutComps[y]->getHeight();
-        top = (top*layoutComps[y]->getHeight());
-                left = (left*layoutComps[y]->getWidth());
+				//if left is < 1 then the user is using the new system
+				if(left>1){
+                width = width*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
+                height = height*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
+                top = top*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
+                left = left*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
+				}
+				else{    
+					width = (width>1 ? .5 : width*layoutComps[y]->getWidth());
+                    height = (height>1 ? .5 : height*layoutComps[y]->getHeight());
+					top = (top*layoutComps[y]->getHeight());
+					left = (left*layoutComps[y]->getWidth());
+				}
 
                 if(layoutComps[y]->getName().containsIgnoreCase("groupbox")||
                         layoutComps[y]->getName().containsIgnoreCase("image"))
@@ -1851,6 +1898,97 @@ catch(...){
                                         /*     actionlistener method (xypad/table/snapshot)      */
                                         /*********************************************************/
 void CabbagePluginAudioProcessorEditor::actionListenerCallback (const String& message){
+//the first part of this method receives messages from the GUI editor layout/Main panel and updates the 
+//source code accordingly. The second half if use for messages being sent from GUI widgets
+if(message.contains("Message sent from CabbageMainPanel")){
+
+	#ifdef Cabbage_GUI_Editor//if GUI editor has been enabled
+	StringArray csdArray;
+	csdArray.clear();
+	String temp;
+
+	//break up lines in csd file into a string array
+	csdArray.addLines(getFilter()->getCsoundInputFileText());
+
+		//this removes the bounds data from the string... 
+		if(componentPanel->getMouseState().equalsIgnoreCase("down")){
+				for(int i=0; i<csdArray.size(); i++){
+				if(csdArray[i].containsIgnoreCase(componentPanel->getCurrentBounds())||
+				(csdArray[i].containsIgnoreCase(componentPanel->getCurrentPos())&&
+				csdArray[i].containsIgnoreCase(componentPanel->getCurrentPos())))
+				{
+						if(csdArray[i].containsIgnoreCase(componentPanel->getCurrentBounds())){
+								temp = csdArray[i].replace(componentPanel->getCurrentBounds(), String("bounds()"), true);
+						}
+						else if(csdArray[i].containsIgnoreCase(componentPanel->getCurrentSize())&&
+								csdArray[i].containsIgnoreCase(componentPanel->getCurrentPos())){
+								String temp1 = csdArray[i].replace(componentPanel->getCurrentSize()+String(","), String(""), true);
+								temp = temp1.replace(componentPanel->getCurrentPos(), String("bounds()"), true);
+						}
+				csdArray.set(i, temp);
+				getFilter()->updateCsoundFile(csdArray.joinIntoString("\n"));
+				lineNumber = i;
+				getFilter()->setCurrentLine(lineNumber);
+				}
+		}
+		}//END OF MOUSE DOWN MESSAGE EVENT
+
+		else if(componentPanel->getMouseState().equalsIgnoreCase("up")){
+		//ONLY SEND UPDATED INFO ON A MOUSE UP
+		temp = csdArray[lineNumber].replace(String("bounds()"), componentPanel->getCurrentBounds());
+		csdArray.set(lineNumber, temp);
+		getFilter()->setCurrentLineText(temp);
+		//Logger::writeToLog(String(tempArray.size()));
+		if(temp.contains("plant(\"")){
+			for(int y=1, off=0;y<componentPanel->childBounds.size()+1;y++){		
+			Logger::writeToLog("origBounds: "+String(componentPanel->getCurrentOrigChildBounds(y-1)));
+			Logger::writeToLog("currentBounds: "+String(componentPanel->getCurrentChildBounds(y-1)));
+			//stops things from getting messed up if there are line 
+			if((csdArray[lineNumber+y+off].length()<2) || csdArray[lineNumber+y+off].indexOf(";")==0){
+				off++;
+				y--;
+			}
+			csdArray.set(lineNumber+y+off, csdArray[lineNumber+y+off].replace(componentPanel->getCurrentOrigChildBounds(y-1), componentPanel->getCurrentChildBounds(y-1), true));
+			//	csdArray.set(lineNumber+y, tempArray[y-1]);//.replace("bounds()", componentPanel->getCurrentChildBounds(y-1), true));
+			}
+		}
+		//Logger::writeToLog(String(lineNumber));
+		getFilter()->updateCsoundFile(csdArray.joinIntoString("\n"));
+		getFilter()->setGuiEnabled(true);
+		getFilter()->setChangeMessageType("GUI_edit");  
+		getFilter()->sendActionMessage("GUI Update");
+		}//END OF MOUSE UP MESSAGE EVENT
+
+
+		if(message.length()>String("Message sent from CabbageMainPanel").length()){ //ADD TO REPOSITORY
+			String repoEntryName = message.substring(String("Message sent from CabbageMainPanel").length());
+			String repoEntry = temp;
+			int cnt = 0;
+			//CabbageUtils::showMessage(repoEntryName);
+			if(temp.contains("plant(\"")){
+				repoEntry = "";
+				while(!csdArray[lineNumber+cnt].contains("}")){
+					repoEntry = repoEntry+csdArray[lineNumber+cnt]+"\n";
+					cnt++;
+				}
+				repoEntry = repoEntry+"}";
+			
+			}
+			//make sure host doesn't fail if there are no Plant entries
+			ScopedPointer<XmlElement> xml = new XmlElement("PLANTS");
+			PropertySet pSet;
+			pSet.setValue("PlantRepository", xml);
+			appProperties->getUserSettings()->setFallbackPropertySet(&pSet);	
+			xml = appProperties->getUserSettings()->getXmlValue("PlantRepository");
+			xml->setAttribute(repoEntryName, repoEntry);
+			appProperties->getUserSettings()->setValue("PlantRepository", xml);
+	}
+	#endif
+
+
+}//END OF TEST FOR MESSAGE SENT FROM CABBAGE MAIN PANEL
+
+else{
 //this event recieves action messages from custom components. 
 String name = message.substring(0, message.indexOf(String("|"))); 
 String type = message.substring(message.indexOf(String("|"))+1, message.indexOf(String(":")));
@@ -2059,6 +2197,7 @@ for(int i=0;i<(int)getFilter()->getGUICtrlsSize();i++)//find correct control fro
                 }
         }
         */
+		}
 }
 
 //+++++++++++++++++++++++++++++++++++++++++++
@@ -2095,10 +2234,19 @@ try{
                 //top = top*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
                 //left = left*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
 
-                width = width*layoutComps[y]->getWidth();
-                height = height*layoutComps[y]->getHeight();
-        top = (top*layoutComps[y]->getHeight());
-                left = (left*layoutComps[y]->getWidth());
+				//if left is < 1 then the user is using the new system
+				if(left>1){
+                width = width*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
+                height = height*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
+                top = top*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
+                left = left*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
+				}
+				else{    
+					width = (width>1 ? .5 : width*layoutComps[y]->getWidth());
+                    height = (height>1 ? .5 : height*layoutComps[y]->getHeight());
+					top = (top*layoutComps[y]->getHeight());
+					left = (left*layoutComps[y]->getWidth());
+				}
 
                 if(layoutComps[y]->getName().containsIgnoreCase("groupbox")||
                         layoutComps[y]->getName().containsIgnoreCase("image"))

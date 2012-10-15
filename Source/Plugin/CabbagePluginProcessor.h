@@ -42,7 +42,8 @@ class CabbagePluginAudioProcessor  : public AudioProcessor,
                                                                          public CabbageUtils,
                                                                          public ChangeBroadcaster,
                                                                          public ChangeListener,
-                                                                         public Timer
+                                                                         public Timer,
+																		 public ActionBroadcaster
 {
     //==============================================================================
         File csdFile;
@@ -84,6 +85,7 @@ class CabbagePluginAudioProcessor  : public AudioProcessor,
         String plantFlag, presetFlag;
         String debugMessage;
         StringArray debugMessageArray;
+		String currentLineText;
         
 
 
@@ -218,10 +220,10 @@ public:
                 arr.add(String("Name:")+cAttr.getStringProp("name")+String(", Type:")+cAttr.getStringProp("type")+String(", Caption:")+cAttr.getStringProp("caption")+String(", RelToPlant:")+cAttr.getStringProp("reltoplant")+String(", Plant:")+cAttr.getStringProp("plant"));
                 arr.add(String("PosX:")+String(cAttr.getNumProp("left"))+String(", PosY:")+String(cAttr.getNumProp("top"))+String(", Width:")+String(cAttr.getNumProp("width"))+String(", Height:")+String(cAttr.getNumProp("height")));
                 arr.add(String("   "));
-                Logger::writeToLog(String("----------- ")+type+String(" -----------"));
-                Logger::writeToLog(String("Name:")+cAttr.getStringProp("name")+String(", Type:")+cAttr.getStringProp("type")+String(", Caption:")+cAttr.getStringProp("caption")+String(", RelToPlant:")+cAttr.getStringProp("reltoplant")+String(", Plant:")+cAttr.getStringProp("plant"));
-                Logger::writeToLog(String("PosX:")+String(cAttr.getNumProp("left"))+String(", PosY:")+String(cAttr.getNumProp("top"))+String(", Width:")+String(cAttr.getNumProp("width"))+String(", Height:")+String(cAttr.getNumProp("height")));
-                Logger::writeToLog("   ");
+                //Logger::writeToLog(String("----------- ")+type+String(" -----------"));
+                //Logger::writeToLog(String("Name:")+cAttr.getStringProp("name")+String(", Type:")+cAttr.getStringProp("type")+String(", Caption:")+cAttr.getStringProp("caption")+String(", RelToPlant:")+cAttr.getStringProp("reltoplant")+String(", Plant:")+cAttr.getStringProp("plant"));
+                //Logger::writeToLog(String("PosX:")+String(cAttr.getNumProp("left"))+String(", PosY:")+String(cAttr.getNumProp("top"))+String(", Width:")+String(cAttr.getNumProp("width"))+String(", Height:")+String(cAttr.getNumProp("height")));
+                //Logger::writeToLog("   ");
                 return arr;
         }
         inline bool getCsoundStatus(){
@@ -263,6 +265,14 @@ public:
 
         inline void setCurrentLine(int line){
                 currentLine = line;
+        }
+
+        inline void setCurrentLineText(String lineText){
+                currentLineText = lineText;
+        }
+
+        String getCurrentLineText(){
+                return currentLineText;
         }
 
 #ifndef Cabbage_No_Csound

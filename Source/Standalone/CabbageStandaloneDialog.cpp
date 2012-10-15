@@ -62,6 +62,7 @@ StandaloneFilterWindow::StandaloneFilterWindow (const String& title,
     {
         filter = createCabbagePluginFilter("", false);
 		filter->addChangeListener(this);
+		filter->addActionListener(this);
 		filter->sendChangeMessage();
 		filter->createGUI("");
     }
@@ -199,20 +200,40 @@ void StandaloneFilterWindow::timerCallback()
 // action Callback - updates instrument according to changes in source code
 //==============================================================================
 void StandaloneFilterWindow::actionListenerCallback (const String& message){
+	if(message == "GUI Update"){
+		if(cabbageCsoundEditor){
+		cabbageCsoundEditor->setCsoundFile(csdFile);
+		cabbageCsoundEditor->csoundEditor->highlightLine(filter->getCurrentLineText());
+		cabbageCsoundEditor->csoundEditor->grabKeyboardFocus();
+		}
+	}
+
+	if(message == "GUI Updated, controls added")
+	filter->createGUI(csdFile.loadFileAsString());
+
 	if(message.equalsIgnoreCase("fileSaved")){
-		saveFile();
+	saveFile();
 	}
+
 	else if(message.contains("fileOpen")){
-		openFile();
+	openFile();
 	}
+
 	else if(message.contains("fileSaveAs")){
-		saveFileAs();
+	saveFileAs();
 	}
+
 	else if(message.contains("fileExportSynth")){
 	exportPlugin(String("VSTi"), false);
 	}
+
 	else if(message.contains("fileExportEffect")){
 	exportPlugin(String("VST"), false);
+	}
+
+	else if(message.contains("fileUpdateGUI")){
+		filter->createGUI(cabbageCsoundEditor->getCurrentText());
+		csdFile.replaceWithText(cabbageCsoundEditor->getCurrentText()); 
 	}
 }
 //==============================================================================
@@ -315,6 +336,7 @@ void StandaloneFilterWindow::resetFilter()
 	filter = createCabbagePluginFilter(csdFile.getFullPathName(), isGuiEnabled());
 	//filter->suspendProcessing(isGuiEnabled());
 	filter->addChangeListener(this);
+	filter->addActionListener(this);
 	filter->sendChangeMessage();
 	filter->createGUI(csdFile.loadFileAsString());
 	String test = filter->getPluginName();
@@ -473,6 +495,8 @@ void StandaloneFilterWindow::buttonClicked (Button*)
 	m.addItem(2, String("View Source Editor"));
     m.addItem(4, TRANS("Audio Settings..."));
     m.addSeparator();
+	m.addItem(100, String("Toggle Edit-mode"));
+	m.addSeparator();
 	subMenu.clear();
 	subMenu.addItem(15, TRANS("Plugin Synth"));
 	subMenu.addItem(16, TRANS("Plugin Effect"));
@@ -596,20 +620,6 @@ void StandaloneFilterWindow::buttonClicked (Button*)
     else if(options==8)
         resetFilter();
 
-	/*
-   	else if(options==9){
-		setAlwaysOnTop(false);
-
-		//hint.showDialog("Cabbage", 0, 0, Colours::beige, true);
-
-		hintDialog->toFront(true);
-		if(filter->getMidiDebug())
-			filter->setMidiDebug(false);
-		else 
-			filter->setMidiDebug(true);
-        setAlwaysOnTop(true);
-	}*/
-
 	//----- batch process ------
 	else if(options==11)
 		BatchProcess(String("VST"));
@@ -643,6 +653,17 @@ void StandaloneFilterWindow::buttonClicked (Button*)
 			appProperties->getUserSettings()->setValue("DisablePluginInfo", var(1));
 		else
 			appProperties->getUserSettings()->setValue("DisablePluginInfo", var(0));
+	}
+	else if(options==100){
+		if(filter->isGuiEnabled()){
+		((CabbagePluginAudioProcessorEditor*)filter->getActiveEditor())->setEditMode(false);
+		filter->setGuiEnabled(false);
+		}
+		else{
+		((CabbagePluginAudioProcessorEditor*)filter->getActiveEditor())->setEditMode(true);
+		filter->setGuiEnabled(true);
+		}
+
 	}
 	repaint();
 }

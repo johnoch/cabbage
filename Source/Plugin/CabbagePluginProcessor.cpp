@@ -73,10 +73,15 @@ csndIndex = 32;
 //set up PVS struct
 dataout = new PVSDATEXT;
 
-//if(!csdFile.exists())showMessage("Csound file doesn't exist? The file should be in the same directory as the plugin");
+//char** command;
+//sprintf(command[0], "%s", const_cast<char*>(inputfile.toUTF8().getAddress()));
+//sprintf(command[1], "-+ignore_csopts=false");
+//command[1] = const_cast<char*>(inputfile.toUTF8().getAddress());
+//showMessage(command[0]);
+//showMessage(command[1]);
 
 if(!inputfile.isEmpty()){
-csCompileResult = csound->Compile( const_cast<char*>(inputfile.toUTF8().getAddress()));
+csCompileResult = csound->Compile(const_cast<char*>(inputfile.toUTF8().getAddress()));
 if(csCompileResult==0){
         //simple hack to allow tables to be set up correctly. 
         csound->PerformKsmps();
@@ -235,13 +240,16 @@ if(!isGuiEnabled()){
 //===========================================================
 void CabbagePluginAudioProcessor::createGUI(String source)
 {
-        int guiID=0;
-        StringArray csdText;
-        int lines=1;
-        String csdLine("");
-        csdText.addLines(source);
-        bool multiComment = false;
-        bool multiLine = false;
+guiLayoutCtrls.clear();       
+guiCtrls.clear();
+
+int guiID=0;
+StringArray csdText;
+int lines=1;
+String csdLine("");
+csdText.addLines(source);
+bool multiComment = false;
+bool multiLine = false;
         //reset the size of filter's guiCtrls as the constructor can be called many times..
     for(int i=0;i<csdText.size();i++)
         {
@@ -406,6 +414,15 @@ void CabbagePluginAudioProcessor::createGUI(String source)
         }
 
 #ifdef Cabbage_Build_Standalone
+
+if(this->getActiveEditor()){
+	getActiveEditor()->repaint();
+	((CabbagePluginAudioProcessorEditor*)getActiveEditor())->setEditMode(false);
+	((CabbagePluginAudioProcessorEditor*)getActiveEditor())->InsertGUIControls();
+	((CabbagePluginAudioProcessorEditor*)getActiveEditor())->setEditMode(true);
+	
+}
+
 #ifndef Cabbage_No_Csound
                 //init all channels with their init val
                 for(int i=0;i<guiCtrls.size();i++)

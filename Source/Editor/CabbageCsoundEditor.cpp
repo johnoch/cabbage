@@ -11,7 +11,7 @@ lookAndFeel = new CabbageLookAndFeel();
 //textEditor = new CodeEditorComponent(csoundDoc, &csoundToker);
 opcodes.addLines(String((BinaryData::opcodes_txt)));
 csoundDoc.addListener(this);
-textEditor = new CodeEditorComponent(csoundDoc, &csoundToker);
+textEditor = new CsoundCodeEditor(csoundDoc, &csoundToker);
 textEditor->setColour(CodeEditorComponent::lineNumberTextId, Colours::white);
 textEditor->setColour(CodeEditorComponent::lineNumberBackgroundId, Colours::black);
 
@@ -152,7 +152,10 @@ void CsoundEditor::getCommandInfo (const CommandID commandID, ApplicationCommand
 		result.setInfo (String("Export Effect"), String("Export Effect"), CommandCategories::file, 0);
 		result.addDefaultKeypress ('e', ModifierKeys::commandModifier);
         break;
-
+    case CommandIDs::fileUpdateGUI:
+		result.setInfo (String("Update GUI"), String("Update GUI"), CommandCategories::file, 0);
+		result.addDefaultKeypress ('u', ModifierKeys::commandModifier);
+        break;
     case CommandIDs::editUndo:
 		result.setInfo (String("Undo"), String("Undo last action"), CommandCategories::edit, 0);
 		result.addDefaultKeypress ('z', ModifierKeys::commandModifier);
@@ -203,6 +206,7 @@ void CsoundEditor::getAllCommands (Array <CommandID>& commands)
 								CommandIDs::fileSaveAs,
 								CommandIDs::fileExportSynth,
 								CommandIDs::fileExportEffect,
+								CommandIDs::fileUpdateGUI,
 								
 								CommandIDs::editUndo,
 								CommandIDs::editCopy,
@@ -257,6 +261,12 @@ bool CsoundEditor::perform (const InvocationInfo& info)
 	case CommandIDs::fileExportEffect:
 		{
 			sendActionMessage("fileExportEffect");
+			break;
+		}
+
+	case CommandIDs::fileUpdateGUI:
+		{
+			sendActionMessage("fileUpdateGUI");
 			break;
 		}
 

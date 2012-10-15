@@ -7,7 +7,7 @@
 *
 */
 #include "ComponentLayoutEditor.h"
-#include "CabbageMainPanel.h"
+
 
 ChildAlias::ChildAlias (Component* targetChild, String type, int ind)
 :   target (targetChild), index(ind), type(type)
@@ -32,11 +32,12 @@ ChildAlias::~ChildAlias ()
 
 void ChildAlias::resized ()
 {
-   resizer->setBounds (0,0,getWidth(),getHeight());
+
+  resizer->setBounds (0,0,getWidth(),getHeight());
    
    if (resizer->isMouseButtonDown ())
    {
-      applyToTarget ();
+      applyToTarget ("");
    }
 }
 
@@ -51,8 +52,13 @@ void ChildAlias::paint (Graphics& g)
    
    g.setColour (c.withMultipliedAlpha (0.2f));
    g.fillAll ();
-   g.setColour (Colours::findColourForName("orange", Colours::black));
+   g.setColour (Colours::orange.withAlpha(.5f));
    g.drawRect (0,0,getWidth(),getHeight(),1);
+}
+
+CabbageMainPanel* ChildAlias::getMainPanel()
+{
+	return (CabbageMainPanel*)target->getParentComponent();
 }
 
 const Component* ChildAlias::getTargetChild ()
@@ -74,19 +80,39 @@ void ChildAlias::updateFromTarget ()
    }
 }
 
-void ChildAlias::applyToTarget ()
+void ChildAlias::applyToTarget (String triggeredFrom)
 {
    if (target != NULL)
       //!target.hasBeenDeleted ())
    {
-      Component* c = (Component*) target.getComponent ();
+        Component* c = (Component*) target.getComponent ();
+		((CabbageMainPanel*)(getTarget()->getParentComponent()))->childBounds.clear();
+		((CabbageMainPanel*)(getTarget()->getParentComponent()))->origChildBounds.clear();
+
 		if(type.containsIgnoreCase("CabbageGroupbox")||
 			type.containsIgnoreCase("CabbageImage"))
 			c->toBack();
 			
 		else 
-			c->toFront(true);
-      c->setBounds (getBounds ());
+		c->toFront(true);
+
+		//if just resizing is taking place we need to resize child components..
+		if(startBounds.getTopLeft()==c->getBounds().getTopLeft())
+		for(int i=0;i<c->getNumChildComponents();i++){
+			float x = ((float)c->getWidth()/(float)startBounds.getWidth());
+			float y = ((float)c->getHeight()/(float)startBounds.getHeight());
+			
+			c->getChildComponent(i)->setBounds(origBounds[i].getX()*x, 
+												origBounds[i].getY()*y,
+												origBounds[i].getWidth()*x,
+												origBounds[i].getHeight()*y);
+			((CabbageMainPanel*)(getTarget()->getParentComponent()))->childBounds.add(c->getChildComponent(i)->getBounds());
+			((CabbageMainPanel*)(getTarget()->getParentComponent()))->origChildBounds.add(origBounds[i]);
+		}
+		//Logger::writeToLog("ComponentEditor:"+String(((CabbageMainPanel*)(getTarget()->getParentComponent()))->childBounds.size()));
+		//Logger::writeToLog("Number of children: "+String(((CabbageMainPanel*)(getTarget()->getParentComponent()))->childBounds.size()));
+	  ((CabbageMainPanel*)(getTarget()->getParentComponent()))->sendActionMessage("Message sent from CabbageMainPanel");
+	  c->setBounds (getBounds ());
       userChangedBounds ();
    }
 }
@@ -115,7 +141,8 @@ bool ChildAlias::boundsChangedSinceStart ()
 
 void ChildAlias::mouseDown (const MouseEvent& e)
 {
-if (e.mods.isLeftButtonDown()){
+ 
+//if (e.mods.isLeftButtonDown()){
 ((CabbageMainPanel*)(getTarget()->getParentComponent()))->setMouseState("down");
    toFront (true);
    if (e.eventComponent == resizer)
@@ -130,8 +157,16 @@ if (e.mods.isLeftButtonDown()){
    userAdjusting = true;
    startBounds = getBounds ();
    userStartedChangingBounds ();
+
+   //get the bounds of each of the child components if we are dealing with a plant
+   Component* c = (Component*) target.getComponent ();
+   origBounds.clear();
+   for(int i=0;i<c->getNumChildComponents();i++){
+   origBounds.add(c->getChildComponent(i)->getBounds());
+   }
+
+
    //update dimensions
-   
    int offX = getProperties().getWithDefault(var::identifier("plantX"), 0);
    int offY = getProperties().getWithDefault(var::identifier("plantY"), 0);
 
@@ -140,13 +175,29 @@ if (e.mods.isLeftButtonDown()){
    ((CabbageMainPanel*)(getTarget()->getParentComponent()))->height = getHeight();
    ((CabbageMainPanel*)(getTarget()->getParentComponent()))->left = getPosition().getX()-offX;
    ((CabbageMainPanel*)(getTarget()->getParentComponent()))->top = getPosition().getY()-offY; 
-   ((CabbageMainPanel*)(getTarget()->getParentComponent()))->sendChangeMessage();
-}
+   ((CabbageMainPanel*)(getTarget()->getParentComponent()))->sendActionMessage("Message sent from CabbageMainPanel");
+
+	if(e.mods.isRightButtonDown()){
+		PopupMenu m;
+		m.setLookAndFeel(&getParentComponent()->getLookAndFeel());
+		m.addItem(1, "Add to repository");
+		int choice = m.show();
+		if(choice==1){
+			this->getTopLevelComponent()->setAlwaysOnTop(false);
+			AlertWindow alert("Add to Repository", "", AlertWindow::NoIcon, this->getTopLevelComponent()); 
+			alert.setLookAndFeel(&this->getTopLevelComponent()->getLookAndFeel());
+			alert.addTextEditor("textEditor", "name", "Enter a name and hit 'escape'");
+			alert.runModalLoop();
+			this->getTopLevelComponent()->setAlwaysOnTop(true);
+			((CabbageMainPanel*)(getTarget()->getParentComponent()))->sendActionMessage("Message sent from CabbageMainPanel"+alert.getTextEditorContents("textEditor"));
+			}
+		}
+
 }
 
 void ChildAlias::mouseUp (const MouseEvent& e)
 { 
-((CabbageMainPanel*)(getTarget()->getParentComponent()))->setMouseState("up");
+ ((CabbageMainPanel*)(getTarget()->getParentComponent()))->setMouseState("up");
    if (e.eventComponent == resizer)
    {
    }
@@ -164,8 +215,11 @@ void ChildAlias::mouseUp (const MouseEvent& e)
    ((CabbageMainPanel*)(getTarget()->getParentComponent()))->width = getWidth();
    ((CabbageMainPanel*)(getTarget()->getParentComponent()))->height = getHeight();
    ((CabbageMainPanel*)(getTarget()->getParentComponent()))->left = getPosition().getX()-offX;;
-   ((CabbageMainPanel*)(getTarget()->getParentComponent()))->top = getPosition().getY()-offY;      
-   ((CabbageMainPanel*)(getTarget()->getParentComponent()))->sendChangeMessage();
+   ((CabbageMainPanel*)(getTarget()->getParentComponent()))->top = getPosition().getY()-offY;     
+
+   applyToTarget("");
+
+   ((CabbageMainPanel*)(getTarget()->getParentComponent()))->sendActionMessage("Message sent from CabbageMainPanel");
 
    if(type.containsIgnoreCase("CabbageGroupbox")||
 	   type.containsIgnoreCase("CabbageImage"))
@@ -188,7 +242,7 @@ if (e.mods.isLeftButtonDown()){
       {
 		 constrainer->setMinimumOnscreenAmounts(getHeight(), getWidth(), getHeight(), getWidth());
          dragger.dragComponent (this,e, constrainer);
-         applyToTarget ();
+         applyToTarget ("");
 		 if(type.containsIgnoreCase("juce::GroupComponent")||
 					type.containsIgnoreCase("CabbageImage"))
 			toBack();
@@ -199,7 +253,6 @@ if (e.mods.isLeftButtonDown()){
 	   toBack();
    else 
 	   toFront(true);
-
 }//end of left click check
 }
 

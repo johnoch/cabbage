@@ -12,6 +12,7 @@
 
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "CabbageUtils.h"
+#include "CabbageMainPanel.h"
 
 
 //=============================================================================
@@ -27,9 +28,10 @@ class ChildAlias   :   public Component,
       
       const Component* getTargetChild ();
 	  const Component* getTarget();
+	  CabbageMainPanel* getMainPanel();
       
       void updateFromTarget ();
-      void applyToTarget ();
+      void applyToTarget (String triggeredFrom);
       
       virtual void userChangedBounds ();
       virtual void userStartedChangingBounds ();
@@ -45,6 +47,7 @@ class ChildAlias   :   public Component,
       
     private:
 	  int index;
+	  Array<Rectangle<int>> origBounds;
 	  String type;
 	  CriticalSection bounds;
       ScopedPointer<ComponentBoundsConstrainer>  constrainer;

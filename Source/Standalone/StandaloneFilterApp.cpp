@@ -13,19 +13,19 @@ class CabbageStandalone : public JUCEApplication
           {
 			// initialise our settings file..
 			PropertiesFile::Options options;
-			options.applicationName     = "Cabbage Standalone host";
+			options.applicationName     = "Cabbage";
 			options.filenameSuffix      = "settings";
 			options.osxLibrarySubFolder = "Preferences";
 
 			appProperties = new ApplicationProperties();
 			appProperties->setStorageParameters (options);
 
-			 filterWindow = new StandaloneFilterWindow (String("Cabbage"), Colours::black);
-             filterWindow->setTitleBarButtonsRequired (DocumentWindow::allButtons, false);
-             filterWindow->setVisible (true);
-             //turn off resizeable...
-			 //filterWindow->setResizable (true, true);
-             juce::Thread::setCurrentThreadName("cabbage");
+			filterWindow = new StandaloneFilterWindow (String("Cabbage"), Colours::black);
+            filterWindow->setTitleBarButtonsRequired (DocumentWindow::allButtons, false);
+            filterWindow->setVisible (true);
+            //turn off resizeable...
+			//filterWindow->setResizable (true, true);
+            juce::Thread::setCurrentThreadName("cabbage");
           }
 
           void shutdown()

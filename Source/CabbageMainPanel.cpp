@@ -35,6 +35,7 @@ setName("CabbageMainPanel");
 setVisible(true);
 setSize(0,0);
 LOCKED=true;
+panelColour = CabbageUtils::getBackgroundSkin();
 }
 
 CabbageMainPanel::~CabbageMainPanel()
@@ -44,7 +45,7 @@ CabbageMainPanel::~CabbageMainPanel()
 
 void CabbageMainPanel::paint(Graphics &g)
 {
-	g.fillAll(Colours::findColourForName(colour, Colours::white));
+	g.fillAll(panelColour);
 }
 
 ComponentLayoutEditor* CabbageMainPanel::getLayoutEditor()

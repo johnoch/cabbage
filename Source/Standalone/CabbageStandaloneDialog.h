@@ -24,6 +24,7 @@
 #include "../CabbageUtils.h"
 #include "../CabbageLookAndFeel.h"
 #include "../Plugin/CabbagePluginProcessor.h"
+#include "../Plugin/CabbagePluginEditor.h"
 
 extern ApplicationProperties* appProperties;
 

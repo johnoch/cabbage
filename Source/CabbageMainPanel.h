@@ -43,20 +43,26 @@ public:
 
 class CabbageMainPanel   : public Component,
 						   public CabbageUtils,
-						   public ChangeBroadcaster
+						   public ActionBroadcaster
 {
 private:	
 	
 	ScopedPointer<ComponentLayoutEditor> layoutEditor;
 	OwnedArray<Component > comps;
 	OwnedArray<Component > clipBoard;
+	
+	Colour panelColour;
 	int currentIndex;
 	bool LOCKED;
 	String mouseState;
 	String colour;
+	bool doubleClick;
 
 
 public:
+	Array<Rectangle<int>> childBounds;
+	Array<Rectangle<int>> origChildBounds;
+
 	int width, height, top, left;
 	inline void setCompColour(String col){
 		colour = col;
@@ -74,14 +80,33 @@ public:
 		mouseState = state;
 	}
 
+	inline void setDoubleClick(bool dblClick){
+		doubleClick = dblClick;
+	}
+
+	bool isDoubleClick(){
+		return doubleClick;
+	}
+
 	String getCurrentBounds(){
 	return "bounds(" + String(left) + String(", ") + String(top) + String(", ") + String(width) + String(", ")
 			+ String(height) + String(")");
 	}
 
+	String getCurrentChildBounds(int i){
+		return "bounds(" + String(childBounds[i].getX()) + String(", ") + String(childBounds[i].getY()) + String(", ") + String(childBounds[i].getWidth()) + String(", ")
+			+ String(childBounds[i].getHeight()) + String(")");
+	}
+
+	String getCurrentOrigChildBounds(int i){
+		return "bounds(" + String(origChildBounds[i].getX()) + String(", ") + String(origChildBounds[i].getY()) + String(", ") + String(origChildBounds[i].getWidth()) + String(", ")
+			+ String(origChildBounds[i].getHeight()) + String(")");
+	}
+		
 	String getCurrentPos(){
 	return String("pos(") + String(left) + String(", ") + String(top) + String(")");
 	}
+
 
 	String getCurrentSize(){
 	return String("size(") + String(width) + String(", ") + String(height) + String(")");
