@@ -21,9 +21,13 @@ namespace CommandIDs
 	static const int editPaste			= 0x2015;
 	static const int editZoomIn			= 0x2016;
 	static const int editZoomOut		= 0x2017;
+	static const int whiteBackground	= 0x2018;
+	static const int blackBackground	= 0x2019;
 
-	static const int viewHelp			= 0x2018;
-	static const int viewSource			= 0x2019;
+	static const int viewHelp			= 0x2020;
+	static const int viewSource			= 0x2021;
+
+
 };
 
 //==============================================================================

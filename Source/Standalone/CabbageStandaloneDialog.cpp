@@ -34,7 +34,7 @@ StandaloneFilterWindow::StandaloneFilterWindow (const String& title,
     : DocumentWindow (title, backgroundColour,
                       DocumentWindow::minimiseButton
                        | DocumentWindow::closeButton),
-      optionsButton ("options"), isGUIOn(false), pipeOpenedOk(false)
+      optionsButton ("options"), isGUIOn(false), pipeOpenedOk(false), AudioEnabled(true)
 {
 	consoleMessages = "";
 	setTitleBarButtonsRequired (DocumentWindow::minimiseButton | DocumentWindow::closeButton, false);
@@ -215,26 +215,49 @@ void StandaloneFilterWindow::actionListenerCallback (const String& message){
 	saveFile();
 	}
 
-	else if(message.contains("fileOpen")){
+	if(message.contains("fileOpen")){
 	openFile();
 	}
 
-	else if(message.contains("fileSaveAs")){
+	if(message.contains("fileSaveAs")){
 	saveFileAs();
 	}
 
-	else if(message.contains("fileExportSynth")){
+	if(message.contains("fileExportSynth")){
 	exportPlugin(String("VSTi"), false);
 	}
 
-	else if(message.contains("fileExportEffect")){
+	if(message.contains("fileExportEffect")){
 	exportPlugin(String("VST"), false);
 	}
 
-	else if(message.contains("fileUpdateGUI")){
+	if(message.contains("fileUpdateGUI")){
 		filter->createGUI(cabbageCsoundEditor->getCurrentText());
 		csdFile.replaceWithText(cabbageCsoundEditor->getCurrentText()); 
 	}
+
+#ifdef Cabbage_Build_Standalone
+	if(message.contains("MENU COMMAND: manual update instrument"))
+		resetFilter();
+
+	if(message.contains("MENU COMMAND: open instrument"))
+		openFile();
+
+	if(message.contains("MENU COMMAND: manual update GUI"))
+		filter->createGUI(csdFile.loadFileAsString());
+	
+	if(message.contains("MENU COMMAND: suspend audio"))
+        if(AudioEnabled){
+			filter->suspendProcessing(true);
+			AudioEnabled = false;
+		}
+		else{
+			AudioEnabled = true;
+			filter->suspendProcessing(false);
+		}
+
+#endif
+
 }
 //==============================================================================
 
@@ -479,6 +502,14 @@ void StandaloneFilterWindow::buttonClicked (Button*)
     if (filter == nullptr)
         return;
 
+	PropertySet pSet;
+	pSet.setValue("DisablePluginInfo", 0);
+	pSet.setValue("DisableGUIEditModeWarning", 0);
+	pSet.setValue("SetAlwaysOnTop", 1);
+	appProperties->getUserSettings()->setFallbackPropertySet(&pSet);
+
+
+
 	String test;
     PopupMenu m;
 	PopupMenu subMenu;
@@ -493,6 +524,11 @@ void StandaloneFilterWindow::buttonClicked (Button*)
 	m.addSubMenu(String("New Cabbage..."), subMenu);
 
 	m.addItem(2, String("View Source Editor"));
+	m.addSeparator();
+	if(AudioEnabled)
+	m.addItem(400, "Audio Enabled", true, true); 
+	else
+	m.addItem(400, "Audio Enabled", true, false); 
     m.addItem(4, TRANS("Audio Settings..."));
     m.addSeparator();
 	m.addItem(100, String("Toggle Edit-mode"));
@@ -508,10 +544,11 @@ void StandaloneFilterWindow::buttonClicked (Button*)
 	m.addSubMenu(TRANS("Export Plugin As..."), subMenu);
 #endif
     m.addSeparator();
-	if(isAlwaysOnTop())
+	int alwaysontop = appProperties->getUserSettings()->getValue("SetAlwaysOnTop", var(0)).getFloatValue(); 
+	if(alwaysontop)
 	m.addItem(7, String("Always on Top"), true, true);
 	else
-	m.addItem(7, String("Always on Top"));
+	m.addItem(7, String("Always on Top"), true, false);
 	m.addItem(8, String("Update instrument"));
 	/*
 	if(filter->getMidiDebug())
@@ -531,12 +568,20 @@ void StandaloneFilterWindow::buttonClicked (Button*)
 
 
 	subMenu.clear();
-	int val = appProperties->getUserSettings()->getValue("DisablePluginInfo", var(0)).getFloatValue();
+
+	int pluginInfo = appProperties->getUserSettings()->getValue("DisablePluginInfo", var(0)).getFloatValue();
 	subMenu.addItem(200, "Set Csound Manual Directory");
-	if(!val)
-	subMenu.addItem(201, String("Disable Export Plugin Info"));
+	if(!pluginInfo)
+	subMenu.addItem(201, String("Disable Export Plugin Info"), true, false);
 	else
 	subMenu.addItem(201, String("Disable Export Plugin Info"), true, true);
+
+	int disableGUIEditWarning = appProperties->getUserSettings()->getValue("DisableGUIEditModeWarning", var(0)).getFloatValue();
+	if(disableGUIEditWarning)
+	subMenu.addItem(202, String("Disable GUI Edit Mode warning"), true, false);
+	else
+	subMenu.addItem(202, String("Disable GUI Edit Mode warning"), true, true);
+
 
 	m.addSubMenu("Preferences", subMenu);
 	
@@ -594,6 +639,18 @@ void StandaloneFilterWindow::buttonClicked (Button*)
 		resetFilter();
 	}
 
+	//suspend audio
+   	else if(options==400){
+        if(AudioEnabled){
+			filter->suspendProcessing(true);
+			AudioEnabled = false;
+		}
+		else{
+			AudioEnabled = true;
+			filter->suspendProcessing(false);
+		}
+	}
+
 	//----- export ------
 	else if(options==15)
 	exportPlugin(String("VSTi"), false);
@@ -611,10 +668,15 @@ void StandaloneFilterWindow::buttonClicked (Button*)
 
 	//----- always on top  ------
 	else if(options==7)
-	if(isAlwaysOnTop())
+
+	if(appProperties->getUserSettings()->getValue("SetAlwaysOnTop", var(0)).getFloatValue()){
 		this->setAlwaysOnTop(false);
-	else
+		appProperties->getUserSettings()->setValue("SetAlwaysOnTop", var(0));
+	}
+	else{
 		this->setAlwaysOnTop(true);
+		appProperties->getUserSettings()->setValue("SetAlwaysOnTop", var(1));
+	}
 	
 	//----- update instrument  ------
     else if(options==8)
@@ -649,12 +711,25 @@ void StandaloneFilterWindow::buttonClicked (Button*)
 
 	else if(options==201){
 		int val = appProperties->getUserSettings()->getValue("DisablePluginInfo", var(0)).getFloatValue();
-		if(val==0) 
+		if(val==0)
 			appProperties->getUserSettings()->setValue("DisablePluginInfo", var(1));
 		else
 			appProperties->getUserSettings()->setValue("DisablePluginInfo", var(0));
 	}
+
+	else if(options==202){
+		int val = appProperties->getUserSettings()->getValue("DisableGUIEditModeWarning", var(0)).getFloatValue();
+		if(val==0) 
+			appProperties->getUserSettings()->setValue("DisableGUIEditModeWarning", var(1));
+		else
+			appProperties->getUserSettings()->setValue("DisableGUIEditModeWarning", var(0));
+	}
+
 	else if(options==100){
+		int val = appProperties->getUserSettings()->getValue("DisableGUIEditModeWarning", var(0)).getFloatValue();
+		if(val)
+			showMessage("Warning!! This feature is bleeding edge! (that's programmer speak for totally untested and likely to crash hard..!). If you like to live on the edge, disable this wanring under the 'Preferences' menu command and try 'Edit Mode' again, otherwise just let be...", lookAndFeel);
+		else{
 		if(filter->isGuiEnabled()){
 		((CabbagePluginAudioProcessorEditor*)filter->getActiveEditor())->setEditMode(false);
 		filter->setGuiEnabled(false);
@@ -663,7 +738,7 @@ void StandaloneFilterWindow::buttonClicked (Button*)
 		((CabbagePluginAudioProcessorEditor*)filter->getActiveEditor())->setEditMode(true);
 		filter->setGuiEnabled(true);
 		}
-
+		}
 	}
 	repaint();
 }

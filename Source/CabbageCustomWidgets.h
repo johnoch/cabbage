@@ -128,7 +128,7 @@ CabbageSlider(String name, String text, String caption, String kind, String colo
 	addAndMakeVisible(groupbox);
 	groupbox->setVisible(false);
 	groupbox->getProperties().set("groupLine", var(1));
-	if(tracker.length()>2)
+	if(tracker.length()>0)
 	slider->getProperties().set("tracker", tracker);
 
 	slider->getProperties().set("fontcolour", fontColour);
@@ -1761,6 +1761,7 @@ JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CabbageTable);
 //==============================================================================
 // custom PVSView, for viewing pvs
 //==============================================================================
+#ifndef Cabbage_No_Csound
 class CabbagePVSTableData       :       public Component
 {
 public:
@@ -1961,7 +1962,7 @@ private:
         JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CabbagePVSView);
 };
 
-
+#endif
 
 //==============================================================================
 // custom SnapshotControl, used for saving and recalling presets
@@ -2479,7 +2480,9 @@ class CabbageDisplay	:	public Component
 public:
 	CabbageDisplay ()
 	{
+#ifndef Cabbage_No_Csound
 	winData = nullptr;
+#endif
 	}
 
 	~CabbageDisplay()
@@ -2490,7 +2493,7 @@ public:
 	{
 
 	}
-
+#ifndef Cabbage_No_Csound
 	void updateData(WINDAT* windat)
 	{
 	winData = windat;
@@ -2511,6 +2514,7 @@ public:
 	}
 
 	WINDAT* winData;
+#endif
 private:
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CabbageDisplay);
 };

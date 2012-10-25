@@ -57,11 +57,13 @@ private:
 	String mouseState;
 	String colour;
 	bool doubleClick;
+	
 
 
 public:
-	Array<Rectangle<int>> childBounds;
-	Array<Rectangle<int>> origChildBounds;
+	Rectangle<int> currentBounds;
+	Array<Rectangle<int> > childBounds;
+	Array<Rectangle<int> > origChildBounds;
 
 	int width, height, top, left;
 	inline void setCompColour(String col){
@@ -88,24 +90,24 @@ public:
 		return doubleClick;
 	}
 
-	String getCurrentBounds(){
-	return "bounds(" + String(left) + String(", ") + String(top) + String(", ") + String(width) + String(", ")
-			+ String(height) + String(")");
-	}
+	//String getCurrentBounds(){
+	//	return "bounds(" + String(currentBounds.getX()) + String(", ") + String(currentBounds.getY()) + String(", ") + String(currentBounds.getWidth()) + String(", ")
+	//		+ String(currentBounds.getHeight()) + String(")");
+	//}
 
-	String getCurrentChildBounds(int i){
-		return "bounds(" + String(childBounds[i].getX()) + String(", ") + String(childBounds[i].getY()) + String(", ") + String(childBounds[i].getWidth()) + String(", ")
-			+ String(childBounds[i].getHeight()) + String(")");
-	}
+	//String getCurrentChildBounds(int i){
+	//	return "bounds(" + String(childBounds[i].getX()) + String(", ") + String(childBounds[i].getY()) + String(", ") + String(childBounds[i].getWidth()) + String(", ")
+	//		+ String(childBounds[i].getHeight()) + String(")");
+	//}
 
-	String getCurrentOrigChildBounds(int i){
-		return "bounds(" + String(origChildBounds[i].getX()) + String(", ") + String(origChildBounds[i].getY()) + String(", ") + String(origChildBounds[i].getWidth()) + String(", ")
-			+ String(origChildBounds[i].getHeight()) + String(")");
-	}
-		
-	String getCurrentPos(){
-	return String("pos(") + String(left) + String(", ") + String(top) + String(")");
-	}
+	//String getCurrentOrigChildBounds(int i){
+	//	return "bounds(" + String(origChildBounds[i].getX()) + String(", ") + String(origChildBounds[i].getY()) + String(", ") + String(origChildBounds[i].getWidth()) + String(", ")
+	//		+ String(origChildBounds[i].getHeight()) + String(")");
+	//}
+	//	
+	//String getCurrentPos(){
+	//return String("pos(") + String(left) + String(", ") + String(top) + String(")");
+	//}
 
 
 	String getCurrentSize(){

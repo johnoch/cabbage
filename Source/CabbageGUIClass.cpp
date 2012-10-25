@@ -33,7 +33,11 @@ CabbageGUIClass::CabbageGUIClass(String compStr, int ID):
 								sizeText(""),
 								preset(""),
 								trackerFill(),
-								masterSnap(0)
+								masterSnap(0),
+								width(0),
+								height(0),
+								left(0),
+								top(0)
 {
 //Default values are assigned to all attributres 
 //before parsing begins
@@ -544,8 +548,13 @@ int CabbageGUIClass::parse(String str)
 			}
 
             else if(identArray.getReference(indx).toLowerCase().equalsIgnoreCase("tracker(")){
-					if(strTokens.size()<2)
+
+					if(strTokens.size()<2){
+						if(strTokens[0].trim().length()>2)
 						trackerFill = Colours::findColourForName(strTokens[0].trim(), Colours::white);
+						else 
+						trackerFill = Colour::fromRGBA (256, 256, 256, 0);
+					}
 					else if(strTokens.size()==4)
 						trackerFill = Colour::fromRGBA (strTokens[0].getIntValue(),
 															strTokens[1].getIntValue(), 
@@ -1007,6 +1016,13 @@ String CabbageGUIClass::getStringProp(String prop, int index)
 		return "";
 }
 
+Rectangle<int> CabbageGUIClass::getComponentBounds()
+{
+Rectangle<int> rect;
+rect.setBounds(left, top, width, height);
+return rect;
+}
+
 String CabbageGUIClass::getStringProp(String prop)
 {
 		if(prop.equalsIgnoreCase("channel"))
@@ -1019,8 +1035,13 @@ String CabbageGUIClass::getStringProp(String prop)
 			return yChannel.trim();
 		else if(prop.equalsIgnoreCase("name"))
 			return name.trim();
-		else if(prop.equalsIgnoreCase("bounds"))
+		else if(prop.equalsIgnoreCase("initBoundsText"))
 			return boundsText.trim();
+		else if(prop.equalsIgnoreCase("newBoundsText")){
+			String bounds;
+			bounds << "bounds(" << String(left) << ", " << String(top) << ", " << String(width) << ", " << String(height) << ")";
+			return bounds;
+		}
 		else if(prop.equalsIgnoreCase("pos"))
 			return posText.trim();
 		else if(prop.equalsIgnoreCase("size"))
@@ -1049,6 +1070,11 @@ String CabbageGUIClass::getStringProp(String prop)
 			return exit.trim();
 		else if(prop.equalsIgnoreCase("plant"))
 			return plant.trim();
+		else if(prop.equalsIgnoreCase("plantText")){
+			String plantText;
+			plantText << "plant(\"" << plant.trim() << "\")";
+			return plantText;
+		}
 		else if(prop.equalsIgnoreCase("reltoplant"))
 			return reltoplant.trim();
 		else if(prop.equalsIgnoreCase("debugmessage"))

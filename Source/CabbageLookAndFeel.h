@@ -19,9 +19,9 @@ public:
 	CabbageLookAndFeel();
 	~CabbageLookAndFeel();
 
-	Image drawRotaryImage(int diameter, const Colour circleFill, const Colour trackerCol, float sliderPosProportional, float zeroPosProportional, 
+	Image drawRotaryImage(int diameter, const Colour circleFill, const Colour trackerCol, float sliderPosProportional, float zeroPosProportional,
 																								bool useTrackerFill,
-																								bool useBigImage);
+																								float markerOpacity);
 	Image drawLinearBgImage (float width, float height, float sliderPosProportional, float zeroPosProportional, 
 																								bool useTrackerFill,
 																								bool isVertical,

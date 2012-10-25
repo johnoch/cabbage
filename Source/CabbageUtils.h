@@ -138,9 +138,9 @@ static String cabbageString (String input, Font font, float availableWidth)
 	float charWidth = stringWidth / numChars;
 
 	if (stringWidth > availableWidth) {
-		float includeChars = (availableWidth / charWidth) - 3;
-		newStr = input.substring (0, includeChars);
-		newStr << "...";
+		int numCharsToInclude = ((availableWidth / charWidth)+0.5) - 2;
+		newStr = input.substring (0, numCharsToInclude);
+		newStr << "..";
 		return newStr;
 	}
 	else
@@ -150,14 +150,14 @@ static String cabbageString (String input, Font font, float availableWidth)
 //========= Normal font for components ===============================================
 static Font getComponentFont()
 {
-	Font font = Font ("Verdana", 12, 1);
+	Font font = Font ("Verdana", 11.5, 1);
 	return font;
 }
 
 //======= For slider values etc ======================================================
 static Font getValueFont()
 {
-	Font font = Font ("Helvetica", 12, 1);
+	Font font = Font ("Helvetica", 11.5, 1);
 	return font;
 }
 
@@ -197,11 +197,41 @@ static Colour getComponentSkin()
 	return skin;
 }
 
+//====== border colour ============================================================
+static const Colour getBorderColour()
+{
+	return getComponentFontColour().withMultipliedAlpha(0.2);
+}
+
+//====== border width ============================================================
+static const float getBorderWidth()
+{
+	return 1.0f;
+}
+
 //======== for the main background =========================================================
 static Colour getBackgroundSkin()
 {
 	Colour skin = Colour::fromRGBA (5, 15, 20, 255);
 	return skin;
+}
+
+//======= method for retrieve the string values of rectangles..
+static	String getBoundsString(Rectangle<int> currentBounds)
+{
+		return "bounds(" + String(currentBounds.getX()) + String(", ") + String(currentBounds.getY()) + String(", ") + String(currentBounds.getWidth()) + String(", ")
+			+ String(currentBounds.getHeight()) + String(")");
+}
+
+//======= method for replacing the contents of an identifier with new values..
+static	String replaceIdentifier(String line, String identifier, String updatedIdentifier)
+{
+	int startPos = line.indexOf(identifier);
+	String firstSection = line.substring(0, line.indexOf(identifier));
+	line = line.substring(line.indexOf(identifier));
+	String secondSection = line.substring(line.indexOf(")")+1);
+	return firstSection+updatedIdentifier+secondSection;
+	
 }
 
 //======= for darker backgrounds ==========================================================

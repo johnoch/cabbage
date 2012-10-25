@@ -41,7 +41,6 @@
 class CabbagePluginAudioProcessor  : public AudioProcessor,
                                                                          public CabbageUtils,
                                                                          public ChangeBroadcaster,
-                                                                         public ChangeListener,
                                                                          public Timer,
 																		 public ActionBroadcaster
 {

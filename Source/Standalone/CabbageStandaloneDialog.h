@@ -152,6 +152,7 @@ public:
 
 private:
 	bool timerRunning;
+	bool AudioEnabled;
 	int setUniquePluginID(File inFile, File csdFile);
 	float yAxis;
 	void timerCallback();

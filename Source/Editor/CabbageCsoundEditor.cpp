@@ -12,6 +12,7 @@ lookAndFeel = new CabbageLookAndFeel();
 opcodes.addLines(String((BinaryData::opcodes_txt)));
 csoundDoc.addListener(this);
 textEditor = new CsoundCodeEditor(csoundDoc, &csoundToker);
+
 textEditor->setColour(CodeEditorComponent::lineNumberTextId, Colours::white);
 textEditor->setColour(CodeEditorComponent::lineNumberBackgroundId, Colours::black);
 
@@ -184,6 +185,12 @@ void CsoundEditor::getCommandInfo (const CommandID commandID, ApplicationCommand
 		result.setInfo (String("Zoom out"), String("Zoom out"), CommandCategories::edit, 0);
 		result.addDefaultKeypress ('-', ModifierKeys::commandModifier);
         break;
+	case CommandIDs::whiteBackground:
+		result.setInfo (String("White background"), String("White scheme"), CommandCategories::edit, 0);
+        break;
+	case CommandIDs::blackBackground:
+		result.setInfo (String("Dark background"), String("Dark scheme"), CommandCategories::edit, 0);
+        break;
 	case CommandIDs::viewHelp:
 #ifndef MACOSX
 		result.setInfo (String("View Help F1"), String("View Help"), CommandCategories::help, 0);
@@ -215,6 +222,8 @@ void CsoundEditor::getAllCommands (Array <CommandID>& commands)
 								CommandIDs::editRedo,
 								CommandIDs::editZoomIn,
 								CommandIDs::editZoomOut,
+								CommandIDs::whiteBackground,
+								CommandIDs::blackBackground,
 
 								CommandIDs::viewHelp
 	};
@@ -307,6 +316,23 @@ bool CsoundEditor::perform (const InvocationInfo& info)
 			setFontSize("out");
 			break;
 		}
+
+	case CommandIDs::whiteBackground:
+		{			
+			textEditor->setColourScheme(csoundToker.getDefaultColourScheme());
+			textEditor->setColour(CodeEditorComponent::backgroundColourId, Colours::white);
+			textEditor->setColour(CodeEditorComponent::highlightColourId, Colours::cornflowerblue); 
+			break;
+		}
+
+	case CommandIDs::blackBackground:
+		{			
+			textEditor->setColourScheme(csoundToker.getDarkColourScheme());
+			textEditor->setColour(CodeEditorComponent::backgroundColourId, Colour::fromRGB(20, 20, 20));
+			textEditor->setColour(CodeEditorComponent::highlightColourId, Colours::green.withAlpha(.6f)); 
+			break;
+		}
+
 	case CommandIDs::viewHelp:
 		{			
 			//showMessage(appProperties->getUserSettings()->getValue("htmlHelp", "string"), lookAndFeel);
@@ -367,7 +393,7 @@ return true;
 PopupMenu CsoundEditor::getMenuForIndex (int topLevelMenuIndex, const String& menuName)
 {
 PopupMenu m1, m2;
-
+m2.setLookAndFeel(&getLookAndFeel());
 if(topLevelMenuIndex==0)
 	{
 	 m1.addCommandItem(&commandManager, CommandIDs::fileNew);	 
@@ -387,10 +413,14 @@ else if(topLevelMenuIndex==1)
 	m1.addCommandItem(&commandManager, CommandIDs::editCut);
 	m1.addCommandItem(&commandManager, CommandIDs::editCopy);
 	m1.addCommandItem(&commandManager, CommandIDs::editPaste);
-	//m1.addSeparator();
-	//m2.addCommandItem(&commandManager, CommandIDs::editZoomIn);
-	//m2.addCommandItem(&commandManager, CommandIDs::editZoomOut);
-	//m1.addSubMenu(String("Font Size"), m2);
+	m1.addSeparator();
+	m2.addCommandItem(&commandManager, CommandIDs::editZoomIn);
+	m2.addCommandItem(&commandManager, CommandIDs::editZoomOut);
+	m1.addSubMenu(String("Font Size"), m2);
+	m2.clear();
+	m2.addCommandItem(&commandManager, CommandIDs::whiteBackground);
+	m2.addCommandItem(&commandManager, CommandIDs::blackBackground);
+	m1.addSubMenu("Change editor theme", m2);
 	return m1;
 	}
 

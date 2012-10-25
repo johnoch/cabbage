@@ -80,9 +80,12 @@ dataout = new PVSDATEXT;
 //showMessage(command[0]);
 //showMessage(command[1]);
 
+
 if(!inputfile.isEmpty()){
 csCompileResult = csound->Compile(const_cast<char*>(inputfile.toUTF8().getAddress()));
 if(csCompileResult==0){
+
+	   // File(inputfile).setAsCurrentWorkingDirectory();
         //simple hack to allow tables to be set up correctly. 
         csound->PerformKsmps();
         csound->SetScoreOffsetSeconds(0);
@@ -154,7 +157,12 @@ Logger::writeToLog("File exists:"+String(csdFile.getFullPathName()));
 else
 Logger::writeToLog("File doesn't exist"+String(csdFile.getFullPathName()));
 
-createGUI(csdFile.loadFileAsString().toUTF8());
+
+Logger::writeToLog(csdFile.getFullPathName());
+
+File(csdFile.getFullPathName()).setAsCurrentWorkingDirectory();
+
+createGUI(csdFile.loadFileAsString());
 
 #ifndef Cabbage_No_Csound
 csound = new Csound();
@@ -175,7 +183,7 @@ csoundChanList = NULL;
 numCsoundChannels = 0;
 csndIndex = 32;
 startTimer(15);
-csCompileResult = csound->Compile( const_cast<char*>(csdFile.getFullPathName().toUTF8().getAddress()));
+csCompileResult = csound->Compile("C:\\Users\\Rory\\Documents\\SourceCode\\cabbage-svn\\Builds\\VisualStudio2010\\Debug\\CabbagePlugin.csd");// const_cast<char*>(csdFile.getFullPathName().toUTF8().getAddress()));
 if(csCompileResult==0){
         //simple hack to allow tables to be set up correctly. 
         csound->PerformKsmps();
@@ -191,7 +199,7 @@ if(csCompileResult==0){
         for(int i=0;i<guiCtrls.size();i++){
                 csound->SetChannel( guiCtrls.getReference(i).getStringProp("channel").toUTF8(), 
                                                         guiCtrls.getReference(i).getNumProp("value"));
-                setParameter(i, guiCtrls.getReference(i).getNumProp("value")); 
+        //        setParameter(i, guiCtrls.getReference(i).getNumProp("value")); 
         }
 
         csndIndex = csound->GetKsmps();
@@ -478,15 +486,7 @@ catch(...){
 }
 #endif
 
-void CabbagePluginAudioProcessor::changeListenerCallback(ChangeBroadcaster *source)
-{
-#ifdef Cabbage_GUI_Editor
-changeMessageType = String("GUI");
-sendChangeMessage();
-#endif
-}
 
- 
 //==============================================================================
 #ifdef Cabbage_Build_Standalone
 CabbagePluginAudioProcessor* JUCE_CALLTYPE createCabbagePluginFilter(String inputfile, bool guiOnOff)
@@ -697,6 +697,7 @@ if(!isGuiEnabled()){
 //==============================================================================
 void CabbagePluginAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
 {
+
 float* audioBuffer;
 #ifndef Cabbage_No_Csound
 

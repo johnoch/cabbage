@@ -58,27 +58,6 @@ public:
 		tokenType_csdTag
     };
 
-private:
-	//==============================================================================
-	StringArray getTokenTypes()
-	{
-    StringArray s;
-    s.add ("Error");
-    s.add ("Comment");
-    s.add ("C++ keyword");
-    s.add ("Identifier");
-    s.add ("Integer literal");
-    s.add ("Float literal");
-    s.add ("String literal");
-    s.add ("Operator");
-    s.add ("Bracket");
-    s.add ("Punctuation");
-    s.add ("Preprocessor line");
-	s.add ("CSD Tag");
-    return s;
-	}
-
-
 	CodeEditorComponent::ColourScheme getDefaultColourScheme()
 	{
 		struct Type
@@ -111,27 +90,57 @@ private:
 		return cs;
 	}
 
-	Colour getDefaultColour (int tokenType)
+	CodeEditorComponent::ColourScheme getDarkColourScheme()
 	{
-    const Colour colours[] = {
-		Colours::black, // error
-        Colours::green,  // comment
-        Colours::blue,  // keyword
-        Colours::black,  // identifier
-        Colours::orange,  // int literal
-        Colours::black,  // float literal
-        Colours::red,  // string literal
-        Colours::darkgreen,  // operator
-        Colours::darkgreen,  // bracket
-        Colours::black,  // punctuation
-        Colours::yellow,   // preprocessor
-		Colours::brown   // csd tag
+		struct Type
+		{
+			const char* name;
+			uint32 colour;
+		};
 
-    };
+		const Type types[] =
+		{
+			{ "Error",              Colours::white.getARGB() },
+			{ "Comment",            Colours::green.getARGB() },
+			{ "Keyword",            Colours::blue.getARGB() },
+			{ "Identifier",         Colours::white.getARGB() },
+			{ "Integer",            Colours::orange.getARGB() },
+			{ "Float",              Colours::white.getARGB() },
+			{ "String",             Colours::red.getARGB() },
+			{ "Operator",           Colours::pink.getARGB() },
+			{ "Bracket",            Colours::darkgreen.getARGB() },
+			{ "Punctuation",        Colours::white.getARGB() },
+			{ "Preprocessor Text",  Colours::green.getARGB() },
+			{ "Csd Tag",			Colours::brown.getARGB() }
+		};
 
-    if (tokenType >= 0 && tokenType < numElementsInArray (colours))
-        return Colour (colours [tokenType]);
-    return Colours::white;
+		CodeEditorComponent::ColourScheme cs;
+
+		for (int i = 0; i < sizeof (types) / sizeof (types[0]); ++i)  // (NB: numElementsInArray doesn't work here in GCC4.2)
+			cs.set (types[i].name, Colour (types[i].colour));
+
+		return cs;
+	}
+
+
+private:
+	//==============================================================================
+	StringArray getTokenTypes()
+	{
+    StringArray s;
+    s.add ("Error");
+    s.add ("Comment");
+    s.add ("C++ keyword");
+    s.add ("Identifier");
+    s.add ("Integer literal");
+    s.add ("Float literal");
+    s.add ("String literal");
+    s.add ("Operator");
+    s.add ("Bracket");
+    s.add ("Punctuation");
+    s.add ("Preprocessor line");
+	s.add ("CSD Tag");
+    return s;
 	}
 
 	//==============================================================================
@@ -370,75 +379,137 @@ public:
 
 	};
 
-	class CsoundCodeEditor : public CodeEditorComponent
+	class CsoundCodeEditor : public CodeEditorComponent,
+							public ChangeListener
 	{
+		class colourPallete : public ColourSelector
+		{
+			Array <Colour> swatchColours;
+		
+		    public:			
+			colourPallete(): ColourSelector(){
+			swatchColours.add(Colour(0xFF000000));
+			swatchColours.add(Colour(0xFFFFFFFF));
+			swatchColours.add(Colour(0xFFFF0000));
+			swatchColours.add(Colour(0xFF00FF00));
+			swatchColours.add(Colour(0xFF0000FF));
+			swatchColours.add(Colour(0xFFFFFF00));
+			swatchColours.add(Colour(0xFFFF00FF));
+			swatchColours.add(Colour(0xFF00FFFF));
+			swatchColours.add(Colour(0x80000000));
+			swatchColours.add(Colour(0x80FFFFFF));
+			swatchColours.add(Colour(0x80FF0000));
+			swatchColours.add(Colour(0x8000FF00));
+			swatchColours.add(Colour(0x800000FF));
+			swatchColours.add(Colour(0x80FFFF00));
+			swatchColours.add(Colour(0x80FF00FF));
+			swatchColours.add(Colour(0x8000FFFF));
+			};
+
+			~colourPallete(){};
+
+			/*int getNumSwatches() const 
+			{
+			return swatchColours.size();
+			}
+
+			Colour getSwatchColour(int index) const 
+			{
+				return swatchColours[index];
+			}
+
+			void setSwatchColour (int index, const Colour &newColour)
+			{
+				swatchColours.insert(index, newColour);
+			}*/
+		};
+
+
 	public:
+			CodeDocument::Position positionInCode;
 			CsoundCodeEditor(CodeDocument &document, CodeTokeniser *codeTokeniser)
 					: CodeEditorComponent(document, codeTokeniser)
 			{
-				setColour(CodeEditorComponent::highlightColourId, Colours::cornflowerblue); 	
+				setColour(CodeEditorComponent::highlightColourId, Colours::cornflowerblue); 
+				xPos = 10;
+				yPos = 10;
 			}
-/*
-		void addPopupMenuItems(PopupMenu &menuToAddTo, const MouseEvent *mouseClickEvent)
-			{		
-			menuToAddTo.addItem(100, "Cut"); 
-			menuToAddTo.addItem(101, "Copy"); 
-			menuToAddTo.addItem(102, "Paste"); 
-			menuToAddTo.addItem(103, "Select All"); 
-			menuToAddTo.addSeparator();
-			menuToAddTo.addItem(104, "Undo"); 
-			menuToAddTo.addItem(105, "Redo");
-			menuToAddTo.addSeparator();
-			menuToAddTo.addItem(106, "Add Plant to Garden");
-			menuToAddTo.addItem(107, "Use Plant from Garden"); 
-			}
-
-
-		void performPopupMenuAction(int menuItemID){
-			ScopedPointer<XmlElement> xmlElem1;
-			ScopedPointer<XmlElement> xmlElem2;
-
-				switch (menuItemID)
-					{
-					  case 100:
-						 cutToClipboard();
-						 break;
-					  case 101:
-						 copyToClipboard();
-						 break;
-					  case 102:
-						 pasteFromClipboard();
-						 break;
-					  case 103:
-						 selectAll();
-						 break;
-					  case 104:
-						 undo();
-						 break;
-					  case 105:
-						 redo();
-						 break;
-					  case 106:
-					//	 xmlElem1 = new XmlElement("plantData");
-						 //showMessage(xmlElem->getAllSubText();
-					//	 xmlElem2 = appProperties->getUserSettings()->getXmlValue("plantData");
-					//	 xmlElem2->addChildElement(xmlElem1);
-						 //appProperties->getUserSettings()->setValue("plantData", xmlElem2);
-						 break;
-					  case 107:
-						 showMessage("retreiving plant");
-						 break;
-					  default:
-						 showMessage("Whoops");
-					}
-			}
-			*/
-
 			~CsoundCodeEditor(){};
 
+	void 	addPopupMenuItems (PopupMenu &menuToAddTo, const MouseEvent *mouseClickEvent){
+		menuToAddTo.addItem(1, "Cut");
+		menuToAddTo.addItem(1, "Copy");
+		menuToAddTo.addItem(1, "Paste");
+		menuToAddTo.addItem(1, "Select All");
+		menuToAddTo.addSeparator();
+		menuToAddTo.addItem(1, "Undo");
+		menuToAddTo.addItem(1, "Redo");
+		menuToAddTo.addItem(10, "Colour selector");
+		xPos = mouseClickEvent->x;
+		yPos = mouseClickEvent->y;
+	};
+
+	void 	performPopupMenuAction (int menuItemID){
+ 	if(menuItemID==10){
+			//method for adding colours directly to code from popup colour selector
+			pos1 = getDocument().findWordBreakBefore(getCaretPos());
+			pos2 = getDocument().findWordBreakAfter(getCaretPos());
+			String identifierName = getDocument().getTextBetween(pos1, pos2);
+			identifierName = identifierName.substring(0, identifierName.indexOf("("));
+			String line = getDocument().getLine(pos1.getLineNumber());
+			String identifierString = line.substring(line.indexOf(identifierName));
+			identifierString = identifierString.substring(0, identifierString.indexOf(")")+1);
+
+			if((identifierName=="colour") ||
+				(identifierName=="fontcolour")||
+				(identifierName=="outline")||
+				(identifierName=="tracker")){
+					colourPallete colourSelector;
+					colourSelector.setLookAndFeel(&getLookAndFeel());
+					colourSelector.setBounds(xPos, yPos, 200, 200);
+					colourSelector.addChangeListener (this);   
+					CallOutBox callOut (colourSelector, *this, nullptr);
+					callOut.setTopLeftPosition(xPos+20, yPos);
+			
+					callOut.runModalLoop();
+					StringArray csoundFile;
+
+					csoundFile.addLines(getDocument().getAllContent());
+
+					CabbageGUIClass cAttr(line, -90);
+					int r = selectedColour.getRed();
+					int g = selectedColour.getGreen();
+					int b = selectedColour.getBlue();
+					int a = selectedColour.getAlpha();
+			
+					String newColour = identifierName + "(" + String(r) + ", " + String(g) + ", " + String(b) + ", " + String(a) + ")";
+					line = CabbageUtils::replaceIdentifier(line, identifierName, newColour);
+					line = line.removeCharacters("\n");
+			
+					csoundFile.set(pos1.getLineNumber(), line);
+					getDocument().replaceAllContent(csoundFile.joinIntoString("\n"));
+					int newCursorPos = line.indexOf(newColour);
+					Range<int> range;
+					range.setStart(getDocument().getAllContent().indexOf(line)+newCursorPos);
+					range.setEnd(getDocument().getAllContent().indexOf(line)+newCursorPos+newColour.length());
+					setHighlightedRegion(range);
+			}
+			else
+				CabbageUtils::showMessage("No valid colur identifier found? Please type a colour identifier, and try again.", &getLookAndFeel());
+	}
+	};
+
+	void changeListenerCallback(juce::ChangeBroadcaster *source){
+		ColourSelector* cs = dynamic_cast <ColourSelector*> (source);
+		selectedColour = cs->getCurrentColour();
+	};
+
+	
 
 	private:
-
+		int xPos, yPos;
+		CodeDocument::Position pos1, pos2;
+		Colour selectedColour;
 	};
 
 

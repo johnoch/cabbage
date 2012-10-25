@@ -62,6 +62,7 @@ public:
 	String getStringProp(String prop, int index);
 	String getPropsString();
 	String getColourProp(String prop);
+	Rectangle<int> getComponentBounds();
 
 	inline int getNumPresets(){
 		return snapshotData.size();

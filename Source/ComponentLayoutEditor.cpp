@@ -171,10 +171,11 @@ void ChildAlias::mouseDown (const MouseEvent& e)
    int offY = getProperties().getWithDefault(var::identifier("plantY"), 0);
 
    ((CabbageMainPanel*)(getTarget()->getParentComponent()))->setIndex(index);
-   ((CabbageMainPanel*)(getTarget()->getParentComponent()))->width = getWidth();
-   ((CabbageMainPanel*)(getTarget()->getParentComponent()))->height = getHeight();
-   ((CabbageMainPanel*)(getTarget()->getParentComponent()))->left = getPosition().getX()-offX;
-   ((CabbageMainPanel*)(getTarget()->getParentComponent()))->top = getPosition().getY()-offY; 
+   ((CabbageMainPanel*)(getTarget()->getParentComponent()))->currentBounds.setBounds(getPosition().getX()-offX,
+																					 getPosition().getY()-offY,
+																					 getWidth(),
+																					 getHeight());
+
    ((CabbageMainPanel*)(getTarget()->getParentComponent()))->sendActionMessage("Message sent from CabbageMainPanel");
 
 	if(e.mods.isRightButtonDown()){
@@ -186,7 +187,8 @@ void ChildAlias::mouseDown (const MouseEvent& e)
 			this->getTopLevelComponent()->setAlwaysOnTop(false);
 			AlertWindow alert("Add to Repository", "", AlertWindow::NoIcon, this->getTopLevelComponent()); 
 			alert.setLookAndFeel(&this->getTopLevelComponent()->getLookAndFeel());
-			alert.addTextEditor("textEditor", "name", "Enter a name and hit 'escape'");
+			alert.addTextBlock("Enter a name and hit 'escape'(The following symbols not premitted in names:"" $ % ^ & * ( ) - + )");
+			alert.addTextEditor("textEditor", "name", "");
 			alert.runModalLoop();
 			this->getTopLevelComponent()->setAlwaysOnTop(true);
 			((CabbageMainPanel*)(getTarget()->getParentComponent()))->sendActionMessage("Message sent from CabbageMainPanel"+alert.getTextEditorContents("textEditor"));
@@ -212,10 +214,10 @@ void ChildAlias::mouseUp (const MouseEvent& e)
    int offX = getProperties().getWithDefault(var::identifier("plantX"), 0);
    int offY = getProperties().getWithDefault(var::identifier("plantY"), 0);
    //update dimensions
-   ((CabbageMainPanel*)(getTarget()->getParentComponent()))->width = getWidth();
-   ((CabbageMainPanel*)(getTarget()->getParentComponent()))->height = getHeight();
-   ((CabbageMainPanel*)(getTarget()->getParentComponent()))->left = getPosition().getX()-offX;;
-   ((CabbageMainPanel*)(getTarget()->getParentComponent()))->top = getPosition().getY()-offY;     
+   ((CabbageMainPanel*)(getTarget()->getParentComponent()))->currentBounds.setBounds(getPosition().getX()-offX,
+																					 getPosition().getY()-offY,
+																					 getWidth(),
+																					 getHeight());
 
    applyToTarget("");
 
