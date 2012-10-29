@@ -4,7 +4,7 @@
 CabbageLookAndFeel::CabbageLookAndFeel()
 {
 	setColour(AlertWindow::backgroundColourId, CabbageUtils::getDarkerBackgroundSkin());
-	setColour(AlertWindow::textColourId, CabbageUtils::getComponentFontColour());
+	setColour(AlertWindow::textColourId, Colours::white);
 	setColour(AlertWindow::outlineColourId, Colours::grey);
 }
 
@@ -496,7 +496,7 @@ void CabbageLookAndFeel::drawRotarySlider(Graphics& g, int /*x*/, int /*y*/, int
 
 				
 //=========== Linear Slider Background ===========================================================================
-void CabbageLookAndFeel::drawLinearSliderBackground (Graphics &g, int x, int /*y*/, int width, int /*height*/, float sliderPos, 
+void CabbageLookAndFeel::drawLinearSliderBackground (Graphics &g, int x, int /*y*/, int width, int height, float sliderPos, 
                                                                                                 float /*minSliderPos*/, 
                                                                                                 float /*maxSliderPos*/, 
                                                                                                 const Slider::SliderStyle style, 
@@ -528,11 +528,9 @@ void CabbageLookAndFeel::drawLinearSliderBackground (Graphics &g, int x, int /*y
     bool showNameLabel = false;
 	String nameLabel(slider.getName());
     float nameLabelWidth;
-    if (slider.getName().length() > 0) { //if displaying name
-        g.setFont (nameLabelFont);
-        g.setColour (fontcolour);
+    if (slider.getName().length() > 0) 
         showNameLabel = true; 
-    }
+    
 
 	// Tracker fill
 	bool useTracker = true;
@@ -544,6 +542,10 @@ void CabbageLookAndFeel::drawLinearSliderBackground (Graphics &g, int x, int /*y
 
     //===================== If Horizontal Slider =================================================
     if (style == Slider::LinearHorizontal) {
+		// Making sure that the specified size is ok...
+		if (slider.getHeight() > (slider.getWidth()*0.5))
+			slider.setBounds(slider.getX(), slider.getY(), slider.getWidth(), slider.getWidth()*0.5);
+
 		// Name alignment
 		String alignment = slider.getProperties().getWithDefault("align", "").toString();
 		Justification just(1);
@@ -565,14 +567,16 @@ void CabbageLookAndFeel::drawLinearSliderBackground (Graphics &g, int x, int /*y
 
         // Start and end of slider image, height*0.25 is to make room for the edge of the slider thumb when at 
         // a maximum or minimum
-        destX = slider.getHeight()*0.25; 
+        destX = height*0.25; 
 		destY = 0;
         sliderEndPosition = slider.getWidth() - destX; 
         
         // If there is a name label it will be shown at the start
         if (showNameLabel) {
             nameLabel = CabbageUtils::cabbageString (nameLabel, CabbageUtils::getComponentFont(), nameLabelWidth);
-			g.drawText (nameLabel, 0, (slider.getHeight()/2) - (CabbageUtils::getComponentFont().getHeight()/2), 
+			g.setFont(nameLabelFont);
+			g.setColour(CabbageUtils::getComponentFontColour());
+			g.drawText (nameLabel, 0, (height/2) - (CabbageUtils::getComponentFont().getHeight()/2), 
 				(int)nameLabelWidth, CabbageUtils::getComponentFont().getHeight(), just, false);
             destX += nameLabelWidth; 
         }
@@ -604,25 +608,32 @@ void CabbageLookAndFeel::drawLinearSliderBackground (Graphics &g, int x, int /*y
 		
 		// Getting image
 		newBackground = drawLinearBgImage (destWidth, destHeight, sliderPosProp, zeroPosProportional, 
-			useTracker, false, Colour::fromString(trackColour));		
+			useTracker, false, Colour::fromString(trackColour));	
     }
 
     //=========================== Else if Vertical Slider =======================================
     else if (style == Slider::LinearVertical) {
-		nameLabelWidth = slider.getWidth();
-        destX = ((slider.getWidth() - destWidth) / 2);    
+		// Making sure that the specified size is ok...
+		if (slider.getWidth() > (slider.getHeight()*0.5))
+			slider.setBounds(slider.getX(), slider.getY(), slider.getHeight()*0.5, slider.getHeight());
+		
+		nameLabel = CabbageUtils::cabbageString(nameLabel, nameLabelFont, width);
+		nameLabelWidth = nameLabelFont.getStringWidth(nameLabel);
+        destX = ((width - destWidth) / 2);    
         // Starting y position, width*0.25 is to make room for the edge of the thumb when at a 
         // maximum or minimum
-		float thumbHeight = slider.getWidth()/2;
+		float thumbHeight = width/2;
         destY = thumbHeight/2; 
         sliderEndPosition = slider.getHeight() - destY;
+
+		g.setFont(nameLabelFont);
+		g.setColour(CabbageUtils::getComponentFontColour());
 
         // If no textbox.....Name label goes at top, value goes at bottom.
         if (slider.getTextBoxPosition() == Slider::NoTextBox) {
             slider.setTextBoxStyle (Slider::NoTextBox, true, 0, 0);
             if (showNameLabel) { 
-                nameLabel = CabbageUtils::cabbageString (nameLabel, CabbageUtils::getComponentFont(), slider.getWidth()); 
-				g.drawText (nameLabel, (slider.getWidth()/2) - (nameLabelWidth/2), slider.getHeight() - nameLabelFont.getHeight(), 
+				g.drawText (nameLabel, (width/2) - (nameLabelWidth/2), slider.getHeight() - nameLabelFont.getHeight(), 
 					(int)nameLabelWidth, nameLabelFont.getHeight(), Justification::centred, false);
                 sliderEndPosition -= nameLabelFont.getHeight();
             }
@@ -634,11 +645,9 @@ void CabbageLookAndFeel::drawLinearSliderBackground (Graphics &g, int x, int /*y
             String str;
             str << slider.getMaximum() << slider.getInterval();
 			slider.setTextBoxStyle (Slider::TextBoxBelow, false, CabbageUtils::getValueFont().getStringWidth(str), 15);
-			sliderEndPosition -= (slider.getTextBoxHeight() + (thumbHeight/2));
-
+			sliderEndPosition -= slider.getTextBoxHeight();
             if (showNameLabel) { 
-                nameLabel = CabbageUtils::cabbageString (nameLabel, nameLabelFont, slider.getWidth());
-				g.drawText (nameLabel, (slider.getWidth()/2) - (nameLabelWidth/2), 0, nameLabelFont.getStringWidth(nameLabel), 
+				g.drawText (nameLabel, (width/2) - (nameLabelWidth/2), 0, nameLabelFont.getStringWidth(nameLabel), 
 					nameLabelFont.getHeight(), Justification::centred, false);
 				destY += nameLabelFont.getHeight(); 
                 //sliderEndPosition -= 0; Textbox automatically adjusts height.
@@ -653,8 +662,6 @@ void CabbageLookAndFeel::drawLinearSliderBackground (Graphics &g, int x, int /*y
             slider.setEnabled (true);
             if ((mousePos.getY() >= (destY-5)) && (mousePos.getY() <= (sliderEndPosition+5))) {
 				sliderPosProp = 1 - ((mousePos.getY()-destY)/destHeight); //inverting because of y axis
-                //float yInvert = 1 - ((mousePos.getY()-destY) / destHeight);
-                //slider.setValue ((yInvert*range)+slider.getMinimum());
 				slider.setValue(slider.proportionOfLengthToValue(sliderPosProp), true, false);
             }
         }
@@ -707,17 +714,20 @@ void CabbageLookAndFeel::drawLinearSliderThumb (Graphics &g, int x, int /*y*/, i
 		// Setting up format string....
 		String format;
 		format << "%." << numDec << "f";
-		sliderValue = CabbageUtils::cabbageString(String::formatted(format, slider.getValue()), valueFont, slider.getWidth());
+		sliderValue = String::formatted(format, slider.getValue());
 		sliderValueWidth = valueFont.getStringWidth(sliderValue);
 	}
 
 	//===================== If Horizontal ================================================
 	if (style == Slider::LinearHorizontal) {
-		//Getting width of name label....
 		String nameLabel(slider.getName());
 		Font nameFont = CabbageUtils::getComponentFont();
 		g.setFont (nameFont);
-		float nameLabelWidth = slider.getWidth() * 0.2; //nameFont.getStringWidth(name);
+		float nameLabelWidth = slider.getWidth() * 0.2; //fixed width for name label
+
+		// Making sure that the specified size is ok...
+		if (slider.getHeight() > (slider.getWidth()*0.5))
+			height = slider.getWidth()*0.5;
 
 		thumbWidth = thumbHeight = height * 0.5;
 
@@ -730,12 +740,12 @@ void CabbageLookAndFeel::drawLinearSliderThumb (Graphics &g, int x, int /*y*/, i
 			sliderStart += nameLabelWidth;
 		
 		if (slider.getTextBoxPosition() != slider.NoTextBox)  //If a textbox IS to be displayed
-			sliderEndPosition -= sliderValueWidth; 
+			sliderEndPosition -= slider.getTextBoxWidth(); 
 
 		// Thumb position 
 		float availableWidth = sliderEndPosition - sliderStart;
-		destY = (slider.getHeight()/2) - (thumbHeight/2);
-		destX = (sliderPosProp*availableWidth) + sliderStart - (thumbWidth/2);// -5; //subtracting (thumbWidth/2) centres the thumb over slider position		
+		destY = (height/2) - (thumbHeight/2);
+		destX = (sliderPosProp*availableWidth) + sliderStart - (thumbWidth/2);//subtracting (thumbWidth/2) centres the thumb over slider position		
 
 		// Drawing the slider value above the thumb if there is no textbox, and mouse is hovering or dragging
 		if ((slider.getTextBoxPosition() == Slider::NoTextBox) && (slider.isMouseOverOrDragging() == true)) {
@@ -753,8 +763,11 @@ void CabbageLookAndFeel::drawLinearSliderThumb (Graphics &g, int x, int /*y*/, i
 	}
 
 	//=========================== Else if vertical ===================================================
-	if (style == Slider::LinearVertical) {
-		// thumbWidth and thumbHeight are based on the width
+	else if (style == Slider::LinearVertical) {
+		// Making sure that the specified size is ok...
+		if (slider.getWidth() > (slider.getHeight()*0.5))
+			width = slider.getHeight()*0.5;
+
 		thumbWidth = thumbHeight = width * 0.5;
 
 		sliderStart = thumbHeight/2; //leaving room for thumb
@@ -777,18 +790,18 @@ void CabbageLookAndFeel::drawLinearSliderThumb (Graphics &g, int x, int /*y*/, i
 		// Thumb position 
 		float availableHeight = sliderEndPosition - sliderStart;
 		float newSliderPos = ((1-sliderPosProp) * availableHeight) + sliderStart;
-		destX = (slider.getWidth()/2) - (thumbWidth/2);
+		destX = (width/2) - (thumbWidth/2);
 		destY = newSliderPos - (thumbHeight / 2);
 
 		// Drawing the slider value above the thumb if there is no textbox, and mouse is hovering or dragging
 		if ((slider.getTextBoxPosition() == Slider::NoTextBox) && (slider.isMouseOverOrDragging() == true)) {
 			float boxWidth = sliderValueWidth+2;
 			g.setColour (CabbageUtils::getDarkerBackgroundSkin());
-			g.fillRoundedRectangle ((slider.getWidth()/2) - (boxWidth/2), newSliderPos-(valueFont.getHeight()+(thumbHeight/2)), 
+			g.fillRoundedRectangle ((width/2) - (boxWidth/2), newSliderPos-(valueFont.getHeight()+(thumbHeight/2)), 
 				boxWidth, valueFont.getHeight(), 2);
 			g.setColour (Colours::whitesmoke);
 			g.setFont (valueFont);
-			g.drawText (sliderValue, (slider.getWidth()/2) - (sliderValueWidth/2), newSliderPos-(valueFont.getHeight()+(thumbHeight/2)), 
+			g.drawText (sliderValue, (width/2) - (sliderValueWidth/2), newSliderPos-(valueFont.getHeight()+(thumbHeight/2)), 
 				(int)sliderValueWidth, valueFont.getHeight(), Justification::centred, false);
 		}
 		newThumb = drawLinearThumbImage (thumbWidth, thumbHeight, thumbFill, true); //creating image
@@ -830,8 +843,6 @@ void CabbageLookAndFeel::drawToggleButton (Graphics &g, ToggleButton &button, bo
     }
     else
 		fcol = Colour::fromString(button.getProperties().getWithDefault("fontcolour", "lime"));
-
-
 
 	bool isRECT = button.getProperties().getWithDefault("isRect", 0);
 
@@ -983,6 +994,11 @@ void CabbageLookAndFeel::drawLabel (Graphics &g, Label &label)
 		g.setColour(Colours::whitesmoke);
 		g.setFont(CabbageUtils::getValueFont());
 		g.drawText (label.getText(), 0, 0, label.getWidth(), label.getHeight(), Justification::centred, false);
+		// Border
+		g.setColour(CabbageUtils::getBorderColour());
+		float borderWidth = CabbageUtils::getBorderWidth();
+		g.drawRoundedRectangle(borderWidth/2, borderWidth/2, label.getWidth()-borderWidth, label.getHeight()-borderWidth,
+			label.getHeight()/5, borderWidth);
 	}
 	// Else If not a slider
 	else { 
@@ -1145,7 +1161,7 @@ void CabbageLookAndFeel::drawPopupMenuItem (Graphics &g, int width, int height, 
 																								bool isTicked, 
 																								bool hasSubMenu, 
 																								const String &text, 
-																								const String &/*shortcutKeyText*/, 
+																								const String &shortcutKeyText, 
 																								Image */*image*/, 
 																								const Colour */*const textColour*/)
 {
@@ -1175,6 +1191,16 @@ void CabbageLookAndFeel::drawPopupMenuItem (Graphics &g, int width, int height, 
 		const Line<float> line(width-15, height*.5, width-5, height*.5);
 		g.drawArrow(line, 0, height*.3, height*.3);
 	}
+        if (shortcutKeyText.isNotEmpty())
+        {
+			const int leftBorder = (height * 5) / 4;
+			const int rightBorder = 4;
+
+            g.drawText (shortcutKeyText,
+                        leftBorder, 0, width - (leftBorder + rightBorder + 4), height,
+                        Justification::centredRight,
+                        true);
+        }
 }
 
 //======== Menubar background ======================================================================
@@ -1310,17 +1336,438 @@ Button* CabbageLookAndFeel::createDocumentWindowButton (int buttonType)
 	return button;
 }
 
+//============= alert windows methods ===================================
+AlertWindow* CabbageLookAndFeel::createAlertWindow (const String& title,
+                                             const String& message,
+                                             const String& button1,
+                                             const String& button2,
+                                             const String& button3,
+                                             AlertWindow::AlertIconType iconType,
+                                             int numButtons,
+                                             Component* associatedComponent)
+{
+    AlertWindow* aw = new AlertWindow (title, message, iconType, associatedComponent);
+
+    if (numButtons == 1)
+    {
+        aw->addButton (button1, 0,
+                       KeyPress (KeyPress::escapeKey),
+                       KeyPress (KeyPress::returnKey));
+    }
+    else
+    {
+        const KeyPress button1ShortCut ((int) CharacterFunctions::toLowerCase (button1[0]), 0, 0);
+        KeyPress button2ShortCut ((int) CharacterFunctions::toLowerCase (button2[0]), 0, 0);
+        if (button1ShortCut == button2ShortCut)
+            button2ShortCut = KeyPress();
+
+        if (numButtons == 2)
+        {
+            aw->addButton (button1, 1, KeyPress (KeyPress::returnKey), button1ShortCut);
+            aw->addButton (button2, 0, KeyPress (KeyPress::escapeKey), button2ShortCut);
+        }
+        else if (numButtons == 3)
+        {
+            aw->addButton (button1, 1, button1ShortCut);
+            aw->addButton (button2, 2, button2ShortCut);
+            aw->addButton (button3, 0, KeyPress (KeyPress::escapeKey));
+        }
+    }
+
+    return aw;
+}
+
+void CabbageLookAndFeel::drawAlertBox (Graphics& g,
+                                AlertWindow& alert,
+                                const Rectangle<int>& textArea,
+                                TextLayout& textLayout)
+{
+    g.fillAll (alert.findColour (AlertWindow::backgroundColourId));
+	g.fillAll (CabbageUtils::getComponentSkin());
+    int iconSpaceUsed = 0;
+
+    const int iconWidth = 80;
+    int iconSize = jmin (iconWidth + 50, alert.getHeight() + 20);
+
+    if (alert.containsAnyExtraComponents() || alert.getNumButtons() > 2)
+        iconSize = jmin (iconSize, textArea.getHeight() + 50);
+
+    const Rectangle<int> iconRect (iconSize / -10, iconSize / -10,
+                                   iconSize, iconSize);
+
+    if (alert.getAlertType() != AlertWindow::NoIcon)
+    {
+        Path icon;
+        uint32 colour;
+        char character;
+
+        if (alert.getAlertType() == AlertWindow::WarningIcon)
+        {
+            colour = 0x55ff5555;
+            character = '!';
+
+            icon.addTriangle (iconRect.getX() + iconRect.getWidth() * 0.5f, (float) iconRect.getY(),
+                              (float) iconRect.getRight(), (float) iconRect.getBottom(),
+                              (float) iconRect.getX(), (float) iconRect.getBottom());
+
+            icon = icon.createPathWithRoundedCorners (5.0f);
+        }
+        else
+        {
+            colour    = alert.getAlertType() == AlertWindow::InfoIcon ? (uint32) 0x605555ff : (uint32) 0x40b69900;
+            character = alert.getAlertType() == AlertWindow::InfoIcon ? 'i' : '?';
+
+            icon.addEllipse ((float) iconRect.getX(), (float) iconRect.getY(),
+                             (float) iconRect.getWidth(), (float) iconRect.getHeight());
+        }
+
+        GlyphArrangement ga;
+        ga.addFittedText (Font (iconRect.getHeight() * 0.9f, Font::bold),
+                          String::charToString ((juce_wchar) (uint8) character),
+                          (float) iconRect.getX(), (float) iconRect.getY(),
+                          (float) iconRect.getWidth(), (float) iconRect.getHeight(),
+                          Justification::centred, false);
+        ga.createPath (icon);
+
+        icon.setUsingNonZeroWinding (false);
+        g.setColour (Colour (colour));
+        g.fillPath (icon);
+
+        iconSpaceUsed = iconWidth;
+    }
+
+	g.setColour (Colours::white);//alert.findColour (AlertWindow::textColourId));
+
+    textLayout.draw (g, Rectangle<int> (textArea.getX() + iconSpaceUsed,
+                                        textArea.getY(),
+                                        textArea.getWidth() - iconSpaceUsed,
+                                        textArea.getHeight()).toFloat());
+
+    g.setColour (alert.findColour (AlertWindow::outlineColourId));
+    g.drawRect (0, 0, alert.getWidth(), alert.getHeight());
+}
+
+int CabbageLookAndFeel::getAlertBoxWindowFlags()
+{
+    return ComponentPeer::windowAppearsOnTaskbar
+            | ComponentPeer::windowHasDropShadow;
+}
+
+int CabbageLookAndFeel::getAlertWindowButtonHeight()
+{
+    return 28;
+}
+
+Font CabbageLookAndFeel::getAlertWindowMessageFont()
+{
+    return Font (15.0f);
+}
+
+Font CabbageLookAndFeel::getAlertWindowFont()
+{
+    return Font (12.0f);
+}
+
+//tabbed component methods
+//==============================================================================
+int CabbageLookAndFeel::getTabButtonOverlap (int tabDepth)
+{
+    return 1 + tabDepth / 3;
+}
+
+int CabbageLookAndFeel::getTabButtonSpaceAroundImage()
+{
+    return 4;
+}
+
+int CabbageLookAndFeel::getTabButtonBestWidth (TabBarButton& button, int tabDepth)
+{
+    int width = Font (tabDepth * 0.6f).getStringWidth (button.getButtonText().trim())
+                  + getTabButtonOverlap (tabDepth) * 2;
+
+    Component* const extraComponent = button.getExtraComponent();
+
+    if (extraComponent != nullptr)
+        width += button.getTabbedButtonBar().isVertical() ? extraComponent->getHeight()
+                                                          : extraComponent->getWidth();
+
+    return jlimit (tabDepth * 2, tabDepth * 8, width);
+}
+
+Rectangle<int> CabbageLookAndFeel::getTabButtonExtraComponentBounds (const TabBarButton& button, Rectangle<int>& textArea, Component& comp)
+{
+    Rectangle<int> extraComp;
+
+    const TabbedButtonBar::Orientation orientation = button.getTabbedButtonBar().getOrientation();
+
+    if (button.getExtraComponentPlacement() == TabBarButton::beforeText)
+    {
+        switch (orientation)
+        {
+            case TabbedButtonBar::TabsAtBottom:
+            case TabbedButtonBar::TabsAtTop:     extraComp = textArea.removeFromLeft   (comp.getWidth()); break;
+            case TabbedButtonBar::TabsAtLeft:    extraComp = textArea.removeFromBottom (comp.getHeight()); break;
+            case TabbedButtonBar::TabsAtRight:   extraComp = textArea.removeFromTop    (comp.getHeight()); break;
+            default:                             jassertfalse; break;
+        }
+    }
+    else
+    {
+        switch (orientation)
+        {
+            case TabbedButtonBar::TabsAtBottom:
+            case TabbedButtonBar::TabsAtTop:     extraComp = textArea.removeFromRight  (comp.getWidth()); break;
+            case TabbedButtonBar::TabsAtLeft:    extraComp = textArea.removeFromTop    (comp.getHeight()); break;
+            case TabbedButtonBar::TabsAtRight:   extraComp = textArea.removeFromBottom (comp.getHeight()); break;
+            default:                             jassertfalse; break;
+        }
+    }
+
+    return extraComp;
+}
+
+void CabbageLookAndFeel::createTabButtonShape (TabBarButton& button, Path& p, bool /*isMouseOver*/, bool /*isMouseDown*/)
+{
+    const Rectangle<int> activeArea (button.getActiveArea());
+    const float w = (float) activeArea.getWidth();
+    const float h = (float) activeArea.getHeight();
+
+    float length = w;
+    float depth = h;
+
+    if (button.getTabbedButtonBar().isVertical())
+        std::swap (length, depth);
+
+    const float indent = (float) getTabButtonOverlap ((int) depth);
+    const float overhang = 4.0f;
+
+    switch (button.getTabbedButtonBar().getOrientation())
+    {
+        case TabbedButtonBar::TabsAtLeft:
+            p.startNewSubPath (w, 0.0f);
+            p.lineTo (0.0f, indent);
+            p.lineTo (0.0f, h - indent);
+            p.lineTo (w, h);
+            p.lineTo (w + overhang, h + overhang);
+            p.lineTo (w + overhang, -overhang);
+            break;
+
+        case TabbedButtonBar::TabsAtRight:
+            p.startNewSubPath (0.0f, 0.0f);
+            p.lineTo (w, indent);
+            p.lineTo (w, h - indent);
+            p.lineTo (0.0f, h);
+            p.lineTo (-overhang, h + overhang);
+            p.lineTo (-overhang, -overhang);
+            break;
+
+        case TabbedButtonBar::TabsAtBottom:
+            p.startNewSubPath (0.0f, 0.0f);
+            p.lineTo (indent, h);
+            p.lineTo (w - indent, h);
+            p.lineTo (w, 0.0f);
+            p.lineTo (w + overhang, -overhang);
+            p.lineTo (-overhang, -overhang);
+            break;
+
+        default:
+            p.startNewSubPath (0.0f, h);
+            p.lineTo (indent, 0.0f);
+            p.lineTo (w - indent, 0.0f);
+            p.lineTo (w, h);
+            p.lineTo (w + overhang, h + overhang);
+            p.lineTo (-overhang, h + overhang);
+            break;
+    }
+
+    p.closeSubPath();
+
+    p = p.createPathWithRoundedCorners (3.0f);
+}
+
+void CabbageLookAndFeel::fillTabButtonShape (TabBarButton& button, Graphics& g, const Path& path,  bool /*isMouseOver*/, bool /*isMouseDown*/)
+{
+    //const Colour tabBackground (button.getTabBackgroundColour());
+	const Colour tabBackground (CabbageUtils::getBackgroundSkin());
+    const bool isFrontTab = button.isFrontTab();
+
+    //g.setColour (isFrontTab ? tabBackground
+    //                        : tabBackground.withMultipliedAlpha (0.9f));
+	g.setColour(CabbageUtils::getBackgroundSkin());
+    g.fillPath (path);
+
+    g.setColour (button.findColour (isFrontTab ? TabbedButtonBar::frontOutlineColourId
+                                               : TabbedButtonBar::tabOutlineColourId, false)
+                    .withMultipliedAlpha (button.isEnabled() ? 1.0f : 0.5f));
+
+    g.strokePath (path, PathStrokeType (isFrontTab ? 1.0f : 0.5f));
+}
+
+void CabbageLookAndFeel::drawTabButtonText (TabBarButton& button, Graphics& g, bool isMouseOver, bool isMouseDown)
+{
+    const Rectangle<float> area (button.getTextArea().toFloat());
+
+    float length = area.getWidth();
+    float depth  = area.getHeight();
+
+    if (button.getTabbedButtonBar().isVertical())
+        std::swap (length, depth);
+
+    Font font (depth * 0.6f);
+    font.setUnderline (button.hasKeyboardFocus (false));
+
+    GlyphArrangement textLayout;
+    textLayout.addFittedText (font, button.getButtonText().trim(),
+                              0.0f, 0.0f, (float) length, (float) depth,
+                              Justification::centred,
+                              jmax (1, ((int) depth) / 12));
+
+    AffineTransform t;
+
+    switch (button.getTabbedButtonBar().getOrientation())
+    {
+        case TabbedButtonBar::TabsAtLeft:   t = t.rotated (float_Pi * -0.5f).translated (area.getX(), area.getBottom()); break;
+        case TabbedButtonBar::TabsAtRight:  t = t.rotated (float_Pi *  0.5f).translated (area.getRight(), area.getY()); break;
+        case TabbedButtonBar::TabsAtTop:
+        case TabbedButtonBar::TabsAtBottom: t = t.translated (area.getX(), area.getY()); break;
+        default:                            jassertfalse; break;
+    }
+
+    Colour col;
+
+    if (button.isFrontTab() && (button.isColourSpecified (TabbedButtonBar::frontTextColourId)
+                                    || isColourSpecified (TabbedButtonBar::frontTextColourId)))
+        col = findColour (TabbedButtonBar::frontTextColourId);
+    else if (button.isColourSpecified (TabbedButtonBar::tabTextColourId)
+                 || isColourSpecified (TabbedButtonBar::tabTextColourId))
+        col = findColour (TabbedButtonBar::tabTextColourId);
+    else
+        col = button.getTabBackgroundColour().contrasting();
+
+	col = Colours::whitesmoke;
+    const float alpha = button.isEnabled() ? ((isMouseOver || isMouseDown) ? 1.0f : 0.8f) : 0.3f;
+
+    g.setColour (col.withMultipliedAlpha (alpha));
+    textLayout.draw (g, t);
+}
+
+void CabbageLookAndFeel::drawTabButton (TabBarButton& button, Graphics& g, bool isMouseOver, bool isMouseDown)
+{
+    Path tabShape;
+    createTabButtonShape (button, tabShape, isMouseOver, isMouseDown);
+
+    const Rectangle<int> activeArea (button.getActiveArea());
+    tabShape.applyTransform (AffineTransform::translation ((float) activeArea.getX(),
+                                                           (float) activeArea.getY()));
+
+    DropShadow (Colours::black.withAlpha (0.5f), 2, Point<int> (0, 1)).drawForPath (g, tabShape);
+
+    fillTabButtonShape (button, g, tabShape, isMouseOver, isMouseDown);
+    drawTabButtonText (button, g, isMouseOver, isMouseDown);
+}
+
+void CabbageLookAndFeel::drawTabAreaBehindFrontButton (TabbedButtonBar& bar, Graphics& g, const int w, const int h)
+{
+    const float shadowSize = 0.2f;
+
+    Rectangle<int> shadowRect, line;
+    ColourGradient gradient (Colours::black.withAlpha (bar.isEnabled() ? 0.3f : 0.15f), 0, 0,
+                             Colours::transparentBlack, 0, 0, false);
+
+    switch (bar.getOrientation())
+    {
+        case TabbedButtonBar::TabsAtLeft:
+            gradient.point1.x = (float) w;
+            gradient.point2.x = w * (1.0f - shadowSize);
+            shadowRect.setBounds ((int) gradient.point2.x, 0, w - (int) gradient.point2.x, h);
+            line.setBounds (w - 1, 0, 1, h);
+            break;
+
+        case TabbedButtonBar::TabsAtRight:
+            gradient.point2.x = w * shadowSize;
+            shadowRect.setBounds (0, 0, (int) gradient.point2.x, h);
+            line.setBounds (0, 0, 1, h);
+            break;
+
+        case TabbedButtonBar::TabsAtTop:
+            gradient.point1.y = (float) h;
+            gradient.point2.y = h * (1.0f - shadowSize);
+            shadowRect.setBounds (0, (int) gradient.point2.y, w, h - (int) gradient.point2.y);
+            line.setBounds (0, h - 1, w, 1);
+            break;
+
+        case TabbedButtonBar::TabsAtBottom:
+            gradient.point2.y = h * shadowSize;
+            shadowRect.setBounds (0, 0, w, (int) gradient.point2.y);
+            line.setBounds (0, 0, w, 1);
+            break;
+
+        default: break;
+    }
+
+    g.setGradientFill (gradient);
+    g.fillRect (shadowRect.expanded (2, 2));
+
+    g.setColour (Colour (0x80000000));
+    g.fillRect (line);
+}
+
+Button* CabbageLookAndFeel::createTabBarExtrasButton()
+{
+    const float thickness = 7.0f;
+    const float indent = 22.0f;
+
+    Path p;
+    p.addEllipse (-10.0f, -10.0f, 120.0f, 120.0f);
+
+    DrawablePath ellipse;
+    ellipse.setPath (p);
+    ellipse.setFill (Colour (0x99ffffff));
+
+    p.clear();
+    p.addEllipse (0.0f, 0.0f, 100.0f, 100.0f);
+    p.addRectangle (indent, 50.0f - thickness, 100.0f - indent * 2.0f, thickness * 2.0f);
+    p.addRectangle (50.0f - thickness, indent, thickness * 2.0f, 50.0f - indent - thickness);
+    p.addRectangle (50.0f - thickness, 50.0f + thickness, thickness * 2.0f, 50.0f - indent - thickness);
+    p.setUsingNonZeroWinding (false);
+
+    DrawablePath dp;
+    dp.setPath (p);
+    dp.setFill (Colour (0x59000000));
+
+    DrawableComposite normalImage;
+    normalImage.addAndMakeVisible (ellipse.createCopy());
+    normalImage.addAndMakeVisible (dp.createCopy());
+
+    dp.setFill (Colour (0xcc000000));
+
+    DrawableComposite overImage;
+    overImage.addAndMakeVisible (ellipse.createCopy());
+    overImage.addAndMakeVisible (dp.createCopy());
+
+    DrawableButton* db = new DrawableButton ("tabs", DrawableButton::ImageFitted);
+    db->setImages (&normalImage, &overImage, nullptr);
+    return db;
+}
+
+
+
 /*
   =========================================================================================================
 	
 	Alternative Look and Feel Class
-
-  ---------------------------------------------------------------------------------------------------------
 	
   =========================================================================================================
 */
 CabbageLookAndFeelBasic::CabbageLookAndFeelBasic()
 {
+	setColour(AlertWindow::backgroundColourId, CabbageUtils::getDarkerBackgroundSkin());
+	setColour(AlertWindow::textColourId, Colours::white);
+	setColour(AlertWindow::outlineColourId, Colours::grey);
+	setColour(TextEditor::ColourIds::backgroundColourId, Colours::white);
+	setColour(TextEditor::ColourIds::highlightColourId, Colours::cornflowerblue);
+	setColour(TextEditor::ColourIds::textColourId, Colours::black);
+
 }
 
 CabbageLookAndFeelBasic::~CabbageLookAndFeelBasic()
@@ -1380,7 +1827,3 @@ void CabbageLookAndFeelBasic::drawLinearSliderThumb (Graphics &g, int x, int y, 
 	g.setColour (Colours::black);
 	g.drawRoundedRectangle (sliderPos, destY, rectWidth, rectHeight, rectWidth/3, 1);
 }
-
-
-
-

@@ -96,7 +96,6 @@ private:
         void buttonClicked (Button*);
         void timerCallback();
         void mouseDown(const MouseEvent &e);
-        void mouseUp(const MouseEvent &e);
         bool LOCKED;
         void insertCabbageText(String text);
         int lineNumber;
@@ -119,6 +118,8 @@ private:
 		bool keyIsPressed;
         OwnedArray<Component> controls;
         OwnedArray<Component> layoutComps;
+
+		void positionComponentWithinPlant(String type, int idx, float left, float top, float width, float height, Component *layout, Component *control);
         //ScopedPointer<CabbagePlantWindow> subPatch;
         OwnedArray<CabbageButton> plantButton;
         OwnedArray<CabbagePlantWindow> subPatch;

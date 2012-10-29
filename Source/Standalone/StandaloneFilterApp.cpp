@@ -1,6 +1,7 @@
 #include "CabbageStandaloneDialog.h"
 
 ApplicationProperties* appProperties = nullptr;
+PropertySet* defaultPropSet = nullptr;
 
 class CabbageStandalone : public JUCEApplication
     {
@@ -18,7 +19,17 @@ class CabbageStandalone : public JUCEApplication
 			options.osxLibrarySubFolder = "Preferences";
 
 			appProperties = new ApplicationProperties();
+			defaultPropSet = new PropertySet();
+			ScopedPointer<XmlElement> xml = new XmlElement("PLANTS");
+			defaultPropSet->setValue("DisablePluginInfo", 0);
+			defaultPropSet->setValue("DisableGUIEditModeWarning", 1);
+			defaultPropSet->setValue("SetAlwaysOnTop", 1);	
+			defaultPropSet->setValue("PlantRepository", xml);
+			defaultPropSet->setValue("EditorColourScheme", 1);
+			
 			appProperties->setStorageParameters (options);
+			appProperties->getUserSettings()->setFallbackPropertySet(defaultPropSet);
+			
 
 			filterWindow = new StandaloneFilterWindow (String("Cabbage"), Colours::black);
             filterWindow->setTitleBarButtonsRequired (DocumentWindow::allButtons, false);
@@ -33,6 +44,7 @@ class CabbageStandalone : public JUCEApplication
 			filterWindow = 0;// = nullptr;
 			appProperties->closeFiles();
 			deleteAndZero(appProperties);
+			deleteAndZero(defaultPropSet);
           }
 
           const String getApplicationName()

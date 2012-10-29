@@ -1,5 +1,6 @@
 
 #include "CabbageCsoundEditor.h"
+#include "../Standalone/CabbageStandaloneDialog.h"
 
 
 #pragma warning(disable: 4996)
@@ -96,6 +97,27 @@ horizontalLayout.setItemLayout (2,
 horizontalLayout.setItemLayout (3,          // for item 2
     -0., -.9, // size must be between 0% and 60% of the available space
     -.3);        // and its preferred size is 30% of total available space
+
+
+//set up colour scheme:
+PropertySet pSet;
+pSet.setValue("EditorColourScheme", 1);
+appProperties->getUserSettings()->setFallbackPropertySet(&pSet);
+
+if(!appProperties->getUserSettings()->getValue("EditorColourScheme", var(0)).getIntValue()){
+			textEditor->setColourScheme(csoundToker.getDefaultColourScheme());
+			textEditor->setColour(CodeEditorComponent::backgroundColourId, Colours::white);
+			textEditor->setColour(CaretComponent::caretColourId, Colours::black);
+			textEditor->setColour(CodeEditorComponent::highlightColourId, Colours::cornflowerblue); 
+}
+
+else if(appProperties->getUserSettings()->getValue("EditorColourScheme", var(0)).getIntValue()){
+			textEditor->setColourScheme(csoundToker.getDarkColourScheme());
+			textEditor->setColour(CaretComponent::caretColourId, Colours::white);
+			textEditor->setColour(CodeEditorComponent::backgroundColourId, Colour::fromRGB(20, 20, 20));
+			textEditor->setColour(CodeEditorComponent::highlightColourId, Colours::green.withAlpha(.6f)); 
+}
+
 
 }
 //==============================================================================
@@ -322,14 +344,19 @@ bool CsoundEditor::perform (const InvocationInfo& info)
 			textEditor->setColourScheme(csoundToker.getDefaultColourScheme());
 			textEditor->setColour(CodeEditorComponent::backgroundColourId, Colours::white);
 			textEditor->setColour(CodeEditorComponent::highlightColourId, Colours::cornflowerblue); 
+			textEditor->setColour(CaretComponent::caretColourId, Colours::black);
+			appProperties->getUserSettings()->setValue("EditorColourScheme", 0);
 			break;
 		}
 
 	case CommandIDs::blackBackground:
 		{			
+			
 			textEditor->setColourScheme(csoundToker.getDarkColourScheme());
 			textEditor->setColour(CodeEditorComponent::backgroundColourId, Colour::fromRGB(20, 20, 20));
 			textEditor->setColour(CodeEditorComponent::highlightColourId, Colours::green.withAlpha(.6f)); 
+			textEditor->setColour(CaretComponent::caretColourId, Colours::white);
+			appProperties->getUserSettings()->setValue("EditorColourScheme", 1);
 			break;
 		}
 
@@ -400,7 +427,11 @@ if(topLevelMenuIndex==0)
 	 m1.addCommandItem(&commandManager, CommandIDs::fileOpen);
 	 m1.addCommandItem(&commandManager, CommandIDs::fileSave);
 	 m1.addCommandItem(&commandManager, CommandIDs::fileSaveAs);
-	 //m1.addSeparator();
+	 m1.addSeparator();
+	 m1.addCommandItem(&commandManager, CommandIDs::fileUpdateGUI);
+	 m1.addCommandItem(&commandManager, CommandIDs::fileExportSynth);
+	 m1.addCommandItem(&commandManager, CommandIDs::fileExportEffect);
+
 	 //m2.addCommandItem(&commandManager, CommandIDs::fileExportSynth);
 	 //m2.addCommandItem(&commandManager, CommandIDs::fileExportEffect);
 	 //m1.addSubMenu(String("Export Plugin"), m2);

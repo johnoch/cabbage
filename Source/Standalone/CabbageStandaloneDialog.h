@@ -27,6 +27,7 @@
 #include "../Plugin/CabbagePluginEditor.h"
 
 extern ApplicationProperties* appProperties;
+extern PropertySet* defaultPropSet;
 
 //==============================================================================
 // This is the main host window. It gets instatiated in StandaloneFilterApp.cpp
@@ -153,6 +154,7 @@ public:
 private:
 	bool timerRunning;
 	bool AudioEnabled;
+	bool isAFileOpen;
 	int setUniquePluginID(File inFile, File csdFile);
 	float yAxis;
 	void timerCallback();

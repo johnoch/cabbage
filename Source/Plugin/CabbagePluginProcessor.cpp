@@ -375,6 +375,7 @@ bool multiLine = false;
                                                                 ||tokes.getReference(0).equalsIgnoreCase(String("button"))){
                                                         CabbageGUIClass cAttr(csdLine.trimEnd(), guiID);
                                                         csdLine = "";
+														Logger::writeToLog(tokes.getReference(0));
                                                         //attach widget to plant if need be
                                                         if(cAttr.getStringProp(String("relToPlant")).equalsIgnoreCase(String(""))){
                                                                 //showMessage(cAttr.getStringProp(String("relToPlant")));
@@ -425,9 +426,9 @@ bool multiLine = false;
 
 if(this->getActiveEditor()){
 	getActiveEditor()->repaint();
-	((CabbagePluginAudioProcessorEditor*)getActiveEditor())->setEditMode(false);
+	//((CabbagePluginAudioProcessorEditor*)getActiveEditor())->setEditMode(false);
 	((CabbagePluginAudioProcessorEditor*)getActiveEditor())->InsertGUIControls();
-	((CabbagePluginAudioProcessorEditor*)getActiveEditor())->setEditMode(true);
+	//((CabbagePluginAudioProcessorEditor*)getActiveEditor())->setEditMode(true);
 	
 }
 

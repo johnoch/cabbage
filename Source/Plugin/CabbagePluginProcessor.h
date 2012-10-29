@@ -67,8 +67,7 @@ class CabbagePluginAudioProcessor  : public AudioProcessor,
         int CSCompResult;                       //result of Csound performKsmps
         CsoundChannelListEntry* csoundChanList;         // list of all available channels...
         int numCsoundChannels;          //number of Csound channels
-        static void messageCallback(CSOUND *csound, int attr, 
-                                                                const char *fmt, va_list args);  //message callback function
+        static void messageCallback(CSOUND *csound, int attr, const char *fmt, va_list args);  //message callback function
         int pos;
         //Csound API functions for deailing with midi input
         static int OpenMidiInputDevice(CSOUND * csnd, void **userData, const char *devName);
@@ -77,10 +76,10 @@ class CabbagePluginAudioProcessor  : public AudioProcessor,
         static int WriteMidiData(CSOUND *csound, void *userData, const unsigned char *mbuf, int nbytes);
 #endif
         StringArray debugInfo;
-        //these need to change to OwnedArrays, but check it first on another demo app
+
         Array<CabbageGUIClass, CriticalSection> guiLayoutCtrls;
         Array<CabbageGUIClass, CriticalSection> guiCtrls;
-        
+	        
         String plantFlag, presetFlag;
         String debugMessage;
         StringArray debugMessageArray;

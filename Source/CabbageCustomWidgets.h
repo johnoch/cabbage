@@ -364,7 +364,7 @@ combo->setBounds(offX, offY, getWidth()+offWidth, getHeight()+offHeight);
 this->setWantsKeyboardFocus(false);
 }
 
-//JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CabbageComboBox);
+JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CabbageComboBox);
 };
 
 //==============================================================================

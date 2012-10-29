@@ -87,6 +87,30 @@ public:
 	Image drawWindowButtonIsOver(int buttonType);
 	virtual Button* createDocumentWindowButton (int buttonType);
 
+	int getAlertBoxWindowFlags();
+	int getAlertWindowButtonHeight();
+	Font getAlertWindowMessageFont();
+	Font getAlertWindowFont();
+	void drawAlertBox (Graphics& g, AlertWindow& alert, const Rectangle<int>& textArea, TextLayout& textLayout);
+
+	AlertWindow* createAlertWindow (const String& title, const String& message, const String& button1, const String& button2,
+                                             const String& button3, AlertWindow::AlertIconType iconType, int numButtons,
+                                             Component* associatedComponent);
+	
+	int getTabButtonSpaceAroundImage();
+    int getTabButtonOverlap (int tabDepth);
+    int getTabButtonBestWidth (TabBarButton&, int tabDepth);
+    Rectangle<int> getTabButtonExtraComponentBounds (const TabBarButton&, Rectangle<int>& textArea, Component& extraComp);
+
+    void drawTabButton (TabBarButton&, Graphics& g, bool isMouseOver, bool isMouseDown);
+    void drawTabButtonText (TabBarButton&, Graphics& g, bool isMouseOver, bool isMouseDown);
+    void drawTabAreaBehindFrontButton (TabbedButtonBar&, Graphics& g, int w, int h);
+
+    void createTabButtonShape (TabBarButton&, Path& path,  bool isMouseOver, bool isMouseDown);
+    void fillTabButtonShape (TabBarButton&, Graphics& g, const Path& path, bool isMouseOver, bool isMouseDown);
+
+    Button* createTabBarExtrasButton();
+	
 	juce_UseDebuggingNewOperator
 
 

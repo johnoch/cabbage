@@ -7,6 +7,7 @@
 *
 */
 #include "ComponentLayoutEditor.h"
+#include "./Standalone/CabbageStandaloneDialog.h"
 
 
 ChildAlias::ChildAlias (Component* targetChild, String type, int ind)
@@ -185,14 +186,43 @@ void ChildAlias::mouseDown (const MouseEvent& e)
 		int choice = m.show();
 		if(choice==1){
 			this->getTopLevelComponent()->setAlwaysOnTop(false);
-			AlertWindow alert("Add to Repository", "", AlertWindow::NoIcon, this->getTopLevelComponent()); 
-			alert.setLookAndFeel(&this->getTopLevelComponent()->getLookAndFeel());
-			alert.addTextBlock("Enter a name and hit 'escape'(The following symbols not premitted in names:"" $ % ^ & * ( ) - + )");
+			AlertWindow alert("Add to Repository", "Enter a name and hit 'escape'", AlertWindow::NoIcon, this->getTopLevelComponent()); 
+			CabbageLookAndFeelBasic basicLookAndFeel;
+			alert.setLookAndFeel(&basicLookAndFeel);
+			alert.setColour(TextEditor::textColourId, Colours::white);
+			//alert.addTextBlock("Enter a name and hit 'escape'(The following symbols not premitted in names:"" $ % ^ & * ( ) - + )");
 			alert.addTextEditor("textEditor", "name", "");
 			alert.runModalLoop();
 			this->getTopLevelComponent()->setAlwaysOnTop(true);
-			((CabbageMainPanel*)(getTarget()->getParentComponent()))->sendActionMessage("Message sent from CabbageMainPanel"+alert.getTextEditorContents("textEditor"));
+			if(alert.getTextEditorContents("textEditor").containsAnyOf("$%^&*()-+ "))
+				CabbageUtils::showMessage("Invalid name, please try again(names cannot contains white spaces of the following characters: $ % ^ & * ( ) - + ). Nothing has been added to your user repository", &getLookAndFeel());
+			else{
+						//make sure host doesn't fail if there are no Plant entries
+				ScopedPointer<XmlElement> xml = new XmlElement("PLANTS");
+/*				PropertySet pSet;
+				pSet.setValue("PlantRepository", xml);
+				appProperties->getUserSettings()->setFallbackPropertySet(&pSet);*/	
+				xml = appProperties->getUserSettings()->getXmlValue("PlantRepository");
+				int test = 1;
+				bool clashingNames=false;
+				int result; 
+
+				if(xml != nullptr)
+				for(int i=0;i<xml->getNumAttributes();i++)
+					if(xml->getAttributeName(i)==alert.getTextEditorContents("textEditor"))
+						clashingNames = true;
+					
+				if(clashingNames==true){
+					result = CabbageUtils::showYesNoMessage("Do you wish to overwrite the existing plant?", &getLookAndFeel());	
+					if(result == 0)
+					((CabbageMainPanel*)(getTarget()->getParentComponent()))->sendActionMessage("Message sent from CabbageMainPanel"+alert.getTextEditorContents("textEditor"));
+					else
+						showMessage("Nothing written to repository", &getLookAndFeel());
+				}
+				else ((CabbageMainPanel*)(getTarget()->getParentComponent()))->sendActionMessage("Message sent from CabbageMainPanel"+alert.getTextEditorContents("textEditor"));
+				
 			}
+		}
 		}
 
 }

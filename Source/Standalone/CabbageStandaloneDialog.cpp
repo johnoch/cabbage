@@ -34,13 +34,12 @@ StandaloneFilterWindow::StandaloneFilterWindow (const String& title,
     : DocumentWindow (title, backgroundColour,
                       DocumentWindow::minimiseButton
                        | DocumentWindow::closeButton),
-      optionsButton ("options"), isGUIOn(false), pipeOpenedOk(false), AudioEnabled(true)
+      optionsButton ("options"), isGUIOn(false), pipeOpenedOk(false), AudioEnabled(true), isAFileOpen(false)
 {
 	consoleMessages = "";
 	setTitleBarButtonsRequired (DocumentWindow::minimiseButton | DocumentWindow::closeButton, false);
     Component::addAndMakeVisible (&optionsButton);
     optionsButton.addListener (this);
-	optionsButton.setTooltip("This is a test");
 	timerRunning = false;
 	yAxis = 0;
     optionsButton.setTriggeredOnMouseDown (true);
@@ -502,21 +501,13 @@ void StandaloneFilterWindow::buttonClicked (Button*)
     if (filter == nullptr)
         return;
 
-	PropertySet pSet;
-	pSet.setValue("DisablePluginInfo", 0);
-	pSet.setValue("DisableGUIEditModeWarning", 0);
-	pSet.setValue("SetAlwaysOnTop", 1);
-	appProperties->getUserSettings()->setFallbackPropertySet(&pSet);
-
-
-
 	String test;
     PopupMenu m;
 	PopupMenu subMenu;
 	m.setLookAndFeel(lookAndFeel);
 	subMenu.setLookAndFeel(lookAndFeel);
 
-	m.addItem(1, String("Open Cabbage Instrument"));
+	m.addItem(1, String("Open Cabbage Instrument | Ctrl+o"));
 	
 
 	subMenu.addItem(30, String("Effect"));
@@ -526,9 +517,9 @@ void StandaloneFilterWindow::buttonClicked (Button*)
 	m.addItem(2, String("View Source Editor"));
 	m.addSeparator();
 	if(AudioEnabled)
-	m.addItem(400, "Audio Enabled", true, true); 
+	m.addItem(400, "Audio Enabled | Ctrl+m", true, true); 
 	else
-	m.addItem(400, "Audio Enabled", true, false); 
+	m.addItem(400, "Audio Enabled | Ctrl+m", true, false); 
     m.addItem(4, TRANS("Audio Settings..."));
     m.addSeparator();
 	m.addItem(100, String("Toggle Edit-mode"));
@@ -549,7 +540,8 @@ void StandaloneFilterWindow::buttonClicked (Button*)
 	m.addItem(7, String("Always on Top"), true, true);
 	else
 	m.addItem(7, String("Always on Top"), true, false);
-	m.addItem(8, String("Update instrument"));
+	m.addItem(8, String("Rebuild Instrument | Ctrl+b"));
+	m.addItem(9, String("Rebuild GUI | Ctrl+u"));
 	/*
 	if(filter->getMidiDebug())
     m.addItem(9, TRANS("Show MIDI Debug Information"), true, true);
@@ -577,7 +569,7 @@ void StandaloneFilterWindow::buttonClicked (Button*)
 	subMenu.addItem(201, String("Disable Export Plugin Info"), true, true);
 
 	int disableGUIEditWarning = appProperties->getUserSettings()->getValue("DisableGUIEditModeWarning", var(0)).getFloatValue();
-	if(disableGUIEditWarning)
+	if(!disableGUIEditWarning)
 	subMenu.addItem(202, String("Disable GUI Edit Mode warning"), true, false);
 	else
 	subMenu.addItem(202, String("Disable GUI Edit Mode warning"), true, true);
@@ -632,6 +624,7 @@ void StandaloneFilterWindow::buttonClicked (Button*)
 	cabbageCsoundEditor->csoundEditor->newFile("instrument");
 	saveFileAs();
 	cabbageCsoundEditor->csoundEditor->textEditor->grabKeyboardFocus();
+	isAFileOpen = true;
 	}
 	//----- audio settings ------
    	else if(options==4){
@@ -681,6 +674,9 @@ void StandaloneFilterWindow::buttonClicked (Button*)
 	//----- update instrument  ------
     else if(options==8)
         resetFilter();
+	//----- update GUI only -----
+	else if(options==9)
+	filter->createGUI(csdFile.loadFileAsString());
 
 	//----- batch process ------
 	else if(options==11)
@@ -728,8 +724,9 @@ void StandaloneFilterWindow::buttonClicked (Button*)
 	else if(options==100){
 		int val = appProperties->getUserSettings()->getValue("DisableGUIEditModeWarning", var(0)).getFloatValue();
 		if(val)
-			showMessage("Warning!! This feature is bleeding edge! (that's programmer speak for totally untested and likely to crash hard..!). If you like to live on the edge, disable this wanring under the 'Preferences' menu command and try 'Edit Mode' again, otherwise just let be...", lookAndFeel);
+			showMessage("Warning!! This feature is bleeding edge! (that's programmer speak for totally untested and likely to crash hard!). If you like to live on the edge, disable this warning under the 'Preferences' menu command and try 'Edit Mode' again, otherwise just let it be...", lookAndFeel);
 		else{
+	if(isAFileOpen == true)
 		if(filter->isGuiEnabled()){
 		((CabbagePluginAudioProcessorEditor*)filter->getActiveEditor())->setEditMode(false);
 		filter->setGuiEnabled(false);
@@ -738,6 +735,7 @@ void StandaloneFilterWindow::buttonClicked (Button*)
 		((CabbagePluginAudioProcessorEditor*)filter->getActiveEditor())->setEditMode(true);
 		filter->setGuiEnabled(true);
 		}
+	else showMessage("Open or create a file first", &getLookAndFeel());
 		}
 	}
 	repaint();
@@ -752,6 +750,7 @@ void StandaloneFilterWindow::openFile()
 	FileChooser openFC(String("Open a Cabbage .csd file..."), File::nonexistent, String("*.csd;*.vst"));
 	if(openFC.browseForFileToOpen()){
 		csdFile = openFC.getResult();
+		csdFile.setAsCurrentWorkingDirectory();
 		if(csdFile.getFileExtension()==(".vst")){
 			String csd = csdFile.getFullPathName();
 			csd << "/Contents/" << csdFile.getFileNameWithoutExtension() << ".csd";
@@ -765,9 +764,12 @@ void StandaloneFilterWindow::openFile()
 	FileChooser openFC(String("Open a Cabbage .csd file..."), File::nonexistent, String("*.csd"));
 	if(openFC.browseForFileToOpen()){
 		csdFile = openFC.getResult();
+		csdFile.getParentDirectory().setAsCurrentWorkingDirectory();
 		resetFilter();
 		if(cabbageCsoundEditor)
 		cabbageCsoundEditor->setCsoundFile(csdFile);
+
+		isAFileOpen = true;
 	}
 #endif
 }

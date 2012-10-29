@@ -141,10 +141,11 @@ m.addSubMenu(String("Indigenous"), subm);
 subm.clear();
 
 
-PropertySet pSet;
-pSet.setValue("PlantRepository", xml);
-appProperties->getUserSettings()->setFallbackPropertySet(&pSet);	
+//PropertySet pSet;
+//pSet.setValue("PlantRepository", xml);
+//appProperties->getUserSettings()->setFallbackPropertySet(&pSet);	
 xml = appProperties->getUserSettings()->getXmlValue("PlantRepository");
+if(xml != nullptr)
 for(int i=0;i<xml->getNumAttributes();i++)
 	subm.addItem(100+i, xml->getAttributeName(i));
 
@@ -161,19 +162,19 @@ if (e.mods.isRightButtonDown())
 	 if(choice==1)
 			 insertCabbageText(String("button bounds(")+String(e.getPosition().getX())+(", ")+String(e.getPosition().getY())+String(", 60, 25), channel(\"but1\"), text(\"on\", \"off\")"));
 	 else if(choice==2)
-			 insertCabbageText(String("rslider bounds(")+String(e.getPosition().getX())+(", ")+String(e.getPosition().getY())+String(", 60, 60), channel(\"rslider\"), text(\"\"), range(0, 100, 0)"));
+			 insertCabbageText(String("rslider bounds(")+String(e.getPosition().getX())+(", ")+String(e.getPosition().getY())+String(", 50, 50), channel(\"rslider\"), text(\"\"), range(0, 100, 0)"));
 	 else if(choice==3)
-			 insertCabbageText(String("vslider bounds(")+String(e.getPosition().getX())+(", ")+String(e.getPosition().getY())+String(", 50, 125), channel(\"vslider\"), text(\"\"), range(0, 100, 0)"));
+			 insertCabbageText(String("vslider bounds(")+String(e.getPosition().getX())+(", ")+String(e.getPosition().getY())+String(", 30, 200), channel(\"vslider\"), text(\"\"), range(0, 100, 0), colour(\"white\")"));
  	 else if(choice==4)
-			 insertCabbageText(String("hslider bounds(")+String(e.getPosition().getX())+(", ")+String(e.getPosition().getY())+String(", 225, 30), channel(\"hslider\"), text(\"\"), range(0, 100, 0)"));
+			 insertCabbageText(String("hslider bounds(")+String(e.getPosition().getX())+(", ")+String(e.getPosition().getY())+String(", 200, 30), channel(\"hslider\"), text(\"\"), range(0, 100, 0), colour(\"white\")"));
  	 else if(choice==5)
- 			 insertCabbageText(String("combobox bounds(")+String(e.getPosition().getX())+(", ")+String(e.getPosition().getY())+String(", 100, 30), channel(\"combobox\"), items(\"1\", \"2\", \"3\")"));
+ 			 insertCabbageText(String("combobox bounds(")+String(e.getPosition().getX())+(", ")+String(e.getPosition().getY())+String(", 100, 30), channel(\"combobox\"), items(\"Item 1\", \"Item 2\", \"Item 3\")"));
 	 else if(choice==6)
-	 		 insertCabbageText(String("checkbox bounds(")+String(e.getPosition().getX())+(", ")+String(e.getPosition().getY())+String(", 80, 30), channel(\"checkbox\"), text(\"checkbox\")"));
+	 		 insertCabbageText(String("checkbox bounds(")+String(e.getPosition().getX())+(", ")+String(e.getPosition().getY())+String(", 80, 20), channel(\"checkbox\"), text(\"checkbox\")"));
 	 else if(choice==7)
-			 insertCabbageText(String("groupbox bounds(")+String(e.getPosition().getX())+(", ")+String(e.getPosition().getY())+String(", 200, 150), text(\"checkbox\"), colour(\"black\"), caption(\"groupbBox\")"));
+			 insertCabbageText(String("groupbox bounds(")+String(e.getPosition().getX())+(", ")+String(e.getPosition().getY())+String(", 200, 150), text(\"groupbox\"), colour(\"black\"), caption(\"groupbBox\")"));
 	 else if(choice==8)
-			 insertCabbageText(String("image bounds(")+String(e.getPosition().getX())+(", ")+String(e.getPosition().getY())+String(", 200, 150), text(\"checkbox\"), colour(\"white\"), caption(\"\"), outline(\"black\"), line(3)"));
+			 insertCabbageText(String("image bounds(")+String(e.getPosition().getX())+(", ")+String(e.getPosition().getY())+String(", 200, 150), colour(\"white\"), line(0)"));
 	 else if(choice==9)
 			 insertCabbageText(String("keyboard bounds(")+String(e.getPosition().getX())+(", ")+String(e.getPosition().getY())+String(", 150, 60)"));
 	 else if(choice>=100){
@@ -231,13 +232,38 @@ void CabbagePluginAudioProcessorEditor::setEditMode(bool on){
 }
 
 //==============================================================================
-// this function will any mouse up events on our editor
+// this function will postion component
 //==============================================================================
-void CabbagePluginAudioProcessorEditor::mouseUp(const MouseEvent &e)
-{
+void CabbagePluginAudioProcessorEditor::positionComponentWithinPlant(String type, int idx, float left, float top, float width, float height, Component *layout, Component *control)
+{			
+//if dimensions are < 1 then the user is using the decimal proportional of positioning
+if(width>1 && height>1){
+width = width*layout->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
+height = height*layout->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
+top = top*layout->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
+left = left*layout->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
+}
+else{    
+	width = (width>1 ? .5 : width*layout->getWidth());
+    height = (height>1 ? .5 : height*layout->getHeight());
+	top = (top*layout->getHeight());
+	left = (left*layout->getWidth());
+}
+	if(type.equalsIgnoreCase("rslider"))
+		if(width<height) height = width;
+		else if(height<width) width = height;
 
+if(layout->getName().containsIgnoreCase("groupbox")||
+        layout->getName().containsIgnoreCase("image"))
+        {                       
+        control->setBounds(left, top, width, height);
+        layout->addAndMakeVisible(controls[idx]);
+        }
 }
 
+
+//==============================================================================
+// utility function to insert cabbage text into source code
 //==============================================================================
 void CabbagePluginAudioProcessorEditor::insertCabbageText(String text)
 {
@@ -799,26 +825,7 @@ try{
         if(cAttr.getStringProp("reltoplant").length()>0){
         if(layoutComps[y]->getProperties().getWithDefault(String("plant"), -99).toString().equalsIgnoreCase(cAttr.getStringProp("reltoplant")))
         {
-				//if left is < 1 then the user is using the new system
-				if(left>1){
-                width = width*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
-                height = height*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
-                top = top*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
-                left = left*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
-				}
-				else{    
-					width = (width>1 ? .5 : width*layoutComps[y]->getWidth());
-                    height = (height>1 ? .5 : height*layoutComps[y]->getHeight());
-					top = (top*layoutComps[y]->getHeight());
-					left = (left*layoutComps[y]->getWidth());
-				}
-                if(layoutComps[y]->getName().containsIgnoreCase("groupbox")||
-                        layoutComps[y]->getName().containsIgnoreCase("image"))
-                        {                       
-                        layoutComps[idx]->setBounds(left, top, width, height);
-                        //if component is a member of a plant add it directly to the plant
-                        layoutComps[y]->addAndMakeVisible(layoutComps[idx]);
-                        }
+				positionComponentWithinPlant("", idx, left, top, width, height, layoutComps[y], controls[idx]);
         }
         }
         else{
@@ -863,27 +870,7 @@ try{
         if(cAttr.getStringProp("reltoplant").length()>0){
         if(layoutComps[y]->getProperties().getWithDefault(String("plant"), -99).toString().equalsIgnoreCase(cAttr.getStringProp("reltoplant")))
         {
-				//if left is < 1 then the user is using the new system
-				if(left>1){
-                width = width*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
-                height = height*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
-                top = top*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
-                left = left*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
-				}
-				else{    
-					width = (width>1 ? .5 : width*layoutComps[y]->getWidth());
-                    height = (height>1 ? .5 : height*layoutComps[y]->getHeight());
-					top = (top*layoutComps[y]->getHeight());
-					left = (left*layoutComps[y]->getWidth());
-				}
-
-                if(layoutComps[y]->getName().containsIgnoreCase("groupbox")||
-                        layoutComps[y]->getName().containsIgnoreCase("image"))
-                        {                       
-                        layoutComps[idx]->setBounds(left, top, width, height);
-                        //if component is a member of a plant add it directly to the plant
-                        layoutComps[y]->addAndMakeVisible(layoutComps[idx]);
-                        }
+				positionComponentWithinPlant("", idx, left, top, width, height, layoutComps[y], controls[idx]);
         }
         }
         else{
@@ -948,27 +935,7 @@ try{
         if(cAttr.getStringProp("reltoplant").length()>0){
         if(layoutComps[y]->getProperties().getWithDefault(String("plant"), -99).toString().equalsIgnoreCase(cAttr.getStringProp("reltoplant")))
         {
-				//if left is < 1 then the user is using the new system
-				if(left>1){
-                width = width*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
-                height = height*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
-                top = top*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
-                left = left*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
-				}
-				else{    
-					width = (width>1 ? .5 : width*layoutComps[y]->getWidth());
-                    height = (height>1 ? .5 : height*layoutComps[y]->getHeight());
-					top = (top*layoutComps[y]->getHeight());
-					left = (left*layoutComps[y]->getWidth());
-				}
-
-                if(layoutComps[y]->getName().containsIgnoreCase("groupbox")||
-                        layoutComps[y]->getName().containsIgnoreCase("image"))
-                        {                       
-                        layoutComps[idx]->setBounds(left, top, width, height);
-                        //if component is a member of a plant add it directly to the plant
-                        layoutComps[y]->addAndMakeVisible(layoutComps[idx]);
-                        }
+				positionComponentWithinPlant("", idx, left, top, width, height, layoutComps[y], controls[idx]);
         }
         }
         else{
@@ -1007,27 +974,7 @@ try{
         if(cAttr.getStringProp("reltoplant").length()>0){
         if(layoutComps[y]->getProperties().getWithDefault(String("plant"), -99).toString().equalsIgnoreCase(cAttr.getStringProp("reltoplant")))
         {
-				//if left is < 1 then the user is using the new system
-				if(left>1){
-                width = width*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
-                height = height*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
-                top = top*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
-                left = left*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
-				}
-				else{    
-					width = (width>1 ? .5 : width*layoutComps[y]->getWidth());
-                    height = (height>1 ? .5 : height*layoutComps[y]->getHeight());
-					top = (top*layoutComps[y]->getHeight());
-					left = (left*layoutComps[y]->getWidth());
-				}
-
-                if(layoutComps[y]->getName().containsIgnoreCase("groupbox")||
-                        layoutComps[y]->getName().containsIgnoreCase("image"))
-                        {                       
-                        layoutComps[idx]->setBounds(left, top, width, height);
-                        //if component is a member of a plant add it directly to the plant
-                        layoutComps[y]->addAndMakeVisible(layoutComps[idx]);
-                        }
+				positionComponentWithinPlant("", idx, left, top, width, height, layoutComps[y], controls[idx]);
         }
         }
         else{
@@ -1037,7 +984,7 @@ try{
         }
 
         ((CabbageSnapshot*)layoutComps[idx])->addActionListener(this);
-        
+        ((CabbageSnapshot*)layoutComps[idx])->combobox->addItem("Select preset", -1);
     for(int i=1;i<(int)cAttr.getItemsSize()+1;i++){
                 String test  = cAttr.getItems(i-1);
                 //showMessage(test);
@@ -1119,27 +1066,7 @@ try{
         if(cAttr.getStringProp("reltoplant").length()>0){
         if(layoutComps[y]->getProperties().getWithDefault(String("plant"), -99).toString().equalsIgnoreCase(cAttr.getStringProp("reltoplant")))
         {
-				//if left is < 1 then the user is using the new system
-				if(left>1){
-                width = width*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
-                height = height*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
-                top = top*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
-                left = left*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
-				}
-				else{    
-					width = (width>1 ? .5 : width*layoutComps[y]->getWidth());
-                    height = (height>1 ? .5 : height*layoutComps[y]->getHeight());
-					top = (top*layoutComps[y]->getHeight());
-					left = (left*layoutComps[y]->getWidth());
-				}
-
-                if(layoutComps[y]->getName().containsIgnoreCase("groupbox")||
-                        layoutComps[y]->getName().containsIgnoreCase("image"))
-                        {                       
-                        layoutComps[idx]->setBounds(left, top, width, height);
-                        //if component is a member of a plant add it directly to the plant
-                        layoutComps[y]->addAndMakeVisible(layoutComps[idx]);
-                        }
+				positionComponentWithinPlant("", idx, left, top, width, height, layoutComps[y], controls[idx]);
         }
         }
         else{
@@ -1194,31 +1121,7 @@ try{
         if(cAttr.getStringProp("reltoplant").length()>0){
         if(layoutComps[y]->getProperties().getWithDefault(String("plant"), -99).toString().equalsIgnoreCase(cAttr.getStringProp("reltoplant")))
                 {
-				//if left is < 1 then the user is using the new system
-				if(left>1){
-                width = width*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
-                height = height*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
-                top = top*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
-                left = left*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
-				}
-				else{    
-					width = (width>1 ? .5 : width*layoutComps[y]->getWidth());
-                    height = (height>1 ? .5 : height*layoutComps[y]->getHeight());
-					top = (top*layoutComps[y]->getHeight());
-					left = (left*layoutComps[y]->getWidth());
-				}
-                                if(cAttr.getStringProp("type").equalsIgnoreCase("rslider"))
-                                if(width<height) height = width;
-                                else if(height<width) width = height;
-
-
-                        if(layoutComps[y]->getName().containsIgnoreCase("groupbox")||
-                        layoutComps[y]->getName().containsIgnoreCase("image"))
-                        {                      
-                        controls[idx]->setBounds(left, top, width, height);
-                        //if component is a member of a plant add it directly to the plant
-                        layoutComps[y]->addAndMakeVisible(controls[idx]);
-                        }
+					positionComponentWithinPlant(cAttr.getStringProp("type"), idx, left, top, width, height, layoutComps[y], controls[idx]);
                 }
         }
                 else{
@@ -1326,25 +1229,7 @@ try{
         if(cAttr.getStringProp("reltoplant").length()>0){
         if(layoutComps[y]->getProperties().getWithDefault(String("plant"), -99).toString().equalsIgnoreCase(cAttr.getStringProp("reltoplant")))
                 {
-				//if left is < 1 then the user is using the new system
-				if(left>1){
-                width = width*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
-                height = height*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
-                top = top*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
-                left = left*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
-				}
-				else{    
-					width = (width>1 ? .5 : width*layoutComps[y]->getWidth());
-                    height = (height>1 ? .5 : height*layoutComps[y]->getHeight());
-					top = (top*layoutComps[y]->getHeight());
-					left = (left*layoutComps[y]->getWidth());
-				}
-                if(layoutComps[y]->getName().containsIgnoreCase("groupbox")||
-                        layoutComps[y]->getName().containsIgnoreCase("image"))
-                        {                       
-                        controls[idx]->setBounds(left, top, width, height);
-                        layoutComps[y]->addAndMakeVisible(controls[idx]);
-                        }
+				positionComponentWithinPlant("", idx, left, top, width, height, layoutComps[y], controls[idx]);
                 }
         }
                 else{
@@ -1363,6 +1248,8 @@ try{
 #ifdef Cabbage_Build_Standalone
         ((CabbageButton*)controls[idx])->button->setWantsKeyboardFocus(true);
 #endif
+
+		showMessage(controls[idx]->getParentComponent()->getName());
 }
 catch(...){
     Logger::writeToLog(String("Syntax error: 'button..."));
@@ -1397,27 +1284,7 @@ try{
         if(cAttr.getStringProp("reltoplant").length()>0){
         if(layoutComps[y]->getProperties().getWithDefault(String("plant"), -99).toString().equalsIgnoreCase(cAttr.getStringProp("reltoplant")))
                 {
-				//if left is < 1 then the user is using the new system
-				if(left>1){
-                width = width*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
-                height = height*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
-                top = top*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
-                left = left*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
-				}
-				else{    
-					width = (width>1 ? .5 : width*layoutComps[y]->getWidth());
-                    height = (height>1 ? .5 : height*layoutComps[y]->getHeight());
-					top = (top*layoutComps[y]->getHeight());
-					left = (left*layoutComps[y]->getWidth());
-				}
-
-                if(layoutComps[y]->getName().containsIgnoreCase("groupbox")||
-                        layoutComps[y]->getName().containsIgnoreCase("image"))
-                        {                       
-                        controls[idx]->setBounds(left, top, width, height);
-                        //if component is a member of a plant add it directly to the plant
-                        layoutComps[y]->addAndMakeVisible(controls[idx]);
-                        }
+				positionComponentWithinPlant("", idx, left, top, width, height, layoutComps[y], controls[idx]);
                 }
         }
                 else{
@@ -1573,39 +1440,17 @@ try{
 
         int relY=0,relX=0;
         if(layoutComps.size()>0){
-        for(int y=0;y<layoutComps.size();y++){
+        for(int y=0;y<layoutComps.size();y++)
         if(cAttr.getStringProp("reltoplant").length()>0){
         if(layoutComps[y]->getProperties().getWithDefault(String("plant"), -99).toString().equalsIgnoreCase(cAttr.getStringProp("reltoplant")))
                 {
-				//if left is < 1 then the user is using the new system
-				if(left>1){
-                width = width*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
-                height = height*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
-                top = top*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
-                left = left*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
-				}
-				else{    
-					width = (width>1 ? .5 : width*layoutComps[y]->getWidth());
-                    height = (height>1 ? .5 : height*layoutComps[y]->getHeight());
-					top = (top*layoutComps[y]->getHeight())+layoutComps[y]->getY();
-					left = (left*layoutComps[y]->getWidth())+layoutComps[y]->getX();
-				}
-
-
-                if(layoutComps[y]->getName().containsIgnoreCase("groupbox")||
-                        layoutComps[y]->getName().containsIgnoreCase("image"))
-                        {                       
-                        controls[idx]->setBounds(left, top, width, height);
-                        //if component is a member of a plant add it directly to the plant
-                        layoutComps[y]->addAndMakeVisible(controls[idx]);
-                        }
+				positionComponentWithinPlant("", idx, left, top, width, height, layoutComps[y], controls[idx]);
                 }
         }
                 else{
-            controls[idx]->setBounds(left+relX, top+relY, width, height);
+                controls[idx]->setBounds(left+relX, top+relY, width, height);
                 componentPanel->addAndMakeVisible(controls[idx]);               
                 }
-        }
         }
         else{
             controls[idx]->setBounds(left+relX, top+relY, width, height);
@@ -1615,21 +1460,20 @@ try{
 //this needs some attention. 
 //At present comboxbox colours can't be changed...
         int items;
-    for(int i=0;i<(int)cAttr.getItemsSize();i++){
+		for(int i=0;i<(int)cAttr.getItemsSize();i++){
                 String test  = cAttr.getItems(i);
                 ((CabbageComboBox*)controls[idx])->combo->addItem(cAttr.getItems(i), i+1);
                 cAttr.setNumProp("maxItems", i);
                 items=i;
         }
-        //showMessage(String(cAttr.getItemsSize()));
+
         cAttr.setNumProp("sliderRange", cAttr.getItemsSize());
-
         lookAndFeel->setColour(ComboBox::textColourId, Colour::fromString(cAttr.getColourProp("fontcolour")));
-
         ((CabbageComboBox*)controls[idx])->combo->setSelectedId(cAttr.getNumProp("value"));
-        componentPanel->addAndMakeVisible(((CabbageComboBox*)controls[idx]));
         ((CabbageComboBox*)controls[idx])->setName(cAttr.getStringProp("name"));
         ((CabbageComboBox*)controls[idx])->combo->addListener(this);
+
+		
 }
 catch(...){
     Logger::writeToLog(String("Syntax error: 'combobox..."));
@@ -1713,27 +1557,7 @@ try{
         if(cAttr.getStringProp("reltoplant").length()>0){
         if(layoutComps[y]->getProperties().getWithDefault(String("plant"), -99).toString().equalsIgnoreCase(cAttr.getStringProp("reltoplant")))
                 {
-				//if left is < 1 then the user is using the new system
-				if(left>1){
-                width = width*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
-                height = height*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
-                top = top*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
-                left = left*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
-				}
-				else{    
-					width = (width>1 ? .5 : width*layoutComps[y]->getWidth());
-                    height = (height>1 ? .5 : height*layoutComps[y]->getHeight());
-					top = (top*layoutComps[y]->getHeight());
-					left = (left*layoutComps[y]->getWidth());
-				}
-
-                if(layoutComps[y]->getName().containsIgnoreCase("groupbox")||
-                        layoutComps[y]->getName().containsIgnoreCase("image"))
-                        {                       
-                        controls[idx]->setBounds(left, top, width, height);
-                        if(!cAttr.getStringProp("name").containsIgnoreCase("dummy"))
-                        layoutComps[y]->addAndMakeVisible(controls[idx]);
-                        }
+				positionComponentWithinPlant("", idx, left, top, width, height, layoutComps[y], controls[idx]);
                 }
         }
                 else{
@@ -1807,27 +1631,7 @@ void CabbagePluginAudioProcessorEditor::InsertPVSViewer(CabbageGUIClass &cAttr)
         if(cAttr.getStringProp("reltoplant").length()>0){
         if(layoutComps[y]->getProperties().getWithDefault(String("plant"), -99).toString().equalsIgnoreCase(cAttr.getStringProp("reltoplant")))
                 {
-				//if left is < 1 then the user is using the new system
-				if(left>1){
-                width = width*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
-                height = height*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
-                top = top*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
-                left = left*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
-				}
-				else{    
-					width = (width>1 ? .5 : width*layoutComps[y]->getWidth());
-                    height = (height>1 ? .5 : height*layoutComps[y]->getHeight());
-					top = (top*layoutComps[y]->getHeight());
-					left = (left*layoutComps[y]->getWidth());
-				}
-
-                if(layoutComps[y]->getName().containsIgnoreCase("groupbox")||
-                        layoutComps[y]->getName().containsIgnoreCase("image"))
-                        {                       
-                        layoutComps[idx]->setBounds(left, top, width, height);
-                        //if component is a member of a plant add it directly to the plant
-                        layoutComps[y]->addAndMakeVisible(layoutComps[idx]);
-                        }
+				positionComponentWithinPlant("", idx, left, top, width, height, layoutComps[y], controls[idx]);
                 }
         }
                 else{
@@ -1881,27 +1685,7 @@ try{
         if(cAttr.getStringProp("reltoplant").length()>0){
         if(layoutComps[y]->getProperties().getWithDefault(String("plant"), -99).toString().equalsIgnoreCase(cAttr.getStringProp("reltoplant")))
                 {
-				//if left is < 1 then the user is using the new system
-				if(left>1){
-                width = width*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
-                height = height*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
-                top = top*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
-                left = left*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
-				}
-				else{    
-					width = (width>1 ? .5 : width*layoutComps[y]->getWidth());
-                    height = (height>1 ? .5 : height*layoutComps[y]->getHeight());
-					top = (top*layoutComps[y]->getHeight());
-					left = (left*layoutComps[y]->getWidth());
-				}
-
-                if(layoutComps[y]->getName().containsIgnoreCase("groupbox")||
-                        layoutComps[y]->getName().containsIgnoreCase("image"))
-                        {                       
-                        layoutComps[idx]->setBounds(left, top, width, height);
-                        //if component is a member of a plant add it directly to the plant
-                        layoutComps[y]->addAndMakeVisible(layoutComps[idx]);
-                        }
+				positionComponentWithinPlant("", idx, left, top, width, height, layoutComps[y], controls[idx]);
                 }
         }
                 else{
@@ -1979,12 +1763,12 @@ if(message.contains("Message sent from CabbageMainPanel")){
 				}
 				getFilter()->updateCsoundFile(csdArray.joinIntoString("\n"));
 				getFilter()->setCurrentLineText(csdArray[lineNumber]);
-				getFilter()->setGuiEnabled(true);
+				//getFilter()->setGuiEnabled(true);
 				getFilter()->sendActionMessage("GUI Update");
 
 		}//END OF MOUSE UP MESSAGE EVENT
 
-
+		//doing this here because compoentLayoutManager doesn't know the csd file text...
 		if(message.length()>String("Message sent from CabbageMainPanel").length()){ //ADD TO REPOSITORY
 			String repoEntryName = message.substring(String("Message sent from CabbageMainPanel").length());
 			String repoEntry = temp;
@@ -2001,10 +1785,11 @@ if(message.contains("Message sent from CabbageMainPanel")){
 			}
 			//make sure host doesn't fail if there are no Plant entries
 			ScopedPointer<XmlElement> xml = new XmlElement("PLANTS");
-			PropertySet pSet;
-			pSet.setValue("PlantRepository", xml);
-			appProperties->getUserSettings()->setFallbackPropertySet(&pSet);	
+//			PropertySet pSet;
+			//pSet.setValue("PlantRepository", xml);
+			//appProperties->getUserSettings()->setFallbackPropertySet(&pSet);	
 			xml = appProperties->getUserSettings()->getXmlValue("PlantRepository");
+			if(xml)
 			xml->setAttribute(repoEntryName, repoEntry);
 			appProperties->getUserSettings()->setValue("PlantRepository", xml);
 	}

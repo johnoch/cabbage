@@ -13,6 +13,7 @@
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "CabbageUtils.h"
 #include "CabbageMainPanel.h"
+#include "CabbageLookAndFeel.h"
 
 
 //=============================================================================

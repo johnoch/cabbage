@@ -455,7 +455,10 @@ public:
 			pos1 = getDocument().findWordBreakBefore(getCaretPos());
 			pos2 = getDocument().findWordBreakAfter(getCaretPos());
 			String identifierName = getDocument().getTextBetween(pos1, pos2);
-			identifierName = identifierName.substring(0, identifierName.indexOf("("));
+			identifierName = identifierName.removeCharacters("\"(), ");
+			identifierName = identifierName.trim();
+			CabbageUtils::showMessage(identifierName);
+			//identifierName = identifierName.substring(0, identifierName.indexOf("("));
 			String line = getDocument().getLine(pos1.getLineNumber());
 			String identifierString = line.substring(line.indexOf(identifierName));
 			identifierString = identifierString.substring(0, identifierString.indexOf(")")+1);
@@ -465,7 +468,7 @@ public:
 				(identifierName=="outline")||
 				(identifierName=="tracker")){
 					colourPallete colourSelector;
-					colourSelector.setLookAndFeel(&getLookAndFeel());
+					//colourSelector.setLookAndFeel(&getLookAndFeel());
 					colourSelector.setBounds(xPos, yPos, 200, 200);
 					colourSelector.addChangeListener (this);   
 					CallOutBox callOut (colourSelector, *this, nullptr);
@@ -495,7 +498,7 @@ public:
 					setHighlightedRegion(range);
 			}
 			else
-				CabbageUtils::showMessage("No valid colur identifier found? Please type a colour identifier, and try again.", &getLookAndFeel());
+				CabbageUtils::showMessage("No valid colur identifier found? Please use a valid identifer and try again. (See any of the colour entries in the Cabbage help file for details on using the colour selector)", &getLookAndFeel());
 	}
 	};
 

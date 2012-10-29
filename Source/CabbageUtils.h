@@ -101,7 +101,6 @@ File thisFile(File::getSpecialLocation(File::currentApplicationFile));
 static void showMessage(double num){
 	String str(num);
 	File thisFile(File::getSpecialLocation(File::currentApplicationFile));
-
 	AlertWindow alert(thisFile.getFullPathName(), str, AlertWindow::NoIcon);
 	alert.showMessageBox(AlertWindow::NoIcon, thisFile.getFullPathName(), str, "Ok");
 }
@@ -224,14 +223,19 @@ static	String getBoundsString(Rectangle<int> currentBounds)
 }
 
 //======= method for replacing the contents of an identifier with new values..
-static	String replaceIdentifier(String line, String identifier, String updatedIdentifier)
+static String replaceIdentifier(String line, String identifier, String updatedIdentifier)
 {
+	if(identifier.length()<2)
+		return line;
+	if(updatedIdentifier.length()<2)
+		return line;
+
 	int startPos = line.indexOf(identifier);
 	String firstSection = line.substring(0, line.indexOf(identifier));
 	line = line.substring(line.indexOf(identifier));
 	String secondSection = line.substring(line.indexOf(")")+1);
-	return firstSection+updatedIdentifier+secondSection;
 	
+	return firstSection+updatedIdentifier+secondSection;
 }
 
 //======= for darker backgrounds ==========================================================
@@ -292,6 +296,17 @@ static void showMessage(String message, LookAndFeel* feel)
     alert.runModalLoop();
 }
 
+//===========================================================================================
+static int showYesNoMessage(String message, LookAndFeel* feel)
+{
+    AlertWindow alert("Cabbage Message", message, AlertWindow::NoIcon, 0);
+    alert.setLookAndFeel(feel);
+	alert.addButton("Yes", 0);
+	alert.addButton("No", 1);
+	int result = alert.runModalLoop();
+	//int result = alert.showYesNoCancelBox(AlertWindow::QuestionIcon, "Warning", message, "Yes", "No", "Cancel");
+	return result;
+}
 
 };
 
