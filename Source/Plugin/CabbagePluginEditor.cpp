@@ -207,7 +207,7 @@ if (e.mods.isRightButtonDown())
 				String newPlant = origPlant+String(cnt);
 				cAttr.setStringProp("plant", newPlant);
 				customPlantControl = customPlantControl.replace(plantText, cAttr.getStringProp("plantText"));
-				Logger::writeToLog(customPlantControl);
+				//Logger::writeToLog(customPlantControl);
 			}
 			insertCabbageText(customPlantControl);
 		 }
@@ -438,7 +438,6 @@ for(int i=0;i<getFilter()->getGUICtrlsSize();i++){
 //+++++++++++++++++++++++++++++++++++++++++++
 void CabbagePluginAudioProcessorEditor::InsertGroupBox(CabbageGUIClass &cAttr)
 {
-try{
         layoutComps.add(new CabbageGroupbox(cAttr.getStringProp("name"), 
                                                                                  cAttr.getStringProp("caption"), 
                                                                                  cAttr.getItems(0), 
@@ -491,17 +490,12 @@ try{
         layoutComps[idx]->getProperties().set(String("plant"), var(cAttr.getStringProp("plant")));
         layoutComps[idx]->getProperties().set(String("groupLine"), cAttr.getNumProp("line"));
 }
-catch(...){
-    Logger::writeToLog(String("Syntax error: 'groupbox..."));
-    }
-}
 
 //+++++++++++++++++++++++++++++++++++++++++++
 //                                      image
 //+++++++++++++++++++++++++++++++++++++++++++
 void CabbagePluginAudioProcessorEditor::InsertImage(CabbageGUIClass &cAttr)
 {
-try{
         String pic;
 
 #ifdef Cabbage_Build_Standalone
@@ -576,17 +570,12 @@ try{
         //((CabbageImage*)layoutComps[idx])->setBounds (left+relX, top+relY, width, height);
         cAttr.setStringProp("type", "image");
 }
-catch(...){
-    Logger::writeToLog(String("Syntax error: 'image..."));
-    }
-}
 
 //+++++++++++++++++++++++++++++++++++++++++++
 //                                      line separator
 //+++++++++++++++++++++++++++++++++++++++++++
 void CabbagePluginAudioProcessorEditor::InsertLineSeparator(CabbageGUIClass &cAttr)
 {
-try{
         layoutComps.add(new CabbageLine(true, cAttr.getColourProp("colour")));
         int idx = layoutComps.size()-1;
 
@@ -630,17 +619,12 @@ try{
 
         layoutComps[idx]->getProperties().set(String("plant"), var(cAttr.getStringProp("plant")));
 }
-catch(...){
-        Logger::writeToLog(String("Syntax error: 'label..."));
-    }
-}
 
 //+++++++++++++++++++++++++++++++++++++++++++
 //                                      label
 //+++++++++++++++++++++++++++++++++++++++++++
 void CabbagePluginAudioProcessorEditor::InsertLabel(CabbageGUIClass &cAttr)
 {
-try{
         layoutComps.add(new CabbageLabel(cAttr.getStringProp("text"), cAttr.getColourProp("fontcolour")));      
         int idx = layoutComps.size()-1;
 
@@ -684,17 +668,12 @@ try{
 
         cAttr.setStringProp("type", "label");
 }
-catch(...){
-        Logger::writeToLog(String("Syntax error: 'label..."));
-    }
-}
 
 //+++++++++++++++++++++++++++++++++++++++++++
 //                                      window
 //+++++++++++++++++++++++++++++++++++++++++++
 void CabbagePluginAudioProcessorEditor::SetupWindow(CabbageGUIClass &cAttr)
 {
-try{
         setName(cAttr.getStringProp("caption"));
         getFilter()->setPluginName(cAttr.getStringProp("caption"));
         int left = cAttr.getNumProp("left");
@@ -739,21 +718,12 @@ try{
         layoutComps.add(new Component());
 
 }
-catch(...){
-    Logger::writeToLog(String("Syntax error: 'form..."));
-    }
-        
-
-
-
-}
 
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //      Csound output widget. 
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 void CabbagePluginAudioProcessorEditor::InsertCsoundOutput(CabbageGUIClass &cAttr)
 {
-try{
 
         layoutComps.add(new CabbageMessageConsole(cAttr.getStringProp("name"), 
                                                                                  cAttr.getStringProp("caption"), 
@@ -793,11 +763,6 @@ try{
         }
         layoutComps[idx]->setName("csoundoutput");
         layoutComps[idx]->getProperties().set(String("plant"), var(cAttr.getStringProp("plant")));
-
-}
-catch(...){
-    Logger::writeToLog(String("Syntax error: 'message console..."));
-    }
 }
 
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -805,8 +770,6 @@ catch(...){
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 void CabbagePluginAudioProcessorEditor::InsertSourceButton(CabbageGUIClass &cAttr)
 {
-try{
-
         layoutComps.add(new CabbageButton(cAttr.getStringProp("name"),
                 cAttr.getStringProp("caption"),
                 cAttr.getItems(1-(int)cAttr.getNumProp("value")),
@@ -838,11 +801,6 @@ try{
         layoutComps[idx]->getProperties().set(String("plant"), var(cAttr.getStringProp("plant")));
         ((CabbageButton*)layoutComps[idx])->button->addListener(this);
         ((CabbageButton*)layoutComps[idx])->button->setButtonText(cAttr.getItems(0));
-
-}
-catch(...){
-    Logger::writeToLog(String("Syntax error: 'source button..."));
-    }
 }
 
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -850,8 +808,6 @@ catch(...){
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 void CabbagePluginAudioProcessorEditor::InsertInfoButton(CabbageGUIClass &cAttr)
 {
-try{
-
         layoutComps.add(new CabbageButton("infoButton",
                 cAttr.getStringProp("caption"),
                 cAttr.getItems(1-(int)cAttr.getNumProp("value")),
@@ -884,11 +840,6 @@ try{
         layoutComps[idx]->getProperties().set(String("plant"), var(cAttr.getStringProp("plant")));
         ((CabbageButton*)layoutComps[idx])->button->addListener(this);
         ((CabbageButton*)layoutComps[idx])->button->setButtonText(cAttr.getItems(0));
-
-}
-catch(...){
-    Logger::writeToLog(String("Syntax error: 'info button..."));
-    }
 }
 
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -896,7 +847,6 @@ catch(...){
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 void CabbagePluginAudioProcessorEditor::InsertVUMeter(CabbageGUIClass &cAttr)
 {
-try{
         float left = cAttr.getNumProp("left");
         float top = cAttr.getNumProp("top");
         float width = cAttr.getNumProp("width");
@@ -946,11 +896,6 @@ try{
         }
         layoutComps[idx]->setName("vumeter");
         layoutComps[idx]->getProperties().set(String("plant"), var(cAttr.getStringProp("plant")));
-
-}
-catch(...){
-    Logger::writeToLog(String("Syntax error: 'vu meter..."));
-    }
 }
 
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -959,7 +904,6 @@ catch(...){
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 void CabbagePluginAudioProcessorEditor::InsertSnapshot(CabbageGUIClass &cAttr)
 {
-try{
         layoutComps.add(new CabbageSnapshot(cAttr.getStringProp("name"), cAttr.getColourProp("caption"), cAttr.getStringProp("preset"), cAttr.getNumProp("masterSnap")));       
         int idx = layoutComps.size()-1;
 
@@ -1036,11 +980,6 @@ try{
         //showMessage(cAttr.getStringProp("snapshotData"));
         //cAttr.setStringProp("snapshotData", presetText);
         cAttr.setStringProp("type", "snapshot");
-        
-}
-catch(...){
-        Logger::writeToLog(String("Syntax error: 'label..."));
-    }
 }
 
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -1049,8 +988,6 @@ catch(...){
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 void CabbagePluginAudioProcessorEditor::InsertMIDIKeyboard(CabbageGUIClass &cAttr)
 {
-try{
-
         layoutComps.add(new MidiKeyboardComponent(getFilter()->keyboardState,
                                      MidiKeyboardComponent::horizontalKeyboard));       
         int idx = layoutComps.size()-1;
@@ -1086,10 +1023,6 @@ try{
         layoutComps[idx]->addMouseListener(this, false);
         layoutComps[idx]->setName("midiKeyboard");
 }
-catch(...){
-    Logger::writeToLog(String("Syntax error: 'keyboard..."));
-    }
-}
 
 //=======================================================================================
 //      interactive components - 'insert' methods followed by event methods
@@ -1099,7 +1032,6 @@ catch(...){
 //+++++++++++++++++++++++++++++++++++++++++++
 void CabbagePluginAudioProcessorEditor::InsertSlider(CabbageGUIClass &cAttr)
 {
-try{
         float left = cAttr.getNumProp("left");
         float top = cAttr.getNumProp("top");
         float width = cAttr.getNumProp("width");
@@ -1150,10 +1082,6 @@ try{
 
         controls[idx]->getProperties().set(String("midiChan"), cAttr.getNumProp("midiChan"));
         controls[idx]->getProperties().set(String("midiCtrl"), cAttr.getNumProp("midiCtrl")); 
-}
-catch(...){
-    Logger::writeToLog(String("Syntax error: 'slider..."));
-    }
 }
 
                                         /******************************************/
@@ -1209,7 +1137,6 @@ void CabbagePluginAudioProcessorEditor::sliderValueChanged (Slider* sliderThatWa
 //+++++++++++++++++++++++++++++++++++++++++++
 void CabbagePluginAudioProcessorEditor::InsertButton(CabbageGUIClass &cAttr)
 {
-try{
         controls.add(new CabbageButton(cAttr.getStringProp("name"),
                 cAttr.getStringProp("caption"),
                 cAttr.getItems(1-(int)cAttr.getNumProp("value")),
@@ -1252,18 +1179,12 @@ try{
 
 		showMessage(controls[idx]->getParentComponent()->getName());
 }
-catch(...){
-    Logger::writeToLog(String("Syntax error: 'button..."));
-    }
-        
-}
 
 //+++++++++++++++++++++++++++++++++++++++++++
 //                                      checkbox
 //+++++++++++++++++++++++++++++++++++++++++++
 void CabbagePluginAudioProcessorEditor::InsertCheckBox(CabbageGUIClass &cAttr)
 {
-try{
         bool RECT = cAttr.getStringProp("shape").equalsIgnoreCase("square");
                 
         controls.add(new CabbageCheckbox(cAttr.getStringProp("name"),
@@ -1317,10 +1238,6 @@ try{
         ((CabbageCheckbox*)controls[idx])->button->setWantsKeyboardFocus(true);
 #endif
         
-}
-catch(...){
-    Logger::writeToLog(String("Syntax error: 'checkbox..."));
-    }
 
 }
 
@@ -1425,7 +1342,6 @@ if(!getFilter()->isGuiEnabled()){
 //+++++++++++++++++++++++++++++++++++++++++++
 void CabbagePluginAudioProcessorEditor::InsertComboBox(CabbageGUIClass &cAttr)
 {
-try{
         controls.add(new CabbageComboBox(cAttr.getStringProp("name"),
                 cAttr.getStringProp("caption"),
                 cAttr.getItems(0),
@@ -1475,10 +1391,6 @@ try{
         ((CabbageComboBox*)controls[idx])->combo->addListener(this);
 
 		
-}
-catch(...){
-    Logger::writeToLog(String("Syntax error: 'combobox..."));
-    }
 }
                                         /******************************************/
                                         /*             combobBox event            */
@@ -1533,7 +1445,6 @@ Our filters control vector contains two xypads, one for the X channel and one fo
 channel. Our editor only needs to display one so the xypad with 'dummy' appended to the name
 will be created but not shown. 
 */
-try{
         controls.add(new CabbageXYController(cAttr.getStringProp("name"),
                 cAttr.getStringProp("text"),
                 cAttr.getStringProp("caption"),
@@ -1590,11 +1501,6 @@ try{
         if(!cAttr.getStringProp("name").containsIgnoreCase("dummy"))
         actionListenerCallback(cAttr.getStringProp("name"));
 
-}  
-catch(...){
-    Logger::writeToLog(String("Syntax error: 'xy pad..."));
-    }
-        
 }
 
 //+++++++++++++++++++++++++++++++++++++++++++
@@ -1657,7 +1563,6 @@ void CabbagePluginAudioProcessorEditor::InsertTable(CabbageGUIClass &cAttr)
 {
 int tableSize=0;
 Array <float> tableValues;
-try{
         //fill array with points from table, is table is valid
         if(getFilter()->getCompileStatus()==0){
 #ifndef Cabbage_No_Csound
@@ -1704,11 +1609,7 @@ try{
 //      ((CabbageTable*)controls[idx])->table->addActionListener(this);
 
         Logger::writeToLog(cAttr.getPropsString());
-}
-catch(...){
-    Logger::writeToLog(String("Syntax error: 'table..."));
-    }
-        
+
 }
 
                                         /*********************************************************/
@@ -2020,7 +1921,6 @@ void CabbagePluginAudioProcessorEditor::InsertPatternMatrix(CabbageGUIClass &cAt
 int tableSize=0;
 //getFilter()->patStepMatrix.clear();
 //getFilter()->patPfieldMatrix.clear();
-try{
         controls.add(new CabbagePatternMatrix(getFilter(), cAttr.getStringProp("name"),
                 cAttr.getNumProp("width"),
                 cAttr.getNumProp("height"),
@@ -2081,11 +1981,7 @@ try{
         }
 
         //Logger::writeToLog(cAttr.getPropsString());
-}
-catch(...){
-    Logger::writeToLog(String("Syntax error: 'pattern matrix..."));
-    }
-        
+
 }
 
 //=============================================================================
