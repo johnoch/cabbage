@@ -1992,7 +1992,7 @@ ScopedPointer<ComboBox> combobox;
 	combobox = new ComboBox(name);
 	combobox->addListener(this);
 	button = new TextButton("Snapshot");
-	button->addButtonListener(this);
+	button->addListener(this);
 	
 
 

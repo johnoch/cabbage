@@ -48,7 +48,7 @@ class ChildAlias   :   public Component,
       
     private:
 	  int index;
-	  Array<Rectangle<int>> origBounds;
+	  Array<Rectangle<int> > origBounds;
 	  String type;
 	  CriticalSection bounds;
       ScopedPointer<ComponentBoundsConstrainer>  constrainer;

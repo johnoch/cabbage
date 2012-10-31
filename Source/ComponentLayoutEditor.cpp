@@ -198,7 +198,8 @@ void ChildAlias::mouseDown (const MouseEvent& e)
 				CabbageUtils::showMessage("Invalid name, please try again(names cannot contains white spaces of the following characters: $ % ^ & * ( ) - + ). Nothing has been added to your user repository", &getLookAndFeel());
 			else{
 						//make sure host doesn't fail if there are no Plant entries
-				ScopedPointer<XmlElement> xml = new XmlElement("PLANTS");
+				ScopedPointer<XmlElement> xml;
+				xml = new XmlElement("PLANTS");
 /*				PropertySet pSet;
 				pSet.setValue("PlantRepository", xml);
 				appProperties->getUserSettings()->setFallbackPropertySet(&pSet);*/	

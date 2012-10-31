@@ -20,7 +20,8 @@ class CabbageStandalone : public JUCEApplication
 
 			appProperties = new ApplicationProperties();
 			defaultPropSet = new PropertySet();
-			ScopedPointer<XmlElement> xml = new XmlElement("PLANTS");
+			ScopedPointer<XmlElement> xml;
+			xml = new XmlElement("PLANTS");
 			defaultPropSet->setValue("DisablePluginInfo", 0);
 			defaultPropSet->setValue("DisableGUIEditModeWarning", 1);
 			defaultPropSet->setValue("SetAlwaysOnTop", 1);	

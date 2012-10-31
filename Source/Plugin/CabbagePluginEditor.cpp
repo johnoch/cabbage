@@ -123,7 +123,8 @@ void CabbagePluginAudioProcessorEditor::changeListenerCallback(ChangeBroadcaster
 void CabbagePluginAudioProcessorEditor::mouseDown(const MouseEvent &e)
 {
 #ifdef Cabbage_GUI_Editor
-ScopedPointer<XmlElement> xml = new XmlElement("PLANTS");
+ScopedPointer<XmlElement> xml;
+xml = new XmlElement("PLANTS");
 PopupMenu m;
 m.setLookAndFeel(lookAndFeel);
 if(getFilter()->isGuiEnabled()){
@@ -315,7 +316,7 @@ void CabbagePluginAudioProcessorEditor::paint (Graphics& g)
                 g.fillAll();
 
                 Image logo = ImageCache::getFromMemory (BinaryData::logo_cabbage_Black_png, BinaryData::logo_cabbage_Black_pngSize);
-        g.drawImage(logo, 10, 10, getWidth(), getHeight()-60, 0, 0, logo.getWidth(), logo.getHeight());
+				g.drawImage(logo, 10, 10, getWidth(), getHeight()-60, 0, 0, logo.getWidth(), logo.getHeight());
 
         }
         else {
@@ -1784,7 +1785,8 @@ if(message.contains("Message sent from CabbageMainPanel")){
 			
 			}
 			//make sure host doesn't fail if there are no Plant entries
-			ScopedPointer<XmlElement> xml = new XmlElement("PLANTS");
+			ScopedPointer<XmlElement> xml;
+			xml = new XmlElement("PLANTS");
 //			PropertySet pSet;
 			//pSet.setValue("PlantRepository", xml);
 			//appProperties->getUserSettings()->setFallbackPropertySet(&pSet);	

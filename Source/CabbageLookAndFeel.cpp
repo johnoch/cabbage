@@ -246,7 +246,7 @@ Image CabbageLookAndFeel::drawLinearThumbImage (float width, float height, const
 //========= Toggle Button image ========================================================
 Image CabbageLookAndFeel::drawToggleImage (float width, float height, bool isToggleOn, Colour colour, bool isRect)
 {
-    Image img = Image::Image(Image::ARGB, width, height, true);
+    Image img = Image(Image::ARGB, width, height, true);
     Graphics g (img);
 	float opacity = 0;
    
@@ -1764,9 +1764,9 @@ CabbageLookAndFeelBasic::CabbageLookAndFeelBasic()
 	setColour(AlertWindow::backgroundColourId, CabbageUtils::getDarkerBackgroundSkin());
 	setColour(AlertWindow::textColourId, Colours::white);
 	setColour(AlertWindow::outlineColourId, Colours::grey);
-	setColour(TextEditor::ColourIds::backgroundColourId, Colours::white);
-	setColour(TextEditor::ColourIds::highlightColourId, Colours::cornflowerblue);
-	setColour(TextEditor::ColourIds::textColourId, Colours::black);
+	setColour(TextEditor::backgroundColourId, Colours::white);
+	setColour(TextEditor::highlightColourId, Colours::cornflowerblue);
+	setColour(TextEditor::textColourId, Colours::black);
 
 }
 
