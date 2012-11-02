@@ -44,7 +44,7 @@ class CabbageGUIClass : public CabbageUtils
         shape, beveltype, caption, kind, topitem, yChannel, xChannel, author,
         exit, csstdout, cssetup, file, debugMessage, xyChannel, pluginID, preset;
 		Colour outline, fill, fontcolour, textcolour, colour, trackerFill;
-		int tableNum, textBox, numPresets, masterSnap, plantButton;
+		int tableNum, textBox, numPresets, masterSnap, plantButton, xyAutoIndex;
 		Array<int> vuConfig;
 
 		//JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CabbageGUIClass);

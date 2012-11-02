@@ -53,6 +53,8 @@ patStepMatrix.clear();
 patPfieldMatrix.clear();
 setPlayConfigDetails(2, 2, 44100, 512); 
 
+startTimer(50);
+
 #ifndef Cabbage_No_Csound
 //don't start of run Csound in edit mode
 if(!isGuiEnabled()){
@@ -692,6 +694,18 @@ if(!isGuiEnabled()){
                         csound->SetChannel(getGUILayoutCtrls(i).getStringProp("channel").toUTF8(), hostInfo.ppqPosition);
                 }
         }
+
+for(int i=0;i<(int)getGUICtrlsSize();i++)//find correct control from vector
+        //if message came from an XY pad...
+		if(getGUICtrls(i).getStringProp("type")=="xypad"){
+                if(getGUICtrls(i).getStringProp("xyChannel").equalsIgnoreCase("X")){       
+#ifndef Cabbage_No_Csound
+					csound->SetChannel(getGUICtrls(i).getStringProp("xChannel").toUTF8(), xyAutomation[getGUICtrls(i).getNumProp("xyAutoIndex")]->getXValue());
+                    csound->SetChannel(getGUICtrls(i).getStringProp("yChannel").toUTF8(), xyAutomation[getGUICtrls(i).getNumProp("xyAutoIndex")]->getYValue());
+#endif
+                    }
+		}
+		
 
 }// end of GUI enabled check
 #endif

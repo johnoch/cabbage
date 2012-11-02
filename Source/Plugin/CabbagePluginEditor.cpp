@@ -1446,7 +1446,7 @@ channel. Our editor only needs to display one so the xypad with 'dummy' appended
 will be created but not shown. 
 */
 	getFilter()->addXYAutomater(new XYPadAutomation());
-
+	cAttr.setNumProp("xyAutoIndex", getFilter()->getXYAutomaterSize()-1);
 	controls.add(new CabbageXYController(getFilter()->getXYAutomater(getFilter()->getXYAutomaterSize()-1), 
 				cAttr.getStringProp("name"),
                 cAttr.getStringProp("text"),
@@ -1505,6 +1505,7 @@ will be created but not shown.
         if(!cAttr.getStringProp("name").containsIgnoreCase("dummy"))
         actionListenerCallback(cAttr.getStringProp("name"));
 
+		//cAttr.setStringProp("type", "xycontroller");
 }
 
 //+++++++++++++++++++++++++++++++++++++++++++

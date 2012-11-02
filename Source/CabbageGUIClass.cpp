@@ -37,7 +37,8 @@ CabbageGUIClass::CabbageGUIClass(String compStr, int ID):
 								width(0),
 								height(0),
 								left(0),
-								top(0)
+								top(0), 
+								xyAutoIndex(0)
 {
 //Default values are assigned to all attributres 
 //before parsing begins
@@ -918,6 +919,8 @@ double CabbageGUIClass::getNumProp(String prop)
 			return overlapSize; 
 		else if(prop.equalsIgnoreCase("winSize"))
 			return frameSize; 
+		else if(prop.equalsIgnoreCase("xyAutoIndex"))
+			return xyAutoIndex;
 		else if(prop.equalsIgnoreCase("pvsChannel"))
 			return pvsChannel; 
 		else return -9999;
@@ -996,6 +999,10 @@ void CabbageGUIClass::setNumProp(String prop, float val)
 			 overlapSize = val;
 		else if(prop.equalsIgnoreCase("pvsChannel"))
 			 pvsChannel = val;
+		else if(prop.equalsIgnoreCase("xyAutoIndex"))
+			 xyAutoIndex = val;
+
+
 }
 
 String CabbageGUIClass::getPropsString()
