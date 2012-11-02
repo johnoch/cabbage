@@ -475,7 +475,7 @@ void CabbagePluginAudioProcessorEditor::InsertGroupBox(CabbageGUIClass &cAttr)
         else{
                 plantButton.add(new CabbageButton(cAttr.getStringProp("plant"), "", cAttr.getStringProp("plant"), CabbageUtils::getComponentSkin().toString(), ""));
                 plantButton[plantButton.size()-1]->setBounds(cAttr.getNumProp("left"), cAttr.getNumProp("top"), 100, 30);
-                plantButton[plantButton.size()-1]->button->addButtonListener(this);
+                plantButton[plantButton.size()-1]->button->addListener(this);
                 componentPanel->addAndMakeVisible(plantButton[plantButton.size()-1]);
                 plantButton[plantButton.size()-1]->button->getProperties().set(String("index"), plantButton.size()-1); 
 
@@ -1445,13 +1445,17 @@ Our filters control vector contains two xypads, one for the X channel and one fo
 channel. Our editor only needs to display one so the xypad with 'dummy' appended to the name
 will be created but not shown. 
 */
-        controls.add(new CabbageXYController(cAttr.getStringProp("name"),
+	getFilter()->addXYAutomater(new XYPadAutomation());
+
+	controls.add(new CabbageXYController(getFilter()->getXYAutomater(getFilter()->getXYAutomaterSize()-1), 
+				cAttr.getStringProp("name"),
                 cAttr.getStringProp("text"),
-                cAttr.getStringProp("caption"),
+				"",
                 cAttr.getNumProp("minX"),
                 cAttr.getNumProp("maxX"),
                 cAttr.getNumProp("minY"),
-                cAttr.getNumProp("maxY")));     
+                cAttr.getNumProp("maxY"),
+				getFilter()->getXYAutomaterSize()-1));     
         int idx = controls.size()-1;
 
         float left = cAttr.getNumProp("left");    
@@ -1493,7 +1497,7 @@ will be created but not shown.
         min = cAttr.getNumProp("minY");
         float valueY = cabbageABS(min-cAttr.getNumProp("valueY"))/cabbageABS(min-max);
         //Logger::writeToLog(String("Y:")+String(valueY));
-        ((CabbageXYController*)controls[idx])->xypad->setBallXY(valueX, valueY, true);
+        ((CabbageXYController*)controls[idx])->xypad->setXYValues(valueX, valueY);
 #ifdef Cabbage_Build_Standalone 
         controls[idx]->setWantsKeyboardFocus(false);
 #endif
@@ -1716,8 +1720,8 @@ for(int i=0;i<(int)getFilter()->getGUICtrlsSize();i++)//find correct control fro
                 {
                         if(getFilter()->getGUICtrls(i).getStringProp("xyChannel").equalsIgnoreCase("X")){       
 #ifndef Cabbage_No_Csound
-                        getFilter()->getCsound()->SetChannel(getFilter()->getGUICtrls(i).getStringProp("xChannel").toUTF8(), ((CabbageXYController*)controls[i])->xypad->getBallX());
-                        getFilter()->getCsound()->SetChannel(getFilter()->getGUICtrls(i).getStringProp("yChannel").toUTF8(), ((CabbageXYController*)controls[i])->xypad->getBallY());
+						getFilter()->getCsound()->SetChannel(getFilter()->getGUICtrls(i).getStringProp("xChannel").toUTF8(), ((CabbageXYController*)controls[i])->xypad->getXValue());
+                        getFilter()->getCsound()->SetChannel(getFilter()->getGUICtrls(i).getStringProp("yChannel").toUTF8(), ((CabbageXYController*)controls[i])->xypad->getYValue());
 #endif
                         }
 #ifndef Cabbage_Build_Standalone 
@@ -1738,8 +1742,8 @@ for(int i=0;i<(int)getFilter()->getGUICtrlsSize();i++)//find correct control fro
                         }
 #else                        
                         if(getFilter()->getGUICtrls(i).getStringProp("xyChannel").equalsIgnoreCase("X")){
-                        getFilter()->setParameterNotifyingHost(i, (float)(((CabbageXYController*)controls[i])->xypad->getBallX()));
-                        getFilter()->setParameterNotifyingHost(i+1, (float)(((CabbageXYController*)controls[i])->xypad->getBallY()));
+                        getFilter()->setParameterNotifyingHost(i, (float)(((CabbageXYController*)controls[i])->xypad->getXValue()));
+                        getFilter()->setParameterNotifyingHost(i+1, (float)(((CabbageXYController*)controls[i])->xypad->getYValue()));
                         }
 #endif
                 }
@@ -2029,9 +2033,6 @@ void CabbagePluginAudioProcessorEditor::timerCallback()
 {       
 // update our GUI so that whenever a VST parameter is changed in the 
 // host the corresponding GUI control gets updated. 
-// It is possible in here to update our GUI controls with control
-// signals from Csound. I've removed this for now as most host allow automation.
-// It may prove useful however when running Cabbage in standalone mode...
 
 #ifndef Cabbage_No_Csound       
 //#ifndef Cabbage_Build_Standalone
@@ -2059,7 +2060,10 @@ for(int i=0;i<(int)getFilter()->getGUICtrlsSize();i++){
         else if(getFilter()->getGUICtrls(i).getStringProp("type")==String("xypad") &&
                 getFilter()->getGUICtrls(i).getStringProp("xyChannel").equalsIgnoreCase("X")){
         if(controls[i]){
-                //((CabbageXYController*)controls[i])->xypad->setBallXY(getFilter()->getParameter(i), getFilter()->getParameter(i), false);
+			int index = ((CabbageXYController*)controls[i])->XYAutoIndex;
+			((CabbageXYController*)controls[i])->xypad->setXYValues(getFilter()->getXYAutomater(i)->getXValue(), 
+																	getFilter()->getXYAutomater(i)->getYValue());
+                //((CabbageXYController*)controls[i])->xypad->setXYValues(getFilter()->getParameter(i), getFilter()->getParameter(i), false);
                 }
         }
 
@@ -2143,8 +2147,6 @@ for(int i=0;i<getFilter()->getGUILayoutCtrlsSize();i++){
                 getFilter()->getCsound()->SetChannel(getFilter()->getGUILayoutCtrls(i).getStringProp("channel").toUTF8(), 0.f);
                 }
         }
-
-        
 }
 
 //Check to see if I can use the same means to control sliders if they are in the host application. But 

@@ -4,8 +4,8 @@
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "CabbageUtils.h"
 #include "CabbageLookAndFeel.h"
-#include "imageBinaries.h"
-#include "PluginProcessor.h"
+//#include "BinaryData.h"
+#include "./Plugin/CabbagePluginProcessor.h"
 
 /*
   ====================================================================================

@@ -663,7 +663,7 @@ void CabbagePluginAudioProcessor::releaseResources()
 }
 //==============================================================================
 //this following callback only runs in plugin mode, and only when one of the
-//host widgets is being used
+//host widgets are being used
 void CabbagePluginAudioProcessor::timerCallback(){
 #ifndef Cabbage_No_Csound
 
@@ -692,6 +692,7 @@ if(!isGuiEnabled()){
                         csound->SetChannel(getGUILayoutCtrls(i).getStringProp("channel").toUTF8(), hostInfo.ppqPosition);
                 }
         }
+
 }// end of GUI enabled check
 #endif
 }

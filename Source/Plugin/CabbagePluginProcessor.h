@@ -24,7 +24,7 @@
 #include "../CabbageUtils.h"
 #include "../CabbageGUIClass.h"
 #include "../Editor/CabbageEditorWindow.h"
-
+#include "../XYPadAutomation.h"
 
 #ifndef Cabbage_No_Csound
 #include "csound.hpp"
@@ -86,11 +86,12 @@ class CabbagePluginAudioProcessor  : public AudioProcessor,
         StringArray debugMessageArray;
 		String currentLineText;
         
+		OwnedArray<XYPadAutomation> xyAutomation;
 
 
 public:
     //==============================================================================
-        //ScopedPointer<CabbageEditorWindow> cabbageCsoundEditor;
+
 #ifdef Cabbage_Build_Standalone
     CabbagePluginAudioProcessor(String inputfile, bool guiOnOff);
 #else
@@ -300,6 +301,19 @@ public:
         void setGuiEnabled(bool onoff){
                 guiOnOff = onoff;
         }
+
+
+		void addXYAutomater(XYPadAutomation* xyAuto){
+			xyAutomation.add(xyAuto);
+		}
+
+		XYPadAutomation* getXYAutomater(int index){
+			return xyAutomation[index];
+		}
+
+		int getXYAutomaterSize(){
+			return xyAutomation.size();
+		}
 
         void createGUI(String source);
         MidiKeyboardState keyboardState;

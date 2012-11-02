@@ -20,7 +20,7 @@
 #ifndef __PLUGINPROCESSOR_AUTO__
 #define __PLUGINPROCESSOR_AUTO__
 
-
+#include "../JuceLibraryCode/JuceHeader.h"
 
 //==============================================================================
 // XYPad Automation class. Allows plugin editor to close while maintining automation
