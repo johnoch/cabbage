@@ -1446,6 +1446,9 @@ channel. Our editor only needs to display one so the xypad with 'dummy' appended
 will be created but not shown. 
 */
 	getFilter()->addXYAutomater(new XYPadAutomation());
+	getFilter()->getXYAutomater(getFilter()->getXYAutomaterSize()-1)->addChangeListener(getFilter());
+	getFilter()->getXYAutomater(getFilter()->getXYAutomaterSize()-1)->xChannel = cAttr.getStringProp("xChannel");
+	getFilter()->getXYAutomater(getFilter()->getXYAutomaterSize()-1)->yChannel = cAttr.getStringProp("yChannel");
 	cAttr.setNumProp("xyAutoIndex", getFilter()->getXYAutomaterSize()-1);
 	controls.add(new CabbageXYController(getFilter()->getXYAutomater(getFilter()->getXYAutomaterSize()-1), 
 				cAttr.getStringProp("name"),
@@ -1455,8 +1458,10 @@ will be created but not shown.
                 cAttr.getNumProp("maxX"),
                 cAttr.getNumProp("minY"),
                 cAttr.getNumProp("maxY"),
-				getFilter()->getXYAutomaterSize()-1));     
-        int idx = controls.size()-1;
+				getFilter()->getXYAutomaterSize()-1,
+				cAttr.getColourProp("colour")));     
+
+	    int idx = controls.size()-1;
 
         float left = cAttr.getNumProp("left");    
         float top = cAttr.getNumProp("top");

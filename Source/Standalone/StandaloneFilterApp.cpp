@@ -26,12 +26,9 @@ class CabbageStandalone : public JUCEApplication
 			defaultPropSet->setValue("DisableGUIEditModeWarning", 1);
 			defaultPropSet->setValue("SetAlwaysOnTop", 1);	
 			defaultPropSet->setValue("PlantRepository", xml);
-			defaultPropSet->setValue("EditorColourScheme", 1);
-			
+			defaultPropSet->setValue("EditorColourScheme", 0);
 			appProperties->setStorageParameters (options);
 			appProperties->getUserSettings()->setFallbackPropertySet(defaultPropSet);
-			
-
 			filterWindow = new StandaloneFilterWindow (String("Cabbage"), Colours::black);
             filterWindow->setTitleBarButtonsRequired (DocumentWindow::allButtons, false);
             filterWindow->setVisible (true);

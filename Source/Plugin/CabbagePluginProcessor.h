@@ -43,7 +43,8 @@ class CabbagePluginAudioProcessor  : public AudioProcessor,
                                                                          public CabbageUtils,
                                                                          public ChangeBroadcaster,
                                                                          public Timer,
-																		 public ActionBroadcaster
+																		 public ActionBroadcaster,
+																		 public ChangeListener
 {
     //==============================================================================
         File csdFile;
@@ -124,7 +125,6 @@ public:
     const String getOutputChannelName (int channelIndex) const;
     bool isInputChannelStereoPair (int index) const;
     bool isOutputChannelStereoPair (int index) const;
-
 
     bool acceptsMidi() const;
     bool producesMidi() const;

@@ -1092,7 +1092,7 @@ ScopedPointer<GroupComponent> groupbox;
 ScopedPointer<XYPad> xypad;
 int XYAutoIndex;
 //---- constructor -----
-CabbageXYController(XYPadAutomation* xyAuto, String name, String text, String caption, int minX, int maxX, int minY, int maxY, int index)
+CabbageXYController(XYPadAutomation* xyAuto, String name, String text, String caption, int minX, int maxX, int minY, int maxY, int index, String colour)
 {
 	setName(name);
 	XYAutoIndex = index;
@@ -1100,7 +1100,7 @@ CabbageXYController(XYPadAutomation* xyAuto, String name, String text, String ca
 	caption="";
 	groupbox = new GroupComponent(String("groupbox_")+name);
 	groupbox->setWantsKeyboardFocus(false);
-	xypad = new XYPad(xyAuto, text, minX, maxX, minY, maxY, 2, Colours::beige);
+	xypad = new XYPad(xyAuto, text, minX, maxX, minY, maxY, 2, Colour::fromString(colour));
 	xypad->setWantsKeyboardFocus(false);
 	addAndMakeVisible(xypad);
 	addAndMakeVisible(groupbox);

@@ -1761,13 +1761,6 @@ Button* CabbageLookAndFeel::createTabBarExtrasButton()
 */
 CabbageLookAndFeelBasic::CabbageLookAndFeelBasic()
 {
-	setColour(AlertWindow::backgroundColourId, CabbageUtils::getDarkerBackgroundSkin());
-	setColour(AlertWindow::textColourId, Colours::white);
-	setColour(AlertWindow::outlineColourId, Colours::grey);
-	setColour(TextEditor::backgroundColourId, Colours::white);
-	setColour(TextEditor::highlightColourId, Colours::cornflowerblue);
-	setColour(TextEditor::textColourId, Colours::black);
-
 }
 
 CabbageLookAndFeelBasic::~CabbageLookAndFeelBasic()
@@ -1775,55 +1768,44 @@ CabbageLookAndFeelBasic::~CabbageLookAndFeelBasic()
 }
 
 //=========== Linear Slider Background ====================================================================
-void CabbageLookAndFeelBasic::drawLinearSliderBackground (Graphics &g, int x, int y, int width, int height, 
+void CabbageLookAndFeelBasic::drawLinearSliderBackground (Graphics &g, int /*x*/, int /*y*/, int /*width*/, int /*height*/, 
 																					float sliderPos, 
-																					float minSliderPos, 
-																					float maxSliderPos, 
-																					const Slider::SliderStyle style, 
+																					float /*minSliderPos*/, 
+																					float /*maxSliderPos*/, 
+																					const Slider::SliderStyle /*style*/, 
 																					Slider &slider)
 {
-	//----- Horizontal Sliders....
-	int backgroundHeight = height * 0.3;
-	int fillHeight = height * 0.05;
-	int destY = (height-backgroundHeight) / 2;
-	int destFillY = ((backgroundHeight-fillHeight) / 2) + destY;
-
-	slider.setTextBoxStyle (Slider::NoTextBox, true, 0, 0); //No text box
-	g.setColour(Colours::black);
-	g.setOpacity (0.7);
-	g.fillRoundedRectangle (0, destY, slider.getWidth(), backgroundHeight, backgroundHeight/3);
+	//h slider
+	slider.setTextBoxStyle (Slider::NoTextBox, true, 0, 0); 
+	g.setColour(CabbageUtils::getDarkerBackgroundSkin());
+	g.setOpacity(0.5);
+	g.fillRoundedRectangle (0, slider.getHeight()*0.3, slider.getWidth(), slider.getHeight()*0.4, (float)slider.getHeight()/4);
 
 	//----- For the fill
-	ColourGradient cg = ColourGradient (Colours::transparentBlack, 0, 0, 
-		Colours::grey, slider.getWidth()*0.5, 0, false);
-	g.setGradientFill (cg);
-	g.setOpacity (0.9);
-	g.fillRoundedRectangle (0, destFillY, sliderPos, fillHeight, backgroundHeight/3);
+	float div = (slider.getValue()-slider.getMinimum()) / (slider.getMaximum()-slider.getMinimum());
+	sliderPos = (div*slider.getWidth());
+	g.setColour(Colours::cornflowerblue);
+	g.setOpacity(0.3);
+	g.fillRoundedRectangle (0, slider.getHeight()*0.3, sliderPos, slider.getHeight()*0.4, (float)slider.getHeight()/4);
 }
 
 //=========== Linear Thumb =================================================================================
-void CabbageLookAndFeelBasic::drawLinearSliderThumb (Graphics &g, int x, int y, int width, int height, 
+void CabbageLookAndFeelBasic::drawLinearSliderThumb (Graphics &g, int /*x*/, int /*y*/, int /*width*/, int /*height*/, 
 																						float sliderPos, 
-																						float minSliderPos, 
-																						float maxSliderPos, 
-																						const Slider::SliderStyle style, 
+																						float /*minSliderPos*/, 
+																						float /*maxSliderPos*/, 
+																						const Slider::SliderStyle /*style*/, 
 																						Slider &slider)
 {
-	//----- Horizontal Sliders.....
-	int rectWidth = (height*0.4);
-	int rectHeight = (height*0.75);
-	int destY = ((height-rectHeight)/2);
-	maxSliderPos = width-(rectWidth/2);
-	int availableWidth = slider.getWidth() - rectWidth;
+	//h sliders
+	int thumbWidth = slider.getHeight();
+	int availableWidth = slider.getWidth()-thumbWidth;
 
 	float div = (slider.getValue()-slider.getMinimum()) / (slider.getMaximum()-slider.getMinimum());
 	sliderPos = (div*availableWidth);
 	
-	//g.setColour (Colours::lightgrey);
-	ColourGradient cg = ColourGradient (Colours::whitesmoke, sliderPos, destY, Colours::grey, sliderPos+rectWidth, rectHeight, false);
-	g.setGradientFill (cg);
-	g.fillRoundedRectangle (sliderPos, destY, rectWidth, rectHeight, rectWidth/3);
-
-	g.setColour (Colours::black);
-	g.drawRoundedRectangle (sliderPos, destY, rectWidth, rectHeight, rectWidth/3, 1);
+	g.setColour(Colours::cornflowerblue);
+	g.drawEllipse(sliderPos+(thumbWidth*0.05), thumbWidth*0.05, thumbWidth*0.9, thumbWidth*0.9, thumbWidth*0.1);
+	g.setColour(CabbageUtils::getDarkerBackgroundSkin());
+	g.fillEllipse(sliderPos+(thumbWidth*0.1), thumbWidth*0.1, thumbWidth*0.8, thumbWidth*0.8);
 }

@@ -191,11 +191,13 @@ float XYPadAutomation::getYValue()
 void XYPadAutomation::setXValue(float value)
 {
 	xValue = value;
+	sendChangeMessage();
 }
 
 void XYPadAutomation::setYValue(float value)
 {
 	yValue = value;
+	sendChangeMessage();
 }
 
 int XYPadAutomation::getSelectedToggle()

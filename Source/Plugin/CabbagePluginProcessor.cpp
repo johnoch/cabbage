@@ -53,7 +53,6 @@ patStepMatrix.clear();
 patPfieldMatrix.clear();
 setPlayConfigDetails(2, 2, 44100, 512); 
 
-startTimer(50);
 
 #ifndef Cabbage_No_Csound
 //don't start of run Csound in edit mode
@@ -359,7 +358,8 @@ bool multiLine = false;
                                                         //StringArray log = logGUIAttributes(cAttr, String("Non-Interactive"));
                                                         //debugMessageArray.addArray(logGUIAttributes(cAttr, String("Non-Interactive")));
                                                         sendChangeMessage();
-
+														//if instrument uses any of the host widgets, or an xypad, turn
+														//on the timer
                                                         if(tokes.getReference(0).equalsIgnoreCase(String("hostbpm"))
                                                                 ||tokes.getReference(0).equalsIgnoreCase(String("hosttime"))
                                                                 ||tokes.getReference(0).equalsIgnoreCase(String("hostplaying"))
@@ -409,6 +409,7 @@ bool multiLine = false;
                                                                 cAttr.setStringProp("name", cAttr.getStringProp("name")+String("dummy"));
                                                                 guiCtrls.add(cAttr);
                                                                 guiID++;
+																//startTimer(50);
                                                         }
                                                         else{
                                                         guiCtrls.add(cAttr);
@@ -503,6 +504,19 @@ AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 }
 #endif
 
+//==========================================================================
+//action listener. Listen to messages being sent form xypad automations
+//==========================================================================
+void CabbagePluginAudioProcessor::changeListenerCallback(ChangeBroadcaster *source)
+{
+	//is message coming from an xypad
+	XYPadAutomation* xyPad = dynamic_cast< XYPadAutomation*>(source);
+	if(xyPad){
+		csound->SetChannel(xyPad->xChannel.toUTF8(), xyPad->getXValue());
+		csound->SetChannel(xyPad->yChannel.toUTF8(), xyPad->getYValue());
+	}
+
+}
 
 //==============================================================================
 const String CabbagePluginAudioProcessor::getName() const
@@ -695,16 +709,20 @@ if(!isGuiEnabled()){
                 }
         }
 
-for(int i=0;i<(int)getGUICtrlsSize();i++)//find correct control from vector
-        //if message came from an XY pad...
-		if(getGUICtrls(i).getStringProp("type")=="xypad"){
-                if(getGUICtrls(i).getStringProp("xyChannel").equalsIgnoreCase("X")){       
-#ifndef Cabbage_No_Csound
-					csound->SetChannel(getGUICtrls(i).getStringProp("xChannel").toUTF8(), xyAutomation[getGUICtrls(i).getNumProp("xyAutoIndex")]->getXValue());
-                    csound->SetChannel(getGUICtrls(i).getStringProp("yChannel").toUTF8(), xyAutomation[getGUICtrls(i).getNumProp("xyAutoIndex")]->getYValue());
-#endif
-                    }
-		}
+//
+//for(int i=0;i<(int)getGUICtrlsSize();i++)//find correct control from vector
+//        //if message came from an XY pad...
+//		if(getGUICtrls(i).getStringProp("type")=="xypad"){
+//
+//                if(getGUICtrls(i).getStringProp("xyChannel").equalsIgnoreCase("X")){       
+//#ifndef Cabbage_No_Csound
+//					if(xyAutomation[getGUICtrls(i).getNumProp("xyAutoIndex")]->isAutomating()){
+//					csound->SetChannel(getGUICtrls(i).getStringProp("xChannel").toUTF8(), xyAutomation[getGUICtrls(i).getNumProp("xyAutoIndex")]->getXValue());
+//                    csound->SetChannel(getGUICtrls(i).getStringProp("yChannel").toUTF8(), xyAutomation[getGUICtrls(i).getNumProp("xyAutoIndex")]->getYValue());
+//					}
+//#endif
+//                    }
+//		}
 		
 
 }// end of GUI enabled check

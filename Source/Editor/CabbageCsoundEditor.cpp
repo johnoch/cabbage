@@ -99,11 +99,6 @@ horizontalLayout.setItemLayout (3,          // for item 2
     -.3);        // and its preferred size is 30% of total available space
 
 
-//set up colour scheme:
-PropertySet pSet;
-pSet.setValue("EditorColourScheme", 1);
-appProperties->getUserSettings()->setFallbackPropertySet(&pSet);
-
 if(!appProperties->getUserSettings()->getValue("EditorColourScheme", var(0)).getIntValue()){
 			textEditor->setColourScheme(csoundToker.getDefaultColourScheme());
 			textEditor->setColour(CodeEditorComponent::backgroundColourId, Colours::white);

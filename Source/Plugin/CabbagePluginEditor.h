@@ -77,7 +77,7 @@ private:
         void InsertComboBox(CabbageGUIClass &cAttr);
         void SetupWindow(CabbageGUIClass &cAttr);
         void InsertSlider(CabbageGUIClass &cAttr);
-    void sliderValueChanged (Slider*);
+		void sliderValueChanged (Slider*);
         void InsertButton(CabbageGUIClass &cAttr);
         void InsertSourceButton(CabbageGUIClass &cAttr);
         void InsertVUMeter(CabbageGUIClass &cAttr);
@@ -104,6 +104,7 @@ private:
         void actionListenerCallback (const String& message);
         int zero_dbfs;
 		StringArray tempArray;
+
 
         //CabbagePluginAudioProcessor* filter;
         CabbagePluginAudioProcessor* getFilter() const

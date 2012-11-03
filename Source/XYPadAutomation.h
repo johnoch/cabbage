@@ -22,10 +22,15 @@
 
 #include "../JuceLibraryCode/JuceHeader.h"
 
+#ifndef Cabbage_No_Csound
+#include "csound.hpp"
+#endif
+
 //==============================================================================
 // XYPad Automation class. Allows plugin editor to close while maintining automation
 //==============================================================================
-class XYPadAutomation	:	public Timer
+class XYPadAutomation	:	public Timer,
+							public ChangeBroadcaster
 {
 public:
 	XYPadAutomation();
@@ -51,6 +56,7 @@ public:
 	void setYValue(float value);
 	int getSelectedToggle();
 	float getSliderValue();
+	String xChannel, yChannel;
 	
 private:
 	float xValue, yValue;
