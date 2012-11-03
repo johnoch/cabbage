@@ -7,7 +7,7 @@ To build just run the following command from the Linux directory:
 ./buildCabbage
 
 This should build a Cabbage binary, as well as two plugin libraries. If you move the Cabbage binary
-to another location please make sure to also move teh plugin libs, as they MUST reside in the same
+to another location please make sure to also move the plugin libs, as they MUST reside in the same
 folder as the main Cabbage binary. 
 
 
