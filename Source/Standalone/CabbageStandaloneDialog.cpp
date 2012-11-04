@@ -42,8 +42,8 @@ StandaloneFilterWindow::StandaloneFilterWindow (const String& title,
     optionsButton.addListener (this);
 	timerRunning = false;
 	yAxis = 0;
-    optionsButton.setTriggeredOnMouseDown (true);
-    bool alwaysontop = appProperties->getUserSettings()->getValue("SetAlwaysOnTop", var(0)).getFloatValue();
+	optionsButton.setTriggeredOnMouseDown (true);
+	bool alwaysontop = appProperties->getUserSettings()->getValue("SetAlwaysOnTop", var(0)).getFloatValue();
 	setAlwaysOnTop(alwaysontop);
 	this->setResizable(false, false);
 
