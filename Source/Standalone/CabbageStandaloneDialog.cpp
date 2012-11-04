@@ -43,7 +43,8 @@ StandaloneFilterWindow::StandaloneFilterWindow (const String& title,
 	timerRunning = false;
 	yAxis = 0;
     optionsButton.setTriggeredOnMouseDown (true);
-	setAlwaysOnTop(true);
+    bool alwaysontop = appProperties->getUserSettings()->getValue("SetAlwaysOnTop", var(0)).getFloatValue();
+	setAlwaysOnTop(alwaysontop);
 	this->setResizable(false, false);
 
 	lookAndFeel = new CabbageLookAndFeel();
@@ -470,7 +471,8 @@ void StandaloneFilterWindow::showAudioSettingsDialog()
 	selectorComp.setLookAndFeel(lookAndFeel);
 	Colour col(44, 44, 44);
 	DialogWindow::showModalDialog(TRANS("Audio Settings"), &selectorComp, this, col, true, false, false);
-	setAlwaysOnTop(true);
+	bool alwaysontop = appProperties->getUserSettings()->getValue("SetAlwaysOnTop", var(0)).getFloatValue();
+	setAlwaysOnTop(alwaysontop);
 }
 //==============================================================================
 void StandaloneFilterWindow::closeButtonPressed()
