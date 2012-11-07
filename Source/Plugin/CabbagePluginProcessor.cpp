@@ -184,7 +184,7 @@ csoundChanList = NULL;
 numCsoundChannels = 0;
 csndIndex = 32;
 startTimer(15);
-csCompileResult = csound->Compile("C:\\Users\\Rory\\Documents\\SourceCode\\cabbage-svn\\Builds\\VisualStudio2010\\Debug\\CabbagePlugin.csd");// const_cast<char*>(csdFile.getFullPathName().toUTF8().getAddress()));
+csCompileResult = csound->Compile(const_cast<char*>(csdFile.getFullPathName().toUTF8().getAddress()));
 if(csCompileResult==0){
 	Logger::writeToLog("compiled Ok");
         //simple hack to allow tables to be set up correctly. 
