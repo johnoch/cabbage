@@ -394,6 +394,10 @@ public:
                     AudioUnitSetProperty (audioUnit, kAudioUnitProperty_SampleRate, kAudioUnitScope_Output, i, &sr, sizeof (sr));
             }
 
+            UInt32 frameSize = (UInt32) estimatedSamplesPerBlock;
+            AudioUnitSetProperty (audioUnit, kAudioUnitProperty_MaximumFramesPerSlice, kAudioUnitScope_Global, 0,
+                                  &frameSize, sizeof (frameSize));
+
             setPlayConfigDetails (numInputBusChannels * numInputBusses,
                                   numOutputBusChannels * numOutputBusses,
                                   sampleRate_, estimatedSamplesPerBlock);
@@ -934,7 +938,7 @@ private:
             }
 
             if (outCurrentSampleInTimeLine != nullptr)
-                *outCurrentSampleInTimeLine = roundToInt (result.timeInSeconds * getSampleRate());
+                *outCurrentSampleInTimeLine = (Float64) result.timeInSamples;
 
             if (outIsCycling != nullptr)        *outIsCycling = false;
             if (outCycleStartBeat != nullptr)   *outCycleStartBeat = 0;

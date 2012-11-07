@@ -5,6 +5,9 @@
 *  Modified by Jordan Hochenbaum on 10/25/10.
 *  http://www.rawmaterialsoftware.com/viewtopic.php?f=6&t=2635
 *
+
+and then Rory made shit of it....
+
 */
 #include "ComponentLayoutEditor.h"
 #include "./Standalone/CabbageStandaloneDialog.h"
@@ -179,6 +182,7 @@ void ChildAlias::mouseDown (const MouseEvent& e)
 
    ((CabbageMainPanel*)(getTarget()->getParentComponent()))->sendActionMessage("Message sent from CabbageMainPanel");
 
+#ifdef Cabbage_Build_Standalone
 	if(e.mods.isRightButtonDown()){
 		PopupMenu m;
 		m.setLookAndFeel(&getParentComponent()->getLookAndFeel());
@@ -198,11 +202,13 @@ void ChildAlias::mouseDown (const MouseEvent& e)
 				CabbageUtils::showMessage("Invalid name, please try again(names cannot contains white spaces of the following characters: $ % ^ & * ( ) - + ). Nothing has been added to your user repository", &getLookAndFeel());
 			else{
 						//make sure host doesn't fail if there are no Plant entries
+
 				ScopedPointer<XmlElement> xml;
 				xml = new XmlElement("PLANTS");
 /*				PropertySet pSet;
 				pSet.setValue("PlantRepository", xml);
 				appProperties->getUserSettings()->setFallbackPropertySet(&pSet);*/	
+
 				xml = appProperties->getUserSettings()->getXmlValue("PlantRepository");
 				int test = 1;
 				bool clashingNames=false;
@@ -225,6 +231,7 @@ void ChildAlias::mouseDown (const MouseEvent& e)
 			}
 		}
 		}
+#endif
 
 }
 

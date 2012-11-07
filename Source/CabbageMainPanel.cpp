@@ -45,7 +45,7 @@ CabbageMainPanel::~CabbageMainPanel()
 
 void CabbageMainPanel::paint(Graphics &g)
 {
-	g.fillAll(panelColour);
+	
 }
 
 ComponentLayoutEditor* CabbageMainPanel::getLayoutEditor()

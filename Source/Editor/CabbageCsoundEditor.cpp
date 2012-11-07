@@ -98,6 +98,7 @@ horizontalLayout.setItemLayout (3,          // for item 2
     -0., -.9, // size must be between 0% and 60% of the available space
     -.3);        // and its preferred size is 30% of total available space
 
+#ifdef Cabbage_Build_Standalone
 
 if(!appProperties->getUserSettings()->getValue("EditorColourScheme", var(0)).getIntValue()){
 			textEditor->setColourScheme(csoundToker.getDefaultColourScheme());
@@ -112,7 +113,7 @@ else if(appProperties->getUserSettings()->getValue("EditorColourScheme", var(0))
 			textEditor->setColour(CodeEditorComponent::backgroundColourId, Colour::fromRGB(20, 20, 20));
 			textEditor->setColour(CodeEditorComponent::highlightColourId, Colours::green.withAlpha(.6f)); 
 }
-
+#endif
 
 }
 //==============================================================================
@@ -334,6 +335,7 @@ bool CsoundEditor::perform (const InvocationInfo& info)
 			break;
 		}
 
+#ifdef Cabbage_Build_Standalone
 	case CommandIDs::whiteBackground:
 		{			
 			textEditor->setColourScheme(csoundToker.getDefaultColourScheme());
@@ -354,6 +356,7 @@ bool CsoundEditor::perform (const InvocationInfo& info)
 			appProperties->getUserSettings()->setValue("EditorColourScheme", 1);
 			break;
 		}
+#endif
 
 	case CommandIDs::viewHelp:
 		{			

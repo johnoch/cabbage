@@ -1177,7 +1177,7 @@ void CabbagePluginAudioProcessorEditor::InsertButton(CabbageGUIClass &cAttr)
         ((CabbageButton*)controls[idx])->button->setWantsKeyboardFocus(true);
 #endif
 
-		showMessage(controls[idx]->getParentComponent()->getName());
+		//showMessage(controls[idx]->getParentComponent()->getName());
 }
 
 //+++++++++++++++++++++++++++++++++++++++++++
@@ -1275,8 +1275,8 @@ if(!getFilter()->isGuiEnabled()){
                         if(getFilter()->getGUICtrls(i).getStringProp("type")==String("button"))
                         {                               
                         //+++++++++++++button+++++++++++++
-                                Logger::writeToLog(getFilter()->getGUICtrls(i).getStringProp("name"));
-                                Logger::writeToLog(button->getName());
+                                //Logger::writeToLog(getFilter()->getGUICtrls(i).getStringProp("name"));
+                                //Logger::writeToLog(button->getName());
                                 if(getFilter()->getGUICtrls(i).getStringProp("name")==button->getName()){
                                 //toggle button values
                                 if(getFilter()->getGUICtrls(i).getNumProp("value")==0){
@@ -1618,7 +1618,7 @@ Array <float> tableValues;
         ((CabbageTable*)layoutComps[idx])->fillTable(0, tableValues);
 //      ((CabbageTable*)controls[idx])->table->addActionListener(this);
 
-        Logger::writeToLog(cAttr.getPropsString());
+        //Logger::writeToLog(cAttr.getPropsString());
 
 }
 
@@ -1645,8 +1645,8 @@ if(message.contains("Message sent from CabbageMainPanel")){
 				if(csdArray[i].contains("</Cabbage>"))
 					i=csdArray.size();
 				//Logger::writeToLog(csdArray[i]);
-				Logger::writeToLog("Cattr: "+getBoundsString(CAttr.getComponentBounds()));
-				Logger::writeToLog("Current: "+getBoundsString(componentPanel->currentBounds));
+				//Logger::writeToLog("Cattr: "+getBoundsString(CAttr.getComponentBounds()));
+				//Logger::writeToLog("Current: "+getBoundsString(componentPanel->currentBounds));
 				if(CAttr.getComponentBounds()==componentPanel->currentBounds){
 				lineNumber = i;
 				//empty bounds indentifier text..
@@ -1720,45 +1720,10 @@ String preset = message.substring(message.indexOf(String(";"))+1, message.indexO
 int masterSnap = message.substring(message.indexOf(String("?"))+1, 100).getIntValue(); 
 
 for(int i=0;i<(int)getFilter()->getGUICtrlsSize();i++)//find correct control from vector
-        //if message came from an XY pad...
-        if(type.equalsIgnoreCase(String("xycontroller"))){
-                if(getFilter()->getGUICtrls(i).getStringProp("name")==name)
-                {
-                        if(getFilter()->getGUICtrls(i).getStringProp("xyChannel").equalsIgnoreCase("X")){       
-#ifndef Cabbage_No_Csound
-						getFilter()->getCsound()->SetChannel(getFilter()->getGUICtrls(i).getStringProp("xChannel").toUTF8(), ((CabbageXYController*)controls[i])->xypad->getXValue());
-                        getFilter()->getCsound()->SetChannel(getFilter()->getGUICtrls(i).getStringProp("yChannel").toUTF8(), ((CabbageXYController*)controls[i])->xypad->getYValue());
-#endif
-                        }
-#ifndef Cabbage_Build_Standalone 
-            if(getFilter()->getGUICtrls(i).getStringProp("xyChannel").equalsIgnoreCase("X")){
-                                                //normalising values to host 
-                                                float min = getFilter()->getGUICtrls(i).getNumProp("min");
-                                                float max = getFilter()->getGUICtrls(i).getNumProp("max");
-                                                float ballPos  = ((CabbageXYController*)controls[i])->xypad->getBallX();
-                                                float value = (ballPos - min)/(max-min);
-                                                //Logger::writeToLog(String("actionListenerX:")+String(value));
-                                                getFilter()->setParameterNotifyingHost(i, value);
-                                                min = getFilter()->getGUICtrls(i+1).getNumProp("min");
-                                                max = getFilter()->getGUICtrls(i+1).getNumProp("max");
-                                                ballPos  = ((CabbageXYController*)controls[i])->xypad->getBallY();
-                                                value = (ballPos - min)/(max-min);                                              
-                                                //Logger::writeToLog(String("actionListenerY:")+String(value));
-                                                getFilter()->setParameterNotifyingHost(i+1, value);
-                        }
-#else                        
-                        if(getFilter()->getGUICtrls(i).getStringProp("xyChannel").equalsIgnoreCase("X")){
-                        getFilter()->setParameterNotifyingHost(i, (float)(((CabbageXYController*)controls[i])->xypad->getXValue()));
-                        getFilter()->setParameterNotifyingHost(i+1, (float)(((CabbageXYController*)controls[i])->xypad->getYValue()));
-                        }
-#endif
-                }
-        }
         //if message has come from the snapshot control 
         //============================================================================================
-        else if(type.equalsIgnoreCase(String("snapshot"))){
+		if(type.equalsIgnoreCase(String("snapshot"))){
                 String str, presetData = "";
-                
                 //save presets to .snaps file
                 //showMessage(String("preset name:")+name);
                 if(action=="save"){
@@ -1852,12 +1817,7 @@ for(int i=0;i<(int)getFilter()->getGUICtrlsSize();i++)//find correct control fro
                                                                         }
                                                                         //update host when preset ares recalled
                                                                         getFilter()->setParameterNotifyingHost(u, val);
-
-
-
                                                                 }
-
-
                                                 }
                                                 start = "";
                                         }
@@ -1867,39 +1827,7 @@ for(int i=0;i<(int)getFilter()->getGUICtrlsSize();i++)//find correct control fro
                                 }
                                 values.clear();
                 }
-        }
-
-                                                        
-                                                
-                                        
-/*
-                for(int i=0;i<getFilter()->getGUICtrlsSize();i++)
-                        
-                                
-                                //;index should only start from the first instance of the preset name
-                                if(values[i].contains(preset)){
-                                Logger::writeToLog(values[i+presetIndex]);
-                                String val = values[presetIndex].substring(values[presetIndex].indexOf(":")+1, 100); 
-                                presetIndex++;
-                                getFilter()->getGUICtrls(i).setNumProp("value", val.getDoubleValue());
-                                if(getFilter()->getGUICtrls(i).getStringProp("type")==String("hslider")||
-                                getFilter()->getGUICtrls(i).getStringProp("type")==String("rslider")||
-                                getFilter()->getGUICtrls(i).getStringProp("type")==String("vslider")){
-                                        if(controls[i])
-                                        ((CabbageSlider*)controls[i])->slider->setValue(val.getDoubleValue(), false);                                   
-                                }
-                                else if(getFilter()->getGUICtrls(i).getStringProp("type")==String("checkbox")){
-                                if(controls[i])
-                                        ((CabbageCheckbox*)controls[i])->button->setToggleState((bool)val.getIntValue(), true);
-                                        }
-                                else if(getFilter()->getGUICtrls(i).getStringProp("type")==String("combobox")){
-                                if(controls[i])
-                                        ((CabbageComboBox*)controls[i])->combo->setSelectedItemIndex(val.getIntValue());
-                                        }*/
-                                
-
-        
-                
+        }       
         //============================================================================================
 
         //if message comes from a table
@@ -2067,8 +1995,9 @@ for(int i=0;i<(int)getFilter()->getGUICtrlsSize();i++){
                 getFilter()->getGUICtrls(i).getStringProp("xyChannel").equalsIgnoreCase("X")){
         if(controls[i]){
 			int index = ((CabbageXYController*)controls[i])->XYAutoIndex;
-			((CabbageXYController*)controls[i])->xypad->setXYValues(getFilter()->getXYAutomater(i)->getXValue(), 
-																	getFilter()->getXYAutomater(i)->getYValue());
+			((CabbageXYController*)controls[i])->xypad->setXYValues(getFilter()->getXYAutomater(index)->getXValue(), 
+																	getFilter()->getXYAutomater(index)->getYValue());
+			//((CabbageXYController*)controls[i])->xypad->setXYValues(1, 1);
                 //((CabbageXYController*)controls[i])->xypad->setXYValues(getFilter()->getParameter(i), getFilter()->getParameter(i), false);
                 }
         }

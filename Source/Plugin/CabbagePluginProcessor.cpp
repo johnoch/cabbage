@@ -186,12 +186,13 @@ csndIndex = 32;
 startTimer(15);
 csCompileResult = csound->Compile("C:\\Users\\Rory\\Documents\\SourceCode\\cabbage-svn\\Builds\\VisualStudio2010\\Debug\\CabbagePlugin.csd");// const_cast<char*>(csdFile.getFullPathName().toUTF8().getAddress()));
 if(csCompileResult==0){
+	Logger::writeToLog("compiled Ok");
         //simple hack to allow tables to be set up correctly. 
         csound->PerformKsmps();
         csound->SetScoreOffsetSeconds(0);
         csound->RewindScore();
         //set up PVS struct
-    dataout = new PVSDATEXT;
+		dataout = new PVSDATEXT;
         csound->SetMessageCallback(CabbagePluginAudioProcessor::messageCallback);
         CSspout = csound->GetSpout();
         CSspin  = csound->GetSpin();
@@ -512,8 +513,10 @@ void CabbagePluginAudioProcessor::changeListenerCallback(ChangeBroadcaster *sour
 	//is message coming from an xypad
 	XYPadAutomation* xyPad = dynamic_cast< XYPadAutomation*>(source);
 	if(xyPad){
+#ifndef Cabbage_No_Csound
 		csound->SetChannel(xyPad->xChannel.toUTF8(), xyPad->getXValue());
 		csound->SetChannel(xyPad->yChannel.toUTF8(), xyPad->getYValue());
+#endif
 	}
 
 }

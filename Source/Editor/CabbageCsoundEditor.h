@@ -457,7 +457,7 @@ public:
 			String identifierName = getDocument().getTextBetween(pos1, pos2);
 			identifierName = identifierName.removeCharacters("\"(), ");
 			identifierName = identifierName.trim();
-			CabbageUtils::showMessage(identifierName);
+			//CabbageUtils::showMessage(identifierName);
 			//identifierName = identifierName.substring(0, identifierName.indexOf("("));
 			String line = getDocument().getLine(pos1.getLineNumber());
 			String identifierString = line.substring(line.indexOf(identifierName));
@@ -471,7 +471,8 @@ public:
 					//colourSelector.setLookAndFeel(&getLookAndFeel());
 					colourSelector.setBounds(xPos, yPos, 200, 200);
 					colourSelector.addChangeListener (this);   
-					CallOutBox callOut (colourSelector, *this, nullptr);
+					Rectangle<int> rectum;
+					CallOutBox callOut (colourSelector, rectum, nullptr);
 					callOut.setTopLeftPosition(xPos+20, yPos);
 			
 					callOut.runModalLoop();
@@ -533,6 +534,9 @@ public:
 	void setHelpText(String text){
 		helpLabel->setHelpText(text);
 	}
+
+	void codeDocumentTextInserted(const juce::String &,int){}
+	void codeDocumentTextDeleted(int,int){}
 
 	CommandManager commandManager;
     //==============================================================================

@@ -30,18 +30,18 @@
 #define JucePlugin_Manufacturer         "Cabbage"
 #define JucePlugin_ManufacturerCode     'Cabbu'
 #define JucePlugin_PluginCode           'RORY'
-#define JucePlugin_MaxNumInputChannels  8
-#define JucePlugin_MaxNumOutputChannels 8
-#define JucePlugin_PreferredChannelConfigurations   {1, 1}, {2, 2}, {2, 4}, {2, 6}, {2, 8}
+#define JucePlugin_MaxNumInputChannels  2
+#define JucePlugin_MaxNumOutputChannels 2
+#define JucePlugin_PreferredChannelConfigurations   {1, 1}, {2, 2}
 //if you define this in the IDE make sure to remove it when building from the command line...
 #ifndef Cabbage_Plugin_Synth
 #define JucePlugin_IsSynth             0
 #else
-#define JucePlugin_IsSynth              0
+#define JucePlugin_IsSynth              1
 #endif
 #define JucePlugin_WantsMidiInput       1
 #define JucePlugin_ProducesMidiOutput   1
-#define JucePlugin_SilenceInProducesSilenceOut  0
+#define JucePlugin_SilenceInProducesSilenceOut  1
 #define JucePlugin_TailLengthSeconds    0
 #define JucePlugin_EditorRequiresKeyboardFocus  1
 #define JucePlugin_VersionCode          0x10000
