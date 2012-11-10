@@ -124,9 +124,9 @@ void XYPadAutomation::update()
 {
 if(isAutomating())
 	{
-	int test = int((1-speedSliderValue)*50)+1;
-	if(updateCounter==test)
-		{
+//	int test = int((1-speedSliderValue))+1;
+//	if(updateCounter==test)
+//		{
 		updateCounter = 0;
 		if (selectedToggle == 0) {
 		xValue += xValue_Incr;
@@ -168,8 +168,8 @@ if(isAutomating())
 			incr *= -1;
 		}
 		}
-		}
-	else updateCounter++;
+//		}
+//	else updateCounter++;
 	}
 	
 	//sendChangeMessage();

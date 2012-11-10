@@ -368,7 +368,7 @@ bool multiLine = false;
                                                                 ||tokes.getReference(0).equalsIgnoreCase(String("hostplaying"))
                                                                 ||tokes.getReference(0).equalsIgnoreCase(String("hostppqpos"))
                                                                 ||tokes.getReference(0).equalsIgnoreCase(String("hostrecording")))
-                                                                startTimer(50);
+                                                                startTimer(20);
                                                 }
                                                 //populate the guiCtrls vector with interactive widgets
                                                 else if(tokes.getReference(0).equalsIgnoreCase(String("hslider"))
@@ -412,7 +412,7 @@ bool multiLine = false;
                                                                 cAttr.setStringProp("name", cAttr.getStringProp("name")+String("dummy"));
                                                                 guiCtrls.add(cAttr);
                                                                 guiID++;
-																//startTimer(50);
+																startTimer(20);
                                                         }
                                                         else{
                                                         guiCtrls.add(cAttr);
@@ -713,6 +713,11 @@ if(!isGuiEnabled()){
                         csound->SetChannel(getGUILayoutCtrls(i).getStringProp("channel").toUTF8(), hostInfo.ppqPosition);
                 }
         }
+			
+			for(int y=0;y<xyAutomation.size();y++){
+				if(xyAutomation[y])
+				xyAutomation[y]->update();
+				}
 
 //
 //for(int i=0;i<(int)getGUICtrlsSize();i++)//find correct control from vector
@@ -764,18 +769,7 @@ for(int i=0;i<buffer.getNumSamples();i++, csndIndex++)
 			}
 		else audioBuffer[i]=0; 
 		}
-
-			//set mimimum 
-			if(masterCounter==100){
-			masterCounter = 0;
-			
-			for(int y=0;y<xyAutomation.size();y++){
-				if(xyAutomation[y])
-				xyAutomation[y]->update();
-				}
-			//setParameter(1, xyAutomation[0]->getYValue());
-			}
-			else masterCounter++;                          
+                        
 	}
 }//if not compiled just mute output
 else{

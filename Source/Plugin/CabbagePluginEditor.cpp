@@ -60,7 +60,7 @@ componentPanel->addKeyListener(this);
 componentPanel->setInterceptsMouseClicks(false, true);  
 setSize (400, 400);
 InsertGUIControls();
-startTimer(20);
+startTimer(30);
 
 #ifdef Cabbage_GUI_Editor
 componentPanel->addActionListener(this);
