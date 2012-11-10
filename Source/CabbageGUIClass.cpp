@@ -555,7 +555,7 @@ int CabbageGUIClass::parse(String str)
 						if(strTokens[0].trim().length()>2)
 						trackerFill = Colours::findColourForName(strTokens[0].trim(), Colours::white);
 						else 
-						trackerFill = Colour::fromRGBA (256, 256, 256, 0);
+						trackerFill = Colour::fromRGBA (255, 255, 255, 0);
 					}
 					else if(strTokens.size()==4)
 						trackerFill = Colour::fromRGBA (strTokens[0].getIntValue(),

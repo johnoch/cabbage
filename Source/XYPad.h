@@ -54,7 +54,7 @@ public:
 
 	static Image getImageForAutomation_Type1(int width, int height)
 	{
-		Image img = Image::Image(Image::ARGB, width, height, true);
+		Image img = Image(Image::ARGB, width, height, true);
 		Graphics g(img);
 		g.setColour(Colours::white);
 
@@ -70,7 +70,7 @@ public:
 
 	static Image getImageForAutomation_Type2(int width, int height)
 	{
-		Image img = Image::Image(Image::ARGB, width, height, true);
+		Image img = Image(Image::ARGB, width, height, true);
 		Graphics g(img);
 		g.setColour(Colours::white);
 
