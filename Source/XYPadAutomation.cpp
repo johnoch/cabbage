@@ -14,6 +14,7 @@ XYPadAutomation::XYPadAutomation()
 	speedSliderValue = 0;
 	isAutomationOn = false;
 	updateCounter = 0;
+	paramIndex = 0;
 }
 
 XYPadAutomation::~XYPadAutomation()

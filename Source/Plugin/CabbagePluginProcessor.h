@@ -59,6 +59,7 @@ class CabbagePluginAudioProcessor  : public AudioProcessor,
         String changeMessageType;
         bool guiOnOff;
         int currentLine;
+		bool xyAutosCreated;
 
         //============== Csound related variables/methods ==============================
 #ifndef Cabbage_No_Csound
@@ -100,6 +101,14 @@ public:
         CabbagePluginAudioProcessor();
 #endif
     ~CabbagePluginAudioProcessor();
+
+	bool haveXYAutosBeenCreated(){
+		return xyAutosCreated;
+	}
+
+	void setHaveXYAutoBeenCreated(bool val){
+		xyAutosCreated = val;
+	}
 
     //==============================================================================
     void prepareToPlay (double sampleRate, int samplesPerBlock);

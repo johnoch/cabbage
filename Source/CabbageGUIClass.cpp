@@ -844,6 +844,8 @@ double CabbageGUIClass::getNumProp(String prop)
 			return textBox;
 		else if(prop.equalsIgnoreCase("top"))
 			return top;
+		else if(prop.equalsIgnoreCase("paramIndex"))
+			return paramIndex;
 		else if(prop.equalsIgnoreCase("channels"))
 			return channels.size();
 		else if(prop.equalsIgnoreCase("left"))
@@ -954,6 +956,8 @@ void CabbageGUIClass::setNumProp(String prop, float val)
 			 midiCtrl = val;
 		else if(prop.equalsIgnoreCase("max"))
 			 max = val;
+		else if(prop.equalsIgnoreCase("paramIndex"))
+			 paramIndex = val;
 		else if(prop.equalsIgnoreCase("tabpage"))
 			 tabpage = val;
 		else if(prop.equalsIgnoreCase("noOfMenus"))

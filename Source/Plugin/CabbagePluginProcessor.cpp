@@ -46,7 +46,8 @@ timeCounter(0),
 beat(0),
 bpm(120),
 patMatrixActive(0),
-masterCounter(0)
+masterCounter(0),
+editorReOpened(false)
 {
 //reset patMatrix. If this has more than one we know that
 //pattern matrix object is being used
@@ -139,7 +140,8 @@ timeCounter(0),
 beat(0),
 bpm(120),
 patMatrixActive(0),
-masterCounter(0)
+masterCounter(0),
+xyAutosCreated(false)
 {
 //Cabbage plugins always try to load a csd file with the same name as the plugin library.
 //Therefore we need to find the name of the library and append a '.csd' to it. 
@@ -517,7 +519,10 @@ void CabbagePluginAudioProcessor::changeListenerCallback(ChangeBroadcaster *sour
 	if(xyPad){
 #ifndef Cabbage_No_Csound
 		csound->SetChannel(xyPad->xChannel.toUTF8(), xyPad->getXValue());
+		setParameterNotifyingHost(xyPad->paramIndex, xyPad->getXValue());
+//		Logger::writeToLog(String(xyPad->paramIndex));
 		csound->SetChannel(xyPad->yChannel.toUTF8(), xyPad->getYValue());
+		setParameterNotifyingHost(xyPad->paramIndex+1, xyPad->getYValue());
 #endif
 	}
 
@@ -563,8 +568,8 @@ else return 0.f;
 void CabbagePluginAudioProcessor::setParameter (int index, float newValue)
 {
 /* this will get called by the plugin GUI sliders or 
-by the host via automation. If it's called by the host it will send 
-message back to the GUI to notify it to update controls */
+by the host, via automation. The timer thread in the plugin's editor
+will constantly update with the values that have been set here*/
 #ifndef Cabbage_No_Csound
 float range, min, max;
 if(index<(int)guiCtrls.size())//make sure index isn't out of range

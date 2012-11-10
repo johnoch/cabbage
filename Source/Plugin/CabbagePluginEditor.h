@@ -141,6 +141,7 @@ private:
         String authorText;
         String formPic;
         float inValue;
+		int xyPadIndex;
         ScopedPointer<CabbageLookAndFeel> lookAndFeel;
         ScopedPointer<Label> debugLabel;
         JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CabbagePluginAudioProcessorEditor);

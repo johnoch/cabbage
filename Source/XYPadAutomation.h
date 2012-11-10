@@ -56,10 +56,11 @@ public:
 	String xChannel, yChannel;
 	void update();
 	int updateCounter;
+	int paramIndex;
 	
 private:
 	float xValue, yValue;
-	int timerInterval, minInterval;
+	int timerInterval, minInterval;	
 	float xValue_Incr, yValue_Incr;
 	Rectangle<int> availableBounds;
 	float ballSize;

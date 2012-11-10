@@ -31,7 +31,7 @@
 
 //==============================================================================
 CabbagePluginAudioProcessorEditor::CabbagePluginAudioProcessorEditor (CabbagePluginAudioProcessor* ownerFilter)
-: AudioProcessorEditor (ownerFilter), lineNumber(0), inValue(0), authorText(""), keyIsPressed(false)
+: AudioProcessorEditor (ownerFilter), lineNumber(0), inValue(0), authorText(""), keyIsPressed(false), xyPadIndex(0)
 {
 //set custom skin yo use
 lookAndFeel = new CabbageLookAndFeel(); 
@@ -60,7 +60,13 @@ componentPanel->addKeyListener(this);
 componentPanel->setInterceptsMouseClicks(false, true);  
 setSize (400, 400);
 InsertGUIControls();
+
+//this will prevent editors from creating xyAutos if they have already been crated. 
+getFilter()->setHaveXYAutoBeenCreated(true);
+
+//start timer for updating GUI controls if someone is using a host to contorl parameters. 
 startTimer(30);
+
 
 #ifdef Cabbage_GUI_Editor
 componentPanel->addActionListener(this);
@@ -1444,12 +1450,32 @@ void CabbagePluginAudioProcessorEditor::InsertXYPad(CabbageGUIClass &cAttr)
 Our filters control vector contains two xypads, one for the X channel and one for the Y
 channel. Our editor only needs to display one so the xypad with 'dummy' appended to the name
 will be created but not shown. 
+
+We also need to check to se whether the processor editor has been 're-opened'. if so we 
+don't need to recreate the automation
 */
+int idx;
+if(getFilter()->haveXYAutosBeenCreated()){
+		controls.add(new CabbageXYController(getFilter()->getXYAutomater(xyPadIndex), 
+				cAttr.getStringProp("name"),
+                cAttr.getStringProp("text"),
+				"",
+                cAttr.getNumProp("minX"),
+                cAttr.getNumProp("maxX"),
+                cAttr.getNumProp("minY"),
+                cAttr.getNumProp("maxY"),
+				xyPadIndex,
+				cAttr.getColourProp("colour"))); 
+				xyPadIndex++;  
+	idx = controls.size()-1;
+}
+else{
 	getFilter()->addXYAutomater(new XYPadAutomation());
 	getFilter()->getXYAutomater(getFilter()->getXYAutomaterSize()-1)->addChangeListener(getFilter());
 	getFilter()->getXYAutomater(getFilter()->getXYAutomaterSize()-1)->xChannel = cAttr.getStringProp("xChannel");
 	getFilter()->getXYAutomater(getFilter()->getXYAutomaterSize()-1)->yChannel = cAttr.getStringProp("yChannel");
 	cAttr.setNumProp("xyAutoIndex", getFilter()->getXYAutomaterSize()-1);
+
 	controls.add(new CabbageXYController(getFilter()->getXYAutomater(getFilter()->getXYAutomaterSize()-1), 
 				cAttr.getStringProp("name"),
                 cAttr.getStringProp("text"),
@@ -1459,9 +1485,14 @@ will be created but not shown.
                 cAttr.getNumProp("minY"),
                 cAttr.getNumProp("maxY"),
 				getFilter()->getXYAutomaterSize()-1,
-				cAttr.getColourProp("colour")));     
+				cAttr.getColourProp("colour")));   
+	idx = controls.size()-1;
+	getFilter()->getXYAutomater(getFilter()->getXYAutomaterSize()-1)->paramIndex = idx;
+}
 
-	    int idx = controls.size()-1;
+
+
+	    
 
         float left = cAttr.getNumProp("left");    
         float top = cAttr.getNumProp("top");
@@ -1995,10 +2026,9 @@ for(int i=0;i<(int)getFilter()->getGUICtrlsSize();i++){
                 getFilter()->getGUICtrls(i).getStringProp("xyChannel").equalsIgnoreCase("X")){
         if(controls[i]){
 			int index = ((CabbageXYController*)controls[i])->XYAutoIndex;
-			((CabbageXYController*)controls[i])->xypad->setXYValues(getFilter()->getXYAutomater(index)->getXValue(), 
-																	getFilter()->getXYAutomater(index)->getYValue());
-			//((CabbageXYController*)controls[i])->xypad->setXYValues(1, 1);
-                //((CabbageXYController*)controls[i])->xypad->setXYValues(getFilter()->getParameter(i), getFilter()->getParameter(i), false);
+			//((CabbageXYController*)controls[i])->xypad->setXYValues(getFilter()->getXYAutomater(index)->getXValue(), 
+			//														getFilter()->getXYAutomater(index)->getYValue());
+                ((CabbageXYController*)controls[i])->xypad->setXYValues(getFilter()->getParameter(i), getFilter()->getParameter(i+1));
                 }
         }
 
