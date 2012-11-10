@@ -4,7 +4,6 @@
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "CabbageUtils.h"
 #include "CabbageLookAndFeel.h"
-//#include "BinaryData.h"
 #include "./Plugin/CabbagePluginProcessor.h"
 
 /*
@@ -103,12 +102,13 @@ public:
 class XYToggle	:	public ToggleButton
 {
 public:
-	XYToggle(Image inputImage);
+	XYToggle(Image inputImage, Colour col);
 	~XYToggle();
 	void paintButton (Graphics& g, bool isMouseOverButton, bool isButtonDown);
 
 private:
 	Image img;
+	Colour colourWhenOn;
 
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (XYToggle);
 };
@@ -152,7 +152,7 @@ private:
 */
 
 class XYCanvas	: public Component,
-					public Timer
+					public MultiTimer
 {
 public:
 	XYCanvas(Colour ballColour, float ballSize, float xMinimum, float xMaximum, 
@@ -178,8 +178,8 @@ public:
 	void setEndHandle(Point<float> pt);
 	void clearHandles();
 	void setToggleId(int selection);
-	void beginPathTimer();
-	void isAutomating(bool isAutomating);
+	void useStaticBall(bool useStaticBall);
+	void startBallPathTimer();
 	
 private:
 	Image bg;
@@ -188,27 +188,38 @@ private:
 	float yMax, xMax, yMin, xMin, xRange, yRange;
 	Colour col;
 	Path path;
-	float pathOpacity, pathThickness;
+	float pathOpacity, pathThickness, ballLineOpacity;
 	int toggleId;
-	bool automationOn;
+	bool paintStaticBall;
 	OwnedArray<XYHandleComponent> handles;
 
-	void timerCallback()
+	void timerCallback(int id)
 	{
-		//This reduces the opacity that is used to paint the path. It will
+		//This reduces the opacity that is used to paint the path and ball lines. It will
 		//give it a fade out effect.
-		pathOpacity -= 0.1;
-		pathThickness -= 0.1;
-		repaint();
 
-		if (toggleId == 0) {
-			if (pathOpacity <= 0) 
-				stopTimer();
+		// Path 
+		if (id == 1) {
+			pathOpacity -= 0.1;
+			pathThickness -= 0.1;
+			
+			repaint();
+
+			if (toggleId == 0) {
+				if (pathOpacity <= 0) 
+					stopTimer(1);
+			}
+			else if (toggleId == 1) {
+				if (pathOpacity <= 0.4)
+					stopTimer(1);			
+			}	
 		}
-		else if (toggleId == 1) {
-			if (pathOpacity <= 0.5)
-				stopTimer();			
-		}		
+		// Ball lines
+		else if (id == 2) {
+			ballLineOpacity -= 0.1;
+			if (ballLineOpacity <= 0)
+				stopTimer(2);
+		}
 	}
 
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (XYCanvas);
@@ -236,7 +247,8 @@ public:
 																				int minYValue, 
 																				int maxYValue, 
 																				int numberOfDecimalPlaces,
-																				Colour ballColour);
+																				Colour ballColour,
+																				Colour fontColour);
 	~XYPad();
 
 	void resized();
@@ -260,7 +272,7 @@ private:
 	float ballSize;
 	int speed;
 	String title, name;
-	Colour ballColour;
+	Colour ballColour, fontColour;
 	float yMax, xMax, yMin, xMin;
 	float xOut, yOut, xRange, yRange;
 	int decimalPlaces;	

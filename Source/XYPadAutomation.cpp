@@ -13,6 +13,7 @@ XYPadAutomation::XYPadAutomation()
 	selectedToggle = 0;
 	speedSliderValue = 0;
 	isAutomationOn = false;
+	updateCounter = 0;
 }
 
 XYPadAutomation::~XYPadAutomation()
@@ -85,12 +86,14 @@ void XYPadAutomation::calculateTimerInterval (Path path)
 void XYPadAutomation::setSpeedSliderValue(float sliderValue)
 {
 	speedSliderValue = sliderValue;
-    timerInterval = minInterval/speedSliderValue;
+	//reset our counter...
+	updateCounter = 0;
+ //   timerInterval = minInterval/speedSliderValue;
 
-    if (sliderValue==0)
-        stopTimer();
-    else
-		startTimer(timerInterval); 
+ //   if (sliderValue==0)
+ //       stopTimer();
+ //   else
+	//	//startTimer(timerInterval); 
 }
 
 void XYPadAutomation::beginAutomation(int selectedToggleButton)
@@ -112,13 +115,20 @@ void XYPadAutomation::beginAutomation(int selectedToggleButton)
 	//initialising
 	xValue = ((endDragPos.getX()/(float)availableBounds.getWidth()) * xRange) + xMin; 
 	yValue = ((1 - (endDragPos.getY()/(float)availableBounds.getHeight())) * yRange) + yMin; //inverting y axis 
-	startTimer (timerInterval);
+	//startTimer (timerInterval);
+	startTimer(50);
 	isAutomationOn = true;
 }
 
-void XYPadAutomation::timerCallback()
+void XYPadAutomation::update()
 {
-	if (selectedToggle == 0) {
+if(isAutomating())
+	{
+	int test = int((1-speedSliderValue)*50)+1;
+	if(updateCounter==test)
+		{
+		updateCounter = 0;
+		if (selectedToggle == 0) {
 		xValue += xValue_Incr;
 		yValue += yValue_Incr;
 
@@ -139,9 +149,9 @@ void XYPadAutomation::timerCallback()
 			yValue = yMax;
 			yValue_Incr*=-1;
 		}		
-	}
-	// else if not in normal mode....
-	else if (selectedToggle == 1) { 
+		}
+		// else if not in normal mode....
+		else if (selectedToggle == 1) { 
 		Point<float> pt = ballPath.getPointAlongPath(i, AffineTransform::identity);
 		
 		xValue = ((pt.getX()/(float)availableBounds.getWidth()) * xRange) + xMin;
@@ -157,7 +167,57 @@ void XYPadAutomation::timerCallback()
 			i = 0;
 			incr *= -1;
 		}
+		}
+		}
+	else updateCounter++;
 	}
+	
+	//sendChangeMessage();
+}
+
+void XYPadAutomation::timerCallback()
+{
+	//if (selectedToggle == 0) {
+	//	xValue += xValue_Incr;
+	//	yValue += yValue_Incr;
+
+	//	// If a border is hit then the increment value should be reversed... 
+	//	if (xValue <= xMin) {
+	//		xValue = xMin;
+	//		xValue_Incr*=-1;
+	//	}
+	//	else if (xValue >= xMax) {
+	//		xValue = xMax;
+	//		xValue_Incr*=-1;
+	//	}
+	//	if (yValue <= yMin) {
+	//		yValue = yMin;
+	//		yValue_Incr*=-1;
+	//	}
+	//	else if (yValue >= yMax) {
+	//		yValue = yMax;
+	//		yValue_Incr*=-1;
+	//	}		
+	//}
+	//// else if not in normal mode....
+	//else if (selectedToggle == 1) { 
+	//	Point<float> pt = ballPath.getPointAlongPath(i, AffineTransform::identity);
+	//	
+	//	xValue = ((pt.getX()/(float)availableBounds.getWidth()) * xRange) + xMin;
+	//	yValue = ((pt.getY()/(float)availableBounds.getHeight()) * yRange);
+	//	yValue = (yRange-yValue) + yMin; //inverting and adding yMin
+
+	//	i += incr;
+	//	if (i > ballPath.getLength()) {
+	//		i = ballPath.getLength();
+	//		incr *= -1;
+	//	}
+	//	else if (i < 0) {
+	//		i = 0;
+	//		incr *= -1;
+	//	}
+	//}
+	sendChangeMessage();
 }
 
 Point<float> XYPadAutomation::getStartHandle()
@@ -205,7 +265,7 @@ int XYPadAutomation::getSelectedToggle()
 	return selectedToggle;
 }
 
-float XYPadAutomation::getSliderValue()
+float XYPadAutomation::getSpeedSliderValue()
 {
 	return speedSliderValue;
 }

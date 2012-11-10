@@ -48,6 +48,7 @@ class CabbagePluginAudioProcessor  : public AudioProcessor,
 {
     //==============================================================================
         File csdFile;
+		int masterCounter;
         String filename;
         String pluginName;
         bool csoundStatus;

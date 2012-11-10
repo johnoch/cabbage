@@ -60,8 +60,8 @@ void XYHandleComponent::mouseDrag (const MouseEvent& e)
 
   ============================================================================
 */
-XYToggle::XYToggle(Image inputImage)
-	: img(inputImage)
+XYToggle::XYToggle(Image inputImage, Colour col)
+	: img(inputImage), colourWhenOn(col)
 {
 }
 
@@ -76,7 +76,8 @@ void XYToggle::paintButton (Graphics& g, bool isMouseOverButton, bool isButtonDo
 
 	
 	if (this->getToggleState() == true)
-		g.setColour(Colours::cornflowerblue);
+		//g.setColour(Colours::cornflowerblue);
+		g.setColour(colourWhenOn);
 	else {
 		if (isMouseOverButton)
 			g.setColour(CabbageUtils::getComponentSkin().withMultipliedBrightness(2));
@@ -84,7 +85,7 @@ void XYToggle::paintButton (Graphics& g, bool isMouseOverButton, bool isButtonDo
 			g.setColour(CabbageUtils::getComponentSkin());
 	}
 	g.drawImage(img, 0, 0, getWidth(), getHeight(), 0, 0, img.getWidth(), img.getHeight(), true);
-	g.setOpacity(0.5);
+	g.setOpacity(0.7);
 	g.drawRoundedRectangle(0.5, 0.5, getWidth()-1, getHeight()-1, getHeight()/5, 1);
 	
 }
@@ -140,7 +141,7 @@ XYCanvas::XYCanvas(Colour ballColour, float ballSize, float xMinimum, float xMax
 	//making the overall handle component the same size as the ball.  
 	//This makes it easier for controlling bounds.
 	handleSize = ballSize;
-	automationOn = false;
+	paintStaticBall = true;
 
 	xRange = xMax-xMin;
 	yRange = yMax-yMin;
@@ -195,20 +196,41 @@ void XYCanvas::paint(Graphics& g)
 		if (toggleId == 0) {
 		ColourGradient cg = ColourGradient (Colours::transparentBlack, path.getPointAlongPath(0).getX(), 
 			path.getPointAlongPath(0).getY(),
-			Colours::cornflowerblue, path.getPointAlongPath(path.getLength()).getX(), 
+			col.withMultipliedSaturation(5), path.getPointAlongPath(path.getLength()).getX(), 
 			path.getPointAlongPath(path.getLength()).getY(), false);
 		g.setGradientFill(cg);
 		}
 		else
-			g.setColour(Colours::cornflowerblue);
+			g.setColour(col.withMultipliedSaturation(5));
 		
 		g.setOpacity (pathOpacity);
 		g.strokePath (path, pathThickness);
 	}
 
+	// Ball h and v lines
+	if (ballLineOpacity > 0) {
+		ColourGradient vLineCg = ColourGradient(Colours::transparentBlack, 0, 0, Colours::transparentBlack,
+			0, getHeight(), false);
+		vLineCg.addColour((ballY+(ballSize/2)) / getHeight(), col);
+		g.setGradientFill(vLineCg);
+		g.setOpacity(ballLineOpacity);
+		g.drawLine(ballX+ballSize/2, 0, ballX+ballSize/2, getHeight(), ballLineOpacity);
+
+		ColourGradient hLineCg = ColourGradient(Colours::transparentBlack, 0, 0, Colours::transparentBlack,
+			getWidth(), 0, false);
+		hLineCg.addColour((ballX+(ballSize/2)) / getWidth(), col);
+		g.setGradientFill(hLineCg);
+		g.setOpacity(ballLineOpacity);
+		g.drawLine(0, ballY+ballSize/2, getWidth(), ballY+ballSize/2, ballLineOpacity);
+	}
+
+	// Ball shadow
+	g.setColour(Colour::fromFloatRGBA(0, 0, 0, 100));
+	g.fillEllipse(ballX+ballSize*0.12, ballY+ballSize*0.12, ballSize, ballSize);
+
 	// Ball
 	g.setColour (col);
-	if (automationOn == false) 
+	if (paintStaticBall) 
 		g.fillEllipse (ballX, ballY, ballSize, ballSize);
 	else {
 		g.setOpacity(0.5);
@@ -228,6 +250,7 @@ void XYCanvas::mouseEnter (const MouseEvent& e)
 void XYCanvas::mouseDown (const MouseEvent& e)
 {
 	setMouseCursor(MouseCursor::NoCursor);
+	ballLineOpacity = 0.5;
 }
 
 void XYCanvas::mouseDrag (const MouseEvent& e)
@@ -238,6 +261,8 @@ void XYCanvas::mouseDrag (const MouseEvent& e)
 void XYCanvas::mouseUp (const MouseEvent& e)
 {
 	setMouseCursor(MouseCursor::CrosshairCursor);
+	startTimer(1, 150); //ball path
+	startTimer(2, 250);	//ball cross hair lines
 }
 
 Point<float> XYCanvas::checkBounds(Point<float> pt)
@@ -326,17 +351,18 @@ void XYCanvas::updatePath()
 
 void XYCanvas::setToggleId(int id)
 {
-	toggleId = id;
+	toggleId = id; 
 }
 
-void XYCanvas::beginPathTimer()
+void XYCanvas::useStaticBall(bool useStaticBall)
 {
-	startTimer(150);
+	paintStaticBall = useStaticBall;
 }
 
-void XYCanvas::isAutomating(bool isAutomating)
+void XYCanvas::startBallPathTimer()
 {
-	automationOn = isAutomating;
+	// This is called by XYPad upon re-instantiation if type 2 automation is on.
+	startTimer(1, 150);
 }
 
 /*
@@ -351,10 +377,12 @@ XYPad::XYPad(XYPadAutomation* xyPadAutomation, String title, int minXValue, int 
 																			int minYValue, 
 																			int maxYValue, 
 																			int numberOfDecimalPlaces,
-																			Colour ballColour)
+																			Colour ballColour, 
+																			Colour fontColour)
 																			:
 																			title(title),
 																			ballColour(ballColour),
+																			fontColour(fontColour),
 																			decimalPlaces(numberOfDecimalPlaces),
 																			xyPadAutomation(xyPadAutomation)
 																				
@@ -396,8 +424,8 @@ void XYPad::resized()
 	else
 		toggleWidth = getWidth()/5;
 		
-	xyToggles.add(new XYToggle(XYImages::getImageForAutomation_Type1(toggleWidth, 15)));
-	xyToggles.add(new XYToggle(XYImages::getImageForAutomation_Type2(toggleWidth, 15)));
+	xyToggles.add(new XYToggle(XYImages::getImageForAutomation_Type1(toggleWidth, 15), fontColour));
+	xyToggles.add(new XYToggle(XYImages::getImageForAutomation_Type2(toggleWidth, 15), fontColour));
 	for (int i=0; i<2; i++) {
 		xyToggles[i]->setBounds(5+(i*(toggleWidth+5)), getHeight()-18, toggleWidth, 15);
 		addAndMakeVisible(xyToggles[i]);
@@ -436,7 +464,7 @@ void XYPad::resized()
 	speedSlider->setTextBoxStyle(Slider::NoTextBox, true, 0, 0);
 	speedSlider->setSliderStyle(Slider::LinearHorizontal);
 	speedSlider->setRange(0, 1, 0.01);
-	speedSlider->setValue(xyPadAutomation->getSliderValue());
+	speedSlider->setValue(xyPadAutomation->getSpeedSliderValue());
 	addAndMakeVisible(speedSlider);
 	speedSlider->addListener(this);
 	speedSlider->addMouseListener(this, false);
@@ -447,13 +475,13 @@ void XYPad::resized()
 
 	//if the plugin is already automating from a previous instance then we need to reset certain things 
 	//such as handles and automation type.
-	if (xyPadAutomation->isAutomating() == true) {
+	if (xyPadAutomation->isAutomating()) {
 		if (xyPadAutomation->getSelectedToggle() == 1) {
 			canvas->setStartHandle(xyPadAutomation->getStartHandle());
 			canvas->setEndHandle(xyPadAutomation->getEndHandle());
-			canvas->beginPathTimer(); //we only want to redraw the path for type 2 automation
+			canvas->startBallPathTimer(); //we only want to redraw the path for type 2 automation
 		}
-		canvas->isAutomating(true);
+		canvas->useStaticBall(false);
 	}
 	else { //else if this is the first time being initialised....
 		xyPadAutomation->setBoundsForAutomation (canvas->getBounds());
@@ -471,7 +499,8 @@ void XYPad::buttonClicked(Button* button)
 		xyToggles[0]->setToggleState(false, false);
 		currentSelectedToggle = 1;
 	}
-	canvas->setToggleId(currentSelectedToggle);
+	if (!xyPadAutomation->isAutomating()) //only change toggle id when not automating
+		canvas->setToggleId(currentSelectedToggle);
 }
 
 void XYPad::sliderValueChanged(Slider* slider)
@@ -490,10 +519,11 @@ void XYPad::paint (Graphics& g)
 	float borderWidth = CabbageUtils::getBorderWidth();
 	g.setColour (CabbageUtils::getBorderColour());
 	g.drawRoundedRectangle (borderWidth/2, borderWidth/2, getWidth()-borderWidth, getHeight()-borderWidth, 
-		5, borderWidth);
+		5, borderWidth);	
 
 	// For drawing the title
-	g.setColour (CabbageUtils::getComponentFontColour());
+	//g.setColour (CabbageUtils::getComponentFontColour());
+	g.setColour(fontColour);
 	Font font = CabbageUtils::getComponentFont();
 	g.setFont (font);
 	title = CabbageUtils::cabbageString (title, font, canvas->getRight()-(getWidth()/2));
@@ -504,21 +534,22 @@ void XYPad::paint (Graphics& g)
 
 void XYPad::mouseDown (const MouseEvent& e)
 {	
-	if (canvas->isMouseOver() == true) {
+	if (canvas->isMouseOver()) {
 		if (xyPadAutomation->isAutomating()) {
 			xyPadAutomation->cancelAutomation();
+			canvas->setToggleId(currentSelectedToggle);
 			canvas->clearHandles();
 		}
 
 		Point<float> click;
 		click.setXY (e.x, e.y);
 		canvas->setBallPosition (click);
-		if (e.mods.isRightButtonDown() == true) {
+		if (e.mods.isRightButtonDown()) {
 			canvas->setStartHandle(click);	
-			canvas->isAutomating(true);
+			canvas->useStaticBall(false);
 		}
-		else if (e.mods.isLeftButtonDown() == true) {
-			canvas->isAutomating(false);
+		else if (e.mods.isLeftButtonDown()) {
+			canvas->useStaticBall(true);
 			speedSlider->setValue(0); //resetting slider
 		}
 
@@ -529,12 +560,14 @@ void XYPad::mouseDown (const MouseEvent& e)
 
 void XYPad::mouseDrag (const MouseEvent& e)
 {	
-	if ((canvas->isMouseButtonDownAnywhere() == true) && (canvasHasFocus == true)) {
+	if ((canvas->isMouseButtonDownAnywhere()) && (canvasHasFocus)) {
 		Point<float> click;
 		click.setXY (e.x, e.y);
 		canvas->setBallPosition (click);
+		xyPadAutomation->setXValue(getXValue());
+		xyPadAutomation->setYValue(getYValue());
 		displayXYValues();
-		if (e.mods.isRightButtonDown() == true) 
+		if (e.mods.isRightButtonDown()) 
 			canvas->setEndHandle(click);
 	}
 }
@@ -542,16 +575,15 @@ void XYPad::mouseDrag (const MouseEvent& e)
 void XYPad::mouseUp (const MouseEvent& e)
 {	
 	canvasHasFocus = false;
-	if (e.mods.isRightButtonDown() == true) {
+	if (e.mods.isRightButtonDown()) {
 		xyPadAutomation->beginAutomation(currentSelectedToggle);
-		speedSlider->setValue(xyPadAutomation->getSliderValue(), false, false); //not sending update message so that it won't call sliderValueChange()
-		canvas->beginPathTimer();
+		speedSlider->setValue(xyPadAutomation->getSpeedSliderValue(), false, false); //not sending update message so that it won't call sliderValueChange()
 	}
 }
 
 void XYPad::mouseEnter(const MouseEvent& e)
 {
-	if ((speedSlider->isMouseOver() == true) && (xyPadAutomation->isAutomating() == true)) {
+	if ((speedSlider->isMouseOver()) && (xyPadAutomation->isAutomating())) {
 		speedSlider->setEnabled(true);
 		speedSlider->setAlpha(1.0);
 	}
@@ -565,8 +597,8 @@ void XYPad::displayXYValues ()
 {
 	valueDisplays[0]->setValue(String::formatted(format, getXValue()));
 	valueDisplays[1]->setValue(String::formatted(format, getYValue()));
-	xyPadAutomation->setXValue(getXValue());
-	xyPadAutomation->setYValue(getYValue());
+	//xyPadAutomation->setXValue(getXValue());
+	//xyPadAutomation->setYValue(getYValue());
 }
 
 float XYPad::getXValue()

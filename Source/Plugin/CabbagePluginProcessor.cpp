@@ -45,7 +45,8 @@ noPatterns(0),
 timeCounter(0),
 beat(0),
 bpm(120),
-patMatrixActive(0)
+patMatrixActive(0),
+masterCounter(0)
 {
 //reset patMatrix. If this has more than one we know that
 //pattern matrix object is being used
@@ -137,7 +138,8 @@ noPatterns(0),
 timeCounter(0),
 beat(0),
 bpm(120),
-patMatrixActive(0)
+patMatrixActive(0),
+masterCounter(0)
 {
 //Cabbage plugins always try to load a csd file with the same name as the plugin library.
 //Therefore we need to find the name of the library and append a '.csd' to it. 
@@ -738,62 +740,44 @@ void CabbagePluginAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiB
 float* audioBuffer;
 #ifndef Cabbage_No_Csound
 
-try{
-
 if(csCompileResult==0){
 keyboardState.processNextMidiBuffer (midiMessages, 0, buffer.getNumSamples(), true);
 midiBuffer = midiMessages;
 ccBuffer = midiMessages;
 
-               for(int i=0;i<buffer.getNumSamples();i++, csndIndex++)
-                                {
-                                        if(patMatrixActive==1)
-                                        {
-                                                if(timeCounter==(int)(this->getSampleRate()/(bpm/60.f))){
-                                                        timeCounter=0;
-                                                        for(int y=0;y<noPatterns;y++){
-                                                        if(patStepMatrix[beat+(y*noSteps)].state==1){
-                                                                String scoreEv;
-                                                                scoreEv << "i \"" << patternNames[y].trim()
-                                                                << "\" 0 .5 " << patStepMatrix[beat+(y*noSteps)].p4
-                                                                << " "  << patPfieldMatrix[y].p5 
-                                                                << " " << patPfieldMatrix[y].p6 
-                                                                << " " << patPfieldMatrix[y].p7
-                                                                << " " << patPfieldMatrix[y].p8
-                                                                << " " << patPfieldMatrix[y].p9;
-                                                                csound->InputMessage(scoreEv.toUTF8());
-                                                                }
-                                                        }
-                                                beat++;
-                                                if(beat==noSteps)
-                                                beat=0;
-                                                }
+for(int i=0;i<buffer.getNumSamples();i++, csndIndex++)
+   {                                
 
-                                        timeCounter++;   
-                                        }
-                                
+    for(int channel = 0; channel < getNumInputChannels(); channel++ )
+        {
+        audioBuffer = buffer.getSampleData(channel,0);
+		if(csndIndex == csound->GetKsmps())
+		{
+			CSCompResult = csound->PerformKsmps();
+		csndIndex = 0;
+		}
+        if(!CSCompResult)
+			{
+			pos = csndIndex*getNumInputChannels();
+			CSspin[channel+pos] = audioBuffer[i]*cs_scale;  
+			audioBuffer[i] = (CSspout[channel+pos]/cs_scale);       
+			}
+		else audioBuffer[i]=0; 
+		}
 
-                                 for(int channel = 0; channel < getNumInputChannels(); channel++ )
-                                        {
-                                        audioBuffer = buffer.getSampleData(channel,0);
-                       if(csndIndex == csound->GetKsmps())
-                       {
-                       CSCompResult = csound->PerformKsmps();
-                       csndIndex = 0;
-                       }
-                                                  
-                                           //=============================================
-
-                                        if(!CSCompResult)
-                                                        {
-                                                                pos = csndIndex*getNumInputChannels();
-                                                        CSspin[channel+pos] = audioBuffer[i]*cs_scale;  
-                                                                audioBuffer[i] = (CSspout[channel+pos]/cs_scale);       
-                                                                }
-                                                else audioBuffer[i]=0; 
-                                 }
-                           }
-}
+			//set mimimum 
+			if(masterCounter==100){
+			masterCounter = 0;
+			
+			for(int y=0;y<xyAutomation.size();y++){
+				if(xyAutomation[y])
+				xyAutomation[y]->update();
+				}
+			//setParameter(1, xyAutomation[0]->getYValue());
+			}
+			else masterCounter++;                          
+	}
+}//if not compiled just mute output
 else{
         for(int i=0;i<buffer.getNumSamples();i++, csndIndex++)
                 {
@@ -811,13 +795,8 @@ else{
     {
         buffer.clear (i, 0, buffer.getNumSamples());
     }
-}
-catch(...){
-        CabbageUtils::showMessage(String("If you insist on playing the keyboard\n \
-                                like a nutter please run Cabbage in standalone\n \
-                                mode, outside of WinXound, i.e., launch it on its\n \
-                                own and then load the csd file you wish to use."));
-}
+
+
 #endif
 
 }

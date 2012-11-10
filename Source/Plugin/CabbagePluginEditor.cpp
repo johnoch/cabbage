@@ -1109,7 +1109,7 @@ void CabbagePluginAudioProcessorEditor::sliderValueChanged (Slider* sliderThatWa
                                                 //getFilter()->setParameterNotifyingHost(i, (float)(sliderThatWasMoved->getValue()));
                                                 //normalise parameters in plugin mode.
                                                 getFilter()->beginParameterChangeGesture(i);
-                        getFilter()->setParameterNotifyingHost(i, (float)((sliderThatWasMoved->getValue()-min)/range));
+												getFilter()->setParameterNotifyingHost(i, (float)((sliderThatWasMoved->getValue()-min)/range));
                                                 getFilter()->endParameterChangeGesture(i);
                                                 //Logger::writeToLog(String((float)((sliderThatWasMoved->getValue()-min)/range)));
 #else
@@ -1506,7 +1506,7 @@ will be created but not shown.
 #ifdef Cabbage_Build_Standalone 
         controls[idx]->setWantsKeyboardFocus(false);
 #endif
-        ((CabbageXYController*)controls[idx])->xypad->addActionListener(this);
+//        ((CabbageXYController*)controls[idx])->xypad->addActionListener(this);
         if(!cAttr.getStringProp("name").containsIgnoreCase("dummy"))
         actionListenerCallback(cAttr.getStringProp("name"));
 
@@ -1990,7 +1990,7 @@ for(int i=0;i<(int)getFilter()->getGUICtrlsSize();i++){
         if(controls[i])
                 ((CabbageButton*)controls[i])->button->setButtonText(getFilter()->getGUICtrls(i).getItems(1-(int)inValue));
         }
-        
+  
         else if(getFilter()->getGUICtrls(i).getStringProp("type")==String("xypad") &&
                 getFilter()->getGUICtrls(i).getStringProp("xyChannel").equalsIgnoreCase("X")){
         if(controls[i]){
@@ -2002,7 +2002,7 @@ for(int i=0;i<(int)getFilter()->getGUICtrlsSize();i++){
                 }
         }
 
-        //no automation for comboboxes, still problematic!" 
+        //no automation for comboboxes, still problematic! 
         else if(getFilter()->getGUICtrls(i).getStringProp("type")==String("combobox")){
         //if(controls[i])
 #ifdef Cabbage_Build_Standalone
