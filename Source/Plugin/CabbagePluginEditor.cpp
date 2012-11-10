@@ -1485,14 +1485,11 @@ else{
                 cAttr.getNumProp("minY"),
                 cAttr.getNumProp("maxY"),
 				getFilter()->getXYAutomaterSize()-1,
-				cAttr.getColourProp("colour")));   
+				cAttr.getColourProp("colour"),
+				cAttr.getColourProp("fontcolour")));   
 	idx = controls.size()-1;
 	getFilter()->getXYAutomater(getFilter()->getXYAutomaterSize()-1)->paramIndex = idx;
 }
-
-
-
-	    
 
         float left = cAttr.getNumProp("left");    
         float top = cAttr.getNumProp("top");
@@ -1534,6 +1531,8 @@ else{
         float valueY = cabbageABS(min-cAttr.getNumProp("valueY"))/cabbageABS(min-max);
         //Logger::writeToLog(String("Y:")+String(valueY));
         ((CabbageXYController*)controls[idx])->xypad->setXYValues(valueX, valueY);
+		getFilter()->setParameter(idx, valueX);
+		getFilter()->setParameter(idx+1, valueY);
 #ifdef Cabbage_Build_Standalone 
         controls[idx]->setWantsKeyboardFocus(false);
 #endif

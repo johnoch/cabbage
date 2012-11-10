@@ -130,8 +130,8 @@ if(isAutomating())
 //		{
 		updateCounter = 0;
 		if (selectedToggle == 0) {
-		xValue += xValue_Incr*(10*speedSliderValue);
-		yValue += yValue_Incr*(10*speedSliderValue);
+		xValue += xValue_Incr*(5*speedSliderValue);
+		yValue += yValue_Incr*(5*speedSliderValue);
 
 		// If a border is hit then the increment value should be reversed... 
 		if (xValue <= xMin) {
@@ -155,11 +155,11 @@ if(isAutomating())
 		else if (selectedToggle == 1) { 
 		Point<float> pt = ballPath.getPointAlongPath(i, AffineTransform::identity);
 		
-		xValue =(((pt.getX()/(float)availableBounds.getWidth()) * xRange) + xMin)*(10*speedSliderValue);
+		xValue =(((pt.getX()/(float)availableBounds.getWidth()) * xRange) + xMin);
 		yValue = ((pt.getY()/(float)availableBounds.getHeight()) * yRange);
-		yValue = ((yRange-yValue) + yMin)*(10*speedSliderValue); //inverting and adding yMin
+		yValue = ((yRange-yValue) + yMin); //inverting and adding yMin
 
-		i += incr;
+		i += incr*(5*speedSliderValue);
 		if (i > ballPath.getLength()) {
 			i = ballPath.getLength();
 			incr *= -1;

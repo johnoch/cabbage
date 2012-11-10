@@ -520,7 +520,6 @@ void CabbagePluginAudioProcessor::changeListenerCallback(ChangeBroadcaster *sour
 #ifndef Cabbage_No_Csound
 		csound->SetChannel(xyPad->xChannel.toUTF8(), xyPad->getXValue());
 		setParameterNotifyingHost(xyPad->paramIndex, xyPad->getXValue());
-//		Logger::writeToLog(String(xyPad->paramIndex));
 		csound->SetChannel(xyPad->yChannel.toUTF8(), xyPad->getYValue());
 		setParameterNotifyingHost(xyPad->paramIndex+1, xyPad->getYValue());
 #endif
