@@ -44,7 +44,8 @@ void XYHandleComponent::mouseDown (const MouseEvent& e)
 void XYHandleComponent::mouseDrag (const MouseEvent& e)
 {
 	//checking constraints so that the handle isn't dragged outside of its parent
-	ScopedPointer<ComponentBoundsConstrainer> constrainer = new ComponentBoundsConstrainer();
+	ScopedPointer<ComponentBoundsConstrainer> constrainer; 
+	constrainer = new ComponentBoundsConstrainer();
 	constrainer->setMinimumOnscreenAmounts (0xffffff, 0xffffff, 
 		0xffffff, 0xffffff);
 
@@ -163,7 +164,7 @@ XYPad* XYCanvas::getParentComponent()
 
 void XYCanvas::cacheBackgroundImage()
 {
-	Image img = Image::Image(Image::ARGB, getWidth(), getHeight(), true);
+	Image img = Image(Image::ARGB, getWidth(), getHeight(), true);
 	Graphics g(img);
 
 	g.setColour (CabbageUtils::getBackgroundSkin());

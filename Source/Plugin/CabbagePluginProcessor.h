@@ -88,6 +88,7 @@ class CabbagePluginAudioProcessor  : public AudioProcessor,
         String debugMessage;
         StringArray debugMessageArray;
 		String currentLineText;
+		bool editorReOpened;
         
 		OwnedArray<XYPadAutomation> xyAutomation;
 

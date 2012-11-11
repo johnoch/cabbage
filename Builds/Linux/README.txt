@@ -32,7 +32,7 @@ where ARGS are optional arguments passed to the make commands. For
 instance if you want to compile over 4 threads and set the include
 Csound path to /usr/include/csound, run:
 
-./buildCabbage -j4 CSOUND_INCLUDE=/usr/include/csound
+./buildCabbage -j4 CSOUND_INCLUDE=/usr/include/csound VST_INCLUDE=~/SDKs/vstsdk2.4
 
 This should create a build directory with the Cabbage binary, as well
 as two plugin libraries. If you move the Cabbage binary to another

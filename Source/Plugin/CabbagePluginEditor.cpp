@@ -1465,7 +1465,8 @@ if(getFilter()->haveXYAutosBeenCreated()){
                 cAttr.getNumProp("minY"),
                 cAttr.getNumProp("maxY"),
 				xyPadIndex,
-				cAttr.getColourProp("colour"))); 
+				cAttr.getColourProp("colour"), 
+				cAttr.getColourProp("fontcolour"))); 
 				xyPadIndex++;  
 	idx = controls.size()-1;
 }
