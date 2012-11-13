@@ -47,7 +47,7 @@ beat(0),
 bpm(120),
 patMatrixActive(0),
 masterCounter(0),
-editorReOpened(false)
+xyAutosCreated(false)
 {
 //reset patMatrix. If this has more than one we know that
 //pattern matrix object is being used

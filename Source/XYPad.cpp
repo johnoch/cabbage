@@ -428,11 +428,14 @@ void XYPad::resized()
 	xyToggles.add(new XYToggle(XYImages::getImageForAutomation_Type1(toggleWidth, 15), fontColour));
 	xyToggles.add(new XYToggle(XYImages::getImageForAutomation_Type2(toggleWidth, 15), fontColour));
 	for (int i=0; i<2; i++) {
+		if(xyToggles[i]){
 		xyToggles[i]->setBounds(5+(i*(toggleWidth+5)), getHeight()-18, toggleWidth, 15);
 		addAndMakeVisible(xyToggles[i]);
 		xyToggles[i]->addListener(this);
+		}
 	}
 	currentSelectedToggle = xyPadAutomation->getSelectedToggle();
+	if(xyToggles[currentSelectedToggle])
 	xyToggles[currentSelectedToggle]->setToggleState(true, false);
 	
 	// Ball

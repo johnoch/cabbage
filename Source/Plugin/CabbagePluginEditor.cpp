@@ -1503,6 +1503,7 @@ else{
         //if it is offset it's position accordingly. 
         int relY=0,relX=0;
         if(layoutComps.size()>0){
+			if(controls[idx])
         for(int y=0;y<layoutComps.size();y++)
         if(cAttr.getStringProp("reltoplant").length()>0){
         if(layoutComps[y]->getProperties().getWithDefault(String("plant"), -99).toString().equalsIgnoreCase(cAttr.getStringProp("reltoplant")))

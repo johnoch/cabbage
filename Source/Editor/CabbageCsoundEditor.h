@@ -472,7 +472,7 @@ public:
 					colourSelector.setBounds(xPos, yPos, 200, 200);
 					colourSelector.addChangeListener (this);   
 					Rectangle<int> rectum;
-					CallOutBox callOut (colourSelector, *this, nullptr);
+					CallOutBox callOut (colourSelector, rectum, nullptr);
 					callOut.setTopLeftPosition(xPos+20, yPos);
 			
 					callOut.runModalLoop();
