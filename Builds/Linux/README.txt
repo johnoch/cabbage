@@ -14,8 +14,12 @@ sudo apt-get -y install mesa-common-dev
 sudo apt-get -y install libasound2-dev
 sudo apt-get -y install freeglut3-dev
 sudo apt-get -y install libxcomposite-dev
+sudo apt-get install csound
+sudo apt-get install libcsound64-dev
+sudo apt-get install libcsnd-dev
+sudo apt-get install libsndfile1
+sudo apt-get install libsndfile1-dev
 
-You also need a version of Csound (doubles) installed on your machine.
 If Csound is not installed in the usual place, i.e.,
 "/usr/local/include/csound" you will need to hack the makefiles so
 that the compiler can find the Csound header files or pass the path in
