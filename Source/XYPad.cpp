@@ -81,7 +81,6 @@ void XYToggle::paintButton (Graphics& g, bool isMouseOverButton, bool isButtonDo
 	g.fillRoundedRectangle(0, 0, getWidth(), getHeight(), getHeight()/5);
 
 	if (this->getToggleState() == true)
-		//g.setColour(Colours::cornflowerblue);
 		g.setColour(colourWhenOn);
 	else {
 		if (isMouseOverButton)

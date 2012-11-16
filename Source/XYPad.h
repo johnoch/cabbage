@@ -134,7 +134,7 @@ private:
 
    -------------------------------------------------------------------------
 
-   This displays the outputted value, similar to a textbox.
+   This displays the x and y outputted values, similar to a textbox.
 
   ============================================================================
 */

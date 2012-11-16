@@ -75,7 +75,6 @@ private:
 	float currentPointAlongPath, ballPathDirection;
 	bool isAutomationOn;
 	
-
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (XYPadAutomation);
 };
 

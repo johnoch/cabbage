@@ -1,8 +1,6 @@
 
 #include "XYPadAutomation.h"
 
-//============================================================================
-
 XYPadAutomation::XYPadAutomation() 
 {
 	ballPathDirection = 1; 
