@@ -27,6 +27,7 @@ ChildAlias::ChildAlias (Component* targetChild, String type, int ind)
    userAdjusting = false;
    updateFromTarget ();
    setRepaintsOnMouseActivity (true);
+
 }
 
 ChildAlias::~ChildAlias ()

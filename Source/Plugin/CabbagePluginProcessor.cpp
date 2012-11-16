@@ -256,7 +256,8 @@ void CabbagePluginAudioProcessor::createGUI(String source)
 {
 guiLayoutCtrls.clear();       
 guiCtrls.clear();
-
+int checkGUI = isGuiEnabled();
+setGuiEnabled((false));
 int guiID=0;
 StringArray csdText;
 int lines=1;
@@ -435,9 +436,10 @@ bool multiLine = false;
 if(this->getActiveEditor()){
 	getActiveEditor()->repaint();
 	//((CabbagePluginAudioProcessorEditor*)getActiveEditor())->setEditMode(false);
+		((CabbagePluginAudioProcessorEditor*)getActiveEditor())->setEditMode(false);
 	((CabbagePluginAudioProcessorEditor*)getActiveEditor())->InsertGUIControls();
+	((CabbagePluginAudioProcessorEditor*)getActiveEditor())->setEditMode(checkGUI);
 	//((CabbagePluginAudioProcessorEditor*)getActiveEditor())->setEditMode(true);
-	
 }
 
 #ifndef Cabbage_No_Csound

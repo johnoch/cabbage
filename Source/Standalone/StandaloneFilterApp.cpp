@@ -23,7 +23,7 @@ class CabbageStandalone : public JUCEApplication
 			ScopedPointer<XmlElement> xml;
 			xml = new XmlElement("PLANTS");
 			defaultPropSet->setValue("DisablePluginInfo", 0);
-			defaultPropSet->setValue("DisableGUIEditModeWarning", 1);
+			defaultPropSet->setValue("DisableGUIEditModeWarning", 0);
 			defaultPropSet->setValue("SetAlwaysOnTop", 1);	
 			defaultPropSet->setValue("PlantRepository", xml);
 			defaultPropSet->setValue("EditorColourScheme", 0);

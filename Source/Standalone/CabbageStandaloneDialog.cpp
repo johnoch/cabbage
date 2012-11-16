@@ -50,6 +50,7 @@ StandaloneFilterWindow::StandaloneFilterWindow (const String& title,
 	lookAndFeel = new CabbageLookAndFeel();
 	this->setLookAndFeel(lookAndFeel);
 
+	oldLookAndFeel = new LookAndFeel();
 // MOD - Stefano Bonetti 
 #ifdef Cabbage_Named_Pipe 
 	ipConnection = new socketConnection(*this);
@@ -64,7 +65,7 @@ StandaloneFilterWindow::StandaloneFilterWindow (const String& title,
 		filter->addChangeListener(this);
 		filter->addActionListener(this);
 		filter->sendChangeMessage();
-		filter->createGUI("");
+		filter->createGUI("");		
     }
     JUCE_CATCH_ALL
 
@@ -210,7 +211,8 @@ void StandaloneFilterWindow::actionListenerCallback (const String& message){
 
 	if(message == "GUI Updated, controls added")
 	filter->createGUI(csdFile.loadFileAsString());
-
+	setGuiEnabled(true);
+	setCurrentLine(filter->getCurrentLine()+1);
 	if(message.equalsIgnoreCase("fileSaved")){
 	saveFile();
 	}
@@ -356,7 +358,7 @@ void StandaloneFilterWindow::resetFilter()
 //const MessageManagerLock mmLock; 
     deleteFilter();
 	deviceManager->closeAudioDevice();
-	filter = createCabbagePluginFilter(csdFile.getFullPathName(), isGuiEnabled());
+	filter = createCabbagePluginFilter(csdFile.getFullPathName(), false);
 	//filter->suspendProcessing(isGuiEnabled());
 	filter->addChangeListener(this);
 	filter->addActionListener(this);
@@ -572,9 +574,9 @@ void StandaloneFilterWindow::buttonClicked (Button*)
 
 	int disableGUIEditWarning = appProperties->getUserSettings()->getValue("DisableGUIEditModeWarning", var(0)).getFloatValue();
 	if(!disableGUIEditWarning)
-	subMenu.addItem(202, String("Disable GUI Edit Mode warning"), true, false);
-	else
 	subMenu.addItem(202, String("Disable GUI Edit Mode warning"), true, true);
+	else
+	subMenu.addItem(202, String("Disable GUI Edit Mode warning"), true, false);
 
 
 	m.addSubMenu("Preferences", subMenu);
@@ -698,7 +700,7 @@ void StandaloneFilterWindow::buttonClicked (Button*)
 		timerRunning = false;
 		}
 	}
-//------- preference Csound manual dir ------
+	//------- preference Csound manual dir ------
 	else if(options==200){
 		String dir = appProperties->getUserSettings()->getValue("CsoundHelpDir", "");
 		FileChooser browser(String("Please select the Csound manual directory..."), File(dir), String("*.csd"));
@@ -706,7 +708,7 @@ void StandaloneFilterWindow::buttonClicked (Button*)
 			appProperties->getUserSettings()->setValue("CsoundHelpDir", browser.getResult().getFullPathName());
 		}	
 	}
-
+	//------- preference plugin info ------
 	else if(options==201){
 		int val = appProperties->getUserSettings()->getValue("DisablePluginInfo", var(0)).getFloatValue();
 		if(val==0)
@@ -714,7 +716,7 @@ void StandaloneFilterWindow::buttonClicked (Button*)
 		else
 			appProperties->getUserSettings()->setValue("DisablePluginInfo", var(0));
 	}
-
+	//------- preference disable gui edit warning ------
 	else if(options==202){
 		int val = appProperties->getUserSettings()->getValue("DisableGUIEditModeWarning", var(0)).getFloatValue();
 		if(val==0) 
@@ -722,11 +724,11 @@ void StandaloneFilterWindow::buttonClicked (Button*)
 		else
 			appProperties->getUserSettings()->setValue("DisableGUIEditModeWarning", var(0));
 	}
-
+	//------- enable GUI edito mode------
 	else if(options==100){
 		int val = appProperties->getUserSettings()->getValue("DisableGUIEditModeWarning", var(0)).getFloatValue();
 		if(val)
-			showMessage("Warning!! This feature is bleeding edge! (that's programmer speak for totally untested and likely to crash hard!). If you like to live on the edge, disable this warning under the 'Preferences' menu command and try 'Edit Mode' again, otherwise just let it be...", lookAndFeel);
+			showMessage("Warning!! This feature is bleeding edge! (that's programmer speak for totally untested and likely to crash hard!). If you like to live on the edge, disable this warning under the 'Preferences' menu command and try 'Edit Mode' again, otherwise just let it be...", oldLookAndFeel);
 		else{
 	if(isAFileOpen == true)
 		if(filter->isGuiEnabled()){
@@ -752,6 +754,7 @@ void StandaloneFilterWindow::openFile()
 	FileChooser openFC(String("Open a Cabbage .csd file..."), File::nonexistent, String("*.csd;*.vst"));
 	if(openFC.browseForFileToOpen()){
 		csdFile = openFC.getResult();
+		originalCsdFile = openFC.getResult();
 		csdFile.setAsCurrentWorkingDirectory();
 		if(csdFile.getFileExtension()==(".vst")){
 			String csd = csdFile.getFullPathName();
@@ -764,6 +767,7 @@ void StandaloneFilterWindow::openFile()
 	
 #else
 	FileChooser openFC(String("Open a Cabbage .csd file..."), File::nonexistent, String("*.csd"));
+	this->setAlwaysOnTop(false);
 	if(openFC.browseForFileToOpen()){
 		csdFile = openFC.getResult();
 		csdFile.getParentDirectory().setAsCurrentWorkingDirectory();
@@ -773,6 +777,10 @@ void StandaloneFilterWindow::openFile()
 
 		isAFileOpen = true;
 	}
+	if(appProperties->getUserSettings()->getValue("SetAlwaysOnTop", var(0)).getFloatValue())
+		setAlwaysOnTop((true));
+	else
+		setAlwaysOnTop(false);
 #endif
 }
 
@@ -785,12 +793,17 @@ resetFilter();
 void StandaloneFilterWindow::saveFileAs()
 {
 FileChooser saveFC(String("Save Cabbage file as..."), File::nonexistent, String("*.csd"));
+	this->setAlwaysOnTop(false);
 	if(saveFC.browseForFileToSave(true)){
 		csdFile = saveFC.getResult().withFileExtension(String(".csd"));
 		csdFile.replaceWithText(cabbageCsoundEditor->getCurrentText());
 		cabbageCsoundEditor->setCsoundFile(csdFile);
 		resetFilter();
 	}
+	if(appProperties->getUserSettings()->getValue("SetAlwaysOnTop", var(0)).getFloatValue())
+		setAlwaysOnTop(true);
+	else
+		setAlwaysOnTop(false);
 
 }
 //==============================================================================

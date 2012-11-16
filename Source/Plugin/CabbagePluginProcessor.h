@@ -26,6 +26,7 @@
 #include "../Editor/CabbageEditorWindow.h"
 #include "../XYPadAutomation.h"
 
+
 #ifndef Cabbage_No_Csound
 #include "csound.hpp"
 #include "cwindow.h"
@@ -307,6 +308,7 @@ public:
 
         bool isGuiEnabled(){
                 return guiOnOff;
+				
         }
 
         void setGuiEnabled(bool onoff){

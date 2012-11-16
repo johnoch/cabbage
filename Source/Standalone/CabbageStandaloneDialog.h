@@ -169,11 +169,12 @@ private:
 	AudioProcessorPlayer player;
     TextButton optionsButton;
     void deleteFilter();
-	File csdFile; 
+	File csdFile, originalCsdFile; 
 	bool isGUIOn;
 	int currentLine;
 	bool pipeOpenedOk;
 	ScopedPointer<CabbageLookAndFeel> lookAndFeel;
+	ScopedPointer<LookAndFeel> oldLookAndFeel;
 	ScopedPointer<CabbageEditorWindow> cabbageCsoundEditor;
 	String consoleMessages;
 	
