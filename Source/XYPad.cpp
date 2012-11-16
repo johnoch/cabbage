@@ -61,8 +61,8 @@ void XYHandleComponent::mouseDrag (const MouseEvent& e)
 
   ============================================================================
 */
-XYToggle::XYToggle(Image inputImage, Colour col)
-	: img(inputImage), colourWhenOn(col)
+XYToggle::XYToggle(int imageType, Colour col)
+	: imageType(imageType), colourWhenOn(col)
 {
 }
 
@@ -70,14 +70,17 @@ XYToggle::~XYToggle()
 {
 }
 
+void XYToggle::resized()
+{
+	img = XYImages::getImage(imageType, getWidth(), getHeight());
+}
+
 void XYToggle::paintButton (Graphics& g, bool isMouseOverButton, bool isButtonDown)
 {
 	g.setColour(CabbageUtils::getDarkerBackgroundSkin());
 	g.fillRoundedRectangle(0, 0, getWidth(), getHeight(), getHeight()/5);
 
-	
 	if (this->getToggleState() == true)
-		//g.setColour(Colours::cornflowerblue);
 		g.setColour(colourWhenOn);
 	else {
 		if (isMouseOverButton)
@@ -123,50 +126,27 @@ void XYValueDisplay::paint (Graphics& g)
 	g.drawText (value, 0, 0, getWidth(), getHeight(), Justification::centred, false);
 }
 
-
 /*
   ============================================================================
 
-   XYCanvas
+   XYCanvasBackground
 
   ============================================================================
 */
-XYCanvas::XYCanvas(Colour ballColour, float ballSize, float xMinimum, float xMaximum, float yMinimum, float yMaximum)	
-																									: col(ballColour), 
-																									ballSize(ballSize),
-																									xMin(xMinimum),
-																									xMax(xMaximum),
-																									yMin(yMinimum),
-																									yMax(yMaximum)
-{
-	//making the overall handle component the same size as the ball.  
-	//This makes it easier for controlling bounds.
-	handleSize = ballSize;
-	paintStaticBall = true;
-
-	xRange = xMax-xMin;
-	yRange = yMax-yMin;
-}
-
-XYCanvas::~XYCanvas()
+XYCanvasBackground::XYCanvasBackground()
 {
 }
 
-void XYCanvas::resized()
+XYCanvasBackground::~XYCanvasBackground()
 {
-	cacheBackgroundImage();
 }
 
-XYPad* XYCanvas::getParentComponent()
+void XYCanvasBackground::resized()
 {
-	return (XYPad*)Component::getParentComponent();
 }
 
-void XYCanvas::cacheBackgroundImage()
+void XYCanvasBackground::paint(Graphics& g)
 {
-	Image img = Image(Image::ARGB, getWidth(), getHeight(), true);
-	Graphics g(img);
-
 	g.setColour (CabbageUtils::getBackgroundSkin());
 	g.fillRoundedRectangle (0, 0, getWidth(), getHeight(), 5);
 
@@ -182,27 +162,95 @@ void XYCanvas::cacheBackgroundImage()
 	hGradient.addColour(0.5, CabbageUtils::getComponentSkin());
 	g.setGradientFill(hGradient);
 	g.drawLine(0, getHeight()/2, getWidth(), getHeight()/2, 1);
-
-	ImageCache::addImageToCache(img, 27);
-	bg = ImageCache::getFromHashCode(27);
 }
 
 
-void XYCanvas::paint(Graphics& g)
-{	
-	g.drawImage(bg, 0, 0, getWidth(), getHeight(), 0, 0, bg.getWidth(), bg.getHeight(), false);	
+
+/*
+  ============================================================================
+
+   XYCanvas
+
+  ============================================================================
+*/
+XYCanvas::XYCanvas(Colour ballCol, float xMinimum, float xMaximum, float yMinimum, float yMaximum)	
+																			: ballColour(ballColour),
+																			xMin(xMinimum),
+																			xMax(xMaximum),
+																			yMin(yMinimum),
+																			yMax(yMaximum)
+{
+	paintStaticBall = true;
+
+	xRange = xMax-xMin;
+	yRange = yMax-yMin;
+}
+
+XYCanvas::~XYCanvas()
+{
+}
+
+void XYCanvas::resized()
+{
+	cacheStaticBallImage();
+	cacheMovingBallImage();
+}
+
+XYPad* XYCanvas::getParentComponent()
+{
+	return (XYPad*)Component::getParentComponent();
+}
+
+void XYCanvas::cacheStaticBallImage()
+{
+	Image img = Image(Image::ARGB, ballSize*1.12, ballSize*1.12, true);
+	Graphics g(img);
+
+	// Shadow
+	g.setColour(Colour::fromFloatRGBA(0, 0, 0, 80));
+	g.fillEllipse(ballSize*0.12, ballSize*0.12, ballSize, ballSize);
+
+	g.setColour(ballColour);
+	g.fillEllipse (0, 0, img.getWidth(), img.getHeight());
 	
+	ImageCache::addImageToCache(img, 28);
+	staticBallImage = ImageCache::getFromHashCode(28);
+}
+
+void XYCanvas::cacheMovingBallImage()
+{
+	Image img = Image(Image::ARGB, ballSize*1.12, ballSize*1.12, true);
+	Graphics g(img);
+
+	// Shadow
+	g.setColour(Colour::fromFloatRGBA(0, 0, 0, 80));
+	g.fillEllipse(ballSize*0.12, ballSize*0.12, ballSize, ballSize);
+
+	g.setColour(ballColour);
+	g.setOpacity(0.5);
+	g.fillEllipse ((ballSize*0.3), (ballSize*0.3), 
+		ballSize*0.4, ballSize*0.4);
+	g.setColour (ballColour.withMultipliedSaturation(5));
+	g.drawEllipse (ballSize*0.05, ballSize*0.05,
+		ballSize*0.9, ballSize*0.9, ballSize*0.1);
+
+	ImageCache::addImageToCache(img, 29);
+	movingBallImage = ImageCache::getFromHashCode(29);
+}
+
+void XYCanvas::paint(Graphics& g)
+{		
 	// Ball path
 	if ((path.getLength() > 0) && (pathOpacity > 0)) {
 		if (toggleId == 0) {
 		ColourGradient cg = ColourGradient (Colours::transparentBlack, path.getPointAlongPath(0).getX(), 
 			path.getPointAlongPath(0).getY(),
-			col.withMultipliedSaturation(5), path.getPointAlongPath(path.getLength()).getX(), 
+			ballColour.withMultipliedSaturation(5), path.getPointAlongPath(path.getLength()).getX(), 
 			path.getPointAlongPath(path.getLength()).getY(), false);
 		g.setGradientFill(cg);
 		}
 		else
-			g.setColour(col.withMultipliedSaturation(5));
+			g.setColour(ballColour.withMultipliedSaturation(5));
 		
 		g.setOpacity (pathOpacity);
 		g.strokePath (path, pathThickness);
@@ -212,35 +260,25 @@ void XYCanvas::paint(Graphics& g)
 	if (ballLineOpacity > 0) {
 		ColourGradient vLineCg = ColourGradient(Colours::transparentBlack, 0, 0, Colours::transparentBlack,
 			0, getHeight(), false);
-		vLineCg.addColour((ballY+(ballSize/2)) / getHeight(), col);
+		vLineCg.addColour((ballY+(ballSize/2)) / getHeight(), ballColour);
 		g.setGradientFill(vLineCg);
 		g.setOpacity(ballLineOpacity);
 		g.drawLine(ballX+ballSize/2, 0, ballX+ballSize/2, getHeight(), ballLineOpacity);
 
 		ColourGradient hLineCg = ColourGradient(Colours::transparentBlack, 0, 0, Colours::transparentBlack,
 			getWidth(), 0, false);
-		hLineCg.addColour((ballX+(ballSize/2)) / getWidth(), col);
+		hLineCg.addColour((ballX+(ballSize/2)) / getWidth(), ballColour);
 		g.setGradientFill(hLineCg);
 		g.setOpacity(ballLineOpacity);
 		g.drawLine(0, ballY+ballSize/2, getWidth(), ballY+ballSize/2, ballLineOpacity);
 	}
 
-	// Ball shadow
-	g.setColour(Colour::fromFloatRGBA(0, 0, 0, 100));
-	g.fillEllipse(ballX+ballSize*0.12, ballY+ballSize*0.12, ballSize, ballSize);
-
 	// Ball
-	g.setColour (col);
-	if (paintStaticBall) 
-		g.fillEllipse (ballX, ballY, ballSize, ballSize);
-	else {
-		g.setOpacity(0.5);
-		g.fillEllipse (ballX+(ballSize*0.3), ballY+(ballSize*0.3), 
-			ballSize*0.4, ballSize*0.4);
-		g.setColour (col.withMultipliedSaturation(5));
-		g.drawEllipse (ballX+ballSize*0.05, ballY+ballSize*0.05,
-			ballSize*0.9, ballSize*0.9, ballSize*0.1);
-	}
+	g.setOpacity(1);
+	if (paintStaticBall)
+		g.drawImage(staticBallImage, ballX, ballY, ballSize, ballSize, 0, 0, staticBallImage.getWidth(), staticBallImage.getHeight(), false);
+	else
+		g.drawImage(movingBallImage, ballX, ballY, ballSize, ballSize, 0, 0, movingBallImage.getWidth(), movingBallImage.getHeight(), false);
 }
 
 void XYCanvas::mouseEnter (const MouseEvent& e)
@@ -293,8 +331,15 @@ void XYCanvas::setBallPositionFromXYValues(float xValue, float yValue)
 {
 	//Sets the ball position from the x and y output values
 	ballX = (((xValue-xMin)/xRange)*(getWidth()-ballSize));
-	ballY = (((yValue-yMin)/yRange)*(getHeight()-ballSize));
+	ballY = ((1-((yValue-yMin)/yRange))*(getHeight()-ballSize));
 	repaint();
+}
+
+void XYCanvas::setBallAndHandleSize(float size)
+{
+	//making the overall handle component the same size as the ball.  
+	//This makes it easier for controlling bounds.
+	ballSize = handleSize = size;
 }
 
 float XYCanvas::getBallX()
@@ -314,7 +359,7 @@ XYHandleComponent* XYCanvas::makeHandle(Point<float> pt)
 	XYHandleComponent* handle = new XYHandleComponent();
 	handle->setBounds (pt.getX()-(handleSize/2), pt.getY()-(handleSize/2), 
 		handleSize, handleSize); //their centre will be where the mouse was clicked
-	if (toggleId == 1)
+	if (toggleId == 1) 
 		addAndMakeVisible (handle); //only visible if not in normal mode
 	repaint();
 	return handle;
@@ -378,24 +423,21 @@ XYPad::XYPad(XYPadAutomation* xyPadAutomation, String title, int minXValue, int 
 																			int minYValue, 
 																			int maxYValue, 
 																			int numberOfDecimalPlaces,
-																			Colour ballColour, 
-																			Colour fontColour)
+																			Colour ballCol, 
+																			Colour fontCol)
 																			:
 																			title(title),
-																			ballColour(ballColour),
-																			fontColour(fontColour),
-																			decimalPlaces(numberOfDecimalPlaces),
-																			xyPadAutomation(xyPadAutomation)
+																			decimalPlaces(numberOfDecimalPlaces)
 																				
 {
+	// checking if xyPadAutomation is a valid object
+	if (xyPadAutomation)
+		this->xyPadAutomation = xyPadAutomation;
+	else
+		this->xyPadAutomation = new XYPadAutomation();
+
 	lookAndFeel = new CabbageLookAndFeel();
 	Component::setLookAndFeel(lookAndFeel);
-
-	// Value displays
-	for (int i=0; i<2; i++) {
-		valueDisplays.add (new XYValueDisplay(ballColour));
-		addAndMakeVisible (valueDisplays[i]);
-	}
 
 	// Min and max values
 	xMin = minXValue;
@@ -404,6 +446,35 @@ XYPad::XYPad(XYPadAutomation* xyPadAutomation, String title, int minXValue, int 
 	yMax = maxYValue;
 	xRange = xMax - xMin;
 	yRange = yMax - yMin;
+
+	// Colours
+	ballColour = ballCol;
+	fontColour = fontCol;
+	if (fontColour != CabbageUtils::getComponentFontColour())
+		toggleColour = fontColour;
+	else
+		toggleColour = Colours::cornflowerblue;
+
+	// Canvas
+	canvas = new XYCanvas(ballColour, xMin, xMax, yMin, yMax);
+	canvasBackground = new XYCanvasBackground();
+
+	// Value displays
+	for (int i=0; i<2; i++) {
+		valueDisplays.add (new XYValueDisplay(ballColour));
+		addAndMakeVisible (valueDisplays[i]);
+	}
+
+	// Speed slider
+	speedSlider = new Slider("Speed");
+
+	// Toggles
+	xyToggles.add(new XYToggle(0, toggleColour));
+	xyToggles.add(new XYToggle(1, toggleColour));
+	for (int i=0; i<2; i++) {
+		addAndMakeVisible(xyToggles[i]);
+		xyToggles[i]->addListener(this);
+	}
 		
 	title.append (name, 100);
 
@@ -418,24 +489,17 @@ XYPad::~XYPad()
 
 void XYPad::resized()
 {
-	// Toggles
+	// Toggle bounds
 	float toggleWidth;
 	if (getWidth() >= 150)
 		toggleWidth = 30;
 	else
 		toggleWidth = getWidth()/5;
 		
-	xyToggles.add(new XYToggle(XYImages::getImageForAutomation_Type1(toggleWidth, 15), fontColour));
-	xyToggles.add(new XYToggle(XYImages::getImageForAutomation_Type2(toggleWidth, 15), fontColour));
-	for (int i=0; i<2; i++) {
-		if(xyToggles[i]){
+	for (int i=0; i<2; i++) 
 		xyToggles[i]->setBounds(5+(i*(toggleWidth+5)), getHeight()-18, toggleWidth, 15);
-		addAndMakeVisible(xyToggles[i]);
-		xyToggles[i]->addListener(this);
-		}
-	}
-	currentSelectedToggle = xyPadAutomation->getSelectedToggle();
-	if(xyToggles[currentSelectedToggle])
+	
+	currentSelectedToggle = 0;//xyPadAutomation->getSelectedToggle();
 	xyToggles[currentSelectedToggle]->setToggleState(true, false);
 	
 	// Ball
@@ -444,25 +508,23 @@ void XYPad::resized()
 		ballSize = 18;		//maximum size
 	else if (ballSize < 8) 
 		ballSize = 8;		//minimum size
-
+	
 	xyPadAutomation->setBallSize (ballSize);
+	canvas->setBallAndHandleSize(ballSize);
 
 	// Canvas
-	canvas = new XYCanvas(ballColour, ballSize, xMin, xMax, yMin, yMax);
-	canvas->setBounds (5, 5, getWidth()-10, getHeight()-45);
-	addAndMakeVisible (canvas);
-	//setting ball position from x and y output values, this means the pad will open with the current x and y values
-	canvas->setBallPositionFromXYValues (xyPadAutomation->getXValue(), xyPadAutomation->getYValue());
+	canvasBackground->setBounds(5, 5, getWidth()-10, getHeight()-45);
+	addAndMakeVisible(canvasBackground);
+	canvas->setBounds(5, 5, getWidth()-10, getHeight()-45);
+	addAndMakeVisible(canvas);
 	canvas->addMouseListener(this, true); //so that "this" also gets the mouse events for canvas
 	canvas->setToggleId(currentSelectedToggle);
-
+	
 	// Value displays
 	valueDisplays[0]->setBounds(3, getHeight()-38, getWidth()*0.5-6, 12);
 	valueDisplays[1]->setBounds(getWidth()*0.5+3, getHeight()-38, getWidth()*0.5-6, 12);
-	displayXYValues();
 
 	// Speed slider
-	speedSlider = new Slider("Speed");
 	speedSlider->setBounds(getWidth()*0.3, canvas->getBottom()-25,
 		getWidth()*0.4, 15);
 	speedSlider->setTextBoxStyle(Slider::NoTextBox, true, 0, 0);
@@ -491,6 +553,11 @@ void XYPad::resized()
 		xyPadAutomation->setBoundsForAutomation (canvas->getBounds());
 		xyPadAutomation->setMinMaxValues (xMin, xMax, yMin, yMax);
 	}
+
+	//setting ball position from x and y output values, this means the pad will open with the current x and y values
+	canvas->setBallPositionFromXYValues (xyPadAutomation->getXValue(), xyPadAutomation->getYValue());
+	displayXYValues(xyPadAutomation->getXValue(), xyPadAutomation->getYValue());
+	
 }
 
 void XYPad::buttonClicked(Button* button)
@@ -503,13 +570,15 @@ void XYPad::buttonClicked(Button* button)
 		xyToggles[0]->setToggleState(false, false);
 		currentSelectedToggle = 1;
 	}
+	
 	if (!xyPadAutomation->isAutomating()) //only change toggle id when not automating
 		canvas->setToggleId(currentSelectedToggle);
+	
 }
 
 void XYPad::sliderValueChanged(Slider* slider)
 {
-	if (slider == speedSlider)
+	if (slider == speedSlider) 
 		xyPadAutomation->setSpeedSliderValue(slider->getValue());
 }
 
@@ -526,7 +595,6 @@ void XYPad::paint (Graphics& g)
 		5, borderWidth);	
 
 	// For drawing the title
-	//g.setColour (CabbageUtils::getComponentFontColour());
 	g.setColour(fontColour);
 	Font font = CabbageUtils::getComponentFont();
 	g.setFont (font);
@@ -557,7 +625,9 @@ void XYPad::mouseDown (const MouseEvent& e)
 			speedSlider->setValue(0); //resetting slider
 		}
 
-		displayXYValues();
+		displayXYValues(getXValueWhenNotAutomating(), getYValueWhenNotAutomating());
+		xyPadAutomation->setXValue(getXValueWhenNotAutomating());
+		xyPadAutomation->setYValue(getYValueWhenNotAutomating());
 		canvasHasFocus = true;
 	}
 }
@@ -568,9 +638,9 @@ void XYPad::mouseDrag (const MouseEvent& e)
 		Point<float> click;
 		click.setXY (e.x, e.y);
 		canvas->setBallPosition (click);
-		xyPadAutomation->setXValue(getXValue());
-		xyPadAutomation->setYValue(getYValue());
-		displayXYValues();
+		displayXYValues(getXValueWhenNotAutomating(), getYValueWhenNotAutomating());
+		xyPadAutomation->setXValue(getXValueWhenNotAutomating());
+		xyPadAutomation->setYValue(getYValueWhenNotAutomating());
 		if (e.mods.isRightButtonDown()) 
 			canvas->setEndHandle(click);
 	}
@@ -597,38 +667,57 @@ void XYPad::mouseEnter(const MouseEvent& e)
 	}
 }
 
-void XYPad::displayXYValues ()
+void XYPad::displayXYValues (float xValue, float yValue)
 {
-	valueDisplays[0]->setValue(String::formatted(format, getXValue()));
-	valueDisplays[1]->setValue(String::formatted(format, getYValue()));
-	//xyPadAutomation->setXValue(getXValue());
-	//xyPadAutomation->setYValue(getYValue());
+	valueDisplays[0]->setValue(String::formatted(format, xValue));
+	valueDisplays[1]->setValue(String::formatted(format, yValue));
 }
 
-float XYPad::getXValue()
+float XYPad::getXValueWhenNotAutomating()
 {
 	//Returns the x output value, not the ball's x pixel position!!
+	//Only used when automation is off.
 	return ((canvas->getBallX()/(canvas->getWidth()-ballSize)) * xRange) + xMin;
 }
 
-float XYPad::getYValue()
+float XYPad::getYValueWhenNotAutomating()
 {
 	//Returns the y output value, not the ball's y pixel position!!
+	//Only used when automation is off.
 	return ((1-(canvas->getBallY()/(canvas->getHeight()-ballSize))) * yRange) + yMin;
 }
 
-//========= This method is used by the Plugin Editor ============================================
+//========= These method are used by the Plugin Editor ============================================
 void XYPad::setXYValues (float x, float y)
 {
-	//This method gets the x and y output values from the plugin processor and converts them back 
+	//This method uses the x and y output values passed in from the plugin processor and converts them back 
 	//into the centre coordinates of the ball.
-	Point<float> newPos;
-	newPos.setXY ((((x-xMin)/xRange)*(canvas->getWidth()-ballSize))+(ballSize/2), 
-		((1-((y-yMin)/yRange))*(canvas->getHeight()-ballSize))+(ballSize/2));
 
-	canvas->setBallPosition (newPos);
-	//canvas->setBallPositionFromXYValues(x, y);
-	displayXYValues();
+	if (xyPadAutomation->isAutomating()) {
+		Point<float> newPos;
+		newPos.setXY ((((x-xMin)/xRange)*(canvas->getWidth()-ballSize))+(ballSize/2), 
+			((1-((y-yMin)/yRange))*(canvas->getHeight()-ballSize))+(ballSize/2));
+		canvas->setBallPosition (newPos);
+
+		displayXYValues(x, y);
+	}
+}
+
+void XYPad::setXYValuesFromNormalised (float xNorm, float yNorm)
+{
+	//This method uses normalised values passed in from the plugin processor and converts them back 
+	//into the centre coordinates of the ball.
+
+	if (xyPadAutomation->isAutomating()) {
+		float x = (xNorm*xRange) + xMin;
+		float y = (yNorm*yRange) + yMin;
+		Point<float> newPos;
+		newPos.setXY ((((x-xMin)/xRange)*(canvas->getWidth()-ballSize))+(ballSize/2), 
+			((1-((y-yMin)/yRange))*(canvas->getHeight()-ballSize))+(ballSize/2));
+		canvas->setBallPosition (newPos);
+
+		displayXYValues(x, y);
+	}
 }
 
 
