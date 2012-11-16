@@ -38,7 +38,8 @@ public:
 	void setMinMaxValues (float xMinimum, float xMaximum, float yMinimum, float yMaximum);
 	float getMinimumXValue();
 	float getMinimumYValue();
-	void calculateTimerInterval (Path path);
+	void updateIncrements();
+	void setInitialSpeedSliderValue ();
 	void setBallPath (Path path);
 	void cancelAutomation();
 	bool isAutomating();
@@ -49,6 +50,8 @@ public:
 	Point<float> getEndHandle();
 	float getXValue();
 	float getYValue();
+	float getNormalisedXValue();
+	float getNormalisedYValue();
 	void setXValue(float value);
 	void setYValue(float value);
 	int getSelectedToggle();
@@ -60,16 +63,16 @@ public:
 	
 private:
 	float xValue, yValue;
-	int timerInterval, minInterval;	
-	float xValue_Incr, yValue_Incr;
+	int timerInterval, minTimerInterval;	
+	float xValueIncrement, yValueIncrement;
+	float speedSliderValue, speedValue;
 	Rectangle<int> availableBounds;
 	float ballSize;
 	float xMin, yMin, xMax, yMax, xRange, yRange;
 	float xOut, yOut;
 	int selectedToggle;
-	float speedSliderValue;
 	Path ballPath;
-	int i, incr;
+	float currentPointAlongPath, ballPathDirection;
 	bool isAutomationOn;
 	
 
