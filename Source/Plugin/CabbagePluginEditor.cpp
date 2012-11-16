@@ -2029,7 +2029,9 @@ for(int i=0;i<(int)getFilter()->getGUICtrlsSize();i++){
 			int index = ((CabbageXYController*)controls[i])->XYAutoIndex;
 			//((CabbageXYController*)controls[i])->xypad->setXYValues(getFilter()->getXYAutomater(index)->getXValue(), 
 			//														getFilter()->getXYAutomater(index)->getYValue());
-                ((CabbageXYController*)controls[i])->xypad->setXYValues(getFilter()->getParameter(i), getFilter()->getParameter(i+1));
+			//Logger::writeToLog(String(getFilter()->getParameter(i)));
+			((CabbageXYController*)controls[i])->xypad->setXYValuesFromNormalised(getFilter()->getParameter(i), getFilter()->getParameter(i+1));
+				//setXYValues(getFilter()->getParameter(i), getFilter()->getParameter(i+1));
                 }
         }
 
