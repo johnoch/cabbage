@@ -33,6 +33,8 @@ public:
 	XYPadAutomation();
 	~XYPadAutomation();
 
+	void updateCreationCounter();
+	int getCreationCounter();
 	void beginAutomation(int selectedToggleButton);
 	void setBallSize (float size);
 	void setMinMaxValues (float xMinimum, float xMaximum, float yMinimum, float yMaximum);
@@ -60,6 +62,7 @@ public:
 	void update();
 	int updateCounter;
 	int paramIndex;
+	int creationCounter;
 	
 private:
 	float xValue, yValue;

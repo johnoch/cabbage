@@ -201,7 +201,6 @@ public:
 	void mouseDrag (const MouseEvent& e);
 	void mouseUp (const MouseEvent& e);
 	Point<float> checkBounds (Point<float> pt);
-	void setBallPosition(Point<float> pt);
 	void setBallPositionFromXYValues(float xValue, float yValue);
 	void setBallAndHandleSize(float size);
 	float getBallX();
@@ -292,8 +291,8 @@ public:
 	void paint (Graphics& g);
 	void setXYValues(float x, float y);
 	void setXYValuesFromNormalised(float xNorm, float yNorm);
-	float getXValueWhenNotAutomating();
-	float getYValueWhenNotAutomating();
+	float getXValueWhenNotAutomating(float x);
+	float getYValueWhenNotAutomating(float y);
 	Point<float> checkBounds(float x, float y);
 	void mouseDown (const MouseEvent& e);
 	void mouseDrag (const MouseEvent& e);
