@@ -19,6 +19,7 @@ sudo apt-get install libcsound64-dev
 sudo apt-get install libcsnd-dev
 sudo apt-get install libsndfile1
 sudo apt-get install libsndfile1-dev
+sudo apt-get install libjack-dev
 
 If Csound is not installed in the usual place, i.e.,
 "/usr/local/include/csound" you will need to hack the makefiles so

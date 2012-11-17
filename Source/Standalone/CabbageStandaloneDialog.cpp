@@ -37,6 +37,7 @@ StandaloneFilterWindow::StandaloneFilterWindow (const String& title,
       optionsButton ("options"), isGUIOn(false), pipeOpenedOk(false), AudioEnabled(true), isAFileOpen(false)
 {
 	consoleMessages = "";
+	cabbageDance = 0;
 	setTitleBarButtonsRequired (DocumentWindow::minimiseButton | DocumentWindow::closeButton, false);
     Component::addAndMakeVisible (&optionsButton);
     optionsButton.addListener (this);
@@ -191,10 +192,19 @@ pipeOpenedOk = ipConnection->sendMessage(messageData);
 //==============================================================================
 void StandaloneFilterWindow::timerCallback()
 {   
+	int64 diskTime = csdFile.getLastModificationTime().toMilliseconds();
+	int64 tempTime = lastSaveTime.toMilliseconds();
+	if(diskTime>tempTime){
+		resetFilter();
+		lastSaveTime = csdFile.getLastModificationTime();
+	}
+	//cout << csdFile.getLastModificationTime().toString(true, true, false, false);
+	if(cabbageDance){
 	float moveY = sin(yAxis*2*3.14*20/100); 
 	float moveX = sin(yAxis*2*3.14*10/100); 
 	yAxis+=1;
 	this->setTopLeftPosition(this->getScreenX()+(moveX*5), this->getScreenY()+(moveY*10));
+	}
 }
 
 //==============================================================================
@@ -557,10 +567,20 @@ void StandaloneFilterWindow::buttonClicked (Button*)
 	subMenu.addItem(12, TRANS("Synths"));
 	m.addSubMenu(TRANS("Batch Convert"), subMenu);
 	m.addSeparator();
-	if(timerRunning)
+
+	int autoUpdate = appProperties->getUserSettings()->getValue("AutoUpdate", var(0)).getFloatValue();
+	if(!autoUpdate)
+	m.addItem(299, String("Auto-update"), true, false);
+	else
+	m.addItem(299, String("Auto-update"), true, true);
+/*
+	m.addSeparator();
+	if(cabbageDance)
 	m.addItem(99, String("Cabbage Dance"), true, true);
 	else
 	m.addItem(99, String("Cabbage Dance"));
+*/
+
 
 
 	subMenu.clear();
@@ -689,17 +709,31 @@ void StandaloneFilterWindow::buttonClicked (Button*)
 	else if(options==12)
 		BatchProcess(String("VSTi"));
 
+	//----- auto-update file when saved remotely ------
+	else if(options==299){
+		int val = appProperties->getUserSettings()->getValue("AutoUpdate", var(0)).getFloatValue();
+		if(val==0){
+			appProperties->getUserSettings()->setValue("AutoUpdate", var(1));
+			startTimer(100);	
+			}
+		else{
+			appProperties->getUserSettings()->setValue("AutoUpdate", var(0));
+			stopTimer();
+		}
+		}
+/*
 	//------- cabbage dance ------
 	else if(options==99){
-		if(!timerRunning){
+		if(!cabbageDance){
 		startTimer(20);
-		timerRunning = true;
+		cabbageDance = true;
 		}
 		else{
 		stopTimer();
-		timerRunning = false;
+		cabbageDance = false;
 		}
 	}
+	*/
 	//------- preference Csound manual dir ------
 	else if(options==200){
 		String dir = appProperties->getUserSettings()->getValue("CsoundHelpDir", "");
@@ -755,6 +789,7 @@ void StandaloneFilterWindow::openFile()
 	if(openFC.browseForFileToOpen()){
 		csdFile = openFC.getResult();
 		originalCsdFile = openFC.getResult();
+		lastSaveTime = csdFile.getLastModificationTime();
 		csdFile.setAsCurrentWorkingDirectory();
 		if(csdFile.getFileExtension()==(".vst")){
 			String csd = csdFile.getFullPathName();

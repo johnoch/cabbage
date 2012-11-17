@@ -152,6 +152,8 @@ public:
 	}
 
 private:
+	Time lastSaveTime;
+	bool cabbageDance;
 	bool timerRunning;
 	bool AudioEnabled;
 	bool isAFileOpen;

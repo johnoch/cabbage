@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Session Name="/home/rory/Sourcecode/cabbage/Builds/Linux/CabbagePlugin/CabbagePlugin.workspace">
+  <int Value="12" Name="m_selectedTab"/>
+  <wxString Value="/home/rory/Sourcecode/cabbage/Builds/Linux/CabbagePlugin/CabbagePlugin.workspace" Name="m_workspaceName"/>
+  <TabInfoArray Name="TabInfoArray">
+    <TabInfo>
+      <wxString Value="/home/rory/Sourcecode/cabbage/Source/Standalone/CabbageStandaloneDialog.cpp" Name="FileName"/>
+      <int Value="212" Name="FirstVisibleLine"/>
+      <int Value="212" Name="CurrentLine"/>
+      <wxArrayString Name="Bookmarks"/>
+    </TabInfo>
+    <TabInfo>
+      <wxString Value="/home/rory/Sourcecode/cabbage/Source/Standalone/CabbageStandaloneDialog.h" Name="FileName"/>
+      <int Value="149" Name="FirstVisibleLine"/>
+      <int Value="149" Name="CurrentLine"/>
+      <wxArrayString Name="Bookmarks"/>
+    </TabInfo>
+    <TabInfo>
+      <wxString Value="/home/rory/Sourcecode/cabbage/Source/Plugin/CabbagePluginEditor.cpp" Name="FileName"/>
+      <int Value="117" Name="FirstVisibleLine"/>
+      <int Value="117" Name="CurrentLine"/>
+      <wxArrayString Name="Bookmarks"/>
+    </TabInfo>
+    <TabInfo>
+      <wxString Value="/home/rory/Sourcecode/cabbage/Source/CabbageUtils.h" Name="FileName"/>
+      <int Value="256" Name="FirstVisibleLine"/>
+      <int Value="276" Name="CurrentLine"/>
+      <wxArrayString Name="Bookmarks"/>
+    </TabInfo>
+    <TabInfo>
+      <wxString Value="/home/rory/Sourcecode/cabbage/Source/Plugin/CabbagePluginProcessor.h" Name="FileName"/>
+      <int Value="281" Name="FirstVisibleLine"/>
+      <int Value="330" Name="CurrentLine"/>
+      <wxArrayString Name="Bookmarks"/>
+    </TabInfo>
+    <TabInfo>
+      <wxString Value="/home/rory/Sourcecode/cabbage/Source/Plugin/CabbagePluginProcessor.cpp" Name="FileName"/>
+      <int Value="452" Name="FirstVisibleLine"/>
+      <int Value="472" Name="CurrentLine"/>
+      <wxArrayString Name="Bookmarks"/>
+    </TabInfo>
+    <TabInfo>
+      <wxString Value="/home/rory/Sourcecode/cabbage/Source/Plugin/CabbagePluginEditor.h" Name="FileName"/>
+      <int Value="26" Name="FirstVisibleLine"/>
+      <int Value="26" Name="CurrentLine"/>
+      <wxArrayString Name="Bookmarks"/>
+    </TabInfo>
+    <TabInfo>
+      <wxString Value="/home/rory/Sourcecode/cabbage/Source/ComponentLayoutEditor.cpp" Name="FileName"/>
+      <int Value="75" Name="FirstVisibleLine"/>
+      <int Value="75" Name="CurrentLine"/>
+      <wxArrayString Name="Bookmarks"/>
+    </TabInfo>
+    <TabInfo>
+      <wxString Value="/home/rory/Sourcecode/cabbage/Source/CabbageMainPanel.cpp" Name="FileName"/>
+      <int Value="6" Name="FirstVisibleLine"/>
+      <int Value="40" Name="CurrentLine"/>
+      <wxArrayString Name="Bookmarks"/>
+    </TabInfo>
+    <TabInfo>
+      <wxString Value="/home/rory/Sourcecode/cabbage/Source/CabbageMainPanel.h" Name="FileName"/>
+      <int Value="90" Name="FirstVisibleLine"/>
+      <int Value="120" Name="CurrentLine"/>
+      <wxArrayString Name="Bookmarks"/>
+    </TabInfo>
+    <TabInfo>
+      <wxString Value="/home/rory/Sourcecode/cabbage/Source/ComponentLayoutEditor.h" Name="FileName"/>
+      <int Value="17" Name="FirstVisibleLine"/>
+      <int Value="17" Name="CurrentLine"/>
+      <wxArrayString Name="Bookmarks"/>
+    </TabInfo>
+    <TabInfo>
+      <wxString Value="/home/rory/Sourcecode/cabbage/JuceLibraryCode/modules/juce_core/text/juce_CharPointer_UTF8.h" Name="FileName"/>
+      <int Value="217" Name="FirstVisibleLine"/>
+      <int Value="217" Name="CurrentLine"/>
+      <wxArrayString Name="Bookmarks"/>
+    </TabInfo>
+    <TabInfo>
+      <wxString Value="/home/rory/Sourcecode/julianstorer-JUCE-f02f1c3/modules/juce_gui_basics/components/juce_Component.cpp" Name="FileName"/>
+      <int Value="1070" Name="FirstVisibleLine"/>
+      <int Value="1090" Name="CurrentLine"/>
+      <wxArrayString Name="Bookmarks"/>
+    </TabInfo>
+  </TabInfoArray>
+  <SerializedObject Name="m_breakpoints">
+    <long Value="0" Name="Count"/>
+  </SerializedObject>
+</Session>

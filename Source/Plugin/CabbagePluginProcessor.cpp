@@ -20,7 +20,7 @@
 #include "CabbagePluginProcessor.h"   
 #include "CabbagePluginEditor.h"
 
-#define VERSION "Cabbage v0.04.00 BETA"
+#define CABBAGE_VERSION "Cabbage v0.04.00 BETA"
 
 #define MAX_BUFFER_SIZE 1024
 //==============================================================================
@@ -102,7 +102,7 @@ if(csCompileResult==0){
         csndIndex = csound->GetKsmps();
         cs_scale = csound->Get0dBFS();
         csoundStatus = true;
-        debugMessageArray.add(VERSION);
+        debugMessageArray.add(CABBAGE_VERSION);
         debugMessageArray.add(String("\n"));
 }
 else{

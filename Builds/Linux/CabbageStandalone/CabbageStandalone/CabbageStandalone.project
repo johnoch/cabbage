@@ -1,0 +1,1397 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CodeLite_Project Name="CabbageStandalone" InternalType="">
+  <Plugins>
+    <Plugin Name="qmake">
+      <![CDATA[00010001N0005Debug000000000000]]>
+    </Plugin>
+  </Plugins>
+  <VirtualDirectory Name="modules">
+    <VirtualDirectory Name="juce_audio_processors">
+      <VirtualDirectory Name="format">
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_processors/format/juce_AudioPluginFormatManager.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_processors/format/juce_AudioPluginFormat.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_processors/format/juce_AudioPluginFormat.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_processors/format/juce_AudioPluginFormatManager.h"/>
+      </VirtualDirectory>
+      <VirtualDirectory Name="processors">
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_processors/processors/juce_AudioProcessor.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_processors/processors/juce_AudioPlayHead.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_processors/processors/juce_PluginDescription.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_processors/processors/juce_AudioProcessorGraph.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_processors/processors/juce_AudioProcessorEditor.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_processors/processors/juce_GenericAudioProcessorEditor.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_processors/processors/juce_AudioProcessorListener.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_processors/processors/juce_AudioPluginInstance.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_processors/processors/juce_GenericAudioProcessorEditor.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_processors/processors/juce_AudioProcessorEditor.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_processors/processors/juce_AudioProcessorGraph.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_processors/processors/juce_PluginDescription.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_processors/processors/juce_AudioProcessor.cpp"/>
+      </VirtualDirectory>
+      <VirtualDirectory Name="format_types">
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_processors/format_types/juce_VSTPluginFormat.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_processors/format_types/juce_VSTPluginFormat.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_processors/format_types/juce_VSTMidiEventList.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_processors/format_types/juce_AudioUnitPluginFormat.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_processors/format_types/juce_DirectXPluginFormat.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_processors/format_types/juce_LADSPAPluginFormat.h"/>
+      </VirtualDirectory>
+      <VirtualDirectory Name="scanning">
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_processors/scanning/juce_PluginDirectoryScanner.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_processors/scanning/juce_PluginDirectoryScanner.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_processors/scanning/juce_PluginListComponent.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_processors/scanning/juce_KnownPluginList.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_processors/scanning/juce_PluginListComponent.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_processors/scanning/juce_KnownPluginList.h"/>
+      </VirtualDirectory>
+      <File Name="../../../../JuceLibraryCode/modules/juce_audio_processors/juce_audio_processors.h"/>
+      <File Name="../../../../JuceLibraryCode/modules/juce_audio_processors/juce_module_info"/>
+      <File Name="../../../../JuceLibraryCode/modules/juce_audio_processors/juce_audio_processors.cpp"/>
+    </VirtualDirectory>
+    <VirtualDirectory Name="juce_gui_basics">
+      <VirtualDirectory Name="application">
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/application/juce_Application.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/application/juce_Initialisation.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/application/juce_Application.h"/>
+      </VirtualDirectory>
+      <VirtualDirectory Name="positioning">
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/positioning/juce_MarkerList.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/positioning/juce_RelativeCoordinatePositioner.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/positioning/juce_RelativeCoordinatePositioner.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/positioning/juce_RelativeRectangle.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/positioning/juce_MarkerList.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/positioning/juce_RelativeCoordinate.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/positioning/juce_RelativePoint.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/positioning/juce_RelativeCoordinate.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/positioning/juce_RelativePointPath.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/positioning/juce_RelativeParallelogram.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/positioning/juce_RelativeRectangle.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/positioning/juce_RelativePointPath.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/positioning/juce_RelativeParallelogram.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/positioning/juce_RelativePoint.h"/>
+      </VirtualDirectory>
+      <VirtualDirectory Name="lookandfeel">
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/lookandfeel/juce_LookAndFeel.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/lookandfeel/juce_LookAndFeel.h"/>
+      </VirtualDirectory>
+      <VirtualDirectory Name="widgets">
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/widgets/juce_ComboBox.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/widgets/juce_ToolbarItemFactory.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/widgets/juce_TextEditor.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/widgets/juce_Toolbar.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/widgets/juce_ListBox.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/widgets/juce_TableHeaderComponent.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/widgets/juce_ImageComponent.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/widgets/juce_TreeView.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/widgets/juce_ToolbarItemPalette.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/widgets/juce_Toolbar.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/widgets/juce_ToolbarItemComponent.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/widgets/juce_ImageComponent.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/widgets/juce_TableListBox.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/widgets/juce_TableListBox.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/widgets/juce_ComboBox.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/widgets/juce_Label.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/widgets/juce_Label.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/widgets/juce_Slider.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/widgets/juce_Slider.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/widgets/juce_ProgressBar.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/widgets/juce_ToolbarItemComponent.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/widgets/juce_TextEditor.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/widgets/juce_TreeView.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/widgets/juce_ProgressBar.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/widgets/juce_ToolbarItemPalette.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/widgets/juce_ListBox.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/widgets/juce_TableHeaderComponent.cpp"/>
+      </VirtualDirectory>
+      <VirtualDirectory Name="drawables">
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/drawables/juce_DrawableRectangle.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/drawables/juce_DrawableShape.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/drawables/juce_DrawableComposite.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/drawables/juce_DrawablePath.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/drawables/juce_DrawableComposite.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/drawables/juce_SVGParser.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/drawables/juce_DrawableText.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/drawables/juce_DrawableText.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/drawables/juce_Drawable.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/drawables/juce_DrawableShape.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/drawables/juce_DrawableRectangle.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/drawables/juce_DrawableImage.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/drawables/juce_Drawable.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/drawables/juce_DrawableImage.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/drawables/juce_DrawablePath.h"/>
+      </VirtualDirectory>
+      <VirtualDirectory Name="buttons">
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/buttons/juce_DrawableButton.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/buttons/juce_HyperlinkButton.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/buttons/juce_ArrowButton.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/buttons/juce_ShapeButton.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/buttons/juce_ImageButton.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/buttons/juce_ToolbarButton.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/buttons/juce_TextButton.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/buttons/juce_DrawableButton.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/buttons/juce_HyperlinkButton.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/buttons/juce_Button.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/buttons/juce_ShapeButton.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/buttons/juce_ArrowButton.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/buttons/juce_ToolbarButton.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/buttons/juce_ToggleButton.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/buttons/juce_ImageButton.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/buttons/juce_TextButton.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/buttons/juce_Button.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/buttons/juce_ToggleButton.h"/>
+      </VirtualDirectory>
+      <VirtualDirectory Name="misc">
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/misc/juce_BubbleComponent.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/misc/juce_DropShadower.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/misc/juce_DropShadower.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/misc/juce_BubbleComponent.cpp"/>
+      </VirtualDirectory>
+      <VirtualDirectory Name="components">
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/components/juce_Component.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/components/juce_ModalComponentManager.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/components/juce_Desktop.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/components/juce_Component.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/components/juce_ModalComponentManager.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/components/juce_CachedComponentImage.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/components/juce_ComponentListener.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/components/juce_Desktop.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/components/juce_ComponentListener.h"/>
+      </VirtualDirectory>
+      <VirtualDirectory Name="filebrowser">
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/filebrowser/juce_FileBrowserComponent.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/filebrowser/juce_FileChooser.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/filebrowser/juce_FileBrowserListener.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/filebrowser/juce_FilenameComponent.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/filebrowser/juce_DirectoryContentsList.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/filebrowser/juce_DirectoryContentsDisplayComponent.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/filebrowser/juce_FileChooserDialogBox.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/filebrowser/juce_FileChooser.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/filebrowser/juce_DirectoryContentsDisplayComponent.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/filebrowser/juce_FileChooserDialogBox.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/filebrowser/juce_FileListComponent.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/filebrowser/juce_FileSearchPathListComponent.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/filebrowser/juce_FilenameComponent.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/filebrowser/juce_FileFilter.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/filebrowser/juce_FileBrowserComponent.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/filebrowser/juce_FilePreviewComponent.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/filebrowser/juce_FileTreeComponent.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/filebrowser/juce_WildcardFileFilter.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/filebrowser/juce_ImagePreviewComponent.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/filebrowser/juce_FileListComponent.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/filebrowser/juce_FileSearchPathListComponent.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/filebrowser/juce_DirectoryContentsList.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/filebrowser/juce_FileFilter.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/filebrowser/juce_ImagePreviewComponent.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/filebrowser/juce_WildcardFileFilter.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/filebrowser/juce_FileTreeComponent.h"/>
+      </VirtualDirectory>
+      <VirtualDirectory Name="menus">
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/menus/juce_MenuBarComponent.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/menus/juce_MenuBarComponent.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/menus/juce_PopupMenu.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/menus/juce_PopupMenu.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/menus/juce_MenuBarModel.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/menus/juce_MenuBarModel.h"/>
+      </VirtualDirectory>
+      <VirtualDirectory Name="windows">
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/windows/juce_DialogWindow.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/windows/juce_CallOutBox.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/windows/juce_ComponentPeer.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/windows/juce_TopLevelWindow.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/windows/juce_TopLevelWindow.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/windows/juce_DocumentWindow.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/windows/juce_TooltipWindow.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/windows/juce_AlertWindow.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/windows/juce_ThreadWithProgressWindow.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/windows/juce_CallOutBox.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/windows/juce_NativeMessageBox.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/windows/juce_ComponentPeer.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/windows/juce_ThreadWithProgressWindow.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/windows/juce_AlertWindow.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/windows/juce_DocumentWindow.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/windows/juce_DialogWindow.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/windows/juce_ResizableWindow.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/windows/juce_TooltipWindow.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/windows/juce_ResizableWindow.h"/>
+      </VirtualDirectory>
+      <VirtualDirectory Name="native">
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/native/juce_win32_FileChooser.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/native/juce_win32_DragAndDrop.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/native/juce_MultiTouchMapper.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/native/juce_android_FileChooser.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/native/juce_android_Windowing.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/native/juce_win32_Windowing.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/native/juce_linux_Windowing.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/native/juce_linux_Clipboard.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/native/juce_linux_FileChooser.cpp"/>
+      </VirtualDirectory>
+      <VirtualDirectory Name="mouse">
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/mouse/juce_MouseCursor.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/mouse/juce_MouseEvent.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/mouse/juce_MouseListener.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/mouse/juce_MouseEvent.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/mouse/juce_MouseCursor.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/mouse/juce_LassoComponent.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/mouse/juce_ComponentDragger.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/mouse/juce_TextDragAndDropTarget.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/mouse/juce_DragAndDropContainer.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/mouse/juce_TooltipClient.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/mouse/juce_MouseInputSource.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/mouse/juce_MouseInputSource.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/mouse/juce_FileDragAndDropTarget.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/mouse/juce_DragAndDropTarget.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/mouse/juce_MouseListener.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/mouse/juce_DragAndDropContainer.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/mouse/juce_SelectedItemSet.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/mouse/juce_ComponentDragger.h"/>
+      </VirtualDirectory>
+      <VirtualDirectory Name="commands">
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/commands/juce_KeyPressMappingSet.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/commands/juce_ApplicationCommandTarget.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/commands/juce_ApplicationCommandTarget.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/commands/juce_ApplicationCommandID.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/commands/juce_KeyPressMappingSet.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/commands/juce_ApplicationCommandInfo.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/commands/juce_ApplicationCommandManager.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/commands/juce_ApplicationCommandManager.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/commands/juce_ApplicationCommandInfo.h"/>
+      </VirtualDirectory>
+      <VirtualDirectory Name="keyboard">
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/keyboard/juce_KeyListener.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/keyboard/juce_KeyPress.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/keyboard/juce_CaretComponent.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/keyboard/juce_ModifierKeys.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/keyboard/juce_KeyboardFocusTraverser.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/keyboard/juce_KeyListener.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/keyboard/juce_ModifierKeys.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/keyboard/juce_KeyboardFocusTraverser.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/keyboard/juce_KeyPress.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/keyboard/juce_SystemClipboard.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/keyboard/juce_CaretComponent.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/keyboard/juce_TextInputTarget.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/keyboard/juce_TextEditorKeyMapper.h"/>
+      </VirtualDirectory>
+      <VirtualDirectory Name="layout">
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/layout/juce_ComponentAnimator.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/layout/juce_MultiDocumentPanel.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/layout/juce_ResizableBorderComponent.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/layout/juce_ComponentBuilder.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/layout/juce_Viewport.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/layout/juce_ComponentAnimator.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/layout/juce_ComponentBoundsConstrainer.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/layout/juce_ResizableEdgeComponent.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/layout/juce_TabbedComponent.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/layout/juce_ResizableEdgeComponent.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/layout/juce_TabbedButtonBar.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/layout/juce_Viewport.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/layout/juce_ResizableCornerComponent.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/layout/juce_StretchableObjectResizer.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/layout/juce_MultiDocumentPanel.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/layout/juce_ResizableCornerComponent.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/layout/juce_ResizableBorderComponent.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/layout/juce_ComponentBuilder.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/layout/juce_GroupComponent.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/layout/juce_ComponentMovementWatcher.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/layout/juce_GroupComponent.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/layout/juce_StretchableLayoutManager.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/layout/juce_StretchableLayoutManager.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/layout/juce_StretchableObjectResizer.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/layout/juce_TabbedComponent.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/layout/juce_StretchableLayoutResizerBar.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/layout/juce_ScrollBar.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/layout/juce_ScrollBar.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/layout/juce_ComponentBoundsConstrainer.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/layout/juce_ComponentMovementWatcher.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/layout/juce_ConcertinaPanel.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/layout/juce_StretchableLayoutResizerBar.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/layout/juce_ConcertinaPanel.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/layout/juce_TabbedButtonBar.cpp"/>
+      </VirtualDirectory>
+      <VirtualDirectory Name="properties">
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/properties/juce_PropertyComponent.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/properties/juce_ChoicePropertyComponent.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/properties/juce_PropertyPanel.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/properties/juce_SliderPropertyComponent.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/properties/juce_ButtonPropertyComponent.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/properties/juce_TextPropertyComponent.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/properties/juce_ButtonPropertyComponent.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/properties/juce_SliderPropertyComponent.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/properties/juce_PropertyPanel.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/properties/juce_PropertyComponent.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/properties/juce_ChoicePropertyComponent.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/properties/juce_BooleanPropertyComponent.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/properties/juce_TextPropertyComponent.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/properties/juce_BooleanPropertyComponent.h"/>
+      </VirtualDirectory>
+      <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/juce_gui_basics.h"/>
+      <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/juce_module_info"/>
+      <File Name="../../../../JuceLibraryCode/modules/juce_gui_basics/juce_gui_basics.cpp"/>
+    </VirtualDirectory>
+    <VirtualDirectory Name="juce_gui_extra">
+      <VirtualDirectory Name="lookandfeel">
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_extra/lookandfeel/juce_OldSchoolLookAndFeel.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_extra/lookandfeel/juce_OldSchoolLookAndFeel.cpp"/>
+      </VirtualDirectory>
+      <VirtualDirectory Name="embedding">
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_extra/embedding/juce_NSViewComponent.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_extra/embedding/juce_ActiveXControlComponent.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_extra/embedding/juce_UIViewComponent.h"/>
+      </VirtualDirectory>
+      <VirtualDirectory Name="misc">
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_extra/misc/juce_BubbleMessageComponent.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_extra/misc/juce_BubbleMessageComponent.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_extra/misc/juce_RecentlyOpenedFilesList.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_extra/misc/juce_AppleRemote.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_extra/misc/juce_SplashScreen.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_extra/misc/juce_SystemTrayIconComponent.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_extra/misc/juce_SplashScreen.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_extra/misc/juce_ColourSelector.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_extra/misc/juce_KeyMappingEditorComponent.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_extra/misc/juce_PreferencesPanel.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_extra/misc/juce_RecentlyOpenedFilesList.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_extra/misc/juce_WebBrowserComponent.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_extra/misc/juce_ColourSelector.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_extra/misc/juce_PreferencesPanel.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_extra/misc/juce_SystemTrayIconComponent.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_extra/misc/juce_KeyMappingEditorComponent.cpp"/>
+      </VirtualDirectory>
+      <VirtualDirectory Name="documents">
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_extra/documents/juce_FileBasedDocument.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_extra/documents/juce_FileBasedDocument.h"/>
+      </VirtualDirectory>
+      <VirtualDirectory Name="native">
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_extra/native/juce_win32_ActiveXComponent.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_extra/native/juce_android_WebBrowserComponent.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_extra/native/juce_linux_WebBrowserComponent.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_extra/native/juce_win32_WebBrowserComponent.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_extra/native/juce_mac_CarbonViewWrapperComponent.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_extra/native/juce_win32_SystemTrayIcon.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_extra/native/juce_linux_SystemTrayIcon.cpp"/>
+      </VirtualDirectory>
+      <VirtualDirectory Name="code_editor">
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_extra/code_editor/juce_CPlusPlusCodeTokeniser.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_extra/code_editor/juce_CodeDocument.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_extra/code_editor/juce_CodeEditorComponent.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_extra/code_editor/juce_CodeDocument.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_extra/code_editor/juce_CPlusPlusCodeTokeniserFunctions.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_extra/code_editor/juce_CodeEditorComponent.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_extra/code_editor/juce_CPlusPlusCodeTokeniser.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_gui_extra/code_editor/juce_CodeTokeniser.h"/>
+      </VirtualDirectory>
+      <File Name="../../../../JuceLibraryCode/modules/juce_gui_extra/juce_gui_extra.cpp"/>
+      <File Name="../../../../JuceLibraryCode/modules/juce_gui_extra/juce_gui_extra.h"/>
+      <File Name="../../../../JuceLibraryCode/modules/juce_gui_extra/juce_module_info"/>
+    </VirtualDirectory>
+    <VirtualDirectory Name="juce_graphics">
+      <VirtualDirectory Name="image_formats">
+        <VirtualDirectory Name="jpglib">
+          <File Name="../../../../JuceLibraryCode/modules/juce_graphics/image_formats/jpglib/jmemnobs.c"/>
+          <File Name="../../../../JuceLibraryCode/modules/juce_graphics/image_formats/jpglib/jidctred.c"/>
+          <File Name="../../../../JuceLibraryCode/modules/juce_graphics/image_formats/jpglib/jdtrans.c"/>
+          <File Name="../../../../JuceLibraryCode/modules/juce_graphics/image_formats/jpglib/jdapistd.c"/>
+          <File Name="../../../../JuceLibraryCode/modules/juce_graphics/image_formats/jpglib/jdpostct.c"/>
+          <File Name="../../../../JuceLibraryCode/modules/juce_graphics/image_formats/jpglib/jcomapi.c"/>
+          <File Name="../../../../JuceLibraryCode/modules/juce_graphics/image_formats/jpglib/jchuff.h"/>
+          <File Name="../../../../JuceLibraryCode/modules/juce_graphics/image_formats/jpglib/jcinit.c"/>
+          <File Name="../../../../JuceLibraryCode/modules/juce_graphics/image_formats/jpglib/jcmaster.c"/>
+          <File Name="../../../../JuceLibraryCode/modules/juce_graphics/image_formats/jpglib/jcmarker.c"/>
+          <File Name="../../../../JuceLibraryCode/modules/juce_graphics/image_formats/jpglib/jcsample.c"/>
+          <File Name="../../../../JuceLibraryCode/modules/juce_graphics/image_formats/jpglib/jdphuff.c"/>
+          <File Name="../../../../JuceLibraryCode/modules/juce_graphics/image_formats/jpglib/jcparam.c"/>
+          <File Name="../../../../JuceLibraryCode/modules/juce_graphics/image_formats/jpglib/jdhuff.h"/>
+          <File Name="../../../../JuceLibraryCode/modules/juce_graphics/image_formats/jpglib/jchuff.c"/>
+          <File Name="../../../../JuceLibraryCode/modules/juce_graphics/image_formats/jpglib/jdmarker.c"/>
+          <File Name="../../../../JuceLibraryCode/modules/juce_graphics/image_formats/jpglib/jmemmgr.c"/>
+          <File Name="../../../../JuceLibraryCode/modules/juce_graphics/image_formats/jpglib/jidctfst.c"/>
+          <File Name="../../../../JuceLibraryCode/modules/juce_graphics/image_formats/jpglib/jdcoefct.c"/>
+          <File Name="../../../../JuceLibraryCode/modules/juce_graphics/image_formats/jpglib/jdmerge.c"/>
+          <File Name="../../../../JuceLibraryCode/modules/juce_graphics/image_formats/jpglib/jdsample.c"/>
+          <File Name="../../../../JuceLibraryCode/modules/juce_graphics/image_formats/jpglib/jctrans.c"/>
+          <File Name="../../../../JuceLibraryCode/modules/juce_graphics/image_formats/jpglib/transupp.h"/>
+          <File Name="../../../../JuceLibraryCode/modules/juce_graphics/image_formats/jpglib/jdatasrc.c"/>
+          <File Name="../../../../JuceLibraryCode/modules/juce_graphics/image_formats/jpglib/jccolor.c"/>
+          <File Name="../../../../JuceLibraryCode/modules/juce_graphics/image_formats/jpglib/README"/>
+          <File Name="../../../../JuceLibraryCode/modules/juce_graphics/image_formats/jpglib/jutils.c"/>
+          <File Name="../../../../JuceLibraryCode/modules/juce_graphics/image_formats/jpglib/jmemsys.h"/>
+          <File Name="../../../../JuceLibraryCode/modules/juce_graphics/image_formats/jpglib/jerror.h"/>
+          <File Name="../../../../JuceLibraryCode/modules/juce_graphics/image_formats/jpglib/jcapistd.c"/>
+          <File Name="../../../../JuceLibraryCode/modules/juce_graphics/image_formats/jpglib/transupp.c"/>
+          <File Name="../../../../JuceLibraryCode/modules/juce_graphics/image_formats/jpglib/jdinput.c"/>
+          <File Name="../../../../JuceLibraryCode/modules/juce_graphics/image_formats/jpglib/jconfig.h"/>
+          <File Name="../../../../JuceLibraryCode/modules/juce_graphics/image_formats/jpglib/cderror.h"/>
+          <File Name="../../../../JuceLibraryCode/modules/juce_graphics/image_formats/jpglib/jcphuff.c"/>
+          <File Name="../../../../JuceLibraryCode/modules/juce_graphics/image_formats/jpglib/jquant2.c"/>
+          <File Name="../../../../JuceLibraryCode/modules/juce_graphics/image_formats/jpglib/jcdctmgr.c"/>
+          <File Name="../../../../JuceLibraryCode/modules/juce_graphics/image_formats/jpglib/jdmaster.c"/>
+          <File Name="../../../../JuceLibraryCode/modules/juce_graphics/image_formats/jpglib/jcapimin.c"/>
+          <File Name="../../../../JuceLibraryCode/modules/juce_graphics/image_formats/jpglib/jdhuff.c"/>
+          <File Name="../../../../JuceLibraryCode/modules/juce_graphics/image_formats/jpglib/jccoefct.c"/>
+          <File Name="../../../../JuceLibraryCode/modules/juce_graphics/image_formats/jpglib/jerror.c"/>
+          <File Name="../../../../JuceLibraryCode/modules/juce_graphics/image_formats/jpglib/jquant1.c"/>
+          <File Name="../../../../JuceLibraryCode/modules/juce_graphics/image_formats/jpglib/jidctflt.c"/>
+          <File Name="../../../../JuceLibraryCode/modules/juce_graphics/image_formats/jpglib/jdmainct.c"/>
+          <File Name="../../../../JuceLibraryCode/modules/juce_graphics/image_formats/jpglib/jinclude.h"/>
+          <File Name="../../../../JuceLibraryCode/modules/juce_graphics/image_formats/jpglib/jfdctflt.c"/>
+          <File Name="../../../../JuceLibraryCode/modules/juce_graphics/image_formats/jpglib/jfdctint.c"/>
+          <File Name="../../../../JuceLibraryCode/modules/juce_graphics/image_formats/jpglib/jdct.h"/>
+          <File Name="../../../../JuceLibraryCode/modules/juce_graphics/image_formats/jpglib/jcprepct.c"/>
+          <File Name="../../../../JuceLibraryCode/modules/juce_graphics/image_formats/jpglib/jdapimin.c"/>
+          <File Name="../../../../JuceLibraryCode/modules/juce_graphics/image_formats/jpglib/jpeglib.h"/>
+          <File Name="../../../../JuceLibraryCode/modules/juce_graphics/image_formats/jpglib/jmorecfg.h"/>
+          <File Name="../../../../JuceLibraryCode/modules/juce_graphics/image_formats/jpglib/jddctmgr.c"/>
+          <File Name="../../../../JuceLibraryCode/modules/juce_graphics/image_formats/jpglib/jversion.h"/>
+          <File Name="../../../../JuceLibraryCode/modules/juce_graphics/image_formats/jpglib/jcmainct.c"/>
+          <File Name="../../../../JuceLibraryCode/modules/juce_graphics/image_formats/jpglib/jidctint.c"/>
+          <File Name="../../../../JuceLibraryCode/modules/juce_graphics/image_formats/jpglib/jdcolor.c"/>
+          <File Name="../../../../JuceLibraryCode/modules/juce_graphics/image_formats/jpglib/jfdctfst.c"/>
+          <File Name="../../../../JuceLibraryCode/modules/juce_graphics/image_formats/jpglib/jpegint.h"/>
+        </VirtualDirectory>
+        <VirtualDirectory Name="pnglib">
+          <File Name="../../../../JuceLibraryCode/modules/juce_graphics/image_formats/pnglib/pngmem.c"/>
+          <File Name="../../../../JuceLibraryCode/modules/juce_graphics/image_formats/pnglib/pngpread.c"/>
+          <File Name="../../../../JuceLibraryCode/modules/juce_graphics/image_formats/pnglib/pngerror.c"/>
+          <File Name="../../../../JuceLibraryCode/modules/juce_graphics/image_formats/pnglib/LICENSE"/>
+          <File Name="../../../../JuceLibraryCode/modules/juce_graphics/image_formats/pnglib/pngrio.c"/>
+          <File Name="../../../../JuceLibraryCode/modules/juce_graphics/image_formats/pnglib/pngtrans.c"/>
+          <File Name="../../../../JuceLibraryCode/modules/juce_graphics/image_formats/pnglib/pngset.c"/>
+          <File Name="../../../../JuceLibraryCode/modules/juce_graphics/image_formats/pnglib/png.c"/>
+          <File Name="../../../../JuceLibraryCode/modules/juce_graphics/image_formats/pnglib/pngget.c"/>
+          <File Name="../../../../JuceLibraryCode/modules/juce_graphics/image_formats/pnglib/pngconf.h"/>
+          <File Name="../../../../JuceLibraryCode/modules/juce_graphics/image_formats/pnglib/pngrutil.c"/>
+          <File Name="../../../../JuceLibraryCode/modules/juce_graphics/image_formats/pnglib/png.h"/>
+          <File Name="../../../../JuceLibraryCode/modules/juce_graphics/image_formats/pnglib/pngwrite.c"/>
+          <File Name="../../../../JuceLibraryCode/modules/juce_graphics/image_formats/pnglib/pngwio.c"/>
+          <File Name="../../../../JuceLibraryCode/modules/juce_graphics/image_formats/pnglib/pngrtran.c"/>
+          <File Name="../../../../JuceLibraryCode/modules/juce_graphics/image_formats/pnglib/pngwutil.c"/>
+          <File Name="../../../../JuceLibraryCode/modules/juce_graphics/image_formats/pnglib/pngwtran.c"/>
+          <File Name="../../../../JuceLibraryCode/modules/juce_graphics/image_formats/pnglib/pngread.c"/>
+        </VirtualDirectory>
+        <File Name="../../../../JuceLibraryCode/modules/juce_graphics/image_formats/juce_PNGLoader.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_graphics/image_formats/juce_GIFLoader.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_graphics/image_formats/juce_JPEGLoader.cpp"/>
+      </VirtualDirectory>
+      <VirtualDirectory Name="geometry">
+        <File Name="../../../../JuceLibraryCode/modules/juce_graphics/geometry/juce_EdgeTable.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_graphics/geometry/juce_AffineTransform.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_graphics/geometry/juce_Point.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_graphics/geometry/juce_Rectangle.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_graphics/geometry/juce_RectangleList.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_graphics/geometry/juce_Line.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_graphics/geometry/juce_PathIterator.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_graphics/geometry/juce_Path.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_graphics/geometry/juce_BorderSize.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_graphics/geometry/juce_EdgeTable.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_graphics/geometry/juce_Path.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_graphics/geometry/juce_PathStrokeType.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_graphics/geometry/juce_PathStrokeType.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_graphics/geometry/juce_PathIterator.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_graphics/geometry/juce_AffineTransform.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_graphics/geometry/juce_RectangleList.cpp"/>
+      </VirtualDirectory>
+      <VirtualDirectory Name="contexts">
+        <File Name="../../../../JuceLibraryCode/modules/juce_graphics/contexts/juce_GraphicsContext.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_graphics/contexts/juce_LowLevelGraphicsSoftwareRenderer.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_graphics/contexts/juce_LowLevelGraphicsSoftwareRenderer.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_graphics/contexts/juce_LowLevelGraphicsPostScriptRenderer.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_graphics/contexts/juce_LowLevelGraphicsContext.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_graphics/contexts/juce_LowLevelGraphicsPostScriptRenderer.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_graphics/contexts/juce_GraphicsContext.h"/>
+      </VirtualDirectory>
+      <VirtualDirectory Name="placement">
+        <File Name="../../../../JuceLibraryCode/modules/juce_graphics/placement/juce_Justification.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_graphics/placement/juce_RectanglePlacement.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_graphics/placement/juce_RectanglePlacement.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_graphics/placement/juce_Justification.cpp"/>
+      </VirtualDirectory>
+      <VirtualDirectory Name="fonts">
+        <File Name="../../../../JuceLibraryCode/modules/juce_graphics/fonts/juce_CustomTypeface.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_graphics/fonts/juce_GlyphArrangement.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_graphics/fonts/juce_Typeface.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_graphics/fonts/juce_TextLayout.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_graphics/fonts/juce_CustomTypeface.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_graphics/fonts/juce_Font.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_graphics/fonts/juce_Typeface.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_graphics/fonts/juce_AttributedString.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_graphics/fonts/juce_GlyphArrangement.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_graphics/fonts/juce_TextLayout.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_graphics/fonts/juce_AttributedString.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_graphics/fonts/juce_Font.h"/>
+      </VirtualDirectory>
+      <VirtualDirectory Name="images">
+        <File Name="../../../../JuceLibraryCode/modules/juce_graphics/images/juce_ImageFileFormat.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_graphics/images/juce_Image.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_graphics/images/juce_ImageCache.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_graphics/images/juce_ImageFileFormat.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_graphics/images/juce_ImageConvolutionKernel.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_graphics/images/juce_ImageConvolutionKernel.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_graphics/images/juce_Image.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_graphics/images/juce_ImageCache.cpp"/>
+      </VirtualDirectory>
+      <VirtualDirectory Name="effects">
+        <File Name="../../../../JuceLibraryCode/modules/juce_graphics/effects/juce_GlowEffect.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_graphics/effects/juce_GlowEffect.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_graphics/effects/juce_DropShadowEffect.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_graphics/effects/juce_DropShadowEffect.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_graphics/effects/juce_ImageEffectFilter.h"/>
+      </VirtualDirectory>
+      <VirtualDirectory Name="native">
+        <File Name="../../../../JuceLibraryCode/modules/juce_graphics/native/juce_android_Fonts.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_graphics/native/juce_win32_DirectWriteTypeface.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_graphics/native/juce_win32_Fonts.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_graphics/native/juce_android_GraphicsContext.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_graphics/native/juce_mac_CoreGraphicsHelpers.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_graphics/native/juce_win32_Direct2DGraphicsContext.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_graphics/native/juce_win32_DirectWriteTypeLayout.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_graphics/native/juce_RenderingHelpers.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_graphics/native/juce_mac_CoreGraphicsContext.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_graphics/native/juce_linux_Fonts.cpp"/>
+      </VirtualDirectory>
+      <VirtualDirectory Name="colour">
+        <File Name="../../../../JuceLibraryCode/modules/juce_graphics/colour/juce_PixelFormats.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_graphics/colour/juce_ColourGradient.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_graphics/colour/juce_FillType.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_graphics/colour/juce_Colour.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_graphics/colour/juce_ColourGradient.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_graphics/colour/juce_FillType.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_graphics/colour/juce_Colours.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_graphics/colour/juce_Colour.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_graphics/colour/juce_Colours.h"/>
+      </VirtualDirectory>
+      <File Name="../../../../JuceLibraryCode/modules/juce_graphics/juce_graphics.cpp"/>
+      <File Name="../../../../JuceLibraryCode/modules/juce_graphics/juce_module_info"/>
+      <File Name="../../../../JuceLibraryCode/modules/juce_graphics/juce_graphics.h"/>
+    </VirtualDirectory>
+    <VirtualDirectory Name="juce_cryptography">
+      <VirtualDirectory Name="encryption">
+        <File Name="../../../../JuceLibraryCode/modules/juce_cryptography/encryption/juce_BlowFish.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_cryptography/encryption/juce_RSAKey.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_cryptography/encryption/juce_Primes.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_cryptography/encryption/juce_RSAKey.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_cryptography/encryption/juce_Primes.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_cryptography/encryption/juce_BlowFish.cpp"/>
+      </VirtualDirectory>
+      <VirtualDirectory Name="hashing">
+        <File Name="../../../../JuceLibraryCode/modules/juce_cryptography/hashing/juce_MD5.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_cryptography/hashing/juce_SHA256.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_cryptography/hashing/juce_SHA256.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_cryptography/hashing/juce_MD5.cpp"/>
+      </VirtualDirectory>
+      <File Name="../../../../JuceLibraryCode/modules/juce_cryptography/juce_cryptography.h"/>
+      <File Name="../../../../JuceLibraryCode/modules/juce_cryptography/juce_cryptography.cpp"/>
+      <File Name="../../../../JuceLibraryCode/modules/juce_cryptography/juce_module_info"/>
+    </VirtualDirectory>
+    <VirtualDirectory Name="juce_core">
+      <VirtualDirectory Name="zip">
+        <VirtualDirectory Name="zlib">
+          <File Name="../../../../JuceLibraryCode/modules/juce_core/zip/zlib/uncompr.c"/>
+          <File Name="../../../../JuceLibraryCode/modules/juce_core/zip/zlib/deflate.h"/>
+          <File Name="../../../../JuceLibraryCode/modules/juce_core/zip/zlib/zutil.h"/>
+          <File Name="../../../../JuceLibraryCode/modules/juce_core/zip/zlib/adler32.c"/>
+          <File Name="../../../../JuceLibraryCode/modules/juce_core/zip/zlib/inffast.c"/>
+          <File Name="../../../../JuceLibraryCode/modules/juce_core/zip/zlib/inftrees.c"/>
+          <File Name="../../../../JuceLibraryCode/modules/juce_core/zip/zlib/zutil.c"/>
+          <File Name="../../../../JuceLibraryCode/modules/juce_core/zip/zlib/inffixed.h"/>
+          <File Name="../../../../JuceLibraryCode/modules/juce_core/zip/zlib/zlib.h"/>
+          <File Name="../../../../JuceLibraryCode/modules/juce_core/zip/zlib/inflate.c"/>
+          <File Name="../../../../JuceLibraryCode/modules/juce_core/zip/zlib/zconf.h"/>
+          <File Name="../../../../JuceLibraryCode/modules/juce_core/zip/zlib/crc32.h"/>
+          <File Name="../../../../JuceLibraryCode/modules/juce_core/zip/zlib/README"/>
+          <File Name="../../../../JuceLibraryCode/modules/juce_core/zip/zlib/trees.c"/>
+          <File Name="../../../../JuceLibraryCode/modules/juce_core/zip/zlib/inftrees.h"/>
+          <File Name="../../../../JuceLibraryCode/modules/juce_core/zip/zlib/crc32.c"/>
+          <File Name="../../../../JuceLibraryCode/modules/juce_core/zip/zlib/inflate.h"/>
+          <File Name="../../../../JuceLibraryCode/modules/juce_core/zip/zlib/deflate.c"/>
+          <File Name="../../../../JuceLibraryCode/modules/juce_core/zip/zlib/trees.h"/>
+          <File Name="../../../../JuceLibraryCode/modules/juce_core/zip/zlib/zconf.in.h"/>
+          <File Name="../../../../JuceLibraryCode/modules/juce_core/zip/zlib/compress.c"/>
+          <File Name="../../../../JuceLibraryCode/modules/juce_core/zip/zlib/inffast.h"/>
+          <File Name="../../../../JuceLibraryCode/modules/juce_core/zip/zlib/infback.c"/>
+        </VirtualDirectory>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/zip/juce_GZIPCompressorOutputStream.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/zip/juce_ZipFile.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/zip/juce_ZipFile.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/zip/juce_GZIPDecompressorInputStream.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/zip/juce_GZIPCompressorOutputStream.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/zip/juce_GZIPDecompressorInputStream.h"/>
+      </VirtualDirectory>
+      <VirtualDirectory Name="threads">
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/threads/juce_ScopedLock.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/threads/juce_DynamicLibrary.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/threads/juce_ThreadLocalValue.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/threads/juce_Thread.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/threads/juce_ScopedWriteLock.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/threads/juce_CriticalSection.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/threads/juce_TimeSliceThread.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/threads/juce_ChildProcess.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/threads/juce_ThreadPool.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/threads/juce_WaitableEvent.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/threads/juce_ThreadPool.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/threads/juce_TimeSliceThread.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/threads/juce_SpinLock.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/threads/juce_ChildProcess.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/threads/juce_Thread.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/threads/juce_ReadWriteLock.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/threads/juce_ReadWriteLock.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/threads/juce_ScopedReadLock.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/threads/juce_InterProcessLock.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/threads/juce_Process.h"/>
+      </VirtualDirectory>
+      <VirtualDirectory Name="files">
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/files/juce_MemoryMappedFile.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/files/juce_FileSearchPath.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/files/juce_TemporaryFile.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/files/juce_DirectoryIterator.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/files/juce_FileSearchPath.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/files/juce_FileInputStream.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/files/juce_FileOutputStream.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/files/juce_File.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/files/juce_File.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/files/juce_DirectoryIterator.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/files/juce_TemporaryFile.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/files/juce_FileInputStream.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/files/juce_FileOutputStream.h"/>
+      </VirtualDirectory>
+      <VirtualDirectory Name="logging">
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/logging/juce_FileLogger.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/logging/juce_FileLogger.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/logging/juce_Logger.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/logging/juce_Logger.cpp"/>
+      </VirtualDirectory>
+      <VirtualDirectory Name="maths">
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/maths/juce_BigInteger.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/maths/juce_Random.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/maths/juce_Range.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/maths/juce_Expression.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/maths/juce_BigInteger.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/maths/juce_Expression.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/maths/juce_Random.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/maths/juce_MathsFunctions.h"/>
+      </VirtualDirectory>
+      <VirtualDirectory Name="time">
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/time/juce_Time.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/time/juce_Time.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/time/juce_RelativeTime.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/time/juce_PerformanceCounter.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/time/juce_PerformanceCounter.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/time/juce_RelativeTime.h"/>
+      </VirtualDirectory>
+      <VirtualDirectory Name="unit_tests">
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/unit_tests/juce_UnitTest.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/unit_tests/juce_UnitTest.h"/>
+      </VirtualDirectory>
+      <VirtualDirectory Name="containers">
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/containers/juce_Variant.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/containers/juce_PropertySet.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/containers/juce_NamedValueSet.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/containers/juce_AbstractFifo.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/containers/juce_SortedSet.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/containers/juce_SparseSet.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/containers/juce_ScopedValueSetter.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/containers/juce_OwnedArray.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/containers/juce_NamedValueSet.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/containers/juce_DynamicObject.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/containers/juce_Array.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/containers/juce_HashMap.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/containers/juce_AbstractFifo.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/containers/juce_ArrayAllocationBase.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/containers/juce_ReferenceCountedArray.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/containers/juce_LinkedListPointer.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/containers/juce_DynamicObject.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/containers/juce_PropertySet.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/containers/juce_ElementComparator.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/containers/juce_Variant.h"/>
+      </VirtualDirectory>
+      <VirtualDirectory Name="streams">
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/streams/juce_FileInputSource.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/streams/juce_MemoryOutputStream.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/streams/juce_FileInputSource.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/streams/juce_BufferedInputStream.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/streams/juce_MemoryOutputStream.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/streams/juce_InputStream.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/streams/juce_SubregionStream.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/streams/juce_OutputStream.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/streams/juce_MemoryInputStream.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/streams/juce_OutputStream.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/streams/juce_SubregionStream.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/streams/juce_MemoryInputStream.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/streams/juce_InputStream.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/streams/juce_InputSource.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/streams/juce_BufferedInputStream.h"/>
+      </VirtualDirectory>
+      <VirtualDirectory Name="misc">
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/misc/juce_Result.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/misc/juce_Result.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/misc/juce_Uuid.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/misc/juce_Uuid.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/misc/juce_WindowsRegistry.h"/>
+      </VirtualDirectory>
+      <VirtualDirectory Name="text">
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/text/juce_StringArray.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/text/juce_StringPool.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/text/juce_CharPointer_ASCII.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/text/juce_StringPairArray.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/text/juce_CharacterFunctions.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/text/juce_CharacterFunctions.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/text/juce_String.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/text/juce_String.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/text/juce_CharPointer_UTF16.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/text/juce_CharPointer_UTF32.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/text/juce_LocalisedStrings.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/text/juce_TextDiff.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/text/juce_TextDiff.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/text/juce_StringPool.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/text/juce_Identifier.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/text/juce_NewLine.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/text/juce_CharPointer_UTF8.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/text/juce_StringArray.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/text/juce_Identifier.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/text/juce_StringPairArray.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/text/juce_LocalisedStrings.cpp"/>
+      </VirtualDirectory>
+      <VirtualDirectory Name="xml">
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/xml/juce_XmlElement.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/xml/juce_XmlDocument.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/xml/juce_XmlDocument.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/xml/juce_XmlElement.h"/>
+      </VirtualDirectory>
+      <VirtualDirectory Name="native">
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/native/juce_win32_Files.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/native/juce_BasicNativeHeaders.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/native/juce_linux_Network.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/native/juce_android_Misc.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/native/juce_android_Network.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/native/juce_android_SystemStats.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/native/juce_posix_NamedPipe.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/native/juce_win32_Registry.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/native/juce_android_Files.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/native/juce_osx_ObjCHelpers.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/native/juce_android_Threads.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/native/juce_win32_SystemStats.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/native/juce_win32_ComSmartPtr.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/native/juce_win32_Threads.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/native/juce_android_JNIHelpers.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/native/juce_linux_Threads.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/native/juce_posix_SharedCode.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/native/juce_win32_Network.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/native/juce_linux_SystemStats.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/native/juce_linux_Files.cpp"/>
+      </VirtualDirectory>
+      <VirtualDirectory Name="network">
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/network/juce_URL.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/network/juce_URL.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/network/juce_NamedPipe.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/network/juce_NamedPipe.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/network/juce_MACAddress.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/network/juce_MACAddress.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/network/juce_Socket.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/network/juce_Socket.cpp"/>
+      </VirtualDirectory>
+      <VirtualDirectory Name="json">
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/json/juce_JSON.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/json/juce_JSON.cpp"/>
+      </VirtualDirectory>
+      <VirtualDirectory Name="system">
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/system/juce_SystemStats.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/system/juce_TargetPlatform.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/system/juce_SystemStats.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/system/juce_StandardHeader.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/system/juce_PlatformDefs.h"/>
+      </VirtualDirectory>
+      <VirtualDirectory Name="memory">
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/memory/juce_ByteOrder.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/memory/juce_WeakReference.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/memory/juce_Atomic.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/memory/juce_Memory.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/memory/juce_LeakedObjectDetector.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/memory/juce_MemoryBlock.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/memory/juce_ScopedPointer.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/memory/juce_ReferenceCountedObject.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/memory/juce_MemoryBlock.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/memory/juce_Singleton.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/memory/juce_HeapBlock.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_core/memory/juce_OptionalScopedPointer.h"/>
+      </VirtualDirectory>
+      <File Name="../../../../JuceLibraryCode/modules/juce_core/juce_module_info"/>
+      <File Name="../../../../JuceLibraryCode/modules/juce_core/juce_core.cpp"/>
+      <File Name="../../../../JuceLibraryCode/modules/juce_core/juce_core.h"/>
+    </VirtualDirectory>
+    <VirtualDirectory Name="juce_audio_formats">
+      <VirtualDirectory Name="codecs">
+        <VirtualDirectory Name="flac">
+          <VirtualDirectory Name="libFLAC">
+            <VirtualDirectory Name="include">
+              <VirtualDirectory Name="protected">
+                <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/codecs/flac/libFLAC/include/protected/stream_decoder.h"/>
+                <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/codecs/flac/libFLAC/include/protected/all.h"/>
+                <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/codecs/flac/libFLAC/include/protected/stream_encoder.h"/>
+              </VirtualDirectory>
+              <VirtualDirectory Name="private">
+                <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/codecs/flac/libFLAC/include/private/bitreader.h"/>
+                <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/codecs/flac/libFLAC/include/private/bitwriter.h"/>
+                <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/codecs/flac/libFLAC/include/private/md5.h"/>
+                <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/codecs/flac/libFLAC/include/private/bitmath.h"/>
+                <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/codecs/flac/libFLAC/include/private/cpu.h"/>
+                <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/codecs/flac/libFLAC/include/private/format.h"/>
+                <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/codecs/flac/libFLAC/include/private/memory.h"/>
+                <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/codecs/flac/libFLAC/include/private/lpc.h"/>
+                <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/codecs/flac/libFLAC/include/private/float.h"/>
+                <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/codecs/flac/libFLAC/include/private/all.h"/>
+                <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/codecs/flac/libFLAC/include/private/metadata.h"/>
+                <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/codecs/flac/libFLAC/include/private/window.h"/>
+                <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/codecs/flac/libFLAC/include/private/fixed.h"/>
+                <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/codecs/flac/libFLAC/include/private/crc.h"/>
+                <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/codecs/flac/libFLAC/include/private/stream_encoder_framing.h"/>
+              </VirtualDirectory>
+            </VirtualDirectory>
+            <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/codecs/flac/libFLAC/bitmath.c"/>
+            <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/codecs/flac/libFLAC/cpu.c"/>
+            <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/codecs/flac/libFLAC/crc.c"/>
+            <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/codecs/flac/libFLAC/fixed.c"/>
+            <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/codecs/flac/libFLAC/stream_encoder_framing.c"/>
+            <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/codecs/flac/libFLAC/stream_encoder.c"/>
+            <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/codecs/flac/libFLAC/float.c"/>
+            <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/codecs/flac/libFLAC/lpc_flac.c"/>
+            <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/codecs/flac/libFLAC/stream_decoder.c"/>
+            <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/codecs/flac/libFLAC/bitreader.c"/>
+            <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/codecs/flac/libFLAC/window_flac.c"/>
+            <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/codecs/flac/libFLAC/bitwriter.c"/>
+            <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/codecs/flac/libFLAC/md5.c"/>
+            <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/codecs/flac/libFLAC/memory.c"/>
+            <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/codecs/flac/libFLAC/format.c"/>
+          </VirtualDirectory>
+          <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/codecs/flac/ordinals.h"/>
+          <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/codecs/flac/stream_decoder.h"/>
+          <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/codecs/flac/format.h"/>
+          <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/codecs/flac/export.h"/>
+          <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/codecs/flac/assert.h"/>
+          <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/codecs/flac/callback.h"/>
+          <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/codecs/flac/all.h"/>
+          <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/codecs/flac/alloc.h"/>
+          <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/codecs/flac/metadata.h"/>
+          <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/codecs/flac/stream_encoder.h"/>
+        </VirtualDirectory>
+        <VirtualDirectory Name="oggvorbis">
+          <VirtualDirectory Name="libvorbis-1.3.2">
+            <VirtualDirectory Name="lib">
+              <VirtualDirectory Name="books">
+                <VirtualDirectory Name="coupled">
+                  <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/codecs/oggvorbis/libvorbis-1.3.2/lib/books/coupled/res_books_stereo.h"/>
+                  <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/codecs/oggvorbis/libvorbis-1.3.2/lib/books/coupled/res_books_51.h"/>
+                </VirtualDirectory>
+                <VirtualDirectory Name="uncoupled">
+                  <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/codecs/oggvorbis/libvorbis-1.3.2/lib/books/uncoupled/res_books_uncoupled.h"/>
+                </VirtualDirectory>
+                <VirtualDirectory Name="floor">
+                  <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/codecs/oggvorbis/libvorbis-1.3.2/lib/books/floor/floor_books.h"/>
+                </VirtualDirectory>
+              </VirtualDirectory>
+              <VirtualDirectory Name="modes">
+                <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/codecs/oggvorbis/libvorbis-1.3.2/lib/modes/setup_16.h"/>
+                <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/codecs/oggvorbis/libvorbis-1.3.2/lib/modes/psych_44.h"/>
+                <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/codecs/oggvorbis/libvorbis-1.3.2/lib/modes/psych_8.h"/>
+                <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/codecs/oggvorbis/libvorbis-1.3.2/lib/modes/setup_44u.h"/>
+                <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/codecs/oggvorbis/libvorbis-1.3.2/lib/modes/setup_32.h"/>
+                <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/codecs/oggvorbis/libvorbis-1.3.2/lib/modes/floor_all.h"/>
+                <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/codecs/oggvorbis/libvorbis-1.3.2/lib/modes/psych_11.h"/>
+                <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/codecs/oggvorbis/libvorbis-1.3.2/lib/modes/residue_44p51.h"/>
+                <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/codecs/oggvorbis/libvorbis-1.3.2/lib/modes/setup_44p51.h"/>
+                <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/codecs/oggvorbis/libvorbis-1.3.2/lib/modes/setup_22.h"/>
+                <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/codecs/oggvorbis/libvorbis-1.3.2/lib/modes/residue_8.h"/>
+                <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/codecs/oggvorbis/libvorbis-1.3.2/lib/modes/residue_44u.h"/>
+                <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/codecs/oggvorbis/libvorbis-1.3.2/lib/modes/residue_44.h"/>
+                <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/codecs/oggvorbis/libvorbis-1.3.2/lib/modes/setup_44.h"/>
+                <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/codecs/oggvorbis/libvorbis-1.3.2/lib/modes/psych_16.h"/>
+                <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/codecs/oggvorbis/libvorbis-1.3.2/lib/modes/setup_8.h"/>
+                <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/codecs/oggvorbis/libvorbis-1.3.2/lib/modes/setup_11.h"/>
+                <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/codecs/oggvorbis/libvorbis-1.3.2/lib/modes/residue_16.h"/>
+                <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/codecs/oggvorbis/libvorbis-1.3.2/lib/modes/setup_X.h"/>
+              </VirtualDirectory>
+              <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/codecs/oggvorbis/libvorbis-1.3.2/lib/synthesis.c"/>
+              <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/codecs/oggvorbis/libvorbis-1.3.2/lib/info.c"/>
+              <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/codecs/oggvorbis/libvorbis-1.3.2/lib/lsp.c"/>
+              <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/codecs/oggvorbis/libvorbis-1.3.2/lib/res0.c"/>
+              <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/codecs/oggvorbis/libvorbis-1.3.2/lib/lookup.c"/>
+              <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/codecs/oggvorbis/libvorbis-1.3.2/lib/mdct.h"/>
+              <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/codecs/oggvorbis/libvorbis-1.3.2/lib/registry.h"/>
+              <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/codecs/oggvorbis/libvorbis-1.3.2/lib/envelope.c"/>
+              <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/codecs/oggvorbis/libvorbis-1.3.2/lib/floor0.c"/>
+              <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/codecs/oggvorbis/libvorbis-1.3.2/lib/masking.h"/>
+              <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/codecs/oggvorbis/libvorbis-1.3.2/lib/sharedbook.c"/>
+              <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/codecs/oggvorbis/libvorbis-1.3.2/lib/psy.c"/>
+              <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/codecs/oggvorbis/libvorbis-1.3.2/lib/floor1.c"/>
+              <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/codecs/oggvorbis/libvorbis-1.3.2/lib/codec_internal.h"/>
+              <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/codecs/oggvorbis/libvorbis-1.3.2/lib/lookup.h"/>
+              <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/codecs/oggvorbis/libvorbis-1.3.2/lib/bitrate.c"/>
+              <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/codecs/oggvorbis/libvorbis-1.3.2/lib/mdct.c"/>
+              <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/codecs/oggvorbis/libvorbis-1.3.2/lib/mapping0.c"/>
+              <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/codecs/oggvorbis/libvorbis-1.3.2/lib/highlevel.h"/>
+              <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/codecs/oggvorbis/libvorbis-1.3.2/lib/vorbisfile.c"/>
+              <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/codecs/oggvorbis/libvorbis-1.3.2/lib/lpc.h"/>
+              <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/codecs/oggvorbis/libvorbis-1.3.2/lib/backends.h"/>
+              <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/codecs/oggvorbis/libvorbis-1.3.2/lib/block.c"/>
+              <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/codecs/oggvorbis/libvorbis-1.3.2/lib/analysis.c"/>
+              <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/codecs/oggvorbis/libvorbis-1.3.2/lib/codebook.c"/>
+              <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/codecs/oggvorbis/libvorbis-1.3.2/lib/lookup_data.h"/>
+              <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/codecs/oggvorbis/libvorbis-1.3.2/lib/envelope.h"/>
+              <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/codecs/oggvorbis/libvorbis-1.3.2/lib/window.h"/>
+              <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/codecs/oggvorbis/libvorbis-1.3.2/lib/lsp.h"/>
+              <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/codecs/oggvorbis/libvorbis-1.3.2/lib/window.c"/>
+              <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/codecs/oggvorbis/libvorbis-1.3.2/lib/bitrate.h"/>
+              <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/codecs/oggvorbis/libvorbis-1.3.2/lib/scales.h"/>
+              <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/codecs/oggvorbis/libvorbis-1.3.2/lib/psy.h"/>
+              <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/codecs/oggvorbis/libvorbis-1.3.2/lib/misc.h"/>
+              <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/codecs/oggvorbis/libvorbis-1.3.2/lib/smallft.c"/>
+              <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/codecs/oggvorbis/libvorbis-1.3.2/lib/registry.c"/>
+              <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/codecs/oggvorbis/libvorbis-1.3.2/lib/codebook.h"/>
+              <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/codecs/oggvorbis/libvorbis-1.3.2/lib/smallft.h"/>
+              <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/codecs/oggvorbis/libvorbis-1.3.2/lib/os.h"/>
+              <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/codecs/oggvorbis/libvorbis-1.3.2/lib/lpc.c"/>
+              <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/codecs/oggvorbis/libvorbis-1.3.2/lib/vorbisenc.c"/>
+            </VirtualDirectory>
+            <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/codecs/oggvorbis/libvorbis-1.3.2/CHANGES"/>
+            <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/codecs/oggvorbis/libvorbis-1.3.2/README"/>
+            <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/codecs/oggvorbis/libvorbis-1.3.2/AUTHORS"/>
+            <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/codecs/oggvorbis/libvorbis-1.3.2/COPYING"/>
+          </VirtualDirectory>
+          <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/codecs/oggvorbis/config_types.h"/>
+          <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/codecs/oggvorbis/framing.c"/>
+          <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/codecs/oggvorbis/bitwise.c"/>
+          <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/codecs/oggvorbis/codec.h"/>
+          <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/codecs/oggvorbis/ogg.h"/>
+          <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/codecs/oggvorbis/vorbisfile.h"/>
+          <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/codecs/oggvorbis/os_types.h"/>
+          <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/codecs/oggvorbis/vorbisenc.h"/>
+        </VirtualDirectory>
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/codecs/juce_AiffAudioFormat.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/codecs/juce_QuickTimeAudioFormat.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/codecs/juce_FlacAudioFormat.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/codecs/juce_CoreAudioFormat.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/codecs/juce_WindowsMediaAudioFormat.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/codecs/juce_OggVorbisAudioFormat.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/codecs/juce_WavAudioFormat.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/codecs/juce_WindowsMediaAudioFormat.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/codecs/juce_QuickTimeAudioFormat.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/codecs/juce_OggVorbisAudioFormat.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/codecs/juce_WavAudioFormat.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/codecs/juce_AiffAudioFormat.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/codecs/juce_MP3AudioFormat.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/codecs/juce_CoreAudioFormat.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/codecs/juce_MP3AudioFormat.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/codecs/juce_FlacAudioFormat.cpp"/>
+      </VirtualDirectory>
+      <VirtualDirectory Name="format">
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/format/juce_AudioFormat.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/format/juce_AudioSubsectionReader.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/format/juce_AudioFormatReader.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/format/juce_AudioFormatReaderSource.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/format/juce_AudioFormatWriter.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/format/juce_AudioFormatReaderSource.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/format/juce_AudioFormat.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/format/juce_AudioSubsectionReader.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/format/juce_AudioFormatReader.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/format/juce_AudioFormatManager.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/format/juce_AudioFormatWriter.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/format/juce_AudioFormatManager.cpp"/>
+      </VirtualDirectory>
+      <VirtualDirectory Name="sampler">
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/sampler/juce_Sampler.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/sampler/juce_Sampler.h"/>
+      </VirtualDirectory>
+      <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/juce_audio_formats.cpp"/>
+      <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/juce_audio_formats.h"/>
+      <File Name="../../../../JuceLibraryCode/modules/juce_audio_formats/juce_module_info"/>
+    </VirtualDirectory>
+    <VirtualDirectory Name="juce_opengl">
+      <VirtualDirectory Name="native">
+        <File Name="../../../../JuceLibraryCode/modules/juce_opengl/native/juce_MissingGLDefinitions.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_opengl/native/juce_OpenGL_android.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_opengl/native/juce_OpenGL_osx.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_opengl/native/juce_OpenGL_ios.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_opengl/native/juce_OpenGL_linux.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_opengl/native/juce_OpenGL_win32.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_opengl/native/juce_OpenGLExtensions.h"/>
+      </VirtualDirectory>
+      <VirtualDirectory Name="opengl">
+        <File Name="../../../../JuceLibraryCode/modules/juce_opengl/opengl/juce_Quaternion.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_opengl/opengl/juce_OpenGLPixelFormat.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_opengl/opengl/juce_OpenGLFrameBuffer.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_opengl/opengl/juce_OpenGLHelpers.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_opengl/opengl/juce_OpenGLGraphicsContext.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_opengl/opengl/juce_OpenGLImage.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_opengl/opengl/juce_OpenGLRenderer.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_opengl/opengl/juce_Matrix3D.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_opengl/opengl/juce_OpenGLGraphicsContext.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_opengl/opengl/juce_Vector3D.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_opengl/opengl/juce_Draggable3DOrientation.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_opengl/opengl/juce_OpenGLImage.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_opengl/opengl/juce_OpenGLHelpers.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_opengl/opengl/juce_OpenGLShaderProgram.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_opengl/opengl/juce_OpenGLShaderProgram.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_opengl/opengl/juce_OpenGLTexture.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_opengl/opengl/juce_OpenGLFrameBuffer.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_opengl/opengl/juce_OpenGLTexture.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_opengl/opengl/juce_OpenGLContext.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_opengl/opengl/juce_OpenGLContext.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_opengl/opengl/juce_OpenGLPixelFormat.cpp"/>
+      </VirtualDirectory>
+      <File Name="../../../../JuceLibraryCode/modules/juce_opengl/juce_opengl.cpp"/>
+      <File Name="../../../../JuceLibraryCode/modules/juce_opengl/juce_opengl.h"/>
+      <File Name="../../../../JuceLibraryCode/modules/juce_opengl/juce_module_info"/>
+    </VirtualDirectory>
+    <VirtualDirectory Name="juce_audio_devices">
+      <VirtualDirectory Name="audio_io">
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_devices/audio_io/juce_AudioDeviceManager.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_devices/audio_io/juce_AudioIODeviceType.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_devices/audio_io/juce_AudioIODevice.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_devices/audio_io/juce_AudioIODevice.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_devices/audio_io/juce_AudioIODeviceType.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_devices/audio_io/juce_AudioDeviceManager.cpp"/>
+      </VirtualDirectory>
+      <VirtualDirectory Name="audio_cd">
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_devices/audio_cd/juce_AudioCDBurner.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_devices/audio_cd/juce_AudioCDReader.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_devices/audio_cd/juce_AudioCDReader.cpp"/>
+      </VirtualDirectory>
+      <VirtualDirectory Name="sources">
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_devices/sources/juce_AudioTransportSource.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_devices/sources/juce_AudioTransportSource.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_devices/sources/juce_AudioSourcePlayer.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_devices/sources/juce_AudioSourcePlayer.cpp"/>
+      </VirtualDirectory>
+      <VirtualDirectory Name="native">
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_devices/native/juce_android_OpenSL.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_devices/native/juce_win32_AudioCDBurner.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_devices/native/juce_mac_CoreMidi.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_devices/native/juce_android_Audio.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_devices/native/juce_ios_Audio.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_devices/native/juce_mac_CoreAudio.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_devices/native/juce_win32_ASIO.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_devices/native/juce_win32_WASAPI.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_devices/native/juce_linux_AudioCDReader.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_devices/native/juce_win32_AudioCDReader.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_devices/native/juce_win32_DirectSound.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_devices/native/juce_linux_ALSA.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_devices/native/juce_MidiDataConcatenator.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_devices/native/juce_android_Midi.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_devices/native/juce_linux_Midi.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_devices/native/juce_linux_JackAudio.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_devices/native/juce_win32_Midi.cpp"/>
+      </VirtualDirectory>
+      <VirtualDirectory Name="midi_io">
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_devices/midi_io/juce_MidiMessageCollector.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_devices/midi_io/juce_MidiMessageCollector.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_devices/midi_io/juce_MidiOutput.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_devices/midi_io/juce_MidiInput.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_devices/midi_io/juce_MidiOutput.h"/>
+      </VirtualDirectory>
+      <File Name="../../../../JuceLibraryCode/modules/juce_audio_devices/juce_audio_devices.cpp"/>
+      <File Name="../../../../JuceLibraryCode/modules/juce_audio_devices/juce_module_info"/>
+      <File Name="../../../../JuceLibraryCode/modules/juce_audio_devices/juce_audio_devices.h"/>
+    </VirtualDirectory>
+    <VirtualDirectory Name="juce_audio_plugin_client">
+      <VirtualDirectory Name="Standalone">
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_plugin_client/Standalone/juce_StandaloneFilterWindow.h"/>
+      </VirtualDirectory>
+      <VirtualDirectory Name="VST">
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_plugin_client/VST/juce_VST_Wrapper.cpp"/>
+      </VirtualDirectory>
+      <VirtualDirectory Name="RTAS">
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_plugin_client/RTAS/juce_RTAS_DigiCode_Header.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_plugin_client/RTAS/juce_RTAS_DigiCode1.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_plugin_client/RTAS/juce_RTAS_DigiCode3.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_plugin_client/RTAS/juce_RTAS_DigiCode2.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_plugin_client/RTAS/juce_RTAS_WinUtilities.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_plugin_client/RTAS/juce_RTAS_Wrapper.cpp"/>
+      </VirtualDirectory>
+      <VirtualDirectory Name="utility">
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_plugin_client/utility/juce_IncludeModuleHeaders.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_plugin_client/utility/juce_CheckSettingMacros.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_plugin_client/utility/juce_FakeMouseMoveGenerator.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_plugin_client/utility/juce_PluginHostType.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_plugin_client/utility/juce_CarbonVisibility.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_plugin_client/utility/juce_IncludeSystemHeaders.h"/>
+      </VirtualDirectory>
+      <VirtualDirectory Name="AAX">
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_plugin_client/AAX/juce_AAX_Wrapper.cpp"/>
+      </VirtualDirectory>
+      <File Name="../../../../JuceLibraryCode/modules/juce_audio_plugin_client/juce_audio_plugin_client.h"/>
+      <File Name="../../../../JuceLibraryCode/modules/juce_audio_plugin_client/juce_module_info"/>
+    </VirtualDirectory>
+    <VirtualDirectory Name="juce_audio_basics">
+      <VirtualDirectory Name="synthesisers">
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_basics/synthesisers/juce_Synthesiser.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_basics/synthesisers/juce_Synthesiser.h"/>
+      </VirtualDirectory>
+      <VirtualDirectory Name="effects">
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_basics/effects/juce_IIRFilter.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_basics/effects/juce_Decibels.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_basics/effects/juce_Reverb.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_basics/effects/juce_IIRFilter.h"/>
+      </VirtualDirectory>
+      <VirtualDirectory Name="sources">
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_basics/sources/juce_MixerAudioSource.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_basics/sources/juce_IIRFilterAudioSource.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_basics/sources/juce_BufferingAudioSource.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_basics/sources/juce_ToneGeneratorAudioSource.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_basics/sources/juce_ReverbAudioSource.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_basics/sources/juce_ToneGeneratorAudioSource.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_basics/sources/juce_ChannelRemappingAudioSource.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_basics/sources/juce_ReverbAudioSource.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_basics/sources/juce_BufferingAudioSource.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_basics/sources/juce_ResamplingAudioSource.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_basics/sources/juce_AudioSource.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_basics/sources/juce_MixerAudioSource.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_basics/sources/juce_IIRFilterAudioSource.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_basics/sources/juce_ResamplingAudioSource.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_basics/sources/juce_ChannelRemappingAudioSource.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_basics/sources/juce_PositionableAudioSource.h"/>
+      </VirtualDirectory>
+      <VirtualDirectory Name="midi">
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_basics/midi/juce_MidiBuffer.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_basics/midi/juce_MidiMessage.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_basics/midi/juce_MidiBuffer.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_basics/midi/juce_MidiKeyboardState.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_basics/midi/juce_MidiMessage.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_basics/midi/juce_MidiMessageSequence.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_basics/midi/juce_MidiFile.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_basics/midi/juce_MidiKeyboardState.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_basics/midi/juce_MidiFile.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_basics/midi/juce_MidiMessageSequence.h"/>
+      </VirtualDirectory>
+      <VirtualDirectory Name="buffers">
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_basics/buffers/juce_AudioSampleBuffer.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_basics/buffers/juce_AudioDataConverters.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_basics/buffers/juce_AudioSampleBuffer.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_basics/buffers/juce_AudioDataConverters.cpp"/>
+      </VirtualDirectory>
+      <File Name="../../../../JuceLibraryCode/modules/juce_audio_basics/juce_audio_basics.cpp"/>
+      <File Name="../../../../JuceLibraryCode/modules/juce_audio_basics/juce_audio_basics.h"/>
+      <File Name="../../../../JuceLibraryCode/modules/juce_audio_basics/juce_module_info"/>
+    </VirtualDirectory>
+    <VirtualDirectory Name="juce_audio_utils">
+      <VirtualDirectory Name="gui">
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_utils/gui/juce_MidiKeyboardComponent.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_utils/gui/juce_MidiKeyboardComponent.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_utils/gui/juce_AudioThumbnailBase.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_utils/gui/juce_AudioThumbnail.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_utils/gui/juce_AudioDeviceSelectorComponent.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_utils/gui/juce_AudioThumbnailCache.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_utils/gui/juce_AudioThumbnail.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_utils/gui/juce_AudioThumbnailCache.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_utils/gui/juce_AudioDeviceSelectorComponent.cpp"/>
+      </VirtualDirectory>
+      <VirtualDirectory Name="players">
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_utils/players/juce_AudioProcessorPlayer.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_audio_utils/players/juce_AudioProcessorPlayer.h"/>
+      </VirtualDirectory>
+      <File Name="../../../../JuceLibraryCode/modules/juce_audio_utils/juce_audio_utils.cpp"/>
+      <File Name="../../../../JuceLibraryCode/modules/juce_audio_utils/juce_module_info"/>
+      <File Name="../../../../JuceLibraryCode/modules/juce_audio_utils/juce_audio_utils.h"/>
+    </VirtualDirectory>
+    <VirtualDirectory Name="juce_data_structures">
+      <VirtualDirectory Name="undomanager">
+        <File Name="../../../../JuceLibraryCode/modules/juce_data_structures/undomanager/juce_UndoableAction.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_data_structures/undomanager/juce_UndoManager.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_data_structures/undomanager/juce_UndoManager.h"/>
+      </VirtualDirectory>
+      <VirtualDirectory Name="app_properties">
+        <File Name="../../../../JuceLibraryCode/modules/juce_data_structures/app_properties/juce_ApplicationProperties.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_data_structures/app_properties/juce_PropertiesFile.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_data_structures/app_properties/juce_PropertiesFile.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_data_structures/app_properties/juce_ApplicationProperties.cpp"/>
+      </VirtualDirectory>
+      <VirtualDirectory Name="values">
+        <File Name="../../../../JuceLibraryCode/modules/juce_data_structures/values/juce_ValueTree.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_data_structures/values/juce_Value.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_data_structures/values/juce_ValueTree.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_data_structures/values/juce_Value.h"/>
+      </VirtualDirectory>
+      <File Name="../../../../JuceLibraryCode/modules/juce_data_structures/juce_data_structures.h"/>
+      <File Name="../../../../JuceLibraryCode/modules/juce_data_structures/juce_module_info"/>
+      <File Name="../../../../JuceLibraryCode/modules/juce_data_structures/juce_data_structures.cpp"/>
+    </VirtualDirectory>
+    <VirtualDirectory Name="juce_events">
+      <VirtualDirectory Name="interprocess">
+        <File Name="../../../../JuceLibraryCode/modules/juce_events/interprocess/juce_InterprocessConnectionServer.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_events/interprocess/juce_InterprocessConnectionServer.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_events/interprocess/juce_InterprocessConnection.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_events/interprocess/juce_InterprocessConnection.cpp"/>
+      </VirtualDirectory>
+      <VirtualDirectory Name="broadcasters">
+        <File Name="../../../../JuceLibraryCode/modules/juce_events/broadcasters/juce_ActionBroadcaster.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_events/broadcasters/juce_ListenerList.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_events/broadcasters/juce_AsyncUpdater.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_events/broadcasters/juce_ChangeListener.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_events/broadcasters/juce_ActionListener.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_events/broadcasters/juce_AsyncUpdater.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_events/broadcasters/juce_ChangeBroadcaster.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_events/broadcasters/juce_ActionBroadcaster.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_events/broadcasters/juce_ChangeBroadcaster.cpp"/>
+      </VirtualDirectory>
+      <VirtualDirectory Name="timers">
+        <File Name="../../../../JuceLibraryCode/modules/juce_events/timers/juce_Timer.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_events/timers/juce_MultiTimer.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_events/timers/juce_Timer.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_events/timers/juce_MultiTimer.cpp"/>
+      </VirtualDirectory>
+      <VirtualDirectory Name="messages">
+        <File Name="../../../../JuceLibraryCode/modules/juce_events/messages/juce_DeletedAtShutdown.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_events/messages/juce_CallbackMessage.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_events/messages/juce_MessageManager.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_events/messages/juce_Message.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_events/messages/juce_DeletedAtShutdown.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_events/messages/juce_MessageListener.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_events/messages/juce_ApplicationBase.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_events/messages/juce_MessageManager.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_events/messages/juce_MessageListener.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_events/messages/juce_ApplicationBase.h"/>
+      </VirtualDirectory>
+      <VirtualDirectory Name="native">
+        <File Name="../../../../JuceLibraryCode/modules/juce_events/native/juce_android_Messaging.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_events/native/juce_win32_HiddenMessageWindow.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_events/native/juce_osx_MessageQueue.h"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_events/native/juce_linux_Messaging.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_events/native/juce_win32_Messaging.cpp"/>
+        <File Name="../../../../JuceLibraryCode/modules/juce_events/native/juce_ScopedXLock.h"/>
+      </VirtualDirectory>
+      <File Name="../../../../JuceLibraryCode/modules/juce_events/juce_module_info"/>
+      <File Name="../../../../JuceLibraryCode/modules/juce_events/juce_events.h"/>
+      <File Name="../../../../JuceLibraryCode/modules/juce_events/juce_events.cpp"/>
+    </VirtualDirectory>
+  </VirtualDirectory>
+  <Description/>
+  <Dependencies/>
+  <VirtualDirectory Name="Standalone">
+    <File Name="../../../../Source/Standalone/CabbageStandaloneDialog.h"/>
+    <File Name="../../../../Source/Standalone/CabbageStandaloneDialog.cpp"/>
+    <File Name="../../../../Source/Standalone/StandaloneFilterApp.cpp"/>
+  </VirtualDirectory>
+  <VirtualDirectory Name="Plugin">
+    <File Name="../../../../Source/Plugin/CabbagePluginProcessor.cpp"/>
+    <File Name="../../../../Source/Plugin/CabbagePluginProcessor.h"/>
+    <File Name="../../../../Source/Plugin/CabbagePluginEditor.cpp"/>
+    <File Name="../../../../Source/Plugin/CabbagePluginEditor.h"/>
+  </VirtualDirectory>
+  <VirtualDirectory Name="Editor">
+    <File Name="../../../../Source/Editor/CabbageEditorCommandManager.cpp"/>
+    <File Name="../../../../Source/Editor/CabbageEditorCommandManager.h"/>
+    <File Name="../../../../Source/Editor/CabbageCsoundEditor.cpp"/>
+    <File Name="../../../../Source/Editor/CabbageCsoundEditor.h"/>
+    <File Name="../../../../Source/Editor/CabbageEditorWindow.cpp"/>
+    <File Name="../../../../Source/Editor/CabbageEditorWindow.h"/>
+  </VirtualDirectory>
+  <VirtualDirectory Name="Source">
+    <File Name="../../../../Source/CabbageUtils.h"/>
+    <File Name="../../../../Source/ComponentLayoutEditor.h"/>
+    <File Name="../../../../Source/CabbageTable.h"/>
+    <File Name="../../../../Source/Main.cpp"/>
+    <File Name="../../../../Source/ComponentLayoutEditor.cpp"/>
+    <File Name="../../../../Source/XYPad.cpp"/>
+    <File Name="../../../../Source/CabbageGUIClass.h"/>
+    <File Name="../../../../Source/CabbageLookAndFeel.cpp"/>
+    <File Name="../../../../Source/CabbageTable.cpp"/>
+    <File Name="../../../../Source/CabbageCustomWidgets.h"/>
+    <File Name="../../../../Source/CabbageLookAndFeel.h"/>
+    <File Name="../../../../Source/BinaryData.h"/>
+    <File Name="../../../../Source/JucePluginCharacteristics.h"/>
+    <File Name="../../../../Source/CabbageMainPanel.cpp"/>
+    <File Name="../../../../Source/XYPadAutomation.h"/>
+    <File Name="../../../../Source/XYPad.h"/>
+    <File Name="../../../../Source/CabbageMainPanel.h"/>
+    <File Name="../../../../Source/XYPadAutomation.cpp"/>
+    <File Name="../../../../Source/BinaryData.cpp"/>
+    <File Name="../../../../Source/CabbageGUIClass.cpp"/>
+  </VirtualDirectory>
+  <VirtualDirectory Name="JuceLibraryCode">
+    <File Name="../../../../JuceLibraryCode/AppConfig.h"/>
+    <File Name="../../../../JuceLibraryCode/JuceHeader.h"/>
+  </VirtualDirectory>
+  <Settings Type="Dynamic Library">
+    <GlobalSettings>
+      <Compiler Options="" C_Options="">
+        <IncludePath Value="."/>
+      </Compiler>
+      <Linker Options="">
+        <LibraryPath Value="."/>
+      </Linker>
+      <ResourceCompiler Options=""/>
+    </GlobalSettings>
+    <Configuration Name="Debug" CompilerType="gnu g++" DebuggerType="GNU gdb debugger" Type="Dynamic Library" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">
+      <Compiler Options="-g" C_Options="-g" Required="yes" PreCompiledHeader="" PCHInCommandLine="no" UseDifferentPCHFlags="no" PCHFlags="">
+        <IncludePath Value="."/>
+      </Compiler>
+      <Linker Options="" Required="yes"/>
+      <ResourceCompiler Options="" Required="no"/>
+      <General OutputFile="" IntermediateDirectory="./Debug" Command="../../build/Cabbage" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes"/>
+      <Environment EnvVarSetName="&lt;Use Defaults&gt;" DbgSetName="&lt;Use Defaults&gt;">
+        <![CDATA[]]>
+      </Environment>
+      <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort="" DebuggerPath="">
+        <PostConnectCommands/>
+        <StartupCommands/>
+      </Debugger>
+      <PreBuild/>
+      <PostBuild/>
+      <CustomBuild Enabled="yes">
+        <RebuildCommand/>
+        <CleanCommand>make clean</CleanCommand>
+        <BuildCommand>make -f MakefileStandalone</BuildCommand>
+        <PreprocessFileCommand/>
+        <SingleFileCommand/>
+        <MakefileGenerationCommand/>
+        <ThirdPartyToolName>None</ThirdPartyToolName>
+        <WorkingDirectory>/home/rory/Sourcecode/cabbage/Builds/Linux</WorkingDirectory>
+      </CustomBuild>
+      <AdditionalRules>
+        <CustomPostBuild/>
+        <CustomPreBuild/>
+      </AdditionalRules>
+      <Completion EnableCpp11="no">
+        <ClangCmpFlagsC/>
+        <ClangCmpFlags/>
+        <ClangPP/>
+        <SearchPaths/>
+      </Completion>
+    </Configuration>
+    <Configuration Name="Release" CompilerType="gnu g++" DebuggerType="GNU gdb debugger" Type="Dynamic Library" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">
+      <Compiler Options="" C_Options="" Required="yes" PreCompiledHeader="" PCHInCommandLine="no" UseDifferentPCHFlags="no" PCHFlags="">
+        <IncludePath Value="."/>
+      </Compiler>
+      <Linker Options="-O2" Required="yes"/>
+      <ResourceCompiler Options="" Required="no"/>
+      <General OutputFile="" IntermediateDirectory="./Release" Command="" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes"/>
+      <Environment EnvVarSetName="&lt;Use Defaults&gt;" DbgSetName="&lt;Use Defaults&gt;">
+        <![CDATA[
+      
+      
+      ]]>
+      </Environment>
+      <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort="" DebuggerPath="">
+        <PostConnectCommands/>
+        <StartupCommands/>
+      </Debugger>
+      <PreBuild/>
+      <PostBuild/>
+      <CustomBuild Enabled="yes">
+        <RebuildCommand/>
+        <CleanCommand>make clean</CleanCommand>
+        <BuildCommand>make</BuildCommand>
+        <PreprocessFileCommand/>
+        <SingleFileCommand/>
+        <MakefileGenerationCommand/>
+        <ThirdPartyToolName>None</ThirdPartyToolName>
+        <WorkingDirectory>$(WorkspacePath)</WorkingDirectory>
+      </CustomBuild>
+      <AdditionalRules>
+        <CustomPostBuild/>
+        <CustomPreBuild/>
+      </AdditionalRules>
+      <Completion EnableCpp11="no">
+        <ClangCmpFlagsC/>
+        <ClangCmpFlags/>
+        <ClangPP/>
+        <SearchPaths/>
+      </Completion>
+    </Configuration>
+  </Settings>
+</CodeLite_Project>

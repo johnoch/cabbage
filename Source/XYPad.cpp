@@ -174,7 +174,7 @@ void XYCanvasBackground::paint(Graphics& g)
   ============================================================================
 */
 XYCanvas::XYCanvas(Colour ballCol, float xMinimum, float xMaximum, float yMinimum, float yMaximum)	
-																			: ballColour(ballColour),
+																			: ballColour(ballCol),
 																			xMin(xMinimum),
 																			xMax(xMaximum),
 																			yMin(yMinimum),

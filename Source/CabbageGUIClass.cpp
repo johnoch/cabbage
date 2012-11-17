@@ -342,7 +342,8 @@ CabbageGUIClass::CabbageGUIClass(String compStr, int ID):
 		  type = "xypad";
           name.append(String(ID), 1024);
 		  xyChannel = "";
-		  colour = Colours::white;
+		  colour = Colours::lime;
+		  fontcolour = Colours::cornflowerblue;
 	}
     else if(strTokens[0].indexOfIgnoreCase("keyboard")!=-1){
           top = 10;

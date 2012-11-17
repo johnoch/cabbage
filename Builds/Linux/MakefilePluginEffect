@@ -10,10 +10,10 @@ ifeq ($(TARGET_ARCH),)
 endif
 
 # Default csound include path
-CSOUND_INCLUDE ?= "/usr/local/include/csound"
+CSOUND_INCLUDE ?= "/usr/include/csound"
 
 # Default vst include path
-VST_INCLUDE ?= "~/SDKs/vstsdk2.4"
+VST_INCLUDE ?= "/home/rory/Sourcecode/vstsdk2.4"
 
 # (this disables dependency generation if multiple architectures are set)
 DEPFLAGS := $(if $(word 2, $(TARGET_ARCH)), , -MMD)
