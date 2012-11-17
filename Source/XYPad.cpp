@@ -319,14 +319,6 @@ Point<float> XYCanvas::checkBounds(Point<float> pt)
 	return pt;
 }
 
-void XYCanvas::setBallPosition (Point<float> pt)
-{
-	Point<float> pos = checkBounds(pt);
-	ballX = pos.getX()-(ballSize/2);
-	ballY = pos.getY()-(ballSize/2);
-	repaint();
-}
-
 void XYCanvas::setBallPositionFromXYValues(float xValue, float yValue)
 {
 	//Sets the ball position from the x and y output values
@@ -436,6 +428,9 @@ XYPad::XYPad(XYPadAutomation* xyPadAutomation, String title, int minXValue, int 
 	else
 		this->xyPadAutomation = new XYPadAutomation();
 
+	//every time "this" gets initialised it updates the counter in the automation class
+	xyPadAutomation->updateCreationCounter(); 
+
 	lookAndFeel = new CabbageLookAndFeel();
 	Component::setLookAndFeel(lookAndFeel);
 
@@ -499,7 +494,7 @@ void XYPad::resized()
 	for (int i=0; i<2; i++) 
 		xyToggles[i]->setBounds(5+(i*(toggleWidth+5)), getHeight()-18, toggleWidth, 15);
 	
-	currentSelectedToggle = 0;//xyPadAutomation->getSelectedToggle();
+	currentSelectedToggle = xyPadAutomation->getSelectedToggle();
 	xyToggles[currentSelectedToggle]->setToggleState(true, false);
 	
 	// Ball
@@ -549,7 +544,7 @@ void XYPad::resized()
 		}
 		canvas->useStaticBall(false);
 	}
-	else { //else if this is the first time being initialised....
+	else if (xyPadAutomation->getCreationCounter() == 1) { //else if this is the first time being initialised
 		xyPadAutomation->setBoundsForAutomation (canvas->getBounds());
 		xyPadAutomation->setMinMaxValues (xMin, xMax, yMin, yMax);
 	}
@@ -613,9 +608,7 @@ void XYPad::mouseDown (const MouseEvent& e)
 			canvas->clearHandles();
 		}
 
-		Point<float> click;
-		click.setXY (e.x, e.y);
-		canvas->setBallPosition (click);
+		Point<float> click = canvas->checkBounds(Point<float>(e.x, e.y));
 		if (e.mods.isRightButtonDown()) {
 			canvas->setStartHandle(click);	
 			canvas->useStaticBall(false);
@@ -624,10 +617,11 @@ void XYPad::mouseDown (const MouseEvent& e)
 			canvas->useStaticBall(true);
 			speedSlider->setValue(0); //resetting slider
 		}
-
-		displayXYValues(getXValueWhenNotAutomating(), getYValueWhenNotAutomating());
-		xyPadAutomation->setXValue(getXValueWhenNotAutomating());
-		xyPadAutomation->setYValue(getYValueWhenNotAutomating());
+		float xValue = getXValueWhenNotAutomating(click.getX());
+		float yValue = getYValueWhenNotAutomating(click.getY());
+		xyPadAutomation->setXValue(xValue);
+		xyPadAutomation->setYValue(yValue);
+		displayXYValues(xValue, yValue);
 		canvasHasFocus = true;
 	}
 }
@@ -635,12 +629,12 @@ void XYPad::mouseDown (const MouseEvent& e)
 void XYPad::mouseDrag (const MouseEvent& e)
 {	
 	if ((canvas->isMouseButtonDownAnywhere()) && (canvasHasFocus)) {
-		Point<float> click;
-		click.setXY (e.x, e.y);
-		canvas->setBallPosition (click);
-		displayXYValues(getXValueWhenNotAutomating(), getYValueWhenNotAutomating());
-		xyPadAutomation->setXValue(getXValueWhenNotAutomating());
-		xyPadAutomation->setYValue(getYValueWhenNotAutomating());
+		Point<float> click = canvas->checkBounds(Point<float>(e.x, e.y));
+		float xValue = getXValueWhenNotAutomating(click.getX());
+		float yValue = getYValueWhenNotAutomating(click.getY());
+		xyPadAutomation->setXValue(xValue);
+		xyPadAutomation->setYValue(yValue);
+		displayXYValues(xValue, yValue);
 		if (e.mods.isRightButtonDown()) 
 			canvas->setEndHandle(click);
 	}
@@ -671,20 +665,21 @@ void XYPad::displayXYValues (float xValue, float yValue)
 {
 	valueDisplays[0]->setValue(String::formatted(format, xValue));
 	valueDisplays[1]->setValue(String::formatted(format, yValue));
+	canvas->setBallPositionFromXYValues(xValue, yValue);
 }
 
-float XYPad::getXValueWhenNotAutomating()
+float XYPad::getXValueWhenNotAutomating(float x)
 {
 	//Returns the x output value, not the ball's x pixel position!!
 	//Only used when automation is off.
-	return ((canvas->getBallX()/(canvas->getWidth()-ballSize)) * xRange) + xMin;
+	return (((x-ballSize/2) / (canvas->getWidth()-ballSize)) * xRange) + xMin;
 }
 
-float XYPad::getYValueWhenNotAutomating()
+float XYPad::getYValueWhenNotAutomating(float y)
 {
 	//Returns the y output value, not the ball's y pixel position!!
 	//Only used when automation is off.
-	return ((1-(canvas->getBallY()/(canvas->getHeight()-ballSize))) * yRange) + yMin;
+	return ((1-((y-ballSize/2)/(canvas->getHeight()-ballSize))) * yRange) + yMin;
 }
 
 //========= These method are used by the Plugin Editor ============================================
@@ -692,30 +687,17 @@ void XYPad::setXYValues (float x, float y)
 {
 	//This method uses the x and y output values passed in from the plugin processor and converts them back 
 	//into the centre coordinates of the ball.
-
-	if (xyPadAutomation->isAutomating()) {
-		Point<float> newPos;
-		newPos.setXY ((((x-xMin)/xRange)*(canvas->getWidth()-ballSize))+(ballSize/2), 
-			((1-((y-yMin)/yRange))*(canvas->getHeight()-ballSize))+(ballSize/2));
-		canvas->setBallPosition (newPos);
-
+	if (xyPadAutomation->isAutomating()) 
 		displayXYValues(x, y);
-	}
 }
 
 void XYPad::setXYValuesFromNormalised (float xNorm, float yNorm)
 {
 	//This method uses normalised values passed in from the plugin processor and converts them back 
 	//into the centre coordinates of the ball.
-
 	if (xyPadAutomation->isAutomating()) {
 		float x = (xNorm*xRange) + xMin;
 		float y = (yNorm*yRange) + yMin;
-		Point<float> newPos;
-		newPos.setXY ((((x-xMin)/xRange)*(canvas->getWidth()-ballSize))+(ballSize/2), 
-			((1-((y-yMin)/yRange))*(canvas->getHeight()-ballSize))+(ballSize/2));
-		canvas->setBallPosition (newPos);
-
 		displayXYValues(x, y);
 	}
 }

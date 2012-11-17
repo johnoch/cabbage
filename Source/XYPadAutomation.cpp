@@ -11,10 +11,21 @@ XYPadAutomation::XYPadAutomation()
 	isAutomationOn = false;
 	updateCounter = 0;
 	paramIndex = 0;
+	creationCounter = 0;
 }
 
 XYPadAutomation::~XYPadAutomation()
 {
+}
+
+void XYPadAutomation::updateCreationCounter()
+{
+	creationCounter++;
+}
+
+int XYPadAutomation::getCreationCounter()
+{
+	return creationCounter;
 }
 
 void XYPadAutomation::setBallSize (float size)
