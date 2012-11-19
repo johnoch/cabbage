@@ -203,23 +203,26 @@ void ChildAlias::mouseDown (const MouseEvent& e)
 				CabbageUtils::showMessage("Invalid name, please try again(names cannot contains white spaces of the following characters: $ % ^ & * ( ) - + ). Nothing has been added to your user repository", &getLookAndFeel());
 			else{
 						//make sure host doesn't fail if there are no Plant entries
-
 				ScopedPointer<XmlElement> xml;
 				xml = new XmlElement("PLANTS");
-/*				PropertySet pSet;
-				pSet.setValue("PlantRepository", xml);
-				appProperties->getUserSettings()->setFallbackPropertySet(&pSet);*/	
-
 				xml = appProperties->getUserSettings()->getXmlValue("PlantRepository");
-				int test = 1;
 				bool clashingNames=false;
 				int result; 
+				
+				String plantDir = appProperties->getUserSettings()->getValue("PlantFileDir", "");				
+				Array<File> tempfiles;
+				StringArray plants;   
+				addFileToPpopupMenu(m, tempfiles, plantDir, "*.plant");
+				
+				for(int i=0;i<tempfiles.size();i++){
+				Logger::outputDebugString(tempfiles[i].getFullPathName());
+				plants.add(tempfiles[i].getFileNameWithoutExtension());
+				}
+				
+				for(int i=0;i<plants.size();i++)				
+				if(plants[i]==alert.getTextEditorContents("textEditor"))
+					clashingNames = true;
 
-				if(xml != nullptr)
-				for(int i=0;i<xml->getNumAttributes();i++)
-					if(xml->getAttributeName(i)==alert.getTextEditorContents("textEditor"))
-						clashingNames = true;
-					
 				if(clashingNames==true){
 					result = CabbageUtils::showYesNoMessage("Do you wish to overwrite the existing plant?", &getLookAndFeel());	
 					if(result == 0)

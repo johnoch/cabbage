@@ -287,6 +287,16 @@ long cabbageFindPluginID(unsigned char *buf, size_t len, const char *s)
 	return ret;
 }
 
+static void addFileToPpopupMenu(PopupMenu &m, Array<File> &filesArray, String dir, String ext) 
+{
+File pluginDir(dir);
+pluginDir.findChildFiles(filesArray, 2, true, ext);
+
+for (int i = 0; i < filesArray.size(); i++)
+	m.addItem (i + 100, filesArray[i].getFileNameWithoutExtension());
+
+}
+
 //===========================================================================================
 static void showMessage(String message, LookAndFeel* feel)
 {

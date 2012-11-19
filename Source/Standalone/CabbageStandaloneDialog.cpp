@@ -222,6 +222,7 @@ void StandaloneFilterWindow::actionListenerCallback (const String& message){
 	if(message == "GUI Updated, controls added")
 	filter->createGUI(csdFile.loadFileAsString());
 	setGuiEnabled(true);
+	filter->setGuiEnabled(true);
 	setCurrentLine(filter->getCurrentLine()+1);
 	if(message.equalsIgnoreCase("fileSaved")){
 	saveFile();
@@ -586,6 +587,7 @@ void StandaloneFilterWindow::buttonClicked (Button*)
 	subMenu.clear();
 
 	int pluginInfo = appProperties->getUserSettings()->getValue("DisablePluginInfo", var(0)).getFloatValue();
+	subMenu.addItem(203, "Set Cabbage Plant Directory");
 	subMenu.addItem(200, "Set Csound Manual Directory");
 	if(!pluginInfo)
 	subMenu.addItem(201, String("Disable Export Plugin Info"), true, false);
@@ -740,6 +742,14 @@ void StandaloneFilterWindow::buttonClicked (Button*)
 		FileChooser browser(String("Please select the Csound manual directory..."), File(dir), String("*.csd"));
 		if(browser.browseForDirectory()){
 			appProperties->getUserSettings()->setValue("CsoundHelpDir", browser.getResult().getFullPathName());
+		}	
+	}
+	//------- preference Csound manual dir ------
+	else if(options==203){
+		String dir = appProperties->getUserSettings()->getValue("PlantFileDir", "");
+		FileChooser browser(String("Please select your Plant file directory..."), File(dir), String("*.csd"));
+		if(browser.browseForDirectory()){
+			appProperties->getUserSettings()->setValue("PlantFileDir", browser.getResult().getFullPathName());
 		}	
 	}
 	//------- preference plugin info ------

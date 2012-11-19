@@ -132,6 +132,7 @@ void CabbagePluginAudioProcessorEditor::mouseDown(const MouseEvent &e)
 ScopedPointer<XmlElement> xml;
 xml = new XmlElement("PLANTS");
 PopupMenu m;
+Array<File> plantFiles;
 m.setLookAndFeel(lookAndFeel);
 if(getFilter()->isGuiEnabled()){
 PopupMenu subm;
@@ -147,16 +148,8 @@ subm.addItem(9, "keyboard");
 m.addSubMenu(String("Indigenous"), subm);
 subm.clear();
 
-
-//PropertySet pSet;
-//pSet.setValue("PlantRepository", xml);
-//appProperties->getUserSettings()->setFallbackPropertySet(&pSet);	
-xml = appProperties->getUserSettings()->getXmlValue("PlantRepository");
-if(xml != nullptr)
-for(int i=0;i<xml->getNumAttributes();i++)
-	subm.addItem(100+i, xml->getAttributeName(i));
-
-m.addSubMenu(String("Home grown"), subm);
+String plantDir = appProperties->getUserSettings()->getValue("PlantFileDir", "");	
+addFileToPpopupMenu(m, plantFiles, plantDir, "*.plant"); 
 }
 
 if (e.mods.isRightButtonDown())
@@ -187,7 +180,8 @@ if (e.mods.isRightButtonDown())
 	 else if(choice>=100){
 		 //showMessage(xml->getAttributeValue(choice-100));
 		 //update X and Y positions from plants
-		 String customPlantControl = xml->getAttributeValue(choice-100);
+		 String customPlantControl = plantFiles[choice-100].loadFileAsString();
+		 //xml->getAttributeValue(choice-100);
 		 if(!customPlantControl.contains("bounds("))
 			 showMessage("Invalid control(No bounds identifier found)", &getLookAndFeel());
 		 else{
@@ -1715,6 +1709,37 @@ if(message.contains("Message sent from CabbageMainPanel")){
 		//doing this here because compoentLayoutManager doesn't know the csd file text...
 		if(message.length()>String("Message sent from CabbageMainPanel").length()){ //ADD TO REPOSITORY
 			String repoEntryName = message.substring(String("Message sent from CabbageMainPanel").length());
+			String repoEntry = csdArray[lineNumber];
+			int cnt = 0;
+			//CabbageUtils::showMessage(repoEntryName);
+			if(csdArray[lineNumber].contains("plant(\"")){
+				repoEntry = "";
+				while(!csdArray[lineNumber+cnt].contains("}")){
+					repoEntry = repoEntry+csdArray[lineNumber+cnt]+"\n";
+					cnt++;
+				}
+				repoEntry = repoEntry+"}";
+			
+			}
+			//make sure host doesn't fail if there are no Plant entries
+			//ScopedPointer<XmlElement> xml;
+			//xml = new XmlElement("PLANTS");
+//			PropertySet pSet;
+			//pSet.setValue("PlantRepository", xml);
+			//appProperties->getUserSettings()->setFallbackPropertySet(&pSet);	
+			//xml = appProperties->getUserSettings()->getXmlValue("PlantRepository");
+			//if(xml)
+			//xml->setAttribute(repoEntryName, repoEntry);
+			//showMessage(repoEntryName);
+			//showMessage(repoEntry);
+			//appProperties->getUserSettings()->setValue("PlantRepository", xml);
+			String plantDir = appProperties->getUserSettings()->getValue("PlantFileDir", "");	
+			String plantFile = plantDir + "/" + repoEntryName.trim() + String(".plant");
+			File plant(plantFile);
+			plant.replaceWithText(repoEntry);
+			
+			/*
+						String repoEntryName = message.substring(String("Message sent from CabbageMainPanel").length());
 			String repoEntry = temp;
 			int cnt = 0;
 			//CabbageUtils::showMessage(repoEntryName);
@@ -1736,7 +1761,7 @@ if(message.contains("Message sent from CabbageMainPanel")){
 			xml = appProperties->getUserSettings()->getXmlValue("PlantRepository");
 			if(xml)
 			xml->setAttribute(repoEntryName, repoEntry);
-			appProperties->getUserSettings()->setValue("PlantRepository", xml);
+			appProperties->getUserSettings()->setValue("PlantRepository", xml);*/
 	}
 	#endif
 
@@ -2030,7 +2055,7 @@ for(int i=0;i<(int)getFilter()->getGUICtrlsSize();i++){
 			//((CabbageXYController*)controls[i])->xypad->setXYValues(getFilter()->getXYAutomater(index)->getXValue(), 
 			//														getFilter()->getXYAutomater(index)->getYValue());
 			//Logger::writeToLog(String(getFilter()->getParameter(i)));
-			((CabbageXYController*)controls[i])->xypad->setXYValuesFromNormalised(getFilter()->getParameter(i), getFilter()->getParameter(i+1));
+			((CabbageXYController*)controls[i])->xypad->setXYValues(getFilter()->getParameter(i), getFilter()->getParameter(i+1));
 				//setXYValues(getFilter()->getParameter(i), getFilter()->getParameter(i+1));
                 }
         }
@@ -2097,19 +2122,61 @@ for(int i=0;i<getFilter()->getGUILayoutCtrlsSize();i++){
         }
         else if(getFilter()->getGUILayoutCtrls(i).getStringProp("type").containsIgnoreCase("table")){
                 int     tableSize = getFilter()->getCsound()->TableLength(getFilter()->getGUILayoutCtrls(i).getNumProp("tableNum"));
-                float val = getFilter()->getCsound()->GetChannel(getFilter()->getGUILayoutCtrls(i).getStringProp("channel").toUTF8());
-                
-                if(val<0){
+                //float val = getFilter()->getParameter(i);
+				float val = getFilter()->getCsound()->GetChannel(getFilter()->getGUILayoutCtrls(i).getStringProp("channel").toUTF8());
+				//cout << String(val) << "\n"; //getFilter()->getGUILayoutCtrls(i).getStringProp("channel");
+
+                if(val>1){
                 Array <float> tableValues = getFilter()->getTable(1, tableSize);
                 ((CabbageTable*)layoutComps[i])->fillTable(0, tableValues);
-                getFilter()->getCsound()->SetChannel(getFilter()->getGUILayoutCtrls(i).getStringProp("channel").toUTF8(), 0.f);
+               // cout << "val less than 0";
+				getFilter()->getCsound()->SetChannel(getFilter()->getGUILayoutCtrls(i).getStringProp("channel").toUTF8(), 0.f);
                 }
 
         }
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
         else if(getFilter()->getGUILayoutCtrls(i).getStringProp("type").containsIgnoreCase("pvsview")){
                 float val = getFilter()->getCsound()->GetChannel(getFilter()->getGUILayoutCtrls(i).getStringProp("channel").toUTF8());
                 //Logger::writeToLog(String(getFilter()->getGUILayoutCtrls(i).getNumProp("pvsChannel")));
-                if(val<0){
+                if(val>0){
                 getFilter()->getCsound()->PvsoutGet(getFilter()->getPVSDataOut(), getFilter()->getGUILayoutCtrls(i).getNumProp("pvsChannel"));
                 ((CabbagePVSView*)layoutComps[i])->updatePVSStruct();
                 getFilter()->getCsound()->SetChannel(getFilter()->getGUILayoutCtrls(i).getStringProp("channel").toUTF8(), 0.f);

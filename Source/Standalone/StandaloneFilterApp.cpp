@@ -1,7 +1,9 @@
 #include "CabbageStandaloneDialog.h"
+#include "../CabbageGUIClass.h"
 
 ApplicationProperties* appProperties = nullptr;
 PropertySet* defaultPropSet = nullptr;
+
 
 class CabbageStandalone : public JUCEApplication
     {
@@ -12,7 +14,6 @@ class CabbageStandalone : public JUCEApplication
 
           void initialise(const String& /*commandLineParameters*/)
           {
-			// initialise our settings file..
 			PropertiesFile::Options options;
 			options.applicationName     = "Cabbage";
 			options.filenameSuffix      = "settings";
@@ -22,6 +23,8 @@ class CabbageStandalone : public JUCEApplication
 			defaultPropSet = new PropertySet();
 			ScopedPointer<XmlElement> xml;
 			xml = new XmlElement("PLANTS");
+			String plantDir = File::getSpecialLocation(File::currentApplicationFile).getFullPathName();
+			defaultPropSet->setValue("PlantFileDir", plantDir);
 			defaultPropSet->setValue("DisablePluginInfo", 0);
 			defaultPropSet->setValue("AutoUpdate", 0);
 			defaultPropSet->setValue("DisableGUIEditModeWarning", 0);
