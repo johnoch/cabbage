@@ -2125,8 +2125,8 @@ for(int i=0;i<getFilter()->getGUILayoutCtrlsSize();i++){
                 //float val = getFilter()->getParameter(i);
 				float val = getFilter()->getCsound()->GetChannel(getFilter()->getGUILayoutCtrls(i).getStringProp("channel").toUTF8());
 				//cout << String(val) << "\n"; //getFilter()->getGUILayoutCtrls(i).getStringProp("channel");
-
-                if(val>1){
+				//Logger::writeToLog(String(val));
+                if(val<0){
                 Array <float> tableValues = getFilter()->getTable(1, tableSize);
                 ((CabbageTable*)layoutComps[i])->fillTable(0, tableValues);
                // cout << "val less than 0";
@@ -2172,16 +2172,16 @@ for(int i=0;i<getFilter()->getGUILayoutCtrlsSize();i++){
 		
 		
 		
-		
-        else if(getFilter()->getGUILayoutCtrls(i).getStringProp("type").containsIgnoreCase("pvsview")){
-                float val = getFilter()->getCsound()->GetChannel(getFilter()->getGUILayoutCtrls(i).getStringProp("channel").toUTF8());
-                //Logger::writeToLog(String(getFilter()->getGUILayoutCtrls(i).getNumProp("pvsChannel")));
-                if(val>0){
-                getFilter()->getCsound()->PvsoutGet(getFilter()->getPVSDataOut(), getFilter()->getGUILayoutCtrls(i).getNumProp("pvsChannel"));
-                ((CabbagePVSView*)layoutComps[i])->updatePVSStruct();
-                getFilter()->getCsound()->SetChannel(getFilter()->getGUILayoutCtrls(i).getStringProp("channel").toUTF8(), 0.f);
-                }
-        }
+//		
+//        else if(getFilter()->getGUILayoutCtrls(i).getStringProp("type").containsIgnoreCase("pvsview")){
+//                float val = getFilter()->getCsound()->GetChannel(getFilter()->getGUILayoutCtrls(i).getStringProp("channel").toUTF8());
+//                //Logger::writeToLog(String(getFilter()->getGUILayoutCtrls(i).getNumProp("pvsChannel")));
+//                if(val>0){
+//                getFilter()->getCsound()->PvsoutGet(getFilter()->getPVSDataOut(), getFilter()->getGUILayoutCtrls(i).getNumProp("pvsChannel"));
+//                ((CabbagePVSView*)layoutComps[i])->updatePVSStruct();
+//                getFilter()->getCsound()->SetChannel(getFilter()->getGUILayoutCtrls(i).getStringProp("channel").toUTF8(), 0.f);
+//                }
+//        }
 }
 
 //Check to see if I can use the same means to control sliders if they are in the host application. But 
