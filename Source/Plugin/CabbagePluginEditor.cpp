@@ -1600,7 +1600,8 @@ void CabbagePluginAudioProcessorEditor::InsertTable(CabbageGUIClass &cAttr)
 int tableSize=0;
 Array <float> tableValues;
         //fill array with points from table, is table is valid
-        if(getFilter()->getCompileStatus()==0){
+        if(getFilter()->getCompileStatus()==0 &&
+		   getFilter()->getCsound()){
 #ifndef Cabbage_No_Csound
         tableSize = getFilter()->getCsound()->TableLength(cAttr.getNumProp("tableNum"));
         tableValues = getFilter()->getTable(cAttr.getNumProp("tableNum"), tableSize);
@@ -2121,56 +2122,19 @@ for(int i=0;i<getFilter()->getGUILayoutCtrlsSize();i++){
                 }
         }
         else if(getFilter()->getGUILayoutCtrls(i).getStringProp("type").containsIgnoreCase("table")){
-                int     tableSize = getFilter()->getCsound()->TableLength(getFilter()->getGUILayoutCtrls(i).getNumProp("tableNum"));
+                int tableSize = getFilter()->getCsound()->TableLength(getFilter()->getGUILayoutCtrls(i).getNumProp("tableNum"));
                 //float val = getFilter()->getParameter(i);
 				float val = getFilter()->getCsound()->GetChannel(getFilter()->getGUILayoutCtrls(i).getStringProp("channel").toUTF8());
 				//cout << String(val) << "\n"; //getFilter()->getGUILayoutCtrls(i).getStringProp("channel");
 				//Logger::writeToLog(String(val));
                 if(val<0){
                 Array <float> tableValues = getFilter()->getTable(1, tableSize);
-                ((CabbageTable*)layoutComps[i])->fillTable(0, tableValues);
+               // ((CabbageTable*)layoutComps[i])->fillTable(0, tableValues);
                // cout << "val less than 0";
 				getFilter()->getCsound()->SetChannel(getFilter()->getGUILayoutCtrls(i).getStringProp("channel").toUTF8(), 0.f);
                 }
 
         }
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
 		
 //		
 //        else if(getFilter()->getGUILayoutCtrls(i).getStringProp("type").containsIgnoreCase("pvsview")){

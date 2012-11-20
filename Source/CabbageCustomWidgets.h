@@ -1854,7 +1854,7 @@ public:
 private:
         PVSDATEXT* specData;
         Array<int> freqValues;
-        Array<float> ampValues;
+        Array<MYFLT> ampValues;
         int frameSize, minFreq, maxFreq, freqRange;
         float lineThickness;
         ColourGradient cg;

@@ -210,13 +210,19 @@ public:
         return pluginName;
         }
 
-        Array<float> getTable(double tableNum, int tableSize){
-        Array<float> temp;
-        for(int i=0;i<tableSize;i++)
+        const Array<float> getTable(double tableNum, double tableSize){
+        MYFLT* temp;
+		Array<MYFLT> test;
+        //or(int i=0;i<tableSize;i++)
 #ifndef Cabbage_No_Csound
-                temp.add(csound->TableGet(tableNum, i));
+		if(csound)
+			csound->GetTable(temp, tableNum);
+				
+                //temp.add(csound->TableGet(tableNum, i));
 #endif
-        return temp;
+		Array<float> points(temp, tableSize);
+		//points = Array<MYFLT>(temp, tableSize);
+        return points;
         }
 
         void setMidiDebug(bool val){

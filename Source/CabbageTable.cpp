@@ -147,7 +147,7 @@ void Table::createAmpOverviews (Array<float> csndInputData)
 		overview.minAmps.add (minBlockValue);
 	}
 	setDataSource (zoom);
-	createEnvPath();
+	//createEnvPath();
 	//makeTableEditable();
 }
 

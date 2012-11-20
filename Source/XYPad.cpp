@@ -262,14 +262,14 @@ void XYCanvas::paint(Graphics& g)
 			0, getHeight(), false);
 		vLineCg.addColour((ballY+(ballSize/2)) / getHeight(), ballColour);
 		g.setGradientFill(vLineCg);
-		g.setOpacity(ballLineOpacity);
+		g.setOpacity(1);
 		g.drawLine(ballX+ballSize/2, 0, ballX+ballSize/2, getHeight(), ballLineOpacity);
 
 		ColourGradient hLineCg = ColourGradient(Colours::transparentBlack, 0, 0, Colours::transparentBlack,
 			getWidth(), 0, false);
 		hLineCg.addColour((ballX+(ballSize/2)) / getWidth(), ballColour);
 		g.setGradientFill(hLineCg);
-		g.setOpacity(ballLineOpacity);
+		g.setOpacity(1);
 		g.drawLine(0, ballY+ballSize/2, getWidth(), ballY+ballSize/2, ballLineOpacity);
 	}
 
