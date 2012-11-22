@@ -1459,7 +1459,8 @@ if(getFilter()->haveXYAutosBeenCreated()){
                 cAttr.getNumProp("minY"),
                 cAttr.getNumProp("maxY"),
 				xyPadIndex,
-				cAttr.getColourProp("colour"), 
+				cAttr.getNumProp("decimalPlaces"),
+				cAttr.getColourProp("colour"),
 				cAttr.getColourProp("fontcolour"))); 
 				xyPadIndex++;  
 	idx = controls.size()-1;
@@ -1480,6 +1481,7 @@ else{
                 cAttr.getNumProp("minY"),
                 cAttr.getNumProp("maxY"),
 				getFilter()->getXYAutomaterSize()-1,
+				cAttr.getNumProp("decimalPlaces"),
 				cAttr.getColourProp("colour"),
 				cAttr.getColourProp("fontcolour")));   
 	idx = controls.size()-1;

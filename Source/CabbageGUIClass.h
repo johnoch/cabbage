@@ -37,7 +37,7 @@ class CabbageGUIClass : public CabbageUtils
 {
         double width, height, top, left, isRect, min, max, tabpage, minX, minY, maxX, maxY, comboRange, fftSize, overlapSize, frameSize,
 		noOfMenus, onoff, midiChan, midiCtrl, sliderRange, xypadRangeY, xypadRangeX, noSteps, noPatterns, pvsChannel,
-		line, anchor, linkTo, scaleX, scaleY, value, valueX, valueY, maxItems, sliderIncr, sliderSkew, rCtrls, lineIsVertical;
+		line, anchor, linkTo, scaleX, scaleY, value, valueX, valueY, maxItems, sliderIncr, sliderSkew, decimalPlaces, rCtrls, lineIsVertical;
         StringArray items, onoffcaptions, key, channels, snapshotData;
 
         String channel, name, sizeText, posText, boundsText, text, type, plant, reltoplant, bounds, range,

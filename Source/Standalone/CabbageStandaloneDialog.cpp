@@ -36,6 +36,8 @@ StandaloneFilterWindow::StandaloneFilterWindow (const String& title,
                        | DocumentWindow::closeButton),
       optionsButton ("options"), isGUIOn(false), pipeOpenedOk(false), AudioEnabled(true), isAFileOpen(false)
 {
+	
+	
 	consoleMessages = "";
 	cabbageDance = 0;
 	setTitleBarButtonsRequired (DocumentWindow::minimiseButton | DocumentWindow::closeButton, false);
@@ -121,7 +123,11 @@ StandaloneFilterWindow::StandaloneFilterWindow (const String& title,
     if (x != -100 && y != -100)
         setBoundsConstrained (Rectangle<int> (x, y, getWidth(), getHeight()));
     else
-        centreWithSize (getWidth(), getHeight());
+		centreWithSize (getWidth(), getHeight());
+		
+		int val = appProperties->getUserSettings()->getValue("AutoUpdate", var(0)).getFloatValue();
+		if(val)
+			startTimer(100);
 }
 //==============================================================================
 // Destructor

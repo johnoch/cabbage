@@ -338,6 +338,7 @@ CabbageGUIClass::CabbageGUIClass(String compStr, int ID):
 		  minY = 0;
 		  maxY = 200;
 		  valueX = 0;
+		  decimalPlaces = 2;
 		  valueY = 0;
 		  type = "xypad";
           name.append(String(ID), 1024);
@@ -747,6 +748,9 @@ int CabbageGUIClass::parse(String str)
 				minX = strTokens[0].trim().getFloatValue();  
 				maxX = strTokens[1].trim().getFloatValue();  
 				valueX = strTokens[2].trim().getFloatValue(); 
+				if(strTokens.size()==4)
+				decimalPlaces = strTokens[3].trim().getFloatValue();
+
 				xypadRangeX = maxX-minX;
 				}
 			}
@@ -758,6 +762,9 @@ int CabbageGUIClass::parse(String str)
 				minY = strTokens[0].trim().getFloatValue();  
 				maxY = strTokens[1].trim().getFloatValue();  
 				valueY = strTokens[2].trim().getFloatValue();
+				if(strTokens.size()==4)
+				decimalPlaces = strTokens[3].trim().getFloatValue();				
+				
 				xypadRangeY = maxY-minY;
 				}
 			}
@@ -923,6 +930,8 @@ double CabbageGUIClass::getNumProp(String prop)
 			return overlapSize; 
 		else if(prop.equalsIgnoreCase("winSize"))
 			return frameSize; 
+		else if(prop.equalsIgnoreCase("decimalPlaces"))
+			return decimalPlaces; 
 		else if(prop.equalsIgnoreCase("xyAutoIndex"))
 			return xyAutoIndex;
 		else if(prop.equalsIgnoreCase("pvsChannel"))
