@@ -788,6 +788,8 @@ void StandaloneFilterWindow::buttonClicked (Button*)
 		else{
 		((CabbagePluginAudioProcessorEditor*)filter->getActiveEditor())->setEditMode(true);
 		filter->setGuiEnabled(true);
+		stopTimer();
+		appProperties->getUserSettings()->setValue("AutoUpdate", var(0));
 		}
 	else showMessage("Open or create a file first", &getLookAndFeel());
 		}

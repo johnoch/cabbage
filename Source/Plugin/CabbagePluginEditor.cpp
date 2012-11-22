@@ -1704,7 +1704,7 @@ if(message.contains("Message sent from CabbageMainPanel")){
 				}
 				getFilter()->updateCsoundFile(csdArray.joinIntoString("\n"));
 				getFilter()->setCurrentLineText(csdArray[lineNumber]);
-				//getFilter()->setGuiEnabled(true);
+				getFilter()->setGuiEnabled(true);
 				getFilter()->sendActionMessage("GUI Update");
 
 		}//END OF MOUSE UP MESSAGE EVENT
