@@ -132,7 +132,21 @@ public:
 private:
     MenuBarModel* oldMenu;
     ScopedPointer<PopupMenu> oldAppleMenu;
-    Component dummyModalComponent;
+
+    // The OS view already plays an alert when clicking outside
+    // the modal comp, so this override avoids adding extra
+    // inappropriate noises when the cancel button is pressed.
+    // This override is also important because it stops the base class
+    // calling ModalComponentManager::bringToFront, which can get
+    // recursive when file dialogs are involved
+    class SilentDummyModalComp  : public Component
+    {
+    public:
+        SilentDummyModalComp() {}
+        void inputAttemptWhenModal() {}
+    };
+
+    SilentDummyModalComp dummyModalComponent;
 };
 
 //==============================================================================
