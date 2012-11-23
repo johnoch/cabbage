@@ -213,16 +213,29 @@ public:
         const Array<float> getTable(double tableNum, double tableS){
         MYFLT* temp;
 		int tableSize;
-		Array<MYFLT> test;
-        //or(int i=0;i<tableSize;i++)
+//		temp = (MYFLT*)malloc(sizeof(MYFLT*)*3545817);
+//		int tableSize= 3545817;// 3545817;
+//		Array<MYFLT> test;
+//        for(int i=0;i<tableSize;i++){
+//			temp[i]= i;
+//		}
+		
+			
 #ifndef Cabbage_No_Csound
 		if(csound)
 			tableSize = csound->GetTable(temp, tableNum);
 				
                 //temp.add(csound->TableGet(tableNum, i));
 #endif
-		Array<float> points(temp, tableSize);
+		for(int i=0;i<tableSize;i++){
+			Logger::writeToLog(String(temp[i]));
+		}	
+
+		Array<float> points;//(temp, tableSize-1);
 		//points = Array<MYFLT>(temp, tableSize);
+		
+	
+		
         return points;
         }
 

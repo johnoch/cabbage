@@ -1621,7 +1621,6 @@ Array <float> tableValues;
         float left = cAttr.getNumProp("left");
         float top = cAttr.getNumProp("top");
         float width = cAttr.getNumProp("width");
-        float height = cAttr.getNumProp("height");
 
 
         int relY=0,relX=0;
@@ -2039,7 +2038,7 @@ for(int i=0;i<(int)getFilter()->getGUICtrlsSize();i++){
         if(controls[i]){
 #ifndef Cabbage_Build_Standalone
                 float val = getFilter()->getGUICtrls(i).getNumProp("sliderRange")*getFilter()->getParameter(i);
-                ((CabbageSlider*)controls[i])->slider->setValue(val, false);
+                ((CabbageSlider*)controls[i])->slider->setValue(val, dontSendNotification);
 #else
                 ((CabbageSlider*)controls[i])->slider->setValue(inValue, sendNotification);
 #endif
