@@ -213,7 +213,7 @@ public:
         const Array<float> getTable(double tableNum, double tableS){
         MYFLT* temp;
 		int tableSize;
-//		temp = (MYFLT*)malloc(sizeof(MYFLT*)*3545817);
+		temp = (MYFLT*)malloc(sizeof(MYFLT*)*3545817);
 //		int tableSize= 3545817;// 3545817;
 //		Array<MYFLT> test;
 //        for(int i=0;i<tableSize;i++){
@@ -231,7 +231,7 @@ public:
 			Logger::writeToLog(String(temp[i]));
 		}	
 
-		Array<float> points;//(temp, tableSize-1);
+		Array<float> points(temp, tableSize-1);
 		//points = Array<MYFLT>(temp, tableSize);
 		
 	

@@ -87,8 +87,6 @@ dataout = new PVSDATEXT;
 if(!inputfile.isEmpty()){
 csCompileResult = csound->Compile(const_cast<char*>(inputfile.toUTF8().getAddress()));
 if(csCompileResult==0){
-
-	    //File(inputfile).setAsCurrentWorkingDirectory();
         //simple hack to allow tables to be set up correctly. 
         csound->PerformKsmps();
         csound->SetScoreOffsetSeconds(0);

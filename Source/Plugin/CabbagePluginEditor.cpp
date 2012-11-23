@@ -1621,6 +1621,7 @@ Array <float> tableValues;
         float left = cAttr.getNumProp("left");
         float top = cAttr.getNumProp("top");
         float width = cAttr.getNumProp("width");
+        float height = cAttr.getNumProp("height");
 
 
         int relY=0,relX=0;
