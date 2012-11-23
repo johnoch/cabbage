@@ -645,7 +645,7 @@ void XYPad::mouseUp (const MouseEvent& e)
 	canvasHasFocus = false;
 	if (e.mods.isRightButtonDown()) {
 		xyPadAutomation->beginAutomation(currentSelectedToggle);
-		speedSlider->setValue(xyPadAutomation->getSpeedSliderValue(), false, false); //not sending update message so that it won't call sliderValueChange()
+		speedSlider->setValue(xyPadAutomation->getSpeedSliderValue(), dontSendNotification); //not sending update message so that it won't call sliderValueChange()
 	}
 }
 

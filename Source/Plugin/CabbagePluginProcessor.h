@@ -210,13 +210,14 @@ public:
         return pluginName;
         }
 
-        const Array<float> getTable(double tableNum, double tableSize){
+        const Array<float> getTable(double tableNum, double tableS){
         MYFLT* temp;
+		int tableSize;
 		Array<MYFLT> test;
         //or(int i=0;i<tableSize;i++)
 #ifndef Cabbage_No_Csound
 		if(csound)
-			csound->GetTable(temp, tableNum);
+			tableSize = csound->GetTable(temp, tableNum);
 				
                 //temp.add(csound->TableGet(tableNum, i));
 #endif
@@ -334,6 +335,10 @@ public:
 			return xyAutomation.size();
 		}
 
+
+		bool silenceInProducesSilenceOut() const{
+			return true;
+			}
         void createGUI(String source);
         MidiKeyboardState keyboardState;
         //midiBuffers

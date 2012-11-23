@@ -299,7 +299,7 @@ public:
 	void mouseUp (const MouseEvent& e);
 	void mouseEnter (const MouseEvent& e);
 	void displayXYValues(float xValue, float yValue);
-	
+	ScopedPointer<Slider> speedSlider;
 	XYPadAutomation* xyPadAutomation;
 	
 private:
@@ -314,7 +314,7 @@ private:
 	int decimalPlaces;	
 	OwnedArray<XYValueDisplay> valueDisplays;
 	OwnedArray<XYToggle> xyToggles;
-	ScopedPointer<Slider> speedSlider;
+	
 	ScopedPointer<CabbageLookAndFeel> lookAndFeel;
 	ScopedPointer<CabbageLookAndFeelBasic> lookAndFeelBasic;
 	bool canvasHasFocus;

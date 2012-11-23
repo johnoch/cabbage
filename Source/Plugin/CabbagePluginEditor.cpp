@@ -1865,7 +1865,7 @@ for(int i=0;i<(int)getFilter()->getGUICtrlsSize();i++)//find correct control fro
                                                                         getFilter()->getGUICtrls(u).getStringProp("type")==String("rslider")||
                                                                         getFilter()->getGUICtrls(u).getStringProp("type")==String("vslider")){
                                                                         if(controls[u])
-                                                                        ((CabbageSlider*)controls[u])->slider->setValue(val, false);
+                                                                        ((CabbageSlider*)controls[u])->slider->setValue(val, dontSendNotification);
                                                                         }
                                                                         else if(getFilter()->getGUICtrls(u).getStringProp("type")==String("checkbox")){
                                                                         if(controls[u])
@@ -2041,7 +2041,7 @@ for(int i=0;i<(int)getFilter()->getGUICtrlsSize();i++){
                 float val = getFilter()->getGUICtrls(i).getNumProp("sliderRange")*getFilter()->getParameter(i);
                 ((CabbageSlider*)controls[i])->slider->setValue(val, false);
 #else
-                ((CabbageSlider*)controls[i])->slider->setValue(inValue, true);
+                ((CabbageSlider*)controls[i])->slider->setValue(inValue, sendNotification);
 #endif
         }
         }
@@ -2174,7 +2174,7 @@ for(int i=0;i<getFilter()->getGUILayoutCtrlsSize();i++){
                                                 getFilter()->getGUICtrls(i).getStringProp("type")==String("rslider")||
                                                 getFilter()->getGUICtrls(i).getStringProp("type")==String("vslider")){
                                 if(controls[i])
-                                                ((CabbageSlider*)controls[i])->slider->setValue(value, false);
+                                                ((CabbageSlider*)controls[i])->slider->setValue(value, dontSendNotification);
                                 }
                                 else if(getFilter()->getGUICtrls(i).getStringProp("type")==String("button")){
                                 if(controls[i])

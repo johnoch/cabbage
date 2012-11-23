@@ -59,7 +59,7 @@ void CabbageMainPanel::setLayoutEditor(ComponentLayoutEditor* ed)
    
    if (layoutEditor)
    {
-      deleteAndZero (layoutEditor);
+     // deleteAndZero (layoutEditor);
    }
    
    layoutEditor = ed;

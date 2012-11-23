@@ -662,7 +662,7 @@ void CabbageLookAndFeel::drawLinearSliderBackground (Graphics &g, int x, int /*y
             slider.setEnabled (true);
             if ((mousePos.getY() >= (destY-5)) && (mousePos.getY() <= (sliderEndPosition+5))) {
 				sliderPosProp = 1 - ((mousePos.getY()-destY)/destHeight); //inverting because of y axis
-				slider.setValue(slider.proportionOfLengthToValue(sliderPosProp), true, false);
+				slider.setValue(slider.proportionOfLengthToValue(sliderPosProp), sendNotification);
             }
         }
         slider.setEnabled (false); //disabling
