@@ -8,9 +8,9 @@ IF "%1"=="release" goto RELEASE
 echo Release Builds 
 msbuild CabbagePlugin.sln /t:ReBuild /p:Configuration=Debug
 COPY Debug\CabbagePlugin.dll CabbagePluginEffect.dat
-msbuild CabbagePlugin.sln /t:REBuild /p:Configuration=Debug /p:DefineConst="Cabbage_Plugin_Synth"
+msbuild CabbagePlugin.sln /t:REBuild /p:Configuration=Debug /p:MyConstants="Cabbage_Plugin_Synth=1"
 COPY Debug\CabbagePlugin.dll CabbagePluginSynth.dat
-msbuild Cabbage.sln /t:ReBuild /p:Configuration=Debug /p:DefineConst="Cabbage_Plugin_Synth"
+msbuild Cabbage.sln /t:ReBuild /p:Configuration=Debug /p:MyConstants="Cabbage_Plugin_Synth=1"
 COPY Debug\Cabbage.exe Cabbage.exe
 echo Pleae check current directory for Cabbage.exe, CabbagePluginSynth.dat and CabbagePluginEffect.dat. If any files are missing seomthing went wrong in the build process!  
 goto END
