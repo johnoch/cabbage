@@ -824,10 +824,10 @@ void StandaloneFilterWindow::openFile()
 	if(openFC.browseForFileToOpen()){
 		csdFile = openFC.getResult();
 		csdFile.getParentDirectory().setAsCurrentWorkingDirectory();
+		lastSaveTime = csdFile.getLastModificationTime();
 		resetFilter();
 		if(cabbageCsoundEditor)
 		cabbageCsoundEditor->setCsoundFile(csdFile);
-
 		isAFileOpen = true;
 	}
 	if(appProperties->getUserSettings()->getValue("SetAlwaysOnTop", var(0)).getFloatValue())
