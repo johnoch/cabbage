@@ -73,6 +73,10 @@ class CabbagePluginAudioProcessor  : public AudioProcessor,
         CsoundChannelListEntry* csoundChanList;         // list of all available channels...
         int numCsoundChannels;          //number of Csound channels
         static void messageCallback(CSOUND *csound, int attr, const char *fmt, va_list args);  //message callback function
+		static int yieldCallback(CSOUND* csound){
+			return 1;
+		}
+
         int pos;
         //Csound API functions for deailing with midi input
         static int OpenMidiInputDevice(CSOUND * csnd, void **userData, const char *devName);
@@ -210,34 +214,24 @@ public:
         return pluginName;
         }
 
-        const Array<float> getTable(double tableNum, double tableS){
-        MYFLT* temp;
-		int tableSize;
-		temp = (MYFLT*)malloc(sizeof(MYFLT*)*3545817);
-//		int tableSize= 3545817;// 3545817;
-//		Array<MYFLT> test;
-//        for(int i=0;i<tableSize;i++){
-//			temp[i]= i;
-//		}
-		
-			
-#ifndef Cabbage_No_Csound
-		if(csound)
-			tableSize = csound->GetTable(temp, tableNum);
-				
-                //temp.add(csound->TableGet(tableNum, i));
-#endif
-		for(int i=0;i<tableSize;i++){
-			Logger::writeToLog(String(temp[i]));
-		}	
 
-		Array<float> points(temp, tableSize-1);
-		//points = Array<MYFLT>(temp, tableSize);
+//============ fill table -----------------------
+        const Array<float> getTable(int tableNum, double tableS){
+        //MYFLT* temp;
+		Array<float> points;
 		
+		//table length = 10687746
+		MYFLT* temp;// = new MYFLT[10687746];
+		int tableSize = csound->GetTable(temp, tableNum);
 	
+		//250190, 245757, 274492, 240637
 		
-        return points;
+		points = Array<float>(temp, tableSize);
+		return points;
         }
+
+
+
 
         void setMidiDebug(bool val){
                 showMIDI=val;

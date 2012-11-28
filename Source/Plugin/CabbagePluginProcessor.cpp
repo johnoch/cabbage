@@ -62,6 +62,7 @@ if(!isGuiEnabled()){
 csound = new Csound();
 csound->PreCompile();
 csound->SetMessageCallback(CabbagePluginAudioProcessor::messageCallback);
+csound->SetYieldCallback(CabbagePluginAudioProcessor::yieldCallback);
 csound->SetHostData(this);
 //for host midi to get sent to Csound, don't need this for standalone
 //but might use it in the future foir midi mapping to controls
@@ -466,6 +467,10 @@ if(this->getActiveEditor()){
 // CALLBACKS FOR STANDALONE
 //===========================================================
 #ifndef Cabbage_No_Csound
+//int (*yieldCallback_)(CSOUND *)
+
+
+//void (*csoundMessageCallback_)(CSOUND *, int attr, const char *format, va_list valist)
 void CabbagePluginAudioProcessor::messageCallback(CSOUND* csound, int /*attr*/,  const char* fmt, va_list args)
 {
 try{
@@ -748,7 +753,7 @@ void CabbagePluginAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiB
 
 float* audioBuffer;
 #ifndef Cabbage_No_Csound
-
+/*
 if(csCompileResult==0){
 keyboardState.processNextMidiBuffer (midiMessages, 0, buffer.getNumSamples(), true);
 midiBuffer = midiMessages;
@@ -794,7 +799,7 @@ else{
         buffer.clear (i, 0, buffer.getNumSamples());
     }
 
-
+*/
 #endif
 
 }
