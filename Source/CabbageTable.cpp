@@ -17,31 +17,27 @@ CabbageEnvelopeHandleComponent::~CabbageEnvelopeHandleComponent()
 {
 }
 
-//==================================================================
 void CabbageEnvelopeHandleComponent::paint (Graphics& g)
 {
 	g.setColour (Colours::aqua);
 	g.fillEllipse (1, 1, getWidth()-2, getHeight()-2);
 }
 
-//==================================================================
 Table* CabbageEnvelopeHandleComponent::getParentComponent()
 {
 	return (Table*)Component::getParentComponent();
 }
-//==================================================================
+
 void CabbageEnvelopeHandleComponent::removeThisHandle()
 {
 	getParentComponent()->removeHandle (this);	
 }
 
-//==================================================================
 void CabbageEnvelopeHandleComponent::mouseEnter (const MouseEvent& e)
 {
 	setMouseCursor (MouseCursor::DraggingHandCursor);
 }
 
-//==================================================================
 void CabbageEnvelopeHandleComponent::mouseDown (const MouseEvent& e)
 {
 	//setMouseCursor (MouseCursor::NoCursor);
@@ -64,7 +60,6 @@ void CabbageEnvelopeHandleComponent::mouseDown (const MouseEvent& e)
 	}
 }
 
-//==================================================================
 void CabbageEnvelopeHandleComponent::mouseDrag (const MouseEvent& e)
 {
 	dragger.dragComponent (this, e, nullptr);
@@ -88,7 +83,6 @@ Table::~Table()
 {
 }
 
-//====================================================================
 void Table::resized()
 {
 	//We need to make room for the h scrollbar, therefore table data
@@ -98,19 +92,17 @@ void Table::resized()
 	tableHeight = tableBottom - tableTop;
 }
 
-//====================================================================
 void Table::setOriginalWidth(int w)
 {
 	//Sets the original width from when the table was initialised
 	origWidth = w; 
 	maxZoomForOverview = tblSize / origWidth;
-	backgroundImage();
+	cacheBackgroundImage();
 }
 
-//====== Creates Overview arrays ======================================
 void Table::createAmpOverviews (Array<float> csndInputData)
 {
-	//This function creates smaller overview arrays amp values using the
+	//This method creates smaller amp overview arrays using the
 	//original table data...
 	tableData.amps.clear();
 	tableData.y.clear();
@@ -119,7 +111,7 @@ void Table::createAmpOverviews (Array<float> csndInputData)
 
 	tableData.amps = csndInputData;
 	
-	//----- Getting the min and max amplitude values....
+	// Getting the min and max amplitude values....
 	minAmp = maxAmp = tableData.amps.getFirst();
 	for (int i=0; i<tblSize; i++) {
 		if (tableData.amps[i] > maxAmp)
@@ -128,9 +120,22 @@ void Table::createAmpOverviews (Array<float> csndInputData)
 			minAmp = tableData.amps[i];
 	}
 
+	//if min and max amps are the same value....
+	if (minAmp == maxAmp) {
+		if (minAmp > 0)
+			minAmp = 0;
+		else if (minAmp < 0) {
+			maxAmp = 0;
+		}
+		else { //else if both are 0
+			minAmp = -1;
+			maxAmp = 1;
+		}
+	}
+
 	ampRange = maxAmp - minAmp; 
 
-	//----- Filling overview arrays. The original table data is broken into
+	// Filling overview arrays. The original table data is broken into
 	//separate blocks. The max and min values are then stored from each block.
 	//Block size is dependent on the max zoom level we use for overviews.
 	float incr = (float)tblSize / (getWidth()*maxZoomForOverview);
@@ -151,13 +156,11 @@ void Table::createAmpOverviews (Array<float> csndInputData)
 	//makeTableEditable();
 }
 
-//==============================================================
 void Table::setDataSource (int zoomValue)
 {
 	//If current zoom <= max zoom for overview, then the 
 	//overview arrays are used and converted to y coordinates.
 	//Otherwise the initial table data is used.
-
 	if (zoomValue <= maxZoomForOverview) { 
 		int incrSize = maxZoomForOverview/zoomValue;
 		float maxBlockValue, minBlockValue;
@@ -174,61 +177,52 @@ void Table::setDataSource (int zoomValue)
 					minBlockValue = overview.minAmps[i+j]; 
 			}
 		
-			overview.maxY.add (ampToYCoordinate(maxBlockValue));
-			overview.minY.add (ampToYCoordinate(minBlockValue));
+			overview.maxY.add (convertAmpToPixel(maxBlockValue));
+			overview.minY.add (convertAmpToPixel(minBlockValue));
 			
 			useOverview = true;
 		}
 	}
-	//----- Else we use original table data for painting
+	// Else we use original table data for painting
 	else {
-		pixelsPerIndx = (zoomValue*origWidth) / (float)tblSize;
+		numPixelsPerIndex = (zoomValue*origWidth) / (float)tblSize;
 		useOverview = false;
 	}
 	
 	repaint();
 }
 
-//====== For converting amps to y pixel values ==================
-float Table::ampToYCoordinate (float ampValue)
+float Table::convertAmpToPixel (float ampValue)
 {
-	float ampNormalise = (ampValue-minAmp) / ampRange;
-	float ampInvert = 1-ampNormalise;
-	float yValue  = (ampInvert * tableHeight) + tableTop;
-	return yValue;
+	// This method converts amps to y pixel values
+	float normalisedAmp = (ampValue-minAmp) / ampRange; //first change to normalised value
+	return ((1-normalisedAmp) * tableHeight) + tableTop;
 }
 
-//======= Create background image ========================
-void Table::backgroundImage()
+void Table::cacheBackgroundImage()
 {
 	//This method creates the background image that the table data will be
 	//painted on to.  It is then stored in cache.
-
 	img = Image(Image::ARGB, origWidth, getHeight(), true);
 	Graphics g (img);
 		
-	//----- For drawing the actual canvas area
-	//g.setColour (CabbageUtils::getBackgroundSkin());
 	g.setColour (Colours::black);
 	g.fillRoundedRectangle (0, 0, getWidth(), getHeight(), 5);
 
-	//----- Amp horizontal markers...
+	// Amp horizontal markers...
 	g.setColour (Colour::fromRGBA (220, 220, 240, 255));
 	g.drawLine (0, getHeight()*0.5, getWidth(), getHeight()*0.5, 0.2);
 	g.setColour (Colour::fromRGBA (170, 170, 190, 255));
 	g.drawLine (0, (tableHeight*0.25)+tableTop, getWidth(), (tableHeight*0.25)+tableTop, 0.1);
 	g.drawLine (0, (tableHeight*0.75)+tableTop, getWidth(), (tableHeight*0.75)+tableTop, 0.1);
 			
-	//----- Adding image to cache and assigning it a hash code
 	ImageCache::addImageToCache (img, 15);
 }
 
-//====== Paint method =======================================================
 void Table::paint (Graphics& g)
 {
-
 	float viewStart, viewWidth;
-	//----- Getting viewport's coordinates...
+	// Getting viewport's coordinates...
 	Viewport* const viewport =  this->findParentComponentOfClass<Viewport> ();
 
 	if (viewport) {
@@ -236,7 +230,7 @@ void Table::paint (Graphics& g)
 		viewWidth = viewport->getViewWidth();
 	}
 
-	//----- Background image cache
+	// Background image cache
 	Image bg = ImageCache::getFromHashCode(15);
 	g.drawImage (bg, viewStart, 0, origWidth, getHeight(), 
 		0, 0, bg.getWidth(), bg.getHeight(), false);
@@ -245,54 +239,60 @@ void Table::paint (Graphics& g)
 	int startIndx;
 	int endIndx;
 
-	//---- If using overview...
+	// If using overview...
 	if (useOverview == true) {
 		startIndx = (viewStart/getWidth()) * overview.maxY.size();
 		endIndx = startIndx + viewWidth;
-		float minVal, maxVal;
-		minVal = maxVal = 0;
+		float bottomYPixelValue, topYPixelValue;
+		bottomYPixelValue = topYPixelValue = 0;
 
-		//----- For loop which will draw a vertical line between the min and max value 
+		// For loop which will draw a vertical line between the min and max value 
 		//for each x pixel 
-		int x=0; //represents the pixel number along the x-axis
+		int xPixelValue = 0; 
 		for (int i=startIndx; i<endIndx; i++) {
 			//We need to make sure that the current min value is not greater than the 
 			//next max value. Otherwise there would be a gap in the wave form...
 			if (overview.minY[i] < overview.maxY[i+1])
-				minVal = overview.maxY[i+1];
+				bottomYPixelValue = overview.maxY[i+1];
 			else
-				minVal = overview.minY[i];
+				bottomYPixelValue = overview.minY[i];
 			if (overview.maxY[i] > overview.minY[i+1])
-				maxVal = overview.minY[i+1];
+				topYPixelValue = overview.minY[i+1];
 			else
-				maxVal = overview.maxY[i];
+				topYPixelValue = overview.maxY[i];
+			 
+			float minGap = 0.4;
+			float diff = bottomYPixelValue - topYPixelValue;
+			if (diff < minGap) {
+				bottomYPixelValue += (minGap-diff)/2;
+				topYPixelValue -= (minGap-diff)/2;
+			}
 			
-			if (CabbageUtils::isNumber(maxVal) && CabbageUtils::isNumber(minVal)) {
-				//g.drawLine (x+viewStart, maxVal, x+viewStart, minVal, 1);
-				g.drawVerticalLine (x+viewStart, maxVal, minVal);
-				x+=1;//.0f;
+			if (CabbageUtils::isNumber(topYPixelValue) && CabbageUtils::isNumber(bottomYPixelValue)) {
+				g.drawVerticalLine (xPixelValue+viewStart, topYPixelValue, bottomYPixelValue);
+				xPixelValue += 1;
 			}
 		}
 	}
 	
-	//----- Using original array values for painting...
+	//Else if using original array values for painting...
 	else if (useOverview == false) {
 		startIndx = ((viewStart/getWidth()) * tableData.amps.size()) + 0.5; //0.5 for rounding
-		endIndx = (startIndx + (viewWidth/pixelsPerIndx)) + 0.5; 
+		endIndx = (startIndx + (viewWidth/numPixelsPerIndex)) + 0.5; 
 		float prevX = viewStart;
-		float prevY = ampToYCoordinate (tableData.amps[startIndx]);
+		float prevY = convertAmpToPixel (tableData.amps[startIndx]);
 		float currY;
 		for (int i=startIndx+1; i<=endIndx; i++) {
-			currY = ampToYCoordinate (tableData.amps[i]);
-			g.drawLine (prevX, prevY, prevX+pixelsPerIndx, currY);
+			currY = convertAmpToPixel (tableData.amps[i]);
+			g.drawLine (prevX, prevY, prevX+numPixelsPerIndex, currY);
 			// For drawing index markers
-			if (pixelsPerIndx > 4) {
+			if (numPixelsPerIndex > 4) {
 				//g.setColour (Colours::aqua);
-				//g.fillEllipse ((prevX+pixelsPerIndx)-2, currY-2, 4, 4);
-				g.drawVerticalLine (prevX+pixelsPerIndx, currY-3, currY+3);
+				//g.fillEllipse ((prevX+numPixelsPerIndex)-2, currY-2, 4, 4);
+				g.drawVerticalLine (prevX+numPixelsPerIndex, currY-3, currY+3);
 				//g.setColour(cl);
 			}
-			prevX = prevX + pixelsPerIndx;
+			prevX = prevX + numPixelsPerIndex;
 			prevY = currY;
 		}
 	}
@@ -349,10 +349,9 @@ void Table::paint (Graphics& g)
 
 }
 
-//====== Mouse Down ==============================================
 void Table::mouseDown (const MouseEvent& e)
 {
-	//----- If no shift button then it's a zoom in or out.
+	// If no shift button then it's a zoom in or out.
 	if (e.mods.isShiftDown() == false) {
 		Viewport* const viewport = this->findParentComponentOfClass<Viewport> ();
 		float viewStart = viewport->getViewPositionX();
@@ -361,7 +360,7 @@ void Table::mouseDown (const MouseEvent& e)
 
 		//left mouse button for zooming in
 		if (e.mods.isLeftButtonDown() == true) { 
-			if (pixelsPerIndx <= 50) {
+			if (numPixelsPerIndex <= 50) {
 				zoom *= 2;
 				x *= 2;
 				if (handles.size() > 0) //if envelope handles
@@ -383,12 +382,11 @@ void Table::mouseDown (const MouseEvent& e)
 		setDataSource (zoom);		
 	}
 
-	//----- With shift button down a new envelope handle is added. No zoom.
+	// With shift button down a new envelope handle is added. No zoom.
 	else if (e.mods.isShiftDown() == true)
 		draggingHandle = addHandle (e.x, e.y);
 }
 
-//======= Modify position of handles after zoom ======================
 void Table::modifyHandlePos (float j)
 {
 	//This function changes the x position of each envelope handle
@@ -399,46 +397,47 @@ void Table::modifyHandlePos (float j)
 	}
 }
 
-//====== creates a scalable vector from our ftable waveform =============
 void Table::createEnvPath()
 {
-envPath.startNewSubPath(0, ampToYCoordinate(tableData.amps[0]));
-//create a vector path based on the ftable waveform
-//the path will always be tblSize pixel wide. 
-for(int i=0;i<tblSize;i++){
-		envPath.lineTo(i, ampToYCoordinate(tableData.amps[i]));
-}
-envPath.scaleToFit(0, tableTop, getWidth(), tableHeight, false);
+	// Creates a scalable vector from our ftable waveform
+	envPath.startNewSubPath(0, convertAmpToPixel(tableData.amps[0]));
+	//create a vector path based on the ftable waveform
+	//the path will always be tblSize pixel wide. 
+	for(int i=0;i<tblSize;i++)
+		envPath.lineTo(i, convertAmpToPixel(tableData.amps[i]));
+
+	envPath.scaleToFit(0, tableTop, getWidth(), tableHeight, false);
 }
 
-//====== Add handles for editing table ==================================
 void Table::makeTableEditable()
 {
-	
+	// Adding handles to make table editable...	
 	handles.clear();
 	double angle, prevAngle;
-	prevAngle = atan2(envPath.getPointAlongPath(2).getY() - envPath.getPointAlongPath(1).getY(), envPath.getPointAlongPath(2).getX() - envPath.getPointAlongPath(1).getX()) * 180 / 3.14;	
+	prevAngle = atan2(envPath.getPointAlongPath(2).getY() - envPath.getPointAlongPath(1).getY(), 
+		envPath.getPointAlongPath(2).getX() - envPath.getPointAlongPath(1).getX()) * 180 / 3.14;	
 	//add first handle
 	addHandle (envPath.getPointAlongPath(1).getX(), envPath.getPointAlongPath(1).getY());
 
 	for(int i=2; i<envPath.getLength(); i++){
-	angle = atan2(envPath.getPointAlongPath(i).getY() - envPath.getPointAlongPath(i-1).getY(), envPath.getPointAlongPath(i).getX() - envPath.getPointAlongPath(i-1).getX()) * 180 / 3.14;	
-	//String msg;
-	//msg << "i:" << i << " Path(" << envPath.getPointAlongPath(i).getX() << ", " << envPath.getPointAlongPath(i).getY() << ")" << " Direction:" << angle;
-	//Logger::writeToLog(msg);
+		angle = atan2(envPath.getPointAlongPath(i).getY() - envPath.getPointAlongPath(i-1).getY(), 
+			envPath.getPointAlongPath(i).getX() - envPath.getPointAlongPath(i-1).getX()) * 180 / 3.14;	
+		//String msg;
+		//msg << "i:" << i << " Path(" << envPath.getPointAlongPath(i).getX() << ", " << envPath.getPointAlongPath(i).getY() << ")" 
+		//<< " Direction:" << angle;
+		//Logger::writeToLog(msg);
 
-	//make sure it's not a NaN
-	if(CabbageUtils::isNumber(angle))
-	//this is not right yet as it adds too many handles....
-	//check that the angle has changed by at least 30 degrees, again, needs work
-	if(((int)prevAngle!=(int)angle)&& abs(prevAngle-angle)>30)
-	addHandle (envPath.getPointAlongPath(i).getX(), envPath.getPointAlongPath(i).getY());
-	prevAngle = angle;
+		//make sure it's not a NaN
+		if(CabbageUtils::isNumber(angle))
+		//this is not right yet as it adds too many handles....
+		//check that the angle has changed by at least 30 degrees, again, needs work
+		if(((int)prevAngle!=(int)angle)&& abs(prevAngle-angle)>30)
+		addHandle (envPath.getPointAlongPath(i).getX(), envPath.getPointAlongPath(i).getY());
+		prevAngle = angle;
 	}
 	addHandle (envPath.getPointAlongPath(envPath.getLength()).getX(), envPath.getPointAlongPath(envPath.getLength()).getY());
 }
 
-//========= Add Handle ===========================================
 CabbageEnvelopeHandleComponent* Table::addHandle(int x, int y)
 {
 	int i;
@@ -456,7 +455,6 @@ CabbageEnvelopeHandleComponent* Table::addHandle(int x, int y)
 	return handle;
 }
 
-//========= Remove Handle ===========================================
 void Table::removeHandle (CabbageEnvelopeHandleComponent* thisHandle)
 {
 	if (handles.size() > 0) {

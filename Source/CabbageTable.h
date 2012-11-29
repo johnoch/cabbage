@@ -72,8 +72,8 @@ public:
 	void setOriginalWidth(int w);
 	void createAmpOverviews (Array<float> csndInputData);
 	void setDataSource (int zoomValue);
-	float ampToYCoordinate (float ampValue);
-	void backgroundImage();
+	float convertAmpToPixel (float ampValue);
+	void cacheBackgroundImage();
 	void paint (Graphics& g);
 	void mouseDown (const MouseEvent& e);
 	CabbageEnvelopeHandleComponent* addHandle(int x, int y);
@@ -93,7 +93,7 @@ private:
 	Colour cl;
 	int origWidth;
 	bool useOverview;
-	float maxZoomForOverview, pixelsPerIndx;
+	float maxZoomForOverview, numPixelsPerIndex;
 
 	OwnedArray<CabbageEnvelopeHandleComponent> handles;
 	CabbageEnvelopeHandleComponent* draggingHandle;
