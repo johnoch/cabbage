@@ -75,7 +75,7 @@ void CabbageEnvelopeHandleComponent::mouseDrag (const MouseEvent& e)
   ====================================================================================
 */
 Table::Table (int tableSize, Colour colour) : tblSize(tableSize), zoom(1.0), cl (colour),
-																draggingHandle (0)
+																draggingHandle (0), scrubberPosition(0)
 {
 }
 
@@ -346,6 +346,15 @@ void Table::paint (Graphics& g)
 		g.setColour(Colours::lightblue);
 		g.strokePath (path, PathStrokeType(2.0f));
 	}
+	
+	
+	//draw the crubber if needed
+	if(scrubberPosition>0){
+	g.setColour(Colours::yellow);
+	scrubberPosition = scrubberPosition*getWidth();
+	g.drawLine(scrubberPosition, 0, scrubberPosition, getHeight(), 2);
+	}
+	
 
 }
 
@@ -563,6 +572,13 @@ void CabbageTableViewer::fillTable (int tableIndex, Array<float> csndInputData)
 {
 	tables[tableIndex]->createAmpOverviews (csndInputData);
 	//tableManager->fillTable (tableID, csndInputData);
+}
+
+void CabbageTableViewer::setScrubberPosition(int tableIndex, float position)
+{
+	tables[tableIndex]->scrubberPosition = position;
+	tables[tableIndex]->repaint();
+	
 }
 
 

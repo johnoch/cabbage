@@ -2140,15 +2140,20 @@ for(int i=0;i<getFilter()->getGUILayoutCtrlsSize();i++){
                 //float val = getFilter()->getParameter(i);
 				float val = getFilter()->getCsound()->GetChannel(getFilter()->getGUILayoutCtrls(i).getStringProp("channel").toUTF8());
 				//cout << String(val) << "\n"; //getFilter()->getGUILayoutCtrls(i).getStringProp("channel");
-
 				
-                if(val<0){
-                Array <float> tableValues = getFilter()->getTable(tableNumber);//change this to table number
-
-                ((CabbageTable*)layoutComps[i])->fillTable(0, tableValues);
-               // cout << "val less than 0";
-				getFilter()->getCsound()->SetChannel(getFilter()->getGUILayoutCtrls(i).getStringProp("channel").toUTF8(), 0.f);
-                }
+				
+                if(val<0)
+					{
+					Array <float> tableValues = getFilter()->getTable(tableNumber);//change this to table number
+					((CabbageTable*)layoutComps[i])->fillTable(0, tableValues);
+					// cout << "val less than 0";
+					getFilter()->getCsound()->SetChannel(getFilter()->getGUILayoutCtrls(i).getStringProp("channel").toUTF8(), 0.f);
+					}
+				else
+					{
+					((CabbageTable*)layoutComps[i])->setScrubberPosition(0, val);	
+					}
+				
 
         }
 		

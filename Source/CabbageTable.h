@@ -81,6 +81,8 @@ public:
 	void modifyHandlePos (float j);
 	void makeTableEditable();
 	void createEnvPath();
+	
+	float scrubberPosition;
 
 private:
 	Image img;
@@ -149,6 +151,7 @@ public:
 	void addTable (String name, int tableSize, Colour colour);
 	void fillTable (int tableID, Array<float> csndInputData);
 	void tableToFront (int tableOnTop);
+	void setScrubberPosition(int tableIndex, float position);
 
 private:
 	//ScopedPointer<CabbageTableManager> tableManager;

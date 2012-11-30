@@ -1748,7 +1748,10 @@ void fillTable(int ID, Array<float> yValues){
 	table->fillTable(ID, yValues);
 }
 
-
+void setScrubberPosition(int ID, float position){
+	if(position>0)
+	table->setScrubberPosition(ID, position);
+}
 //---------------------------------------------
 void resized()
 {
