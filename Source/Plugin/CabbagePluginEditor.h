@@ -68,6 +68,7 @@ public:
     void resized();
 	void setEditMode(bool on);
 	void InsertGUIControls();
+	void ksmpsYieldCallback();
 
 private:
         

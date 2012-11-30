@@ -47,7 +47,10 @@ beat(0),
 bpm(120),
 patMatrixActive(0),
 masterCounter(0),
-xyAutosCreated(false)
+xyAutosCreated(false),
+updateTable(false),
+yieldCallbackBool(false),
+yieldCounter(0)
 {
 //reset patMatrix. If this has more than one we know that
 //pattern matrix object is being used
@@ -61,8 +64,6 @@ setPlayConfigDetails(2, 2, 44100, 512);
 if(!isGuiEnabled()){
 csound = new Csound();
 csound->PreCompile();
-csound->SetMessageCallback(CabbagePluginAudioProcessor::messageCallback);
-csound->SetYieldCallback(CabbagePluginAudioProcessor::yieldCallback);
 csound->SetHostData(this);
 //for host midi to get sent to Csound, don't need this for standalone
 //but might use it in the future foir midi mapping to controls
@@ -94,6 +95,7 @@ if(csCompileResult==0){
         csound->RewindScore();
         
         csound->SetMessageCallback(CabbagePluginAudioProcessor::messageCallback);
+		//csound->SetYieldCallback(CabbagePluginAudioProcessor::yieldCallback);
         if(csound->GetSpout()==nullptr);
         CSspout = csound->GetSpout();
         CSspin  = csound->GetSpin();
@@ -174,6 +176,7 @@ csound->PreCompile();
 csound->SetHostData(this);
 //for host midi to get sent to Csound, don't need this for standalone
 //but might use it in the future for midi mapping to controls
+csound->SetMessageCallback(CabbagePluginAudioProcessor::messageCallback);
 csound->SetExternalMidiInOpenCallback(OpenMidiInputDevice);
 csound->SetExternalMidiReadCallback(ReadMidiData); 
 csound->SetExternalMidiOutOpenCallback(OpenMidiOutputDevice);
@@ -238,6 +241,7 @@ if(!isGuiEnabled()){
                 Logger::writeToLog("about to cleanup Csound");
                 csound->Cleanup();
                 csound->Reset();
+				//csound->SetYieldCallback(nullCallback);
                 csound = nullptr;
                 Logger::writeToLog("Csound cleaned up");
         }
@@ -467,10 +471,6 @@ if(this->getActiveEditor()){
 // CALLBACKS FOR STANDALONE
 //===========================================================
 #ifndef Cabbage_No_Csound
-//int (*yieldCallback_)(CSOUND *)
-
-
-//void (*csoundMessageCallback_)(CSOUND *, int attr, const char *format, va_list valist)
 void CabbagePluginAudioProcessor::messageCallback(CSOUND* csound, int /*attr*/,  const char* fmt, va_list args)
 {
 try{
@@ -748,12 +748,28 @@ if(!isGuiEnabled()){
 #endif
 }
 //==============================================================================
+void CabbagePluginAudioProcessor::updateGUIControlsKsmps(int speed)
+{
+//counter to slow down timer, it's too fast
+if(yieldCounter==speed){
+	yieldCounter=0;
+if(getActiveEditor())
+	if((guiLayoutCtrls.size()>0) || guiCtrls.size()>0)
+		((CabbagePluginAudioProcessorEditor*)getActiveEditor())->ksmpsYieldCallback();
+}
+else
+	yieldCounter++;
+	
+}
+
+
+//==============================================================================
 void CabbagePluginAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
 {
 
 float* audioBuffer;
 #ifndef Cabbage_No_Csound
-/*
+
 if(csCompileResult==0){
 keyboardState.processNextMidiBuffer (midiMessages, 0, buffer.getNumSamples(), true);
 midiBuffer = midiMessages;
@@ -768,7 +784,8 @@ for(int i=0;i<buffer.getNumSamples();i++, csndIndex++)
 		if(csndIndex == csound->GetKsmps())
 		{
 			CSCompResult = csound->PerformKsmps();
-		csndIndex = 0;
+			updateGUIControlsKsmps(10);
+			csndIndex = 0;
 		}
         if(!CSCompResult)
 			{
@@ -799,7 +816,7 @@ else{
         buffer.clear (i, 0, buffer.getNumSamples());
     }
 
-*/
+
 #endif
 
 }

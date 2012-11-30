@@ -125,9 +125,10 @@ StandaloneFilterWindow::StandaloneFilterWindow (const String& title,
     else
 		centreWithSize (getWidth(), getHeight());
 		
-		int val = appProperties->getUserSettings()->getValue("AutoUpdate", var(0)).getFloatValue();
-		if(val)
-			startTimer(100);
+	appProperties->getUserSettings()->setValue("AutoUpdate", var(0));
+	//	int val = appProperties->getUserSettings()->getValue("AutoUpdate", var(0)).getFloatValue();
+	//	if(val)
+	//		startTimer(100);
 }
 //==============================================================================
 // Destructor
@@ -356,7 +357,7 @@ for(int i=0;i<filter->getDebugMessageArray().size();i++)
 //==============================================================================
 void StandaloneFilterWindow::deleteFilter()
 {
-    player.setProcessor (nullptr);
+	player.setProcessor (nullptr);
 
     if (filter != nullptr && getContentComponent() != nullptr)
     {
@@ -373,7 +374,6 @@ void StandaloneFilterWindow::deleteFilter()
 void StandaloneFilterWindow::resetFilter()
 {
 //const MessageManagerLock mmLock; 
-    deleteFilter();
 	deviceManager->closeAudioDevice();
 	filter = createCabbagePluginFilter(csdFile.getFullPathName(), false);
 	//filter->suspendProcessing(isGuiEnabled());
@@ -478,8 +478,8 @@ PropertySet* StandaloneFilterWindow::getGlobalSettings()
 
 void StandaloneFilterWindow::showAudioSettingsDialog()
 {
-	const int numIns = filter->getNumInputChannels() <= 0 ? JucePlugin_MaxNumInputChannels : filter->getNumInputChannels();
-    const int numOuts = filter->getNumOutputChannels() <= 0 ? JucePlugin_MaxNumOutputChannels : filter->getNumOutputChannels();
+const int numIns = filter->getNumInputChannels() <= 0 ? JucePlugin_MaxNumInputChannels : filter->getNumInputChannels();
+const int numOuts = filter->getNumOutputChannels() <= 0 ? JucePlugin_MaxNumOutputChannels : filter->getNumOutputChannels();
 
     AudioDeviceSelectorComponent selectorComp (*deviceManager,
                                                numIns, numIns, numOuts, numOuts,
@@ -492,6 +492,7 @@ void StandaloneFilterWindow::showAudioSettingsDialog()
 	DialogWindow::showModalDialog(TRANS("Audio Settings"), &selectorComp, this, col, true, false, false);
 	bool alwaysontop = appProperties->getUserSettings()->getValue("SetAlwaysOnTop", var(0)).getFloatValue();
 	setAlwaysOnTop(alwaysontop);
+
 }
 //==============================================================================
 void StandaloneFilterWindow::closeButtonPressed()
@@ -660,7 +661,9 @@ void StandaloneFilterWindow::buttonClicked (Button*)
 	}
 	//----- audio settings ------
    	else if(options==4){
+		filter->suspendProcessing(true);
         showAudioSettingsDialog();
+		deleteFilter();
 		resetFilter();
 	}
 
@@ -704,8 +707,10 @@ void StandaloneFilterWindow::buttonClicked (Button*)
 	}
 	
 	//----- update instrument  ------
-    else if(options==8)
+    else if(options==8){
+		deleteFilter();
         resetFilter();
+	}
 	//----- update GUI only -----
 	else if(options==9)
 	filter->createGUI(csdFile.loadFileAsString());
@@ -814,6 +819,8 @@ void StandaloneFilterWindow::openFile()
 			csd << "/Contents/" << csdFile.getFileNameWithoutExtension() << ".csd";
 			csdFile = File(csd);
 		}
+		filter->suspendProcessing(true);
+		deleteFilter();
 		resetFilter();
 		//cabbageCsoundEditor->setCsoundFile(csdFile);
 	}	
@@ -825,6 +832,8 @@ void StandaloneFilterWindow::openFile()
 		csdFile = openFC.getResult();
 		csdFile.getParentDirectory().setAsCurrentWorkingDirectory();
 		lastSaveTime = csdFile.getLastModificationTime();
+		filter->suspendProcessing(true);
+		deleteFilter();
 		resetFilter();
 		if(cabbageCsoundEditor)
 		cabbageCsoundEditor->setCsoundFile(csdFile);
@@ -839,6 +848,9 @@ void StandaloneFilterWindow::openFile()
 
 void StandaloneFilterWindow::saveFile()
 {
+filter->suspendProcessing(true);
+deleteFilter();
+if(csdFile.hasWriteAccess())
 csdFile.replaceWithText(cabbageCsoundEditor->getCurrentText());
 resetFilter();
 }
@@ -851,6 +863,8 @@ FileChooser saveFC(String("Save Cabbage file as..."), File::nonexistent, String(
 		csdFile = saveFC.getResult().withFileExtension(String(".csd"));
 		csdFile.replaceWithText(cabbageCsoundEditor->getCurrentText());
 		cabbageCsoundEditor->setCsoundFile(csdFile);
+		filter->suspendProcessing(true);
+		deleteFilter();
 		resetFilter();
 	}
 	if(appProperties->getUserSettings()->getValue("SetAlwaysOnTop", var(0)).getFloatValue())

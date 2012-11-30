@@ -61,6 +61,9 @@ class CabbagePluginAudioProcessor  : public AudioProcessor,
         bool guiOnOff;
         int currentLine;
 		bool xyAutosCreated;
+		bool updateTable;
+		Array<int> tableNumbers;
+		
 
         //============== Csound related variables/methods ==============================
 #ifndef Cabbage_No_Csound
@@ -73,16 +76,13 @@ class CabbagePluginAudioProcessor  : public AudioProcessor,
         CsoundChannelListEntry* csoundChanList;         // list of all available channels...
         int numCsoundChannels;          //number of Csound channels
         static void messageCallback(CSOUND *csound, int attr, const char *fmt, va_list args);  //message callback function
-		static int yieldCallback(CSOUND* csound){
-			return 1;
-		}
-
         int pos;
         //Csound API functions for deailing with midi input
         static int OpenMidiInputDevice(CSOUND * csnd, void **userData, const char *devName);
         static int OpenMidiOutputDevice(CSOUND * csnd, void **userData, const char *devName);
         static int ReadMidiData(CSOUND *csound, void *userData, unsigned char *mbuf, int nbytes);
         static int WriteMidiData(CSOUND *csound, void *userData, const unsigned char *mbuf, int nbytes);
+		
 #endif
         StringArray debugInfo;
 
@@ -96,7 +96,7 @@ class CabbagePluginAudioProcessor  : public AudioProcessor,
 		bool editorReOpened;
         
 		OwnedArray<XYPadAutomation> xyAutomation;
-
+		void updateGUIControlsKsmps(int speed);
 
 public:
     //==============================================================================
@@ -216,20 +216,29 @@ public:
 
 
 //============ fill table -----------------------
-        const Array<float> getTable(int tableNum, double tableS){
+        const Array<float> getTable(int tableNum){
         //MYFLT* temp;
 		Array<float> points;
 		
 		//table length = 10687746
 		MYFLT* temp;// = new MYFLT[10687746];
 		int tableSize = csound->GetTable(temp, tableNum);
+		
 	
 		//250190, 245757, 274492, 240637
-		
+		if(tableSize>0)
 		points = Array<float>(temp, tableSize);
+		
 		return points;
         }
-
+//        Array<float> getTable(double tableNum, int tableSize){
+//        Array<float> temp;
+//        for(int i=0;i<tableSize;i++)
+//#ifndef Cabbage_No_Csound
+//                temp.add(csound->TableGet(tableNum, i));
+//#endif
+//        return temp;
+//        }
 
 
 
@@ -352,6 +361,8 @@ public:
         MidiBuffer midiBuffer;          
         MidiBuffer ccBuffer;
         bool showMIDI;
+		bool yieldCallbackBool;
+		int yieldCounter;
         JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CabbagePluginAudioProcessor);
         
 };

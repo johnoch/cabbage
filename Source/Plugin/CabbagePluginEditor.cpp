@@ -1599,14 +1599,18 @@ void CabbagePluginAudioProcessorEditor::InsertPVSViewer(CabbageGUIClass &cAttr)
 //+++++++++++++++++++++++++++++++++++++++++++
 void CabbagePluginAudioProcessorEditor::InsertTable(CabbageGUIClass &cAttr)
 {
+//I need to make this thread safe!! I can't do anything to the tables unless Csound is ready..
+
 int tableSize=0;
+int tableNumber = cAttr.getNumProp("tableNum");
 Array <float> tableValues;
         //fill array with points from table, is table is valid
         if(getFilter()->getCompileStatus()==0 &&
 		   getFilter()->getCsound()){
 #ifndef Cabbage_No_Csound
         tableSize = getFilter()->getCsound()->TableLength(cAttr.getNumProp("tableNum"));
-        tableValues = getFilter()->getTable(cAttr.getNumProp("tableNum"), tableSize);
+        tableValues = getFilter()->getTable(cAttr.getNumProp("tableNum"));
+		
 #endif
         }
         else{
@@ -2023,8 +2027,15 @@ for(int i=0;i<(int)getFilter()->getGUICtrlsSize();i++){
 return true;
 }
 //==============================================================================
+//fix this so it only gets called on a ksmps kield
 void CabbagePluginAudioProcessorEditor::timerCallback()
 {       
+	
+}
+
+void CabbagePluginAudioProcessorEditor::ksmpsYieldCallback(){
+
+const MessageManagerLock mmLock;
 // update our GUI so that whenever a VST parameter is changed in the 
 // host the corresponding GUI control gets updated. 
 
@@ -2125,13 +2136,16 @@ for(int i=0;i<getFilter()->getGUILayoutCtrlsSize();i++){
         }
         else if(getFilter()->getGUILayoutCtrls(i).getStringProp("type").containsIgnoreCase("table")){
                 int tableSize = getFilter()->getCsound()->TableLength(getFilter()->getGUILayoutCtrls(i).getNumProp("tableNum"));
+				int tableNumber = getFilter()->getGUILayoutCtrls(i).getNumProp("tableNum");
                 //float val = getFilter()->getParameter(i);
 				float val = getFilter()->getCsound()->GetChannel(getFilter()->getGUILayoutCtrls(i).getStringProp("channel").toUTF8());
 				//cout << String(val) << "\n"; //getFilter()->getGUILayoutCtrls(i).getStringProp("channel");
-				//Logger::writeToLog(String(val));
+
+				
                 if(val<0){
-                Array <float> tableValues = getFilter()->getTable(1, tableSize);
-               // ((CabbageTable*)layoutComps[i])->fillTable(0, tableValues);
+                Array <float> tableValues = getFilter()->getTable(tableNumber);//change this to table number
+
+                ((CabbageTable*)layoutComps[i])->fillTable(0, tableValues);
                // cout << "val less than 0";
 				getFilter()->getCsound()->SetChannel(getFilter()->getGUILayoutCtrls(i).getStringProp("channel").toUTF8(), 0.f);
                 }
@@ -2207,6 +2221,7 @@ for(int i=0;i<getFilter()->getGUILayoutCtrlsSize();i++){
    getFilter()->ccBuffer.clear();
    
   #endif
+
 #endif
 
 

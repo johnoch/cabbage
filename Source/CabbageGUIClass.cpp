@@ -451,6 +451,7 @@ int CabbageGUIClass::parse(String str)
     identArray.add("runcsound(");
 	identArray.add("tabs(");
 	identArray.add("tablenumber(");
+	identArray.add("tablenum(");
 	identArray.add("fill(");
 	identArray.add("file(");
 	identArray.add("outline(");
@@ -792,7 +793,9 @@ int CabbageGUIClass::parse(String str)
             else if(identArray.getReference(indx).toLowerCase().equalsIgnoreCase("textbox(")){
 				textBox = strTokens[0].trim().getFloatValue();  
 			}
-            else if(identArray.getReference(indx).toLowerCase().equalsIgnoreCase("tablenum(")){
+			
+            else if(identArray.getReference(indx).toLowerCase().equalsIgnoreCase("tablenum(")||
+			(identArray.getReference(indx).toLowerCase().equalsIgnoreCase("tablenumber("))){
 				tableNum = strTokens[0].trim().getFloatValue();  
 			}
             else if(identArray.getReference(indx).toLowerCase().equalsIgnoreCase("popup(")){
