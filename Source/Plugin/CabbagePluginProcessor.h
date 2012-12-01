@@ -58,7 +58,7 @@ class CabbagePluginAudioProcessor  : public AudioProcessor,
         String csoundOutput;
         void changeListenerCallback(ChangeBroadcaster *source);
         String changeMessageType;
-        bool guiOnOff;
+        bool guiON;
         int currentLine;
 		bool xyAutosCreated;
 		bool updateTable;
@@ -330,12 +330,12 @@ public:
 #endif
 
         bool isGuiEnabled(){
-                return guiOnOff;
+                return guiON;
 				
         }
 
         void setGuiEnabled(bool onoff){
-                guiOnOff = onoff;
+                guiON = onoff;
         }
 
 

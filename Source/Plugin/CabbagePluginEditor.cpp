@@ -37,6 +37,7 @@ CabbagePluginAudioProcessorEditor::CabbagePluginAudioProcessorEditor (CabbagePlu
 lookAndFeel = new CabbageLookAndFeel(); 
 Component::setLookAndFeel(lookAndFeel);
 oldSchoolLook = new OldSchoolLookAndFeel();
+ownerFilter->addActionListener(this);
 #ifdef Cabbage_GUI_Editor
 //determine whether instrument should be opened in GUI mode or not
 componentPanel = new CabbageMainPanel();
@@ -1659,6 +1660,10 @@ Array <float> tableValues;
                                         /*     actionlistener method (xypad/table/snapshot)      */
                                         /*********************************************************/
 void CabbagePluginAudioProcessorEditor::actionListenerCallback (const String& message){
+	//if message has been send from the processing block it's ok to update controls
+if(message == "k cycle complete")
+ksmpsYieldCallback();
+else
 //the first part of this method receives messages from the GUI editor layout/Main panel and updates the 
 //source code accordingly. The second half if use for messages being sent from GUI widgets
 if(message.contains("Message sent from CabbageMainPanel")){

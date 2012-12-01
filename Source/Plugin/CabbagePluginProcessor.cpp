@@ -38,7 +38,7 @@ csdFile(File(inputfile)),
 showMIDI(false), 
 csCompileResult(1), 
 changeMessageType(""), 
-guiOnOff(guiOnOff),
+guiON(false),
 currentLine(-99),
 noSteps(0),
 noPatterns(0),
@@ -133,7 +133,7 @@ csoundStatus(false),
 showMIDI(false), 
 csCompileResult(1), 
 changeMessageType(""), 
-guiOnOff(0),
+guiON(0),
 currentLine(-99),
 noSteps(0),
 noPatterns(0),
@@ -766,59 +766,60 @@ else
 //==============================================================================
 void CabbagePluginAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
 {
+if(!isSuspended()){
+	float* audioBuffer;
+	#ifndef Cabbage_No_Csound
 
-float* audioBuffer;
-#ifndef Cabbage_No_Csound
+	if(csCompileResult==0){
+	keyboardState.processNextMidiBuffer (midiMessages, 0, buffer.getNumSamples(), true);
+	midiBuffer = midiMessages;
+	ccBuffer = midiMessages;
 
-if(csCompileResult==0){
-keyboardState.processNextMidiBuffer (midiMessages, 0, buffer.getNumSamples(), true);
-midiBuffer = midiMessages;
-ccBuffer = midiMessages;
+	for(int i=0;i<buffer.getNumSamples();i++, csndIndex++)
+	   {                                
 
-for(int i=0;i<buffer.getNumSamples();i++, csndIndex++)
-   {                                
-
-    for(int channel = 0; channel < getNumInputChannels(); channel++ )
-        {
-        audioBuffer = buffer.getSampleData(channel,0);
-		if(csndIndex == csound->GetKsmps())
-		{
-			CSCompResult = csound->PerformKsmps();
-			updateGUIControlsKsmps(10);
-			csndIndex = 0;
-		}
-        if(!CSCompResult)
+		for(int channel = 0; channel < getNumInputChannels(); channel++ )
 			{
-			pos = csndIndex*getNumInputChannels();
-			CSspin[channel+pos] = audioBuffer[i]*cs_scale;  
-			audioBuffer[i] = (CSspout[channel+pos]/cs_scale);       
+			audioBuffer = buffer.getSampleData(channel,0);
+			if(csndIndex == csound->GetKsmps())
+			{
+				CSCompResult = csound->PerformKsmps();
+				//updateGUIControlsKsmps(10);
+				sendActionMessage("k cycle complete");
+				csndIndex = 0;
 			}
-		else audioBuffer[i]=0; 
-		}
+			if(!CSCompResult)
+				{
+				pos = csndIndex*getNumInputChannels();
+				CSspin[channel+pos] = audioBuffer[i]*cs_scale;  
+				audioBuffer[i] = (CSspout[channel+pos]/cs_scale);       
+				}
+			else audioBuffer[i]=0; 
+			}
                         
+		}
+	}//if not compiled just mute output
+	else{
+			for(int i=0;i<buffer.getNumSamples();i++, csndIndex++)
+					{
+					for(int channel = 0; channel < getNumInputChannels(); channel++ )
+							{
+							audioBuffer = buffer.getSampleData(channel,0);
+							audioBuffer[i]=0;
+					}
+			}
 	}
-}//if not compiled just mute output
-else{
-        for(int i=0;i<buffer.getNumSamples();i++, csndIndex++)
-                {
-                for(int channel = 0; channel < getNumInputChannels(); channel++ )
-                        {
-                        audioBuffer = buffer.getSampleData(channel,0);
-                        audioBuffer[i]=0;
-                }
-        }
+		// in case we have more outputs than inputs, we'll clear any output
+		// channels that didn't contain input data, (because these aren't
+		// guaranteed to be empty - they may contain garbage).
+		for (int i = getNumInputChannels(); i < getNumOutputChannels(); ++i)
+		{
+			buffer.clear (i, 0, buffer.getNumSamples());
+		}
+
+
+	#endif
 }
-    // in case we have more outputs than inputs, we'll clear any output
-    // channels that didn't contain input data, (because these aren't
-    // guaranteed to be empty - they may contain garbage).
-    for (int i = getNumInputChannels(); i < getNumOutputChannels(); ++i)
-    {
-        buffer.clear (i, 0, buffer.getNumSamples());
-    }
-
-
-#endif
-
 }
 
 

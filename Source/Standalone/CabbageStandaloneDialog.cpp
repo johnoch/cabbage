@@ -478,6 +478,7 @@ PropertySet* StandaloneFilterWindow::getGlobalSettings()
 
 void StandaloneFilterWindow::showAudioSettingsDialog()
 {
+
 const int numIns = filter->getNumInputChannels() <= 0 ? JucePlugin_MaxNumInputChannels : filter->getNumInputChannels();
 const int numOuts = filter->getNumOutputChannels() <= 0 ? JucePlugin_MaxNumOutputChannels : filter->getNumOutputChannels();
 
@@ -661,7 +662,6 @@ void StandaloneFilterWindow::buttonClicked (Button*)
 	}
 	//----- audio settings ------
    	else if(options==4){
-		filter->suspendProcessing(true);
         showAudioSettingsDialog();
 		deleteFilter();
 		resetFilter();
