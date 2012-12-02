@@ -55,6 +55,7 @@ addAndMakeVisible(componentPanel);
 #endif
 
 #ifndef Cabbage_No_Csound
+if(getFilter()->getCsound())
 zero_dbfs = getFilter()->getCsound()->Get0dBFS();
 #endif
 componentPanel->addKeyListener(this);
@@ -1248,7 +1249,7 @@ void CabbagePluginAudioProcessorEditor::InsertCheckBox(CabbageGUIClass &cAttr)
 void CabbagePluginAudioProcessorEditor::buttonClicked(Button* button)
 {
 #ifndef Cabbage_No_Csound
-if(!getFilter()->isGuiEnabled()){
+if(getFilter()->isGuiEnabled()){
         if(button->isEnabled()){     // check button is ok before sending data to on named channel
         if(dynamic_cast<TextButton*>(button)){//check what type of button it is
                 //deal with non-interactive buttons first..
@@ -1331,6 +1332,7 @@ if(!getFilter()->isGuiEnabled()){
                         }
                         }
         }
+
 }//end of GUI enabled check
 #endif
 }
@@ -1399,7 +1401,7 @@ void CabbagePluginAudioProcessorEditor::InsertComboBox(CabbageGUIClass &cAttr)
 void CabbagePluginAudioProcessorEditor::comboBoxChanged (ComboBox* combo)
 {
 #ifndef Cabbage_No_Csound
-if(!getFilter()->isGuiEnabled()){
+if(getFilter()->isGuiEnabled()){
 if(combo->isEnabled()) // before sending data to on named channel
     {
                 for(int i=0;i<(int)getFilter()->getGUICtrlsSize();i++){//find correct control from vector
@@ -1661,7 +1663,7 @@ Array <float> tableValues;
                                         /*********************************************************/
 void CabbagePluginAudioProcessorEditor::actionListenerCallback (const String& message){
 	//if message has been send from the processing block it's ok to update controls
-if(message == "k cycle complete")
+if(message == "ready to update after Ksmps")
 ksmpsYieldCallback();
 else
 //the first part of this method receives messages from the GUI editor layout/Main panel and updates the 
@@ -2007,7 +2009,7 @@ if(key.getTextDescription()=="ctrl + M")
 	getFilter()->sendActionMessage("MENU COMMAND: suspend audio");
 
 #ifndef Cabbage_No_Csound
-if(!getFilter()->isGuiEnabled()){
+if(getFilter()->isGuiEnabled()){
 getFilter()->getCsound()->KeyPressed(key.getTextCharacter());
 //search through controls to see which is attached to the current key being pressed. 
 for(int i=0;i<(int)getFilter()->getGUICtrlsSize();i++){
@@ -2040,11 +2042,18 @@ void CabbagePluginAudioProcessorEditor::timerCallback()
 
 void CabbagePluginAudioProcessorEditor::ksmpsYieldCallback(){
 
-const MessageManagerLock mmLock;
+//const MessageManagerLock mmLock;
 // update our GUI so that whenever a VST parameter is changed in the 
 // host the corresponding GUI control gets updated. 
 
-#ifndef Cabbage_No_Csound       
+#ifndef Cabbage_No_Csound    
+
+
+for(int y=0;y<getFilter()->getXYAutomaterSize();y++){
+				if(getFilter()->getXYAutomater(y))
+				getFilter()->getXYAutomater(y)->update();
+				}
+   
 //#ifndef Cabbage_Build_Standalone
 for(int i=0;i<(int)getFilter()->getGUICtrlsSize();i++){
         inValue = getFilter()->getParameter(i);
@@ -2093,8 +2102,9 @@ for(int i=0;i<(int)getFilter()->getGUICtrlsSize();i++){
 
         else if(getFilter()->getGUICtrls(i).getStringProp("type")==String("checkbox")){
         if(controls[i]){
-                        ((CabbageCheckbox*)controls[i])->button->setToggleState((bool)inValue, false);
-                        getFilter()->getCsound()->SetChannel(getFilter()->getGUICtrls(i).getStringProp("channel").toUTF8(), inValue);
+			int valy = getFilter()->getGUICtrls(i).getNumProp("value");
+                        ((CabbageCheckbox*)controls[i])->button->setToggleState((bool)getFilter()->getGUICtrls(i).getNumProp("value"), false);
+                        //getFilter()->getCsound()->SetChannel(getFilter()->getGUICtrls(i).getStringProp("channel").toUTF8(), inValue);
                         }
                 }
 }
@@ -2124,6 +2134,7 @@ for(int i=0;i<(int)getFilter()->getGUILayoutCtrlsSize();i++){
 }
 #endif
   
+
 for(int i=0;i<getFilter()->getGUILayoutCtrlsSize();i++){
         //String test = getFilter()->getGUILayoutCtrls(i).getStringProp("type");
         //Logger::writeToLog(test);

@@ -226,7 +226,7 @@ void StandaloneFilterWindow::actionListenerCallback (const String& message){
 		}
 	}
 
-	if(message == "GUI Updated, controls added")
+	else if(message == "GUI Updated, controls added")
 	filter->createGUI(csdFile.loadFileAsString());
 	setGuiEnabled(true);
 	filter->setGuiEnabled(true);
@@ -235,38 +235,38 @@ void StandaloneFilterWindow::actionListenerCallback (const String& message){
 	saveFile();
 	}
 
-	if(message.contains("fileOpen")){
+	else if(message.contains("fileOpen")){
 	openFile();
 	}
 
-	if(message.contains("fileSaveAs")){
+	else if(message.contains("fileSaveAs")){
 	saveFileAs();
 	}
 
-	if(message.contains("fileExportSynth")){
+	else if(message.contains("fileExportSynth")){
 	exportPlugin(String("VSTi"), false);
 	}
 
-	if(message.contains("fileExportEffect")){
+	else if(message.contains("fileExportEffect")){
 	exportPlugin(String("VST"), false);
 	}
 
-	if(message.contains("fileUpdateGUI")){
+	else if(message.contains("fileUpdateGUI")){
 		filter->createGUI(cabbageCsoundEditor->getCurrentText());
 		csdFile.replaceWithText(cabbageCsoundEditor->getCurrentText()); 
 	}
 
 #ifdef Cabbage_Build_Standalone
-	if(message.contains("MENU COMMAND: manual update instrument"))
+	else if(message.contains("MENU COMMAND: manual update instrument"))
 		resetFilter();
 
-	if(message.contains("MENU COMMAND: open instrument"))
+	else if(message.contains("MENU COMMAND: open instrument"))
 		openFile();
 
-	if(message.contains("MENU COMMAND: manual update GUI"))
+	else if(message.contains("MENU COMMAND: manual update GUI"))
 		filter->createGUI(csdFile.loadFileAsString());
 	
-	if(message.contains("MENU COMMAND: suspend audio"))
+	else if(message.contains("MENU COMMAND: suspend audio"))
         if(AudioEnabled){
 			filter->suspendProcessing(true);
 			AudioEnabled = false;
@@ -275,7 +275,7 @@ void StandaloneFilterWindow::actionListenerCallback (const String& message){
 			AudioEnabled = true;
 			filter->suspendProcessing(false);
 		}
-
+else{}
 #endif
 
 }
@@ -365,7 +365,7 @@ void StandaloneFilterWindow::deleteFilter()
         clearContentComponent();
     }
 
-    //filter = nullptr;
+    filter = nullptr;
 }
 
 //==============================================================================
@@ -373,7 +373,7 @@ void StandaloneFilterWindow::deleteFilter()
 //==============================================================================
 void StandaloneFilterWindow::resetFilter()
 {
-//const MessageManagerLock mmLock; 
+deleteFilter();
 	deviceManager->closeAudioDevice();
 	filter = createCabbagePluginFilter(csdFile.getFullPathName(), false);
 	//filter->suspendProcessing(isGuiEnabled());
@@ -663,7 +663,6 @@ void StandaloneFilterWindow::buttonClicked (Button*)
 	//----- audio settings ------
    	else if(options==4){
         showAudioSettingsDialog();
-		deleteFilter();
 		resetFilter();
 	}
 
@@ -708,7 +707,6 @@ void StandaloneFilterWindow::buttonClicked (Button*)
 	
 	//----- update instrument  ------
     else if(options==8){
-		deleteFilter();
         resetFilter();
 	}
 	//----- update GUI only -----
@@ -819,8 +817,6 @@ void StandaloneFilterWindow::openFile()
 			csd << "/Contents/" << csdFile.getFileNameWithoutExtension() << ".csd";
 			csdFile = File(csd);
 		}
-		filter->suspendProcessing(true);
-		deleteFilter();
 		resetFilter();
 		//cabbageCsoundEditor->setCsoundFile(csdFile);
 	}	
@@ -832,8 +828,6 @@ void StandaloneFilterWindow::openFile()
 		csdFile = openFC.getResult();
 		csdFile.getParentDirectory().setAsCurrentWorkingDirectory();
 		lastSaveTime = csdFile.getLastModificationTime();
-		filter->suspendProcessing(true);
-		deleteFilter();
 		resetFilter();
 		if(cabbageCsoundEditor)
 		cabbageCsoundEditor->setCsoundFile(csdFile);
@@ -848,8 +842,6 @@ void StandaloneFilterWindow::openFile()
 
 void StandaloneFilterWindow::saveFile()
 {
-filter->suspendProcessing(true);
-deleteFilter();
 if(csdFile.hasWriteAccess())
 csdFile.replaceWithText(cabbageCsoundEditor->getCurrentText());
 resetFilter();
@@ -863,8 +855,6 @@ FileChooser saveFC(String("Save Cabbage file as..."), File::nonexistent, String(
 		csdFile = saveFC.getResult().withFileExtension(String(".csd"));
 		csdFile.replaceWithText(cabbageCsoundEditor->getCurrentText());
 		cabbageCsoundEditor->setCsoundFile(csdFile);
-		filter->suspendProcessing(true);
-		deleteFilter();
 		resetFilter();
 	}
 	if(appProperties->getUserSettings()->getValue("SetAlwaysOnTop", var(0)).getFloatValue())

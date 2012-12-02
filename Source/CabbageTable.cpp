@@ -346,16 +346,13 @@ void Table::paint (Graphics& g)
 		g.setColour(Colours::lightblue);
 		g.strokePath (path, PathStrokeType(2.0f));
 	}
-	
-	
+		
 	//draw the crubber if needed
 	if(scrubberPosition>0){
 	g.setColour(Colours::yellow);
 	scrubberPosition = scrubberPosition*getWidth();
 	g.drawLine(scrubberPosition, 0, scrubberPosition, getHeight(), 2);
 	}
-	
-
 }
 
 void Table::mouseDown (const MouseEvent& e)

@@ -50,7 +50,7 @@ masterCounter(0),
 xyAutosCreated(false),
 updateTable(false),
 yieldCallbackBool(false),
-yieldCounter(0)
+yieldCounter(10)
 {
 //reset patMatrix. If this has more than one we know that
 //pattern matrix object is being used
@@ -61,7 +61,6 @@ setPlayConfigDetails(2, 2, 44100, 512);
 
 #ifndef Cabbage_No_Csound
 //don't start of run Csound in edit mode
-if(!isGuiEnabled()){
 csound = new Csound();
 csound->PreCompile();
 csound->SetHostData(this);
@@ -114,7 +113,7 @@ else{
 }
 else
 Logger::writeToLog("Welcome to Cabbage");
-}//end of guiEnabled() check
+
 #endif
 
 #ifdef Cabbage_Plugin_Host
@@ -234,7 +233,7 @@ CabbagePluginAudioProcessor::~CabbagePluginAudioProcessor()
 patStepMatrix.clear();
 patternNames.clear();
 patPfieldMatrix.clear();
-if(!isGuiEnabled()){
+
         const MessageManagerLock mmLock;
         if(csound){
                 csound->DeleteChannelList(csoundChanList);
@@ -245,7 +244,7 @@ if(!isGuiEnabled()){
                 csound = nullptr;
                 Logger::writeToLog("Csound cleaned up");
         }
-}//end of gui enabled check
+
 #endif
 }
 
@@ -722,13 +721,8 @@ if(!isGuiEnabled()){
                         csound->SetChannel(getGUILayoutCtrls(i).getStringProp("channel").toUTF8(), hostInfo.ppqPosition);
                 }
         }
-			
-			for(int y=0;y<xyAutomation.size();y++){
-				if(xyAutomation[y])
-				xyAutomation[y]->update();
-				}
 
-//
+
 //for(int i=0;i<(int)getGUICtrlsSize();i++)//find correct control from vector
 //        //if message came from an XY pad...
 //		if(getGUICtrls(i).getStringProp("type")=="xypad"){
@@ -745,6 +739,10 @@ if(!isGuiEnabled()){
 		
 
 }// end of GUI enabled check
+			for(int y=0;y<xyAutomation.size();y++){
+				if(xyAutomation[y])
+				xyAutomation[y]->update();
+				}
 #endif
 }
 //==============================================================================
@@ -755,7 +753,8 @@ if(yieldCounter==speed){
 	yieldCounter=0;
 if(getActiveEditor())
 	if((guiLayoutCtrls.size()>0) || guiCtrls.size()>0)
-		((CabbagePluginAudioProcessorEditor*)getActiveEditor())->ksmpsYieldCallback();
+		//((CabbagePluginAudioProcessorEditor*)getActiveEditor())->ksmpsYieldCallback();
+		sendActionMessage("ready to update after Ksmps");
 }
 else
 	yieldCounter++;
@@ -784,8 +783,9 @@ if(!isSuspended()){
 			if(csndIndex == csound->GetKsmps())
 			{
 				CSCompResult = csound->PerformKsmps();
-				//updateGUIControlsKsmps(10);
-				sendActionMessage("k cycle complete");
+				getCallbackLock().enter();
+				updateGUIControlsKsmps(20);
+				getCallbackLock().exit();
 				csndIndex = 0;
 			}
 			if(!CSCompResult)
