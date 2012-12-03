@@ -1603,7 +1603,7 @@ void CabbagePluginAudioProcessorEditor::InsertPVSViewer(CabbageGUIClass &cAttr)
 void CabbagePluginAudioProcessorEditor::InsertTable(CabbageGUIClass &cAttr)
 {
 //I need to make this thread safe!! I can't do anything to the tables unless Csound is ready..
-
+//getFilter()->getCsound()->Stop();
 int tableSize=0;
 int tableNumber = cAttr.getNumProp("tableNum");
 Array <float> tableValues;
@@ -1611,8 +1611,13 @@ Array <float> tableValues;
         if(getFilter()->getCompileStatus()==0 &&
 		   getFilter()->getCsound()){
 #ifndef Cabbage_No_Csound
+		//this can only be done when it's safe to do so!! Rightnow it's not..
+		
         tableSize = getFilter()->getCsound()->TableLength(cAttr.getNumProp("tableNum"));
-        tableValues = getFilter()->getTable(cAttr.getNumProp("tableNum"));
+        //tableValues = getFilter()->getTable(cAttr.getNumProp("tableNum"));
+		
+		for(int i=0;i<tableSize;i++)
+			tableValues.add(0);
 		
 #endif
         }

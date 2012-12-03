@@ -373,14 +373,16 @@ void StandaloneFilterWindow::deleteFilter()
 //==============================================================================
 void StandaloneFilterWindow::resetFilter()
 {
-deleteFilter();
+	deleteFilter();
 	deviceManager->closeAudioDevice();
 	filter = createCabbagePluginFilter(csdFile.getFullPathName(), false);
-	//filter->suspendProcessing(isGuiEnabled());
+	filter->suspendProcessing(true);
 	filter->addChangeListener(this);
 	filter->addActionListener(this);
 	filter->sendChangeMessage();
+	//filter->suspendProcessing(true);
 	filter->createGUI(csdFile.loadFileAsString());
+	filter->suspendProcessing(false);
 	String test = filter->getPluginName();
 	setName(filter->getPluginName());
 

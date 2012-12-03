@@ -214,8 +214,12 @@ public:
         return pluginName;
         }
 
+		Array<Array <float > > tableArrays;
 
-//============ fill table -----------------------
+		Array<float> getTableArray(int index){
+			return tableArrays[index];
+		}
+		//============ fill table -----------------------
         const Array<float> getTable(int tableNum){
         //MYFLT* temp;
 		Array<float> points;
