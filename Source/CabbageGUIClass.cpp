@@ -38,7 +38,9 @@ CabbageGUIClass::CabbageGUIClass(String compStr, int ID):
 								height(0),
 								left(0),
 								top(0), 
-								xyAutoIndex(0)
+								xyAutoIndex(0),
+								fileType(0),
+								workingDir("")
 {
 //Default values are assigned to all attributres 
 //before parsing begins
@@ -425,6 +427,7 @@ int CabbageGUIClass::parse(String str)
 	identArray.add(" line(");
 	identArray.add(",line(");
 	identArray.add("bounds(");
+	identArray.add("populate(");
 	identArray.add("range(");
 	identArray.add("rangex(");
 	identArray.add("rangey(");
@@ -659,6 +662,12 @@ int CabbageGUIClass::parse(String str)
 
 			else if(identArray.getReference(indx).toLowerCase().equalsIgnoreCase("preset(")){
 				preset = strTokens[0].trim();
+			}
+
+			else if(identArray.getReference(indx).toLowerCase().equalsIgnoreCase("populate(")){
+				fileType = strTokens[0].trim();
+				if(strTokens.size()>1) 
+					workingDir = strTokens[1].trim();
 			}
 
 			else if(identArray.getReference(indx).toLowerCase().equalsIgnoreCase("author(")){
@@ -1069,6 +1078,10 @@ String CabbageGUIClass::getStringProp(String prop)
 		}
 		else if(prop.equalsIgnoreCase("pos"))
 			return posText.trim();
+		else if(prop.equalsIgnoreCase("fileType"))
+			return fileType.trim();
+		else if(prop.equalsIgnoreCase("workingDir"))
+			return workingDir.trim();
 		else if(prop.equalsIgnoreCase("size"))
 			return sizeText.trim();
 		else if(prop.equalsIgnoreCase("text"))

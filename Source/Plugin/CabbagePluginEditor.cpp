@@ -1345,6 +1345,7 @@ if(getFilter()->isGuiEnabled()){
 //+++++++++++++++++++++++++++++++++++++++++++
 void CabbagePluginAudioProcessorEditor::InsertComboBox(CabbageGUIClass &cAttr)
 {
+	    Array<File> dirFiles;
         controls.add(new CabbageComboBox(cAttr.getStringProp("name"),
                 cAttr.getStringProp("caption"),
                 cAttr.getItems(0),
@@ -1380,12 +1381,38 @@ void CabbagePluginAudioProcessorEditor::InsertComboBox(CabbageGUIClass &cAttr)
 //this needs some attention. 
 //At present comboxbox colours can't be changed...
         int items;
+		if(cAttr.getStringProp("fileType").length()<1)
 		for(int i=0;i<(int)cAttr.getItemsSize();i++){
                 String test  = cAttr.getItems(i);
                 ((CabbageComboBox*)controls[idx])->combo->addItem(cAttr.getItems(i), i+1);
                 cAttr.setNumProp("maxItems", i);
                 items=i;
         }
+		else{
+			//appProperties->getUserSettings()->getValue("CsoundPluginDirectory");
+			File pluginDir;
+			String currentFileLocation = getFilter()->getCsoundInputFile().getParentDirectory().getFullPathName();
+			Logger::writeToLog(currentFileLocation);
+			if(cAttr.getStringProp("workingDir").length()<1){
+			pluginDir = File(currentFileLocation);
+			
+			}
+			else
+			pluginDir = File(cAttr.getStringProp("workingDir"));	
+			
+			const String filetype = cAttr.getStringProp("fileType");
+			Logger::writeToLog(cAttr.getStringProp("fileType"));
+			pluginDir.findChildFiles(dirFiles, 2, false, filetype);
+
+			for (int i = 0; i < dirFiles.size(); ++i){
+				//m.addItem (i + menuSize, cabbageFiles[i].getFileNameWithoutExtension());
+                String test  = String(i+1)+": "+dirFiles[i].getFileName();
+                ((CabbageComboBox*)controls[idx])->combo->addItem(test, i+1);
+                cAttr.setNumProp("maxItems", i);
+                items=i;
+			}
+			
+		}
 
         cAttr.setNumProp("sliderRange", cAttr.getItemsSize());
         lookAndFeel->setColour(ComboBox::textColourId, Colour::fromString(cAttr.getColourProp("fontcolour")));

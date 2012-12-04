@@ -40,7 +40,7 @@ class CabbageGUIClass : public CabbageUtils
 		line, anchor, linkTo, scaleX, scaleY, value, valueX, valueY, maxItems, sliderIncr, sliderSkew, decimalPlaces, rCtrls, lineIsVertical;
         StringArray items, onoffcaptions, key, channels, snapshotData;
 
-        String channel, name, sizeText, posText, boundsText, text, type, plant, reltoplant, bounds, range,
+        String channel, name, sizeText, posText, boundsText, text, type, plant, reltoplant, bounds, range, fileType, workingDir,
         shape, beveltype, caption, kind, topitem, yChannel, xChannel, author,
         exit, csstdout, cssetup, file, debugMessage, xyChannel, pluginID, preset;
 		Colour outline, fill, fontcolour, textcolour, colour, trackerFill;
