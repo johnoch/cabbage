@@ -232,6 +232,7 @@ void Table::paint (Graphics& g)
 
 	// Background image cache
 	Image bg = ImageCache::getFromHashCode(15);
+	bg.multiplyAllAlphas(.5);
 	g.drawImage (bg, viewStart, 0, origWidth, getHeight(), 
 		0, 0, bg.getWidth(), bg.getHeight(), false);
 	
@@ -544,7 +545,7 @@ void CabbageTableViewer::resized()
 	//this->setViewedComponent (tableManager, false);
 }
 
-void CabbageTableViewer::addTable (String name, int tableSize, Colour colour)
+void CabbageTableViewer::addTable (String name, int tableSize, Colour colour, float alpha)
 {
 	//tableManager->addTable (name, tableSize, colour);
 
@@ -553,6 +554,7 @@ void CabbageTableViewer::addTable (String name, int tableSize, Colour colour)
 	tables.add (new Table(tableSize, colour));
 	tables[i]->setBounds (getX(), getY(), getWidth(), getHeight());
 	tables[i]->setOriginalWidth (getWidth());
+	tables[i]->setAlpha(alpha);
 	tableToFront (i);	
 }
 

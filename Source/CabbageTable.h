@@ -148,7 +148,7 @@ public:
 	CabbageTableViewer();
 	~CabbageTableViewer();
 	void resized();
-	void addTable (String name, int tableSize, Colour colour);
+	void addTable (String name, int tableSize, Colour colour, float alpha);
 	void fillTable (int tableID, Array<float> csndInputData);
 	void tableToFront (int tableOnTop);
 	void setScrubberPosition(int tableIndex, float position);

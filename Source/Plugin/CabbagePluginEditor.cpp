@@ -1654,14 +1654,14 @@ Array <float> tableValues;
                 cAttr.getStringProp("caption"),
                 cAttr.getItems(0),
                 tableSize, 
-				cAttr.getColourProp("colour")));    
+				cAttr.getColourProp("colour"),
+				cAttr.getNumProp("alpha")));    
         int idx = layoutComps.size()-1;
         float left = cAttr.getNumProp("left");
         float top = cAttr.getNumProp("top");
         float width = cAttr.getNumProp("width");
         float height = cAttr.getNumProp("height");
 		layoutComps[idx]->setAlpha(cAttr.getNumProp("alpha"));
-
         int relY=0,relX=0;
         if(layoutComps.size()>0){
         for(int y=0;y<layoutComps.size();y++){
