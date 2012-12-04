@@ -1701,11 +1701,12 @@ class CabbageTable : public Component
 {
 //ScopedPointer<LookAndFeel> lookFeel;
 int offX, offY, offWidth, offHeight, tableSize;
+String colour;
 public:
 ScopedPointer<GroupComponent> groupbox;
 ScopedPointer<CabbageTableViewer> table;
 //---- constructor -----
-CabbageTable(String name, String text, String caption, int tblSize): tableSize(tblSize)
+CabbageTable(String name, String text, String caption, int tblSize, String Colour): tableSize(tblSize), colour(Colour)
 {
 	setName(name);
 	offX=offY=offWidth=offHeight=0;
@@ -1714,6 +1715,7 @@ CabbageTable(String name, String text, String caption, int tblSize): tableSize(t
 	groupbox->setWantsKeyboardFocus(false);
 	table = new CabbageTableViewer();
 	//table->setBounds(0, 0, 300, 200);
+	
 	
 	addAndMakeVisible(table);
 	addAndMakeVisible(groupbox);
@@ -1757,7 +1759,7 @@ void resized()
 {
 groupbox->setBounds(0, 0, getWidth(), getHeight()); 
 table->setBounds(offX, offY, getWidth()+offWidth, getHeight()+offHeight); 
-table->addTable("table0", tableSize, Colours::lime);
+table->addTable("table0", tableSize, Colour::fromString(colour));
 this->setWantsKeyboardFocus(false);
 }
 

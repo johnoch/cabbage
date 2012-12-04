@@ -787,12 +787,12 @@ void StandaloneFilterWindow::buttonClicked (Button*)
 		else{
 	if(isAFileOpen == true)
 		if(filter->isGuiEnabled()){
-		((CabbagePluginAudioProcessorEditor*)filter->getActiveEditor())->setEditMode(false);
-		filter->setGuiEnabled(false);
-		}
-		else{
 		((CabbagePluginAudioProcessorEditor*)filter->getActiveEditor())->setEditMode(true);
 		filter->setGuiEnabled(true);
+		}
+		else{
+		((CabbagePluginAudioProcessorEditor*)filter->getActiveEditor())->setEditMode(false);
+		filter->setGuiEnabled(false);
 		stopTimer();
 		appProperties->getUserSettings()->setValue("AutoUpdate", var(0));
 		}

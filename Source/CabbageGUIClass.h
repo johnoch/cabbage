@@ -36,7 +36,7 @@ using namespace std;
 class CabbageGUIClass : public CabbageUtils
 {
         double width, height, top, left, isRect, min, max, tabpage, minX, minY, maxX, maxY, comboRange, fftSize, overlapSize, frameSize,
-		noOfMenus, onoff, midiChan, midiCtrl, sliderRange, xypadRangeY, xypadRangeX, noSteps, noPatterns, pvsChannel,
+		noOfMenus, onoff, midiChan, midiCtrl, sliderRange, xypadRangeY, xypadRangeX, noSteps, noPatterns, pvsChannel, alpha,
 		line, anchor, linkTo, scaleX, scaleY, value, valueX, valueY, maxItems, sliderIncr, sliderSkew, decimalPlaces, rCtrls, lineIsVertical;
         StringArray items, onoffcaptions, key, channels, snapshotData;
 

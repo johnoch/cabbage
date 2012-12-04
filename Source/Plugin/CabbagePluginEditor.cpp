@@ -1411,7 +1411,6 @@ void CabbagePluginAudioProcessorEditor::InsertComboBox(CabbageGUIClass &cAttr)
                 cAttr.setNumProp("maxItems", i);
                 items=i;
 			}
-			
 		}
 
         cAttr.setNumProp("sliderRange", cAttr.getItemsSize());
@@ -1638,8 +1637,7 @@ Array <float> tableValues;
         if(getFilter()->getCompileStatus()==0 &&
 		   getFilter()->getCsound()){
 #ifndef Cabbage_No_Csound
-		//this can only be done when it's safe to do so!! Rightnow it's not..
-		
+		//this can only be done when it's safe to do so!!		
         tableSize = getFilter()->getCsound()->TableLength(cAttr.getNumProp("tableNum"));
         //tableValues = getFilter()->getTable(cAttr.getNumProp("tableNum"));
 		
@@ -1655,13 +1653,14 @@ Array <float> tableValues;
         layoutComps.add(new CabbageTable(cAttr.getStringProp("name"),
                 cAttr.getStringProp("caption"),
                 cAttr.getItems(0),
-                tableSize));    
+                tableSize, 
+				cAttr.getColourProp("colour")));    
         int idx = layoutComps.size()-1;
         float left = cAttr.getNumProp("left");
         float top = cAttr.getNumProp("top");
         float width = cAttr.getNumProp("width");
         float height = cAttr.getNumProp("height");
-
+		layoutComps[idx]->setAlpha(cAttr.getNumProp("alpha"));
 
         int relY=0,relX=0;
         if(layoutComps.size()>0){

@@ -40,7 +40,8 @@ CabbageGUIClass::CabbageGUIClass(String compStr, int ID):
 								top(0), 
 								xyAutoIndex(0),
 								fileType(0),
-								workingDir("")
+								workingDir(""),
+								alpha(1)
 {
 //Default values are assigned to all attributres 
 //before parsing begins
@@ -302,7 +303,7 @@ CabbageGUIClass::CabbageGUIClass(String compStr, int ID):
           left = 10;
           width = 400;
           height = 200;
-          colour = Colours::white;
+          colour = Colours::lime;
           name = "table";
 		  type = name;
 		  value = 1;
@@ -432,6 +433,7 @@ int CabbageGUIClass::parse(String str)
 	identArray.add("rangex(");
 	identArray.add("rangey(");
 	identArray.add("plant(");
+	identArray.add("alpha(");
     identArray.add("channel(");
 	identArray.add(" chan(");
     identArray.add("name(");
@@ -803,6 +805,10 @@ int CabbageGUIClass::parse(String str)
 				textBox = strTokens[0].trim().getFloatValue();  
 			}
 			
+            else if(identArray.getReference(indx).toLowerCase().equalsIgnoreCase("alpha(")){
+				alpha = strTokens[0].trim().getFloatValue();  
+			}			
+			
             else if(identArray.getReference(indx).toLowerCase().equalsIgnoreCase("tablenum(")||
 			(identArray.getReference(indx).toLowerCase().equalsIgnoreCase("tablenumber("))){
 				tableNum = strTokens[0].trim().getFloatValue();  
@@ -858,6 +864,8 @@ double CabbageGUIClass::getNumProp(String prop)
 {
 		if(prop.equalsIgnoreCase("width"))
 			return width;
+		if(prop.equalsIgnoreCase("alpha"))
+			return alpha;
 		else if(prop.equalsIgnoreCase("height"))
 			return height;
 		else if(prop.equalsIgnoreCase("textbox"))
