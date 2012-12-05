@@ -151,7 +151,8 @@ m.addSubMenu(String("Indigenous"), subm);
 subm.clear();
 
 String plantDir = appProperties->getUserSettings()->getValue("PlantFileDir", "");	
-addFileToPpopupMenu(m, plantFiles, plantDir, "*.plant"); 
+addFileToPpopupMenu(subm, plantFiles, plantDir, "*.plant"); 
+m.addSubMenu(String("Homegrown"), subm);
 }
 
 if (e.mods.isRightButtonDown())
@@ -207,6 +208,18 @@ if (e.mods.isRightButtonDown())
 					cnt++;
 				}
 				String newPlant = origPlant+String(cnt);
+				StringArray controls;
+				controls.addLines(customPlantControl);
+				Logger::writeToLog(customPlantControl);
+				for(int u=0;u<controls.size();u++){
+					if(controls[u].contains("channel(")){
+					CabbageGUIClass cAttr(controls[u], -99);	
+					const String newChannel = cAttr.getStringProp("channel")+String(cnt);
+					controls.getReference(u) = controls[u].replace(cAttr.getStringProp("channel"), newChannel);
+					}
+					
+				}
+				customPlantControl = controls.joinIntoString("\n");
 				cAttr.setStringProp("plant", newPlant);
 				customPlantControl = customPlantControl.replace(plantText, cAttr.getStringProp("plantText"));
 				//Logger::writeToLog(customPlantControl);
@@ -1633,13 +1646,23 @@ void CabbagePluginAudioProcessorEditor::InsertTable(CabbageGUIClass &cAttr)
 int tableSize=0;
 int tableNumber = cAttr.getNumProp("tableNum");
 Array <float> tableValues;
+Array<int> tableSizes;
         //fill array with points from table, is table is valid
         if(getFilter()->getCompileStatus()==0 &&
 		   getFilter()->getCsound()){
 #ifndef Cabbage_No_Csound
-		//this can only be done when it's safe to do so!!		
+		//this can only be done when it's safe to do so!!
+		if(cAttr.getNumberOfSoftwareChannels()>1)
+		for(int i=0;i<cAttr.getNumberOfSoftwareChannels();i++){
+			if(tableSize<getFilter()->getCsound()->TableLength(cAttr.getTableNumbers(i))){
+			 tableSize = getFilter()->getCsound()->TableLength(cAttr.getTableNumbers(i));
+			tableSizes.add(tableSize);			 
+			}
+		}
+		else{
         tableSize = getFilter()->getCsound()->TableLength(cAttr.getNumProp("tableNum"));
-        //tableValues = getFilter()->getTable(cAttr.getNumProp("tableNum"));
+		tableSizes.add(tableSize);
+		}
 		
 		for(int i=0;i<tableSize;i++)
 			tableValues.add(0);
@@ -1653,7 +1676,7 @@ Array <float> tableValues;
         layoutComps.add(new CabbageTable(cAttr.getStringProp("name"),
                 cAttr.getStringProp("caption"),
                 cAttr.getItems(0),
-                tableSize, 
+				tableSizes,
 				cAttr.getColourProp("colour"),
 				cAttr.getNumProp("alpha")));    
         int idx = layoutComps.size()-1;
@@ -1671,8 +1694,8 @@ Array <float> tableValues;
 				positionComponentWithinPlant("", idx, left, top, width, height, layoutComps[y], controls[idx]);
                 }
         }
-                else{
-            layoutComps[idx]->setBounds(left+relX, top+relY, width, height);
+		else{
+				layoutComps[idx]->setBounds(left+relX, top+relY, width, height);
                 componentPanel->addAndMakeVisible(layoutComps[idx]);            
                 }
         }
@@ -1682,6 +1705,7 @@ Array <float> tableValues;
                 componentPanel->addAndMakeVisible(layoutComps[idx]);            
         }
         
+		//for(int i=0;i<cAttr.getNumberOfSoftwareChannels();i++)
         ((CabbageTable*)layoutComps[idx])->fillTable(0, tableValues);
 //      ((CabbageTable*)controls[idx])->table->addActionListener(this);
 
@@ -1696,10 +1720,10 @@ void CabbagePluginAudioProcessorEditor::actionListenerCallback (const String& me
 	//if message has been send from the processing block it's ok to update controls
 if(message == "ready to update after Ksmps")
 ksmpsYieldCallback();
-else
+
 //the first part of this method receives messages from the GUI editor layout/Main panel and updates the 
 //source code accordingly. The second half if use for messages being sent from GUI widgets
-if(message.contains("Message sent from CabbageMainPanel")){
+else if(message.contains("Message sent from CabbageMainPanel")){
 
 	#ifdef Cabbage_GUI_Editor//if GUI editor has been enabled
 	StringArray csdArray;
@@ -2182,7 +2206,7 @@ for(int i=0;i<getFilter()->getGUILayoutCtrlsSize();i++){
                 }
         }
         else if(getFilter()->getGUILayoutCtrls(i).getStringProp("type").containsIgnoreCase("table")){
-                int tableSize = getFilter()->getCsound()->TableLength(getFilter()->getGUILayoutCtrls(i).getNumProp("tableNum"));
+                //int tableSize = getFilter()->getCsound()->TableLength(getFilter()->getGUILayoutCtrls(i).getNumProp("tableNum"));
 				int tableNumber = getFilter()->getGUILayoutCtrls(i).getNumProp("tableNum");
                 //float val = getFilter()->getParameter(i);
 				float val = getFilter()->getCsound()->GetChannel(getFilter()->getGUILayoutCtrls(i).getStringProp("channel").toUTF8());
@@ -2191,10 +2215,21 @@ for(int i=0;i<getFilter()->getGUILayoutCtrlsSize();i++){
 				
                 if(val<0)
 					{
+					if(getFilter()->getGUILayoutCtrls(i).getNumberOfSoftwareChannels()>1){
+						for(int p=0;p<getFilter()->getGUILayoutCtrls(i).getNumberOfSoftwareChannels();p++){
+						int tableNumber = getFilter()->getGUILayoutCtrls(i).getTableNumbers(p);
+						Array <float> tableValues = getFilter()->getTable(0);//change this to table number
+						((CabbageTable*)layoutComps[i])->fillTable(p, tableValues);
+						getFilter()->getCsound()->SetChannel(getFilter()->getGUILayoutCtrls(i).getChannel(p).toUTF8(), 0.f);
+						}
+					}
+					else{
 					Array <float> tableValues = getFilter()->getTable(tableNumber);//change this to table number
 					((CabbageTable*)layoutComps[i])->fillTable(0, tableValues);
 					// cout << "val less than 0";
 					getFilter()->getCsound()->SetChannel(getFilter()->getGUILayoutCtrls(i).getStringProp("channel").toUTF8(), 0.f);
+					
+						}
 					}
 				else
 					{

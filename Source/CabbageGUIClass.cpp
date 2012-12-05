@@ -500,17 +500,23 @@ int CabbageGUIClass::parse(String str)
             else if(identArray.getReference(indx).toLowerCase().equalsIgnoreCase("channel(")||
 				identArray.getReference(indx).toLowerCase().equalsIgnoreCase(" chan(")){
 					channel = strTokens[0].trim();
+					channels.add(channel);
 					if(str.containsIgnoreCase("xypad")){
 					xChannel = strTokens[0].trim();
 					yChannel = strTokens[1].trim();
 					}
 					else if(str.containsIgnoreCase("vumeter")){
-						channels.clear();
-						for(int u=0;u<strTokens.size();u++){
-							channels.add(strTokens[u].trim());
-						}
+					channels.clear();
+					for(int u=0;u<strTokens.size();u++){
+						channels.add(strTokens[u].trim());
 					}
-					else channels.add(strTokens[0].trim());
+					}
+					else{ 
+						if(strTokens.size()>1)
+						for(int i=0;i<channels.size();i++)
+						channels.add(strTokens[i].trim());
+					
+					}
 			}
 			//don't be so LAZY! Look at all the repeated code!!
             else if(identArray.getReference(indx).toLowerCase().equalsIgnoreCase(" colour(")||
@@ -812,6 +818,10 @@ int CabbageGUIClass::parse(String str)
             else if(identArray.getReference(indx).toLowerCase().equalsIgnoreCase("tablenum(")||
 			(identArray.getReference(indx).toLowerCase().equalsIgnoreCase("tablenumber("))){
 				tableNum = strTokens[0].trim().getFloatValue();  
+				tableNumbers.add(tableNum);
+				if(strTokens.size()>1)
+					for(int i=1;i<strTokens.size();i++)
+						tableNumbers.add(strTokens[i].trim().getFloatValue());
 			}
             else if(identArray.getReference(indx).toLowerCase().equalsIgnoreCase("popup(")){
 				plantButton = strTokens[0].trim().getIntValue();  

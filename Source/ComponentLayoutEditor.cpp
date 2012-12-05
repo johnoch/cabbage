@@ -192,20 +192,20 @@ void ChildAlias::mouseDown (const MouseEvent& e)
 		if(choice==1){
 			this->getTopLevelComponent()->setAlwaysOnTop(false);
 			AlertWindow alert("Add to Repository", "Enter a name and hit 'escape'", AlertWindow::NoIcon, this->getTopLevelComponent()); 
-			CabbageLookAndFeelBasic basicLookAndFeel;
+			CabbageLookAndFeel basicLookAndFeel;
 			alert.setLookAndFeel(&basicLookAndFeel);
 			alert.setColour(TextEditor::textColourId, Colours::white);
 			//alert.addTextBlock("Enter a name and hit 'escape'(The following symbols not premitted in names:"" $ % ^ & * ( ) - + )");
 			alert.addTextEditor("textEditor", "name", "");
 			alert.runModalLoop();
 			this->getTopLevelComponent()->setAlwaysOnTop(true);
-			if(alert.getTextEditorContents("textEditor").containsAnyOf("$%^&*()-+ "))
-				CabbageUtils::showMessage("Invalid name, please try again(names cannot contains white spaces of the following characters: $ % ^ & * ( ) - + ). Nothing has been added to your user repository", &getLookAndFeel());
-			else{
+//			if(alert.getTextEditorContents("textEditor").containsAnyOf("$%^&*()-+ "))
+//				CabbageUtils::showMessage("Invalid name, please try again(names cannot contains white spaces of the following characters: $ % ^ & * ( ) - + ). Nothing has been added to your user repository", &getLookAndFeel());
+
 						//make sure host doesn't fail if there are no Plant entries
-				ScopedPointer<XmlElement> xml;
-				xml = new XmlElement("PLANTS");
-				xml = appProperties->getUserSettings()->getXmlValue("PlantRepository");
+//				ScopedPointer<XmlElement> xml;
+//				xml = new XmlElement("PLANTS");
+//				xml = appProperties->getUserSettings()->getXmlValue("PlantRepository");
 				bool clashingNames=false;
 				int result; 
 				
@@ -231,8 +231,7 @@ void ChildAlias::mouseDown (const MouseEvent& e)
 						showMessage("Nothing written to repository", &getLookAndFeel());
 				}
 				else ((CabbageMainPanel*)(getTarget()->getParentComponent()))->sendActionMessage("Message sent from CabbageMainPanel"+alert.getTextEditorContents("textEditor"));
-				
-			}
+
 		}
 		}
 #endif

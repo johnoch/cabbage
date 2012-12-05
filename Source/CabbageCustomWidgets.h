@@ -1702,12 +1702,13 @@ class CabbageTable : public Component
 //ScopedPointer<LookAndFeel> lookFeel;
 int offX, offY, offWidth, offHeight, tableSize;
 String colour;
+Array<int> tableSizes;
 float alpha;
 public:
 ScopedPointer<GroupComponent> groupbox;
 ScopedPointer<CabbageTableViewer> table;
 //---- constructor -----
-CabbageTable(String name, String text, String caption, int tblSize, String Colour, float alpha): tableSize(tblSize), colour(Colour), alpha(alpha)
+CabbageTable(String name, String text, String caption, Array<int> tblSize, String Colour, float alpha): tableSizes(tblSize), colour(Colour), alpha(alpha)
 {
 	setName(name);
 	offX=offY=offWidth=offHeight=0;
@@ -1716,7 +1717,7 @@ CabbageTable(String name, String text, String caption, int tblSize, String Colou
 	groupbox->setWantsKeyboardFocus(false);
 	table = new CabbageTableViewer();
 	//table->setBounds(0, 0, 300, 200);
-	
+	tableSize = tableSizes[0];
 	
 	addAndMakeVisible(table);
 	addAndMakeVisible(groupbox);
@@ -1738,6 +1739,7 @@ CabbageTable(String name, String text, String caption, int tblSize, String Colou
 		groupbox->setText(caption);
 	}
 	this->setWantsKeyboardFocus(false);
+	
 }
 //---------------------------------------------
 ~CabbageTable(){
@@ -1759,8 +1761,15 @@ void setScrubberPosition(int ID, float position){
 void resized()
 {
 groupbox->setBounds(0, 0, getWidth(), getHeight()); 
-table->setBounds(offX, offY, getWidth()+offWidth, getHeight()+offHeight); 
-table->addTable("table0", tableSize, Colour::fromString(colour), alpha);
+table->setBounds(offX, offY, getWidth()+offWidth, getHeight()+offHeight);
+//not so happy about this method being in here...? Can I remove it? 
+if(tableSizes.size()>1)
+for(int i=0;i<tableSizes.size();i++){
+String name = "table"+String(i);
+table->addTable(name, tableSizes[i], Colour::fromString(colour), alpha);
+}
+else
+table->addTable("table0", tableSizes[0], Colour::fromString(colour), alpha);
 this->setWantsKeyboardFocus(false);
 }
 

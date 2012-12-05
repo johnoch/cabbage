@@ -6,6 +6,7 @@ CabbageLookAndFeel::CabbageLookAndFeel()
 	setColour(AlertWindow::backgroundColourId, CabbageUtils::getDarkerBackgroundSkin());
 	setColour(AlertWindow::textColourId, Colours::white);
 	setColour(AlertWindow::outlineColourId, Colours::grey);
+	
 }
 
 CabbageLookAndFeel::~CabbageLookAndFeel()
@@ -975,6 +976,8 @@ void CabbageLookAndFeel::drawTextEditorOutline (Graphics &g, int width, int heig
 void CabbageLookAndFeel::fillTextEditorBackground (Graphics &g, int width, int height, TextEditor &textEditor)
 {
 	textEditor.setColour (0x1000200, Colours::transparentBlack); //this gets rid of the square rectangle background
+	textEditor.setColour(0x1000201, Colours::white);
+	textEditor.setColour(0x1000203, Colours::white);
 	//g.setColour (CabbageUtils::getBackgroundSkin());
 	//g.fillRoundedRectangle (0, 0, width, height, height/3);
 }

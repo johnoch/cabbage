@@ -226,12 +226,15 @@ void StandaloneFilterWindow::actionListenerCallback (const String& message){
 		}
 	}
 
-	else if(message == "GUI Updated, controls added")
+	else if(message == "GUI Updated, controls added"){
 	filter->createGUI(csdFile.loadFileAsString());
 	setGuiEnabled(true);
 	filter->setGuiEnabled(true);
 	setCurrentLine(filter->getCurrentLine()+1);
-	if(message.equalsIgnoreCase("fileSaved")){
+	
+	}
+	
+	else if(message.equalsIgnoreCase("fileSaved")){
 	saveFile();
 	}
 
@@ -288,46 +291,46 @@ void StandaloneFilterWindow::changeListenerCallback(juce::ChangeBroadcaster* /*s
 {
 String text = "";
 #ifdef Cabbage_Named_Pipe
-#ifdef Cabbage_GUI_Editor
-if(filter->isGuiEnabled()){
-if(filter->getChangeMessageType().containsIgnoreCase("GUI_edit")){
-setGuiEnabled(true);
-setCurrentLine(filter->getCurrentLine()+1);
-sendMessageToWinXound(String("CABBAGE_FILE_UPDATED"), csdFile.getFullPathName());
-sendMessageToWinXound(String("CABBAGE_UPDATE"), "");
-}
-else if(filter->getChangeMessageType().containsIgnoreCase("GUI_lock")){
-setGuiEnabled(false);
-setCurrentLine(filter->getCurrentLine()+1);
-sendMessageToWinXound(String("CABBAGE_FILE_UPDATED"), csdFile.getFullPathName());
-sendMessageToWinXound(String("CABBAGE_UPDATE"), "");
-if(getCurrentLine()>1)
-sendMessageToWinXound(String("CABBAGE_SELECT_LINE"), getCurrentLine()); 
-Logger::writeToLog(String(getCurrentLine()));
-}
-}
-else
-#endif
-// MOD - Stefano Bonetti
-  if(filter && ipConnection->isConnected()){
-      for(int i=0;i<filter->getDebugMessageArray().size();i++)
-      {
-          if(filter->getDebugMessageArray().getReference(i).length()>0)
-          {
-              text += String(filter->getDebugMessageArray().getReference(i).toUTF8());
-          }
-          else 
-          {
-              sendMessageToWinXound(String("CABBAGE_DEBUG"), "Debug message string is empty?");
-              break;
-          }
-
-      }
-
-      filter->clearDebugMessageArray();
-	  sendMessageToWinXound(String("CABBAGE_DEBUG"), text);
-
-  }
+//#ifdef Cabbage_GUI_Editor
+//if(filter->isGuiEnabled()){
+//if(filter->getChangeMessageType().containsIgnoreCase("GUI_edit")){
+//setGuiEnabled(true);
+//setCurrentLine(filter->getCurrentLine()+1);
+//sendMessageToWinXound(String("CABBAGE_FILE_UPDATED"), csdFile.getFullPathName());
+//sendMessageToWinXound(String("CABBAGE_UPDATE"), "");
+//}
+//else if(filter->getChangeMessageType().containsIgnoreCase("GUI_lock")){
+//setGuiEnabled(false);
+//setCurrentLine(filter->getCurrentLine()+1);
+//sendMessageToWinXound(String("CABBAGE_FILE_UPDATED"), csdFile.getFullPathName());
+//sendMessageToWinXound(String("CABBAGE_UPDATE"), "");
+//if(getCurrentLine()>1)
+//sendMessageToWinXound(String("CABBAGE_SELECT_LINE"), getCurrentLine()); 
+//Logger::writeToLog(String(getCurrentLine()));
+//}
+//}
+//else
+//#endif
+//// MOD - Stefano Bonetti
+//  if(filter && ipConnection->isConnected()){
+//      for(int i=0;i<filter->getDebugMessageArray().size();i++)
+//      {
+//          if(filter->getDebugMessageArray().getReference(i).length()>0)
+//          {
+//              text += String(filter->getDebugMessageArray().getReference(i).toUTF8());
+//          }
+//          else 
+//          {
+//              sendMessageToWinXound(String("CABBAGE_DEBUG"), "Debug message string is empty?");
+//              break;
+//          }
+//
+//      }
+//
+//      filter->clearDebugMessageArray();
+//	  sendMessageToWinXound(String("CABBAGE_DEBUG"), text);
+//
+//  }
 #endif
   // MOD - End
 
@@ -787,12 +790,12 @@ void StandaloneFilterWindow::buttonClicked (Button*)
 		else{
 	if(isAFileOpen == true)
 		if(filter->isGuiEnabled()){
-		((CabbagePluginAudioProcessorEditor*)filter->getActiveEditor())->setEditMode(true);
-		filter->setGuiEnabled(true);
-		}
-		else{
 		((CabbagePluginAudioProcessorEditor*)filter->getActiveEditor())->setEditMode(false);
 		filter->setGuiEnabled(false);
+		}
+		else{
+		((CabbagePluginAudioProcessorEditor*)filter->getActiveEditor())->setEditMode(true);
+		filter->setGuiEnabled(true);
 		stopTimer();
 		appProperties->getUserSettings()->setValue("AutoUpdate", var(0));
 		}

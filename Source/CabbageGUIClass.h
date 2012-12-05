@@ -46,6 +46,7 @@ class CabbageGUIClass : public CabbageUtils
 		Colour outline, fill, fontcolour, textcolour, colour, trackerFill;
 		int tableNum, textBox, numPresets, masterSnap, plantButton, xyAutoIndex, paramIndex;
 		Array<int> vuConfig;
+		Array<int> tableNumbers;
 
 		//JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CabbageGUIClass);
 public:
@@ -110,8 +111,12 @@ public:
 		return vuConfig;
 	}
 
-	inline String getChannels(int index){
+	inline String getChannel(int index){
 		return channels[index];
+	}
+
+	inline int getNumberOfSoftwareChannels(){
+		return channels.size();
 	}
 
 	inline int getKeySize(){
@@ -122,6 +127,16 @@ public:
 		return key.getReference(index);
 	}
 
+	int getTableNumbers(int index)
+	{
+		if(index<tableNumbers.size())
+		return tableNumbers[index];		
+	}
+
+	inline Array<int> getTableNumbersArray()
+	{
+		return tableNumbers;		
+	}
 	
 };
 

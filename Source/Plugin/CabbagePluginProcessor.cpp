@@ -132,7 +132,7 @@ csoundStatus(false),
 showMIDI(false), 
 csCompileResult(1), 
 changeMessageType(""), 
-guiON(0),
+guiON(false),
 currentLine(-99),
 noSteps(0),
 noPatterns(0),
@@ -504,7 +504,7 @@ catch(...){
 #ifdef Cabbage_Build_Standalone
 CabbagePluginAudioProcessor* JUCE_CALLTYPE createCabbagePluginFilter(String inputfile, bool guiOnOff)
 {
-    return new CabbagePluginAudioProcessor(inputfile, guiOnOff);
+    return new CabbagePluginAudioProcessor(inputfile, false);
 }
 #else
 AudioProcessor* JUCE_CALLTYPE createPluginFilter()
