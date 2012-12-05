@@ -1751,6 +1751,7 @@ CabbageTable(String name, String text, String caption, Array<int> tblSize, Strin
 void fillTable(int ID, Array<float> yValues){
 	if(yValues.size()>1)
 	table->fillTable(ID, yValues);
+	table->repaint();
 }
 
 void setScrubberPosition(int ID, float position){

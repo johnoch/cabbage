@@ -287,7 +287,7 @@ void Table::paint (Graphics& g)
 			currY = convertAmpToPixel (tableData.amps[i]);
 			g.drawLine (prevX, prevY, prevX+numPixelsPerIndex, currY);
 			// For drawing index markers
-			if (numPixelsPerIndex > 4) {
+			if (numPixelsPerIndex > 4){
 				//g.setColour (Colours::aqua);
 				//g.fillEllipse ((prevX+numPixelsPerIndex)-2, currY-2, 4, 4);
 				g.drawVerticalLine (prevX+numPixelsPerIndex, currY-3, currY+3);

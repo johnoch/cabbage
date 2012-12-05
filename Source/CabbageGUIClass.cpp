@@ -513,7 +513,7 @@ int CabbageGUIClass::parse(String str)
 					}
 					else{ 
 						if(strTokens.size()>1)
-						for(int i=0;i<channels.size();i++)
+						for(int i=1;i<strTokens.size();i++)
 						channels.add(strTokens[i].trim());
 					
 					}

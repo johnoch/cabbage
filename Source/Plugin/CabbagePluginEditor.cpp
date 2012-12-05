@@ -1654,9 +1654,9 @@ Array<int> tableSizes;
 		//this can only be done when it's safe to do so!!
 		if(cAttr.getNumberOfSoftwareChannels()>1)
 		for(int i=0;i<cAttr.getNumberOfSoftwareChannels();i++){
+			tableSizes.add(getFilter()->getCsound()->TableLength(cAttr.getTableNumbers(i)));
 			if(tableSize<getFilter()->getCsound()->TableLength(cAttr.getTableNumbers(i))){
-			 tableSize = getFilter()->getCsound()->TableLength(cAttr.getTableNumbers(i));
-			tableSizes.add(tableSize);			 
+			 tableSize = getFilter()->getCsound()->TableLength(cAttr.getTableNumbers(i));	 
 			}
 		}
 		else{
@@ -1704,9 +1704,11 @@ Array<int> tableSizes;
             layoutComps[idx]->setBounds(left+relX, top+relY, width, height);
                 componentPanel->addAndMakeVisible(layoutComps[idx]);            
         }
+		
+		 
         
 		//for(int i=0;i<cAttr.getNumberOfSoftwareChannels();i++)
-        ((CabbageTable*)layoutComps[idx])->fillTable(0, tableValues);
+        //((CabbageTable*)layoutComps[idx])->fillTable(0, tableValues);
 //      ((CabbageTable*)controls[idx])->table->addActionListener(this);
 
         //Logger::writeToLog(cAttr.getPropsString());
@@ -2208,33 +2210,33 @@ for(int i=0;i<getFilter()->getGUILayoutCtrlsSize();i++){
         else if(getFilter()->getGUILayoutCtrls(i).getStringProp("type").containsIgnoreCase("table")){
                 //int tableSize = getFilter()->getCsound()->TableLength(getFilter()->getGUILayoutCtrls(i).getNumProp("tableNum"));
 				int tableNumber = getFilter()->getGUILayoutCtrls(i).getNumProp("tableNum");
-                //float val = getFilter()->getParameter(i);
-				float val = getFilter()->getCsound()->GetChannel(getFilter()->getGUILayoutCtrls(i).getStringProp("channel").toUTF8());
+                int numberOfTables = getFilter()->getGUILayoutCtrls(i).getNumberOfSoftwareChannels();
+				
+				for(int y=0;y<getFilter()->getGUILayoutCtrls(i).getNumberOfSoftwareChannels();y++){
+				float val = getFilter()->getCsound()->GetChannel(getFilter()->getGUILayoutCtrls(i).getChannel(y).toUTF8());
 				//cout << String(val) << "\n"; //getFilter()->getGUILayoutCtrls(i).getStringProp("channel");
 				
 				
                 if(val<0)
 					{
-					if(getFilter()->getGUILayoutCtrls(i).getNumberOfSoftwareChannels()>1){
-						for(int p=0;p<getFilter()->getGUILayoutCtrls(i).getNumberOfSoftwareChannels();p++){
-						int tableNumber = getFilter()->getGUILayoutCtrls(i).getTableNumbers(p);
-						Array <float> tableValues = getFilter()->getTable(0);//change this to table number
-						((CabbageTable*)layoutComps[i])->fillTable(p, tableValues);
-						getFilter()->getCsound()->SetChannel(getFilter()->getGUILayoutCtrls(i).getChannel(p).toUTF8(), 0.f);
-						}
+						int tableNumber = getFilter()->getGUILayoutCtrls(i).getTableNumbers(y);
+						Array <float> tableValues = getFilter()->getTable(tableNumber);//change this to table number
+						((CabbageTable*)layoutComps[i])->fillTable(y, tableValues);
+						getFilter()->getCsound()->SetChannel(getFilter()->getGUILayoutCtrls(i).getChannel(y).toUTF8(), 0.f);
 					}
-					else{
-					Array <float> tableValues = getFilter()->getTable(tableNumber);//change this to table number
-					((CabbageTable*)layoutComps[i])->fillTable(0, tableValues);
-					// cout << "val less than 0";
-					getFilter()->getCsound()->SetChannel(getFilter()->getGUILayoutCtrls(i).getStringProp("channel").toUTF8(), 0.f);
-					
-						}
-					}
+//					else{
+//					Array <float> tableValues = getFilter()->getTable(tableNumber);//change this to table number
+//					((CabbageTable*)layoutComps[i])->fillTable(0, tableValues);
+//					// cout << "val less than 0";
+//					getFilter()->getCsound()->SetChannel(getFilter()->getGUILayoutCtrls(i).getStringProp("channel").toUTF8(), 0.f);
+//					
+//						}
 				else
 					{
 					((CabbageTable*)layoutComps[i])->setScrubberPosition(0, val);	
 					}
+					
+				}
 				
 
         }
