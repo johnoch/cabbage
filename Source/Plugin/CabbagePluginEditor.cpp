@@ -1645,6 +1645,7 @@ void CabbagePluginAudioProcessorEditor::InsertTable(CabbageGUIClass &cAttr)
 //getFilter()->getCsound()->Stop();
 int tableSize=0;
 int tableNumber = cAttr.getNumProp("tableNum");
+StringArray colours;
 Array <float> tableValues;
 Array<int> tableSizes;
         //fill array with points from table, is table is valid
@@ -1673,11 +1674,19 @@ Array<int> tableSizes;
                 //if table is not valid fill our array with at least one dummy point
                 tableValues.add(0); 
         }
+		
+		//retrieve colours, if there are any.
+		if(cAttr.getNumberOfColours()>0)
+		for(int i=0;i<cAttr.getNumberOfColours();i++)
+			colours.add(cAttr.getColours(i));
+		else
+			colours.add(cAttr.getStringProp("colour"));
+		
         layoutComps.add(new CabbageTable(cAttr.getStringProp("name"),
                 cAttr.getStringProp("caption"),
                 cAttr.getItems(0),
 				tableSizes,
-				cAttr.getColourProp("colour"),
+				colours,
 				cAttr.getNumProp("alpha")));    
         int idx = layoutComps.size()-1;
         float left = cAttr.getNumProp("left");

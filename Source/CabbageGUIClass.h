@@ -38,7 +38,7 @@ class CabbageGUIClass : public CabbageUtils
         double width, height, top, left, isRect, min, max, tabpage, minX, minY, maxX, maxY, comboRange, fftSize, overlapSize, frameSize,
 		noOfMenus, onoff, midiChan, midiCtrl, sliderRange, xypadRangeY, xypadRangeX, noSteps, noPatterns, pvsChannel, alpha,
 		line, anchor, linkTo, scaleX, scaleY, value, valueX, valueY, maxItems, sliderIncr, sliderSkew, decimalPlaces, rCtrls, lineIsVertical;
-        StringArray items, onoffcaptions, key, channels, snapshotData;
+        StringArray items, onoffcaptions, key, channels, snapshotData, colours;
 
         String channel, name, sizeText, posText, boundsText, text, type, plant, reltoplant, bounds, range, fileType, workingDir,
         shape, beveltype, caption, kind, topitem, yChannel, xChannel, author,
@@ -96,6 +96,17 @@ public:
 		return items.getReference(index);
 		else return "";
 	}
+
+	inline String getColours(int index){
+		if(colours.size())
+		return colours.getReference(index);
+		else return "";
+	}
+	
+	inline int getNumberOfColours(){
+		return colours.size();
+
+	}	
 
 	inline StringArray getItemArray(){
 		if(items.size())

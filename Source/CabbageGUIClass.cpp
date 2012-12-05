@@ -436,12 +436,16 @@ int CabbageGUIClass::parse(String str)
 	identArray.add("alpha(");
     identArray.add("channel(");
 	identArray.add(" chan(");
+    identArray.add("channels(");
+	identArray.add(" chans(");
     identArray.add("name(");
     identArray.add("textbox(");
 	identArray.add("instrs(");
     identArray.add("caption(");
     identArray.add(",colour(");
 	identArray.add(" colour(");
+    identArray.add(",colours(");
+	identArray.add(" colours(");
     identArray.add("topitem(");
     identArray.add("menuitem(");
     identArray.add("stdout(");
@@ -457,6 +461,8 @@ int CabbageGUIClass::parse(String str)
 	identArray.add("tabs(");
 	identArray.add("tablenumber(");
 	identArray.add("tablenum(");
+	identArray.add("tablenumbers(");
+	identArray.add("tablenums(");
 	identArray.add("fill(");
 	identArray.add("file(");
 	identArray.add("outline(");
@@ -498,7 +504,10 @@ int CabbageGUIClass::parse(String str)
 			else if(identArray.getReference(indx).toLowerCase().equalsIgnoreCase("plant(")) plant = strTokens[0].trim();
 			else if(identArray.getReference(indx).toLowerCase().equalsIgnoreCase("caption(")) caption = strTokens[0].trim();
             else if(identArray.getReference(indx).toLowerCase().equalsIgnoreCase("channel(")||
-				identArray.getReference(indx).toLowerCase().equalsIgnoreCase(" chan(")){
+				identArray.getReference(indx).toLowerCase().equalsIgnoreCase(" chan(")||
+				identArray.getReference(indx).toLowerCase().equalsIgnoreCase(" chans(") ||
+				identArray.getReference(indx).toLowerCase().equalsIgnoreCase(" channels("))
+				{
 					channel = strTokens[0].trim();
 					channels.add(channel);
 					if(str.containsIgnoreCase("xypad")){
@@ -520,7 +529,9 @@ int CabbageGUIClass::parse(String str)
 			}
 			//don't be so LAZY! Look at all the repeated code!!
             else if(identArray.getReference(indx).toLowerCase().equalsIgnoreCase(" colour(")||
-				identArray.getReference(indx).toLowerCase().equalsIgnoreCase(",colour(")){
+				identArray.getReference(indx).toLowerCase().equalsIgnoreCase(",colour(")||
+				identArray.getReference(indx).toLowerCase().equalsIgnoreCase(" colours(")||
+				identArray.getReference(indx).toLowerCase().equalsIgnoreCase(", colours(")){
 					if(strTokens.size()<2)
 						colour = Colours::findColourForName(strTokens[0].trim(), Colours::white);
 					else if(strTokens.size()==4)
@@ -532,22 +543,12 @@ int CabbageGUIClass::parse(String str)
 						colour = Colour::fromRGB (strTokens[0].getIntValue(),
 									strTokens[1].getIntValue(), 
 									strTokens[2].getIntValue());
+									
+					for(int i=0;i<strTokens.size();i++)
+						colours.add(Colours::findColourForName(strTokens[i].trim(), Colours::white).toString());									
+									
 			}
 
-            else if(identArray.getReference(indx).toLowerCase().equalsIgnoreCase(" colour(")||
-				identArray.getReference(indx).toLowerCase().equalsIgnoreCase(",colour(")){
-					if(strTokens.size()<2)
-						colour = Colours::findColourForName(strTokens[0].trim(), Colours::white);
-					else if(strTokens.size()==4)
-						colour = Colour::fromRGBA (strTokens[0].getIntValue(),
-															strTokens[1].getIntValue(), 
-															strTokens[2].getIntValue(),
-															strTokens[3].getIntValue());
-					else if(strTokens.size()==3)
-						colour = Colour::fromRGB (strTokens[0].getIntValue(),
-									strTokens[1].getIntValue(), 
-									strTokens[2].getIntValue());
-			}
 
             else if(identArray.getReference(indx).toLowerCase().equalsIgnoreCase("fontcolour(")){
 					if(strTokens.size()<2)
@@ -816,7 +817,9 @@ int CabbageGUIClass::parse(String str)
 			}			
 			
             else if(identArray.getReference(indx).toLowerCase().equalsIgnoreCase("tablenum(")||
-			(identArray.getReference(indx).toLowerCase().equalsIgnoreCase("tablenumber("))){
+			(identArray.getReference(indx).toLowerCase().equalsIgnoreCase("tablenumber("))||
+			identArray.getReference(indx).toLowerCase().equalsIgnoreCase("tablenumbers(")||
+			identArray.getReference(indx).toLowerCase().equalsIgnoreCase("tablenumbs(")){
 				tableNum = strTokens[0].trim().getFloatValue();  
 				tableNumbers.add(tableNum);
 				if(strTokens.size()>1)

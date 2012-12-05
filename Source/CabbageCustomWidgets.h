@@ -1701,14 +1701,14 @@ class CabbageTable : public Component
 {
 //ScopedPointer<LookAndFeel> lookFeel;
 int offX, offY, offWidth, offHeight, tableSize;
-String colour;
+StringArray colours;
 Array<int> tableSizes;
 float alpha;
 public:
 ScopedPointer<GroupComponent> groupbox;
 ScopedPointer<CabbageTableViewer> table;
 //---- constructor -----
-CabbageTable(String name, String text, String caption, Array<int> tblSize, String Colour, float alpha): tableSizes(tblSize), colour(Colour), alpha(alpha)
+CabbageTable(String name, String text, String caption, Array<int> tblSize, StringArray Colours, float alpha): tableSizes(tblSize), colours(Colours), alpha(alpha)
 {
 	setName(name);
 	offX=offY=offWidth=offHeight=0;
@@ -1718,6 +1718,12 @@ CabbageTable(String name, String text, String caption, Array<int> tblSize, Strin
 	table = new CabbageTableViewer();
 	//table->setBounds(0, 0, 300, 200);
 	tableSize = tableSizes[0];
+	
+	//add extra colours if user never specified them
+	for(int i=colours.size();i<=tableSizes.size();i++)
+			//colours.add(Colour::fromString(colours[0]).withBrightness(1).toString());
+			colours.add(Colours::lime.withBrightness(float(i)/tableSizes.size()).toString());
+	
 	
 	addAndMakeVisible(table);
 	addAndMakeVisible(groupbox);
@@ -1767,10 +1773,11 @@ table->setBounds(offX, offY, getWidth()+offWidth, getHeight()+offHeight);
 if(tableSizes.size()>1)
 for(int i=0;i<tableSizes.size();i++){
 String name = "table"+String(i);
-table->addTable(name, tableSizes[i], Colour::fromString(colour), alpha);
+Logger::writeToLog(colours[i]);
+table->addTable(name, tableSizes[i], Colour::fromString(colours[i]), alpha);
 }
 else
-table->addTable("table0", tableSizes[0], Colour::fromString(colour), alpha);
+table->addTable("table0", tableSizes[0], Colour::fromString(colours[0]), alpha);
 this->setWantsKeyboardFocus(false);
 }
 
