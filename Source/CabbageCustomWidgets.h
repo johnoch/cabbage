@@ -1774,7 +1774,7 @@ if(tableSizes.size()>1)
 for(int i=0;i<tableSizes.size();i++){
 String name = "table"+String(i);
 Logger::writeToLog(colours[i]);
-table->addTable(name, tableSizes[i], Colour::fromString(colours[i]), alpha);
+table->addTable(name, tableSizes[0], Colour::fromString(colours[i]), alpha);
 }
 else
 table->addTable("table0", tableSizes[0], Colour::fromString(colours[0]), alpha);

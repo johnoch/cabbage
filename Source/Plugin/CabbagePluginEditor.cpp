@@ -1262,7 +1262,8 @@ void CabbagePluginAudioProcessorEditor::InsertCheckBox(CabbageGUIClass &cAttr)
 void CabbagePluginAudioProcessorEditor::buttonClicked(Button* button)
 {
 #ifndef Cabbage_No_Csound
-if(getFilter()->isGuiEnabled()){
+//thi is funked!
+if(!getFilter()->isGuiEnabled()){
         if(button->isEnabled()){     // check button is ok before sending data to on named channel
         if(dynamic_cast<TextButton*>(button)){//check what type of button it is
                 //deal with non-interactive buttons first..
@@ -1334,10 +1335,15 @@ if(getFilter()->isGuiEnabled()){
 
                                 if(button->getToggleState()){
                                         button->setToggleState(true, false);
-                                        //Logger::writeToLog("unpressed");
+										getFilter()->setParameterNotifyingHost(i, 1.f);
+										getFilter()->getCsound()->SetChannel(getFilter()->getGUICtrls(i).getStringProp("channel").toUTF8(), 1.f);
+										getFilter()->getGUICtrls(i).setNumProp("value", 1);
                                 }
                                 else{
                                         button->setToggleState(false, false);
+										getFilter()->setParameterNotifyingHost(i, 0.f);
+										getFilter()->getCsound()->SetChannel(getFilter()->getGUICtrls(i).getStringProp("channel").toUTF8(), 0.f);
+										getFilter()->getGUICtrls(i).setNumProp("value", 0);
                                         //Logger::writeToLog("pressed");
                                 }
                                 getFilter()->getCsound()->SetChannel(getFilter()->getGUICtrls(i).getStringProp("channel").toUTF8(), button->getToggleStateValue().getValue());
@@ -1674,6 +1680,10 @@ Array<int> tableSizes;
                 //if table is not valid fill our array with at least one dummy point
                 tableValues.add(0); 
         }
+		
+		//tableSizes.clear();
+		//for(int i=0;i<cAttr.getNumberOfSoftwareChannels();i++)
+		//		tableSizes.add(tableSize);
 		
 		//retrieve colours, if there are any.
 		if(cAttr.getNumberOfColours()>0)
