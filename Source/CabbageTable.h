@@ -65,7 +65,7 @@ class Table : public Component,
 	public ActionBroadcaster
 {
 public:
-	Table (int tableSize, Colour colour);
+	Table (int tableSize, Colour colour, Viewport* view);
 	~Table();
 
 	void resized();
@@ -85,10 +85,11 @@ public:
 	float scrubberPosition;
 
 private:
+	Viewport* viewport;
 	Image img;
 	int gen, tblSize;
 	float tableTop, tableBottom, tableLeft, tableHeight;
-	float minAmp, maxAmp, ampRange;
+	float minAmp, maxAmp, ampRange, zeroAmpPosition;
 	float zoom;
 	TableData tableData;
 	OverviewData overview;
@@ -96,6 +97,7 @@ private:
 	int origWidth;
 	bool useOverview;
 	float maxZoomForOverview, numPixelsPerIndex;
+	float minWaveHeight;
 
 	OwnedArray<CabbageEnvelopeHandleComponent> handles;
 	CabbageEnvelopeHandleComponent* draggingHandle;

@@ -74,9 +74,11 @@ void CabbageEnvelopeHandleComponent::mouseDrag (const MouseEvent& e)
 
   ====================================================================================
 */
-Table::Table (int tableSize, Colour colour) : tblSize(tableSize), zoom(1.0), cl (colour),
+Table::Table (int tableSize, Colour colour, Viewport* view) : tblSize(tableSize), zoom(1.0), cl (colour),
 																draggingHandle (0), scrubberPosition(0)
 {
+	minWaveHeight = 1;
+	viewport =  view;
 }
 
 Table::~Table()
@@ -97,7 +99,6 @@ void Table::setOriginalWidth(int w)
 	//Sets the original width from when the table was initialised
 	origWidth = w; 
 	maxZoomForOverview = tblSize / origWidth;
-	cacheBackgroundImage();
 }
 
 void Table::createAmpOverviews (Array<float> csndInputData)
@@ -134,6 +135,8 @@ void Table::createAmpOverviews (Array<float> csndInputData)
 	}
 
 	ampRange = maxAmp - minAmp; 
+	zeroAmpPosition = convertAmpToPixel(0);
+	cacheBackgroundImage();
 
 	// Filling overview arrays. The original table data is broken into
 	//separate blocks. The max and min values are then stored from each block.
@@ -210,21 +213,27 @@ void Table::cacheBackgroundImage()
 	g.fillRoundedRectangle (0, 0, getWidth(), getHeight(), 5);
 
 	// Amp horizontal markers...
+	Font ampFont(CabbageUtils::getValueFont());
 	g.setColour (Colour::fromRGBA (220, 220, 240, 255));
-	g.drawLine (0, getHeight()*0.5, getWidth(), getHeight()*0.5, 0.2);
-	g.setColour (Colour::fromRGBA (170, 170, 190, 255));
-	g.drawLine (0, (tableHeight*0.25)+tableTop, getWidth(), (tableHeight*0.25)+tableTop, 0.1);
-	g.drawLine (0, (tableHeight*0.75)+tableTop, getWidth(), (tableHeight*0.75)+tableTop, 0.1);
+	g.drawLine (0, convertAmpToPixel(maxAmp), getWidth(), convertAmpToPixel(maxAmp), 0.1);
+	g.drawLine (0, convertAmpToPixel(minAmp), getWidth(), convertAmpToPixel(minAmp), 0.1);
+	g.drawLine (0, convertAmpToPixel(maxAmp*0.5), getWidth(), convertAmpToPixel(maxAmp*0.5), 0.1);
+	g.drawLine (0, convertAmpToPixel(minAmp*0.5), getWidth(), convertAmpToPixel(minAmp*0.5), 0.1);
+	if (minAmp < 0) {
+		g.drawLine (0, zeroAmpPosition, getWidth(), zeroAmpPosition, 0.3);
+		//g.setColour(Colours::yellow);
+		//g.drawText("This is a test!!", 5, zeroAmpPosition-(ampFont.getHeight()/2), ampFont.getStringWidth("This is a test!!"), 
+		//	ampFont.getHeight(), Justification::left, false);
+	}
 			
 	ImageCache::addImageToCache (img, 15);
 }
 
 void Table::paint (Graphics& g)
 {
-	float viewStart, viewWidth;
 	// Getting viewport's coordinates...
-	Viewport* const viewport =  this->findParentComponentOfClass<Viewport> ();
-
+	//Viewport* const viewport =  this->findParentComponentOfClass<Viewport> ();
+	float viewStart, viewWidth;
 	if (viewport) {
 		viewStart = viewport->getViewPositionX();
 		viewWidth = viewport->getViewWidth();
@@ -270,8 +279,21 @@ void Table::paint (Graphics& g)
 			}
 			
 			if (CabbageUtils::isNumber(topYPixelValue) && CabbageUtils::isNumber(bottomYPixelValue)) {
+				topYPixelValue -= minWaveHeight/2;
+				bottomYPixelValue += minWaveHeight/2;
 				g.drawVerticalLine (xPixelValue+viewStart, topYPixelValue, bottomYPixelValue);
 				xPixelValue += 1;
+
+				// Fill
+				if (tblSize <= 4096) {
+					g.setColour(cl.withAlpha(0.25f));
+					if (bottomYPixelValue < zeroAmpPosition)
+						g.drawVerticalLine (xPixelValue+viewStart, bottomYPixelValue, zeroAmpPosition);
+					else if (bottomYPixelValue > zeroAmpPosition)
+						g.drawVerticalLine (xPixelValue+viewStart, zeroAmpPosition, bottomYPixelValue);
+
+					g.setColour(cl);
+				}
 			}
 		}
 	}
@@ -529,7 +551,7 @@ void CabbageTableManager::mouseDown (const MouseEvent& e)
 */
 CabbageTableViewer::CabbageTableViewer()
 {
-	this->setScrollBarsShown (true, true); //only showing the h scrollbar
+	this->setScrollBarsShown (false, true); //only showing the h scrollbar
 	//tableManager = new CabbageTableManager();
 	//view->setInterceptsMouseClicks (true, false);
 	
@@ -551,7 +573,7 @@ void CabbageTableViewer::addTable (String name, int tableSize, Colour colour, fl
 
 	int i = tables.size();
 
-	tables.add (new Table(tableSize, colour));
+	tables.add (new Table(tableSize, colour, this));
 	tables[i]->setBounds (getX(), getY(), getWidth(), getHeight());
 	tables[i]->setOriginalWidth (getWidth());
 	tables[i]->setAlpha(alpha);
