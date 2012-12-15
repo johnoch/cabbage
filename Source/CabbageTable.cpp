@@ -74,11 +74,9 @@ void CabbageEnvelopeHandleComponent::mouseDrag (const MouseEvent& e)
 
   ====================================================================================
 */
-Table::Table (int tableSize, Colour colour, Viewport* view) : tblSize(tableSize), zoom(1.0), cl (colour),
+Table::Table (int tableSize, Colour colour) : tblSize(tableSize), zoom(1.0), activeColour(colour),
 																draggingHandle (0), scrubberPosition(0)
 {
-	minWaveHeight = 1;
-	viewport =  view;
 }
 
 Table::~Table()
@@ -101,6 +99,13 @@ void Table::setOriginalWidth(int w)
 	maxZoomForOverview = tblSize / origWidth;
 }
 
+void Table::setGlobalAmpRange(float globalMaxAmp, float globalMinAmp, float globalAmpRange)
+{
+	minAmp = globalMinAmp;
+	maxAmp = globalMaxAmp;
+	ampRange = globalAmpRange;
+}
+
 void Table::createAmpOverviews (Array<float> csndInputData)
 {
 	//This method creates smaller amp overview arrays using the
@@ -112,31 +117,7 @@ void Table::createAmpOverviews (Array<float> csndInputData)
 
 	tableData.amps = csndInputData;
 	
-	// Getting the min and max amplitude values....
-	minAmp = maxAmp = tableData.amps.getFirst();
-	for (int i=0; i<tblSize; i++) {
-		if (tableData.amps[i] > maxAmp)
-			maxAmp = tableData.amps[i];
-		if (tableData.amps[i] < minAmp)
-			minAmp = tableData.amps[i];
-	}
-
-	//if min and max amps are the same value....
-	if (minAmp == maxAmp) {
-		if (minAmp > 0)
-			minAmp = 0;
-		else if (minAmp < 0) {
-			maxAmp = 0;
-		}
-		else { //else if both are 0
-			minAmp = -1;
-			maxAmp = 1;
-		}
-	}
-
-	ampRange = maxAmp - minAmp; 
 	zeroAmpPosition = convertAmpToPixel(0);
-	cacheBackgroundImage();
 
 	// Filling overview arrays. The original table data is broken into
 	//separate blocks. The max and min values are then stored from each block.
@@ -208,50 +189,25 @@ void Table::cacheBackgroundImage()
 	//painted on to.  It is then stored in cache.
 	img = Image(Image::ARGB, origWidth, getHeight(), true);
 	Graphics g (img);
-		
-	g.setColour (Colours::black);
-	g.fillRoundedRectangle (0, 0, getWidth(), getHeight(), 5);
-
-	// Amp horizontal markers...
-	Font ampFont(CabbageUtils::getValueFont());
-	g.setColour (Colour::fromRGBA (220, 220, 240, 255));
-	g.drawLine (0, convertAmpToPixel(maxAmp), getWidth(), convertAmpToPixel(maxAmp), 0.1);
-	g.drawLine (0, convertAmpToPixel(minAmp), getWidth(), convertAmpToPixel(minAmp), 0.1);
-	g.drawLine (0, convertAmpToPixel(maxAmp*0.5), getWidth(), convertAmpToPixel(maxAmp*0.5), 0.1);
-	g.drawLine (0, convertAmpToPixel(minAmp*0.5), getWidth(), convertAmpToPixel(minAmp*0.5), 0.1);
-	if (minAmp < 0) {
-		g.drawLine (0, zeroAmpPosition, getWidth(), zeroAmpPosition, 0.3);
-		//g.setColour(Colours::yellow);
-		//g.drawText("This is a test!!", 5, zeroAmpPosition-(ampFont.getHeight()/2), ampFont.getStringWidth("This is a test!!"), 
-		//	ampFont.getHeight(), Justification::left, false);
-	}
 			
 	ImageCache::addImageToCache (img, 15);
 }
 
 void Table::paint (Graphics& g)
 {
-	// Getting viewport's coordinates...
-	//Viewport* const viewport =  this->findParentComponentOfClass<Viewport> ();
-	float viewStart, viewWidth;
-	if (viewport) {
-		viewStart = viewport->getViewPositionX();
-		viewWidth = viewport->getViewWidth();
-	}
-
-	// Background image cache
-	Image bg = ImageCache::getFromHashCode(15);
-	bg.multiplyAllAlphas(.5);
-	g.drawImage (bg, viewStart, 0, origWidth, getHeight(), 
-		0, 0, bg.getWidth(), bg.getHeight(), false);
+	//Image bg = ImageCache::getFromHashCode(15);
+	//g.drawImage (bg, viewX, 0, origWidth, getHeight(), 
+	//	0, 0, bg.getWidth(), bg.getHeight(), false);
 	
-	g.setColour (cl);
-	int startIndx;
-	int endIndx;
+	if (isCurrentlyOnTop)
+		currColour = activeColour.withMultipliedSaturation(3);
+	else
+		currColour = activeColour;
+	int startIndx, endIndx;
 
 	// If using overview...
 	if (useOverview == true) {
-		startIndx = (viewStart/getWidth()) * overview.maxY.size();
+		startIndx = (viewX/getWidth()) * overview.maxY.size();
 		endIndx = startIndx + viewWidth;
 		float bottomYPixelValue, topYPixelValue;
 		bottomYPixelValue = topYPixelValue = 0;
@@ -277,22 +233,26 @@ void Table::paint (Graphics& g)
 				bottomYPixelValue += (minGap-diff)/2;
 				topYPixelValue -= (minGap-diff)/2;
 			}
-			
+
 			if (CabbageUtils::isNumber(topYPixelValue) && CabbageUtils::isNumber(bottomYPixelValue)) {
+				g.setColour(currColour);
 				topYPixelValue -= minWaveHeight/2;
 				bottomYPixelValue += minWaveHeight/2;
-				g.drawVerticalLine (xPixelValue+viewStart, topYPixelValue, bottomYPixelValue);
+				g.drawVerticalLine (xPixelValue+viewX, topYPixelValue, bottomYPixelValue);
 				xPixelValue += 1;
 
 				// Fill
 				if (tblSize <= 4096) {
-					g.setColour(cl.withAlpha(0.25f));
+					g.setColour(currColour.withAlpha(0.1f));
 					if (bottomYPixelValue < zeroAmpPosition)
-						g.drawVerticalLine (xPixelValue+viewStart, bottomYPixelValue, zeroAmpPosition);
+						g.drawVerticalLine (xPixelValue+viewX, bottomYPixelValue, zeroAmpPosition);
 					else if (bottomYPixelValue > zeroAmpPosition)
-						g.drawVerticalLine (xPixelValue+viewStart, zeroAmpPosition, bottomYPixelValue);
+						g.drawVerticalLine (xPixelValue+viewX, zeroAmpPosition, bottomYPixelValue);
 
-					g.setColour(cl);
+					if (isCurrentlyOnTop)
+						currColour = activeColour.withMultipliedSaturation(3);
+					else
+						currColour = activeColour;
 				}
 			}
 		}
@@ -300,21 +260,18 @@ void Table::paint (Graphics& g)
 	
 	//Else if using original array values for painting...
 	else if (useOverview == false) {
-		startIndx = ((viewStart/getWidth()) * tableData.amps.size()) + 0.5; //0.5 for rounding
+		g.setColour(currColour);
+		startIndx = ((viewX/getWidth()) * tableData.amps.size()) + 0.5; //0.5 for rounding
 		endIndx = (startIndx + (viewWidth/numPixelsPerIndex)) + 0.5; 
-		float prevX = viewStart;
+		float prevX = viewX;
 		float prevY = convertAmpToPixel (tableData.amps[startIndx]);
 		float currY;
 		for (int i=startIndx+1; i<=endIndx; i++) {
 			currY = convertAmpToPixel (tableData.amps[i]);
-			g.drawLine (prevX, prevY, prevX+numPixelsPerIndex, currY);
+			g.drawLine (prevX, prevY, prevX+numPixelsPerIndex, currY, minWaveHeight);
 			// For drawing index markers
-			if (numPixelsPerIndex > 4){
-				//g.setColour (Colours::aqua);
-				//g.fillEllipse ((prevX+numPixelsPerIndex)-2, currY-2, 4, 4);
+			if (numPixelsPerIndex > 4)
 				g.drawVerticalLine (prevX+numPixelsPerIndex, currY-3, currY+3);
-				//g.setColour(cl);
-			}
 			prevX = prevX + numPixelsPerIndex;
 			prevY = currY;
 		}
@@ -380,40 +337,36 @@ void Table::paint (Graphics& g)
 
 void Table::mouseDown (const MouseEvent& e)
 {
-	// If no shift button then it's a zoom in or out.
-	if (e.mods.isShiftDown() == false) {
-		Viewport* const viewport = this->findParentComponentOfClass<Viewport> ();
-		float viewStart = viewport->getViewPositionX();
-		float x = e.getPosition().getX();
-		float diff = x-viewStart;			
-
-		//left mouse button for zooming in
-		if (e.mods.isLeftButtonDown() == true) { 
-			if (numPixelsPerIndex <= 50) {
-				zoom *= 2;
-				x *= 2;
-				if (handles.size() > 0) //if envelope handles
-					modifyHandlePos (2);
-			}
-		}
-		//right mouse button for zooming out
-		else if (e.mods.isRightButtonDown() == true) {
-			if (zoom != 1) {
-				zoom /= 2;
-				x /= 2;
-				if (handles.size() > 0) //if envelope handles
-					modifyHandlePos (0.5);
-			}
-		}
-			
-		this->setBounds (0, 0, origWidth*zoom, getHeight());
-		viewport->setViewPosition (x-(diff), 0);
-		setDataSource (zoom);		
-	}
-
-	// With shift button down a new envelope handle is added. No zoom.
+	/* With shift button down a new envelope handle is added. No zoom.
 	else if (e.mods.isShiftDown() == true)
 		draggingHandle = addHandle (e.x, e.y);
+		*/
+}
+
+void Table::applyZoom (int zoomInput)
+{
+	zoom = zoomInput;
+	setDataSource(zoom);
+}
+
+void Table::setToEnabled(bool isEnabled)
+{
+	isCurrentlyOnTop = isEnabled;
+
+	if (isCurrentlyOnTop) //if on top
+		minWaveHeight = 3;
+	else 
+		minWaveHeight = 1.5;
+}
+
+void Table::setViewStart(float x)
+{
+	viewX = x;
+}
+
+void Table::setViewWidth(float width)
+{
+	viewWidth = width;
 }
 
 void Table::modifyHandlePos (float j)
@@ -487,7 +440,6 @@ CabbageEnvelopeHandleComponent* Table::addHandle(int x, int y)
 void Table::removeHandle (CabbageEnvelopeHandleComponent* thisHandle)
 {
 	if (handles.size() > 0) {
-		//handles.removeObject (thisHandle, true);
 		handles.removeObject(thisHandle, true);
 		repaint();
 	}
@@ -501,8 +453,10 @@ void Table::removeHandle (CabbageEnvelopeHandleComponent* thisHandle)
 	Table Manager class
 
   ====================================================================================
-
-CabbageTableManager::CabbageTableManager()
+*/
+CabbageTableManager::CabbageTableManager(Viewport* view)
+	: viewport(view), alpha(1.0f), zoom(1), maxZoom(1), maxNumPixelsPerIndex(1), prevActiveIndex(0),
+	globalMaxAmp(0), globalMinAmp(0)
 {
 }
 
@@ -510,37 +464,148 @@ CabbageTableManager::~CabbageTableManager()
 {
 }
 
-//======= Add table =========================================================
+void CabbageTableManager::resized()
+{
+	//We need to make room for the h scrollbar, therefore table data
+	//can't use the full height of the canvas
+	tableTop = getHeight()*0.15;
+	tableBottom = getHeight()*0.85;
+	tableHeight = tableBottom - tableTop;
+}
+
+void CabbageTableManager::setOriginalWidth(float width)
+{
+	originalWidth = width;
+}
+
+void CabbageTableManager::paint(Graphics& g)
+{
+	g.setColour(CabbageUtils::getDarkerBackgroundSkin());
+	g.fillAll();
+
+	// Amp horizontal markers...
+	g.setColour (Colour::fromRGBA (220, 220, 240, 255));
+	g.drawLine (0, convertAmpToPixel(globalMaxAmp), getWidth(), convertAmpToPixel(globalMaxAmp), 0.1);
+	g.drawLine (0, convertAmpToPixel(globalMinAmp), getWidth(), convertAmpToPixel(globalMinAmp), 0.1);
+	g.drawLine (0, convertAmpToPixel(globalMaxAmp*0.5), getWidth(), convertAmpToPixel(globalMaxAmp*0.5), 0.1);
+	g.drawLine (0, convertAmpToPixel(globalMinAmp*0.5), getWidth(), convertAmpToPixel(globalMinAmp*0.5), 0.1);
+	if (globalMinAmp < 0) 
+		g.drawLine (0, convertAmpToPixel(0), getWidth(), convertAmpToPixel(0), 0.3);
+
+	// update tables
+	for (int i=0; i<tables.size(); ++i) 
+		tables[i]->setViewStart(viewport->getViewPositionX());
+}
+
+float CabbageTableManager::convertAmpToPixel (float ampValue)
+{
+	// This method converts amps to y pixel values
+	float normalisedAmp = (ampValue-globalMinAmp) / globalAmpRange; //first change to normalised value
+	return ((1-normalisedAmp) * tableHeight) + tableTop;
+}
+
 void CabbageTableManager::addTable (String name, int tableSize, Colour colour)
 {
 	int i = tables.size();
 	tables.add (new Table(tableSize, colour));
-
-	tables[i]->setBounds (getX(), getY(), getWidth(), getHeight());
+	tables[i]->setBounds (0, 0, getWidth(), getHeight());
 	tables[i]->setOriginalWidth (getWidth());
+	tables[i]->setViewWidth(viewport->getViewWidth());
 	addAndMakeVisible (tables[i]);
-	tableToFront(i); //automatically puts this table to the front
+	tables[i]->addMouseListener(this, true); //"this" will now also get mouse events for tables[i]
+	tableToTop(i); //setting this table to the top
+
+	//the max possible zoom is based on the table with the most indices. It will have a max zoom
+	//of 50 pixels for every index.
+	if ((tableSize*50) > maxNumPixelsPerIndex) {
+		maxNumPixelsPerIndex = (tableSize*50);
+		maxZoom = sqrt(maxNumPixelsPerIndex);
+	}
 }
 
-//====== Sets desired table to the front ======================================
-void CabbageTableManager::tableToFront (int tableOnTop)
+void CabbageTableManager::tableToTop (int tableIndex)
 {
-	tables[tableOnTop]->toFront(true);
-	tables[tableOnTop]->setAlpha (0.7);
+	if (tables.size() > 1) {
+		tables.swap(tableIndex, tables.size()-1); //swapping currently active table to end of array
+		tables[prevActiveIndex]->setToEnabled(false); //disabling the previously active table
+		tables[prevActiveIndex]->setAlpha(0.7);
+	}
 
-	
+	tables.getLast()->setToEnabled(true);
+	tables.getLast()->setAlpha(1.0);
+
+	prevActiveIndex = tableIndex;
+	//alpha /= 2;
 }
 
-//======== Fill table =========================================================
-void CabbageTableManager::fillTable (int tableID, Array<float> csndInputData)
+void CabbageTableManager::fillTable (int tableIndex, Array<float> csndInputData)
 {
-	tables[tableID]->createAmpOverviews (csndInputData);
+	float currTableMaxAmp, currTableMinAmp;
+
+	// Getting the min and max amplitude values....
+	currTableMinAmp = currTableMaxAmp = csndInputData.getFirst();
+	for (int i=0; i<csndInputData.size(); ++i) {
+		if (csndInputData[i] > currTableMaxAmp)
+			currTableMaxAmp = csndInputData[i];
+		if (csndInputData[i] < currTableMinAmp)
+			currTableMinAmp = csndInputData[i];
+	}
+
+	//if min and max amps are the same value....
+	if (currTableMinAmp == currTableMaxAmp) {
+		if (currTableMinAmp > 0)
+			currTableMinAmp = 0;
+		else if (currTableMinAmp < 0) {
+			currTableMaxAmp = 0;
+		}
+		else { //else if both are 0
+			currTableMinAmp = -1;
+			currTableMaxAmp = 1;
+		}
+	}
+
+	if (currTableMaxAmp > globalMaxAmp)
+		globalMaxAmp = currTableMaxAmp;
+	if (currTableMinAmp < globalMinAmp)
+		globalMinAmp = currTableMinAmp;
+
+	globalAmpRange = globalMaxAmp - globalMinAmp; 
+
+	for (int i=0; i<tables.size(); ++i) 
+		tables[i]->setGlobalAmpRange(globalMaxAmp, globalMinAmp, globalAmpRange);
+
+	tables[tableIndex]->createAmpOverviews(csndInputData);
 }
 
 void CabbageTableManager::mouseDown (const MouseEvent& e)
-{
+{	
+	float distanceFromViewStart = e.x - viewport->getViewPositionX();
+	float mouseClickProportional = e.x;
+
+	//zoom in
+	if ((zoom*2 <= maxZoom) && (e.mods.isLeftButtonDown())) {
+		zoom *= 2;
+		mouseClickProportional *= 2;
+	}
+	//zoom out
+	else if ((zoom/2 >= 1) && (e.mods.isRightButtonDown())) {
+		if (zoom != 1) {
+			zoom /= 2;
+			mouseClickProportional /= 2;
+		}
+	}
+
+	//resetting bounds and viewport view position
+	this->setBounds(0, 0, originalWidth*zoom, getHeight());
+	viewport->setViewPosition(mouseClickProportional - distanceFromViewStart, 0);
+
+	//applying zoom to child tables
+	for (int i=0; i<tables.size(); ++i) {
+		tables[i]->applyZoom(zoom);
+		tables[i]->setBounds(0, 0, getWidth(), getHeight());
+	}
 }
-*/
+
 
 /*
   ====================================================================================
@@ -552,9 +617,7 @@ void CabbageTableManager::mouseDown (const MouseEvent& e)
 CabbageTableViewer::CabbageTableViewer()
 {
 	this->setScrollBarsShown (false, true); //only showing the h scrollbar
-	//tableManager = new CabbageTableManager();
-	//view->setInterceptsMouseClicks (true, false);
-	
+	tableManager = new CabbageTableManager(this);
 }
 
 CabbageTableViewer::~CabbageTableViewer()
@@ -563,44 +626,33 @@ CabbageTableViewer::~CabbageTableViewer()
 
 void CabbageTableViewer::resized()
 {
-	//tableManager->setBounds (getX(), getY(), getWidth(), getHeight());
-	//this->setViewedComponent (tableManager, false);
+	tableManager->setBounds (getX(), getY(), getWidth(), getHeight());
+	tableManager->setOriginalWidth(getWidth());
+	addAndMakeVisible(tableManager);
+	this->setViewedComponent (tableManager, false);
 }
 
 void CabbageTableViewer::addTable (String name, int tableSize, Colour colour, float alpha)
 {
-	//tableManager->addTable (name, tableSize, colour);
-
-	int i = tables.size();
-
-	tables.add (new Table(tableSize, colour, this));
-	tables[i]->setBounds (getX(), getY(), getWidth(), getHeight());
-	tables[i]->setOriginalWidth (getWidth());
-	tables[i]->setAlpha(alpha);
-	tableToFront (i);	
+	tableManager->addTable (name, tableSize, colour);
 }
 
-void CabbageTableViewer::tableToFront (int tableIndex)
+void CabbageTableViewer::tableToTop (int tableIndex)
 {
-	tables[tableIndex]->toFront (true);
-	//tables[tableIndex]->setAlpha (0.75);
-	this->setViewedComponent (tables[tableIndex], false);
-
-	//tableManager->tableToFront (tableOnTop);
+	tableManager->tableToTop(tableIndex);
 }
 
 void CabbageTableViewer::fillTable (int tableIndex, Array<float> csndInputData)
 {
-	tables[tableIndex]->createAmpOverviews (csndInputData);
-	//tableManager->fillTable (tableID, csndInputData);
+	tableManager->fillTable (tableIndex, csndInputData);
 }
 
 void CabbageTableViewer::setScrubberPosition(int tableIndex, float position)
 {
-	tables[tableIndex]->scrubberPosition = position;
-	tables[tableIndex]->repaint();
-	
+	//tables[tableIndex]->scrubberPosition = position;
+	//tables[tableIndex]->repaint();
 }
+
 
 
 

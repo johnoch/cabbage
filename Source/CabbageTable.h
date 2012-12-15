@@ -65,17 +65,22 @@ class Table : public Component,
 	public ActionBroadcaster
 {
 public:
-	Table (int tableSize, Colour colour, Viewport* view);
+	Table (int tableSize, Colour colour);
 	~Table();
 
 	void resized();
 	void setOriginalWidth(int w);
+	void setGlobalAmpRange (float globalMax, float globalMin, float globalRange);
 	void createAmpOverviews (Array<float> csndInputData);
 	void setDataSource (int zoomValue);
 	float convertAmpToPixel (float ampValue);
 	void cacheBackgroundImage();
 	void paint (Graphics& g);
 	void mouseDown (const MouseEvent& e);
+	void applyZoom(int newZoom);
+	void setToEnabled(bool isEnabled);
+	void setViewWidth(float width);
+	void setViewStart(float x);
 	CabbageEnvelopeHandleComponent* addHandle(int x, int y);
 	void removeHandle (CabbageEnvelopeHandleComponent* thisHandle);
 	void modifyHandlePos (float j);
@@ -91,9 +96,11 @@ private:
 	float tableTop, tableBottom, tableLeft, tableHeight;
 	float minAmp, maxAmp, ampRange, zeroAmpPosition;
 	float zoom;
+	float viewX, viewWidth;
 	TableData tableData;
 	OverviewData overview;
-	Colour cl;
+	Colour currColour, activeColour;
+	bool isCurrentlyOnTop;
 	int origWidth;
 	bool useOverview;
 	float maxZoomForOverview, numPixelsPerIndex;
@@ -116,23 +123,35 @@ private:
 	component
 
   ====================================================================================
-
+*/
 class CabbageTableManager : public Component
 {
 public:
-	CabbageTableManager();
+	CabbageTableManager(Viewport* view);
 	~CabbageTableManager();
-
+	void resized();
+	void setOriginalWidth(float width);
+	void paint(Graphics& g);
+	float convertAmpToPixel (float ampValue);
 	void addTable (String name, int tableSize, Colour colour);
 	void fillTable (int tableID, Array<float> csndInputData);
-	void tableToFront (int tableOnTop);
+	void tableToTop (int tableOnTop);
 	void mouseDown (const MouseEvent& e);
 
 private:
 	OwnedArray<Table> tables;
+	Viewport* viewport;
+	float originalWidth;
+	float alpha;
+	int zoom, maxZoom;
+	float globalMaxAmp, globalMinAmp, globalAmpRange;
+	float maxNumPixelsPerIndex;
+	int prevActiveIndex;
+	float tableTop, tableBottom, tableHeight;
+
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CabbageTableManager);
 };
-*/
+
 
 /*
   ====================================================================================
@@ -145,19 +164,21 @@ private:
   ====================================================================================
 */
 class CabbageTableViewer : public Viewport
+							//public Component
 {
 public:
 	CabbageTableViewer();
 	~CabbageTableViewer();
 	void resized();
 	void addTable (String name, int tableSize, Colour colour, float alpha);
-	void fillTable (int tableID, Array<float> csndInputData);
-	void tableToFront (int tableOnTop);
+	void fillTable (int tableIndex, Array<float> csndInputData);
+	void tableToTop (int tableIndex);
 	void setScrubberPosition(int tableIndex, float position);
 
 private:
-	//ScopedPointer<CabbageTableManager> tableManager;
-	OwnedArray<Table> tables;
+	ScopedPointer<CabbageTableManager> tableManager;
+	//OwnedArray<Table> tables;
+	//float tableOpacity;
 
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CabbageTableViewer);
 };
