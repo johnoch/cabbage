@@ -1,0 +1,1 @@
+rslider bounds(180, 30, 60, 60), text("rate"), colour("OrangeRed "), channel("chrate"), range(0,10,0)

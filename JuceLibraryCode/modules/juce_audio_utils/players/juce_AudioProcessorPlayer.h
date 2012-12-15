@@ -94,8 +94,7 @@ private:
     bool isPrepared;
 
     int numInputChans, numOutputChans;
-    enum { MaxNumChannels = 128 };
-    float* channels [MaxNumChannels];
+    HeapBlock<float*> channels;
     AudioSampleBuffer tempBuffer;
 
     MidiBuffer incomingMidi;

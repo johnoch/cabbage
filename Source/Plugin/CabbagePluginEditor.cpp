@@ -2122,6 +2122,7 @@ void CabbagePluginAudioProcessorEditor::ksmpsYieldCallback(){
 // update our GUI so that whenever a VST parameter is changed in the 
 // host the corresponding GUI control gets updated. 
 
+
 #ifndef Cabbage_No_Csound    
 
 

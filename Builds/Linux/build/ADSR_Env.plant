@@ -1,0 +1,1 @@
+rslider bounds(180, 30, 60, 60), text("R"), colour("orange"), channel("rel"), range(0.01,3, .2)

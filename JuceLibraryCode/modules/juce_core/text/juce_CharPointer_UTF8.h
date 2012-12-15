@@ -239,7 +239,7 @@ public:
         p += -numToSkip;
         return p;
     }
-
+ 
     /** Returns the number of characters in this string. */
     size_t length() const noexcept
     {

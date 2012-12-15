@@ -1,0 +1,11 @@
+groupbox bounds(14, 14, 200, 80), line(0), text("Formant Parameters One"), plant("formant1"){
+rslider bounds(6, 1, 190, 76), text("Amp"), colour("grey"), tracker("black"),channel("amp1"), range(0, .5, .5)
+rslider bounds(20, 20, 160, 2), text("BW"), colour("grey"), tracker("black"),channel("bw1"), range(10, 120, 60)
+rslider bounds(100, 24, 2, 40), text("Rise"), colour("grey"), tracker("black"),channel("rise1"), range(0.001, 0.01, 0.001, 1, 0.001)
+rslider bounds(146, 24, 2, 40), text("Decay"), colour("grey"), tracker("black"),channel("dec1"), range(0.001, 0.01, 0.001, 1, 0.001)
+image bounds(54, 24, 2, 40), colour(200, 200, 200, 50)
+line bounds(12, 25, 48, 48), colour("white")
+line bounds(58, 26, 48, 48), colour("white")
+line bounds(104, 26, 48, 48), colour("white")
+line bounds(146, 24, 48, 48), colour("white")
+}

@@ -66,7 +66,7 @@ JUCE_DECL_JACK_FUNCTION (int, jack_set_process_callback, (jack_client_t* client,
 JUCE_DECL_JACK_FUNCTION (const char**, jack_get_ports, (jack_client_t* client, const char* port_name_pattern, const char* type_name_pattern, unsigned long flags), (client, port_name_pattern, type_name_pattern, flags));
 JUCE_DECL_JACK_FUNCTION (int, jack_connect, (jack_client_t* client, const char* source_port, const char* destination_port), (client, source_port, destination_port));
 JUCE_DECL_JACK_FUNCTION (const char*, jack_port_name, (const jack_port_t* port), (port));
-JUCE_DECL_JACK_FUNCTION (void*, jack_set_port_connect_callback, (jack_client_t* client, JackPortConnectCallback port_connect_callback, void* arg), (client, port_connect_callback, arg));
+JUCE_DECL_JACK_FUNCTION (void*, jack_set_port_connect_callback, (jack_client_t* client, JackPortConnectCallback connect_callback, void* arg), (client, connect_callback, arg));
 JUCE_DECL_JACK_FUNCTION (jack_port_t* , jack_port_by_id, (jack_client_t* client, jack_port_id_t port_id), (client, port_id));
 JUCE_DECL_JACK_FUNCTION (int, jack_port_connected, (const jack_port_t* port), (port));
 JUCE_DECL_JACK_FUNCTION (int, jack_port_connected_to, (const jack_port_t* port, const char* port_name), (port, port_name));
@@ -106,13 +106,15 @@ namespace
 
 static const char** getJackPorts (jack_client_t* const client, const bool forInput)
 {
-    if (client == nullptr)
-        return nullptr;
-
-    return juce::jack_get_ports (client, nullptr, nullptr,
-                                 forInput ? JackPortIsOutput : JackPortIsInput);
-                                    // (NB: This looks like it's the wrong way round, but it is correct!)
+    if (client != nullptr)
+        return juce::jack_get_ports (client, nullptr, nullptr,
+                                     forInput ? JackPortIsOutput : JackPortIsInput);
+                                        // (NB: This looks like it's the wrong way round, but it is correct!)
+    return nullptr;
 }
+
+class JackAudioIODeviceType;
+static Array<JackAudioIODeviceType*> activeDeviceTypes;
 
 //==============================================================================
 class JackAudioIODevice   : public AudioIODevice
@@ -164,8 +166,8 @@ public:
                                                            JACK_DEFAULT_AUDIO_TYPE, JackPortIsOutput, 0));
             }
 
-            inputChannelsBuffer.calloc (totalNumberOfInputChannels + 2);
-            outputChannelsBuffer.calloc (totalNumberOfOutputChannels + 2);
+            inChans.calloc (totalNumberOfInputChannels + 2);
+            outChans.calloc (totalNumberOfOutputChannels + 2);
         }
     }
 
@@ -268,8 +270,6 @@ public:
             }
         }
 
-        updateActivePorts();
-
         return lastError;
     }
 
@@ -312,6 +312,34 @@ public:
         start (nullptr);
     }
 
+    void updateActivePorts()
+    {
+        BigInteger currentOutputChannels, currentInputChannels;
+
+        for (int i = 0; i < outputPorts.size(); ++i)
+            if (juce::jack_port_connected ((jack_port_t*) outputPorts.getUnchecked(i)))
+                currentOutputChannels.setBit (i);
+
+        for (int i = 0; i < inputPorts.size(); ++i)
+            if (juce::jack_port_connected ((jack_port_t*) inputPorts.getUnchecked(i)))
+                currentInputChannels.setBit (i);
+
+        // There is not always a real change, this method gets triggered also on jack port changes not concerning us
+        if (currentOutputChannels.compare (activeOutputChannels) != 0 ||
+            currentInputChannels.compare  (activeInputChannels)  != 0)
+        {
+            AudioIODeviceCallback* const currentCallback = callback;
+
+            stop();
+
+            activeOutputChannels = currentOutputChannels;
+            activeInputChannels  = currentInputChannels;
+
+            if (currentCallback != nullptr)
+                start (currentCallback);
+        }
+    }
+
     bool isOpen()                           { return isOpen_; }
     bool isPlaying()                        { return callback != nullptr; }
     int getCurrentBufferSizeSamples()       { return getBufferSizeSamples (0); }
@@ -347,37 +375,36 @@ public:
 private:
     void process (const int numSamples)
     {
-        int numActiveInputChannels = 0, numActiveOutputChannels = 0;
+        int numActiveInChans = 0, numActiveOutChans = 0;
 
         for (int i = 0; i < totalNumberOfInputChannels; ++i)
         {
             if (activeInputChannels[i])
                 if (jack_default_audio_sample_t* in
-                    = (jack_default_audio_sample_t*) juce::jack_port_get_buffer ((jack_port_t*) inputPorts.getUnchecked(i), numSamples))
-                    inputChannelsBuffer [numActiveInputChannels++] = (float*) in;
+                        = (jack_default_audio_sample_t*) juce::jack_port_get_buffer ((jack_port_t*) inputPorts.getUnchecked(i), numSamples))
+                    inChans [numActiveInChans++] = (float*) in;
         }
 
         for (int i = 0; i < totalNumberOfOutputChannels; ++i)
         {
             if (activeOutputChannels[i])
                 if (jack_default_audio_sample_t* out
-                    = (jack_default_audio_sample_t*) juce::jack_port_get_buffer ((jack_port_t*) outputPorts.getUnchecked(i), numSamples))
-                    outputChannelsBuffer [numActiveOutputChannels++] = (float*) out;
+                        = (jack_default_audio_sample_t*) juce::jack_port_get_buffer ((jack_port_t*) outputPorts.getUnchecked(i), numSamples))
+                    outChans [numActiveOutChans++] = (float*) out;
         }
 
         const ScopedLock sl (callbackLock);
 
         if (callback != nullptr)
         {
-            /* check we have any active channels, else it will trigger assertion in juce_AudioSampleBuffer.cpp:72 */
-            if ((numActiveInputChannels + numActiveOutputChannels) > 0)
-                callback->audioDeviceIOCallback (const_cast <const float**> (inputChannelsBuffer.getData()), numActiveInputChannels,
-                                                 outputChannelsBuffer, numActiveOutputChannels, numSamples);
+            if ((numActiveInChans + numActiveOutChans) > 0)
+                callback->audioDeviceIOCallback (const_cast <const float**> (inChans.getData()), numActiveInChans,
+                                                 outChans, numActiveOutChans, numSamples);
         }
         else
         {
-            for (int i = 0; i < numActiveOutputChannels; ++i)
-                zeromem (outputChannelsBuffer[i], sizeof (float) * numSamples);
+            for (int i = 0; i < numActiveOutChans; ++i)
+                zeromem (outChans[i], sizeof (float) * numSamples);
         }
     }
 
@@ -387,30 +414,6 @@ private:
             ((JackAudioIODevice*) callbackArgument)->process (nframes);
 
         return 0;
-    }
-
-    void updateActivePorts()
-    {
-        /* This function is called on open(), and from jack as callback on external
-         * jack port changes. Jules, is there any risk that this can happen in a
-         * separate thread from the audio thread, meaning we need a critical section?
-         * the below two activeOut/InputChannels are used in process() */
-        activeOutputChannels.clear();
-        activeInputChannels.clear();
-
-        for (int i = 0; i < outputPorts.size(); i++)
-            if (juce::jack_port_connected ((jack_port_t*) outputPorts [i]))
-                activeOutputChannels.setBit (i);
-
-        for (int i = 0; i < inputPorts.size(); i++)
-            if (juce::jack_port_connected ((jack_port_t*) inputPorts [i]))
-                activeInputChannels.setBit (i);
-    }
-
-    static void portConnectCallback (jack_port_id_t /* a */, jack_port_id_t /* b */, int /* isConnect */, void* callbackArgument)
-    {
-        if (callbackArgument != nullptr)
-            ((JackAudioIODevice*) callbackArgument)->updateActivePorts();
     }
 
     static void threadInitCallback (void* /* callbackArgument */)
@@ -434,19 +437,19 @@ private:
         jack_Log ("JackAudioIODevice::errorCallback " + String (msg));
     }
 
+    static void portConnectCallback (jack_port_id_t, jack_port_id_t, int, void*);
+
     bool isOpen_;
     jack_client_t* client;
     String lastError;
     AudioIODeviceCallback* callback;
     CriticalSection callbackLock;
 
-    HeapBlock <float*> inputChannelsBuffer, outputChannelsBuffer;
+    HeapBlock <float*> inChans, outChans;
     int totalNumberOfInputChannels;
     int totalNumberOfOutputChannels;
     Array<void*> inputPorts, outputPorts;
-
-    BigInteger activeInputChannels;
-    BigInteger activeOutputChannels;
+    BigInteger activeInputChannels, activeOutputChannels;
 };
 
 
@@ -458,6 +461,12 @@ public:
         : AudioIODeviceType ("JACK"),
           hasScanned (false)
     {
+        activeDeviceTypes.add (this);
+    }
+
+    ~JackAudioIODeviceType()
+    {
+        activeDeviceTypes.removeFirstMatchingValue (this);
     }
 
     void scanForDevices()
@@ -567,12 +576,24 @@ public:
         return nullptr;
     }
 
+    void portConnectionChange()    { callDeviceChangeListeners(); }
+
 private:
     StringArray inputNames, outputNames, inputIds, outputIds;
     bool hasScanned;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (JackAudioIODeviceType);
 };
+
+void JackAudioIODevice::portConnectCallback (jack_port_id_t, jack_port_id_t, int, void* arg)
+{
+    if (JackAudioIODevice* device = static_cast <JackAudioIODevice*> (arg))
+        device->updateActivePorts ();
+
+    for (int i = activeDeviceTypes.size(); --i >= 0;)
+        if (JackAudioIODeviceType* d = activeDeviceTypes[i])
+            d->portConnectionChange();
+}
 
 //==============================================================================
 AudioIODeviceType* AudioIODeviceType::createAudioIODeviceType_JACK()

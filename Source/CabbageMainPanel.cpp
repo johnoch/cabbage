@@ -16,7 +16,7 @@
   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
   02111-1307 USA
   
-*/
+*/ 
 
 #include "CabbageMainPanel.h"
 #include "ComponentLayoutEditor.h"
@@ -31,7 +31,7 @@
 
 CabbageMainPanel::CabbageMainPanel() : width(-99), top(-99), height(-99), left(-99)
 {
-setName("CabbageMainPanel");
+setName("CabbageMainPanel");  
 setVisible(true);
 setSize(0,0);
 LOCKED=true;

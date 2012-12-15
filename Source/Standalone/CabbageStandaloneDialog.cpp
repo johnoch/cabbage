@@ -887,14 +887,14 @@ if(!csdFile.exists()){
 	if (saveFC.browseForFileToSave(true)){
 		if(type.contains("VSTi"))
 			VST = thisFile.getParentDirectory().getFullPathName() + String("/CabbagePluginSynth.so");
-		else if(type.contains(String("VSTfx")))
-			VST = thisFile.getParentDirectory().getFullPathName() + String("CabbagePluginEffect.so");
+		else if(type.contains(String("VST")))
+			VST = thisFile.getParentDirectory().getFullPathName() + String("/CabbagePluginEffect.so");
 		else if(type.contains(String("AU"))){
 			showMessage("This feature only works on computers running OSX");
 		}
 		showMessage(VST);
 		File VSTData(VST);
-		if(VSTData.exists())showMessage("lib exists");
+		if(!VSTData.exists())showMessage("lib cannot be found?");
 		else{
 			File dll(saveFC.getResult().withFileExtension(".so").getFullPathName());
 			showMessage(dll.getFullPathName());

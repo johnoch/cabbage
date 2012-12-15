@@ -141,17 +141,20 @@ beat(0),
 bpm(120),
 patMatrixActive(0),
 masterCounter(0),
-xyAutosCreated(false)
+xyAutosCreated(false),
+updateTable(false),
+yieldCallbackBool(false),
+yieldCounter(10)
 {
 //Cabbage plugins always try to load a csd file with the same name as the plugin library.
 //Therefore we need to find the name of the library and append a '.csd' to it. 
         
 #ifdef MACOSX
-String osxCSD = File::getSpecialLocation(File::currentApplicationFile).getFullPathName()+String("/Contents/")+File::getSpecialLocation(File::currentApplicationFile).getFileName();
+String osxCSD = File::getSpecialLocation(File::currentExecutableFile).getFullPathName()+String("/Contents/")+File::getSpecialLocation(File::currentApplicationFile).getFileName();
 File thisFile(osxCSD); 
 Logger::writeToLog("MACOSX defined OK");
 #else 
-File thisFile(File::getSpecialLocation(File::currentApplicationFile)); 
+File thisFile(File::getSpecialLocation(File::currentExecutableFile)); 
 #endif
 csdFile = thisFile.withFileExtension(String(".csd")).getFullPathName();
 
@@ -749,12 +752,13 @@ if(!isGuiEnabled()){
 void CabbagePluginAudioProcessor::updateGUIControlsKsmps(int speed)
 {
 //counter to slow down timer, it's too fast
-if(yieldCounter==speed){
+if(yieldCounter>speed){
 	yieldCounter=0;
 if(getActiveEditor())
-	if((guiLayoutCtrls.size()>0) || guiCtrls.size()>0)
+	if((guiLayoutCtrls.size()>0) || guiCtrls.size()>0){
 		//((CabbagePluginAudioProcessorEditor*)getActiveEditor())->ksmpsYieldCallback();
 		sendActionMessage("ready to update after Ksmps");
+	}
 }
 else
 	yieldCounter++;
