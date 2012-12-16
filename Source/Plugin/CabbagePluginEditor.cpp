@@ -37,7 +37,6 @@ CabbagePluginAudioProcessorEditor::CabbagePluginAudioProcessorEditor (CabbagePlu
 lookAndFeel = new CabbageLookAndFeel(); 
 Component::setLookAndFeel(lookAndFeel);
 oldSchoolLook = new OldSchoolLookAndFeel();
-ownerFilter->addActionListener(this);
 #ifdef Cabbage_GUI_Editor
 //determine whether instrument should be opened in GUI mode or not
 componentPanel = new CabbageMainPanel();
@@ -66,9 +65,6 @@ InsertGUIControls();
 //this will prevent editors from creating xyAutos if they have already been crated. 
 getFilter()->setHaveXYAutoBeenCreated(true);
 
-//start timer for updating GUI controls if someone is using a host to contorl parameters. 
-startTimer(30);
-
 
 #ifdef Cabbage_GUI_Editor
 componentPanel->addActionListener(this);
@@ -96,10 +92,14 @@ layoutEditor->updateFrames();
         componentPanel->toFront(true);
         componentPanel->grabKeyboardFocus();
 #endif
+
+ownerFilter->addActionListener(this);
+
 }
 
 CabbagePluginAudioProcessorEditor::~CabbagePluginAudioProcessorEditor()
 {
+removeAllChangeListeners();
 getFilter()->editorBeingDeleted(this);
 if(presetFileText.length()>1)
 {
@@ -2109,13 +2109,10 @@ for(int i=0;i<(int)getFilter()->getGUICtrlsSize();i++){
 #endif
 return true;
 }
-//==============================================================================
-//fix this so it only gets called on a ksmps kield
-void CabbagePluginAudioProcessorEditor::timerCallback()
-{       
-	
-}
 
+//==========================================================================================
+//Gets called at the end of each k-cycle
+//==========================================================================================
 void CabbagePluginAudioProcessorEditor::ksmpsYieldCallback(){
 
 //const MessageManagerLock mmLock;

@@ -51,7 +51,6 @@ class CabbagePluginAudioProcessorEditor  : public AudioProcessorEditor,
                                                                 public SliderListener,
                                                                 public ComboBoxListener,
                                                                 public ButtonListener,
-                                                                public Timer,
                                                                 public KeyListener,
                                                                 public ChangeBroadcaster,
                                                                 public ChangeListener,
@@ -95,7 +94,6 @@ private:
         void InsertSnapshot(CabbageGUIClass &cAttr);
         void InsertPVSViewer(CabbageGUIClass &cAttr);
         void buttonClicked (Button*);
-        void timerCallback();
         void mouseDown(const MouseEvent &e);
         bool LOCKED;
         void insertCabbageText(String text);

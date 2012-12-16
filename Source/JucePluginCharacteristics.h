@@ -35,7 +35,7 @@
 #define JucePlugin_PreferredChannelConfigurations   {1, 1}, {2, 2}
 //if you define this in the IDE make sure to remove it when building from the command line...
 #ifndef Cabbage_Plugin_Synth
-#define JucePlugin_IsSynth             0
+#define JucePlugin_IsSynth             1
 #else
 #define JucePlugin_IsSynth              1
 #endif
