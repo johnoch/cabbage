@@ -158,7 +158,7 @@ File thisFile(File::getSpecialLocation(File::currentExecutableFile));
 #endif
 csdFile = thisFile.withFileExtension(String(".csd")).getFullPathName();
 
-
+//Logger::writeToLog(File::getSpecialLocation(File::currentExecutableFile).getFullPathName());
         
 if(csdFile.exists())
 Logger::writeToLog("File exists:"+String(csdFile.getFullPathName()));
@@ -756,8 +756,13 @@ if(yieldCounter>speed){
 	yieldCounter=0;
 if(getActiveEditor())
 	if((guiLayoutCtrls.size()>0) || guiCtrls.size()>0){
-		//((CabbagePluginAudioProcessorEditor*)getActiveEditor())->ksmpsYieldCallback();
+#ifndef Cabbage_Build_Stanalone
+		MessageManagerLock lock;
+		((CabbagePluginAudioProcessorEditor*)getActiveEditor())->ksmpsYieldCallback();
+#else
+		MessageManagerLock lock;
 		sendActionMessage("ready to update after Ksmps");
+#endif
 	}
 }
 else
