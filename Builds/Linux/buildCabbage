@@ -2,9 +2,7 @@
 
 echo "Building Cabbage! "
 
-make -f MakefileStandalone clean
+make -f MakefileStandalone clean "$@"
 make -f MakefileStandalone "$@"
-make -f MakefilePluginEffect clean
 make -f MakefilePluginEffect "$@"
-make -f MakefilePluginSynth clean
 make -f MakefilePluginSynth "$@"
