@@ -6,6 +6,5 @@ make -f MakefileStandalone clean
 make -f MakefileStandalone "$@"
 make -f MakefilePluginEffect clean
 make -f MakefilePluginEffect "$@"
-make -f MakefilePluginEffect clean
+make -f MakefilePluginSynth clean
 make -f MakefilePluginSynth "$@"
-make -f MakefilePluginSynth 
