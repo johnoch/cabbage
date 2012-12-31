@@ -85,13 +85,13 @@ $(OUTDIR)/$(TARGET): $(OBJECTS) $(LDDEPS) $(RESOURCES)
 	@$(BLDCMD)
 
 clean:
-	@echo Cleaning CabbagePlugin
+	@echo Cleaning CabbagePluginSynth
 	-@rm -f $(OUTDIR)/$(TARGET)
 	-@rm -rf $(OBJDIR)/*
 	-@rm -rf $(OBJDIR)
 
 strip:
-	@echo Stripping CabbagePlugin
+	@echo Stripping CabbagePluginSynth
 	-@strip --strip-unneeded $(OUTDIR)/$(TARGET)
 
 $(OBJDIR)/XYPad_6eaa3453.o: ../../Source/XYPad.cpp

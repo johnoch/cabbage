@@ -78,20 +78,20 @@ OBJECTS := \
 .PHONY: clean
 
 $(OUTDIR)/$(TARGET): $(OBJECTS) $(LDDEPS) $(RESOURCES)
-	@echo Linking CabbagePlugin
+	@echo Linking CabbagePluginEffect
 	-@mkdir -p $(BINDIR)
 	-@mkdir -p $(LIBDIR)
 	-@mkdir -p $(OUTDIR)
 	@$(BLDCMD)
 
 clean:
-	@echo Cleaning CabbagePlugin
+	@echo Cleaning CabbagePluginEffect
 	-@rm -f $(OUTDIR)/$(TARGET)
 	-@rm -rf $(OBJDIR)/*
 	-@rm -rf $(OBJDIR)
 
 strip:
-	@echo Stripping CabbagePlugin
+	@echo Stripping CabbagePluginEffect
 	-@strip --strip-unneeded $(OUTDIR)/$(TARGET)
 
 $(OBJDIR)/XYPad_6eaa3453.o: ../../Source/XYPad.cpp
