@@ -129,7 +129,7 @@ public:
 	void changeListenerCallback(ChangeBroadcaster *source);
 	void actionListenerCallback (const String& message);
 	int exportPlugin(String type, bool saveAs);
-	void openFile();
+	void openFile(String _csdfile);
 	void saveFile();
 	void saveFileAs();
 
@@ -153,6 +153,7 @@ public:
 
 private:
 	Time lastSaveTime;
+	bool standaloneMode;
 	bool cabbageDance;
 	bool timerRunning;
 	bool AudioEnabled;

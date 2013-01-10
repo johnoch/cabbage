@@ -485,10 +485,10 @@ void CabbageTableManager::paint(Graphics& g)
 
 	// Amp horizontal markers...
 	g.setColour (Colour::fromRGBA (220, 220, 240, 255));
-	g.drawLine (0, convertAmpToPixel(globalMaxAmp), getWidth(), convertAmpToPixel(globalMaxAmp), 0.1);
-	g.drawLine (0, convertAmpToPixel(globalMinAmp), getWidth(), convertAmpToPixel(globalMinAmp), 0.1);
-	g.drawLine (0, convertAmpToPixel(globalMaxAmp*0.5), getWidth(), convertAmpToPixel(globalMaxAmp*0.5), 0.1);
-	g.drawLine (0, convertAmpToPixel(globalMinAmp*0.5), getWidth(), convertAmpToPixel(globalMinAmp*0.5), 0.1);
+//	g.drawLine (0, convertAmpToPixel(globalMaxAmp), getWidth(), convertAmpToPixel(globalMaxAmp), 0.1);
+//	g.drawLine (0, convertAmpToPixel(globalMinAmp), getWidth(), convertAmpToPixel(globalMinAmp), 0.1);
+//	g.drawLine (0, convertAmpToPixel(globalMaxAmp*0.5), getWidth(), convertAmpToPixel(globalMaxAmp*0.5), 0.1);
+//	g.drawLine (0, convertAmpToPixel(globalMinAmp*0.5), getWidth(), convertAmpToPixel(globalMinAmp*0.5), 0.1);
 	if (globalMinAmp < 0) 
 		g.drawLine (0, convertAmpToPixel(0), getWidth(), convertAmpToPixel(0), 0.3);
 

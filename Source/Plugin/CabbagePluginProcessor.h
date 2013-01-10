@@ -25,6 +25,7 @@
 #include "../CabbageGUIClass.h"
 #include "../Editor/CabbageEditorWindow.h"
 #include "../XYPadAutomation.h"
+#include "../CabbageMessageSystem.h"
 
 
 #ifndef Cabbage_No_Csound
@@ -64,6 +65,7 @@ class CabbagePluginAudioProcessor  : public AudioProcessor,
 		bool updateTable;
 		Array<int> tableNumbers;
 		
+		
 
         //============== Csound related variables/methods ==============================
 #ifndef Cabbage_No_Csound
@@ -82,10 +84,16 @@ class CabbagePluginAudioProcessor  : public AudioProcessor,
         static int OpenMidiOutputDevice(CSOUND * csnd, void **userData, const char *devName);
         static int ReadMidiData(CSOUND *csound, void *userData, unsigned char *mbuf, int nbytes);
         static int WriteMidiData(CSOUND *csound, void *userData, const unsigned char *mbuf, int nbytes);
+		void updateCabbageControls();
+		void sendOutgoingMessagesToCsound();
 		
 #endif
         StringArray debugInfo;
 
+		//basic classes that hold all information regarding GUI objects
+		//guiLayoutControls are not used to send data to Csound, and don't show
+		//as parameters in a host, guiCtrls do show are parameters, and can send 
+		//channel messages to Csound.
         Array<CabbageGUIClass, CriticalSection> guiLayoutCtrls;
         Array<CabbageGUIClass, CriticalSection> guiCtrls;
 	        
@@ -119,57 +127,54 @@ public:
     //==============================================================================
     void prepareToPlay (double sampleRate, int samplesPerBlock);
     void releaseResources();
-
     void processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages);
-
     //==============================================================================
     AudioProcessorEditor* createEditor();
     bool hasEditor() const;
-
     //==============================================================================
     const String getName() const;
-
     int getNumParameters();
-
     float getParameter (int index);
     void setParameter (int index, float newValue);
-
     const String getParameterName (int index);
     const String getParameterText (int index);
-
     const String getInputChannelName (int channelIndex) const;
     const String getOutputChannelName (int channelIndex) const;
     bool isInputChannelStereoPair (int index) const;
     bool isOutputChannelStereoPair (int index) const;
-
     bool acceptsMidi() const;
     bool producesMidi() const;
-        Array<CabbagePatternMatrixStepData> patStepMatrix;
-        StringArray patternNames;
-        Array<CabbagePatternMatrixPfieldData> patPfieldMatrix;
-        //Array<int> pField4, pField5, pField6, pField7;
-        int noSteps;
-        int noPatterns;
-        int timeCounter;
-        int beat;
-        int patMatrixActive;
-        float bpm;
-
-        //void createAndShowSourceEditor(LookAndFeel* looky);
-        //CabbageEditorWindow* getCsoundEditor(){
-        //      return cabbageCsoundEditor;
-        //}
+	Array<CabbagePatternMatrixStepData> patStepMatrix;
+	StringArray patternNames;
+	Array<CabbagePatternMatrixPfieldData> patPfieldMatrix;
+	//Array<int> pField4, pField5, pField6, pField7;
+	int noSteps;
+	int noPatterns;
+	int timeCounter;
+	int beat;
+	int patMatrixActive;
+	float bpm;
     //==============================================================================
     int getNumPrograms();
     int getCurrentProgram();
     void setCurrentProgram (int index);
     const String getProgramName (int index);
     void changeProgramName (int index, const String& newName);
-
     //==============================================================================
     void getStateInformation (MemoryBlock& destData);
     void setStateInformation (const void* data, int sizeInBytes);
-        //==============================================================================
+	const Array<float> getTable(int tableNum);
+	void createGUI(String source);
+	MidiKeyboardState keyboardState;
+	//midiBuffers
+	MidiBuffer midiBuffer;          
+	MidiBuffer ccBuffer;
+	bool showMIDI;
+	bool yieldCallbackBool;
+	int yieldCounter;
+	CabbageMessageQueue messageQueue;
+			
+	//==============================================================================
         File getCsoundInputFile(){
                 return csdFile;
         }
@@ -219,32 +224,6 @@ public:
 		Array<float> getTableArray(int index){
 			return tableArrays[index];
 		}
-		//============ fill table -----------------------
-        const Array<float> getTable(int tableNum){
-        //MYFLT* temp;
-		Array<float> points;
-		
-		//table length = 10687746
-		MYFLT* temp;// = new MYFLT[10687746];
-		int tableSize = csound->GetTable(temp, tableNum);
-		
-	
-		//250190, 245757, 274492, 240637
-		if(tableSize>0)
-		points = Array<float>(temp, tableSize);
-		
-		return points;
-        }
-//        Array<float> getTable(double tableNum, int tableSize){
-//        Array<float> temp;
-//        for(int i=0;i<tableSize;i++)
-//#ifndef Cabbage_No_Csound
-//                temp.add(csound->TableGet(tableNum, i));
-//#endif
-//        return temp;
-//        }
-
-
 
         void setMidiDebug(bool val){
                 showMIDI=val;
@@ -355,19 +334,11 @@ public:
 			return xyAutomation.size();
 		}
 
-
 		bool silenceInProducesSilenceOut() const{
 			return true;
 			}
-        void createGUI(String source);
-        MidiKeyboardState keyboardState;
-        //midiBuffers
-        MidiBuffer midiBuffer;          
-        MidiBuffer ccBuffer;
-        bool showMIDI;
-		bool yieldCallbackBool;
-		int yieldCounter;
-        JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CabbagePluginAudioProcessor);
+        
+		JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CabbagePluginAudioProcessor);
         
 };
 

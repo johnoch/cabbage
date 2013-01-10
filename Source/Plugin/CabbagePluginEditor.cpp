@@ -95,8 +95,26 @@ layoutEditor->updateFrames();
 
 ownerFilter->addActionListener(this);
 
+
+//we update our tables when our editor first opens by sending -1's to each table channel. These are aded to our message queue so
+//the data will only be sent to Csund when it's safe
+for(int index=0;index<getFilter()->getGUILayoutCtrlsSize();index++)
+	{	
+	if(getFilter()->getGUILayoutCtrls(index).getStringProp("type")=="table")
+		{
+		for(int y=0;y<getFilter()->getGUILayoutCtrls(index).getNumberOfTableChannels();y++)
+			getFilter()->messageQueue.addOutgoingChannelMessageToQueue(getFilter()->getGUILayoutCtrls(index).getTableChannel(y).toUTF8(),  -1.f);
+		}	
+	}
+
+//start timer. Timer callback updates our GUI control states/positions, etc. with data from Csound
+startTimer(20);
 }
 
+
+//============================================================================
+//desctrutor 
+//============================================================================
 CabbagePluginAudioProcessorEditor::~CabbagePluginAudioProcessorEditor()
 {
 removeAllChangeListeners();
@@ -1106,44 +1124,24 @@ void CabbagePluginAudioProcessorEditor::sliderValueChanged (Slider* sliderThatWa
 {
 #ifndef Cabbage_No_Csound
 
-//check for parent name rather than slider name which is used as a place holder for a label
-//Logger::writeToLog(sliderThatWasMoved->getParentComponent()->getName());
-
-//if(sliderThatWasMoved->isEnabled()) // before sending data to on named channel
-  //  {
-    //if(RUNNING){make sure Csound is playing before calling SetChannel()
-                for(int i=0;i<(int)getFilter()->getGUICtrlsSize();i++)//find correct control from vector
-                        if(getFilter()->getGUICtrls(i).getStringProp("name")==sliderThatWasMoved->getParentComponent()->getName()){
-                                                //getFilter()->getCsound()->SetChannel(getFilter()->getGUICtrls(i).getStringProp("channel").toUTF8(), sliderThatWasMoved->getValue());
-                        //getFilter()->guiCtrls[i].value = (float)sliderThatWasMoved->getValue();
+for(int i=0;i<(int)getFilter()->getGUICtrlsSize();i++)//find correct control from vector
+       if(getFilter()->getGUICtrls(i).getStringProp("name")==sliderThatWasMoved->getParentComponent()->getName())
+		   {
 #ifndef Cabbage_Build_Standalone
-                                                getFilter()->getGUICtrls(i).setNumProp("value", (float)sliderThatWasMoved->getValue());
-                        //Logger::writeToLog(getFilter()->getGUICtrls(i).getPropsString());
-                                                float min = getFilter()->getGUICtrls(i).getNumProp("min");
-                                                float range = getFilter()->getGUICtrls(i).getNumProp("sliderRange");
-                                                //getFilter()->setParameterNotifyingHost(i, (float)(sliderThatWasMoved->getValue()));
-                                                //normalise parameters in plugin mode.
-                                                getFilter()->beginParameterChangeGesture(i);
-												getFilter()->setParameterNotifyingHost(i, (float)((sliderThatWasMoved->getValue()-min)/range));
-                                                getFilter()->endParameterChangeGesture(i);
-                                                //Logger::writeToLog(String((float)((sliderThatWasMoved->getValue()-min)/range)));
+			getFilter()->getGUICtrls(i).setNumProp("value", (float)sliderThatWasMoved->getValue());
+			float min = getFilter()->getGUICtrls(i).getNumProp("min");
+			float range = getFilter()->getGUICtrls(i).getNumProp("sliderRange");
+			//normalise parameters in plugin mode.
+			getFilter()->beginParameterChangeGesture(i);
+			getFilter()->setParameterNotifyingHost(i, (float)((sliderThatWasMoved->getValue()-min)/range));
+			getFilter()->endParameterChangeGesture(i);
 #else
-                                                //Logger::writeToLog("Current Slider Value"+String(sliderThatWasMoved->getValue()));
-                                                getFilter()->getGUICtrls(i).setNumProp("value", (float)sliderThatWasMoved->getValue());
-                                                getFilter()->beginParameterChangeGesture(i);
-                                                getFilter()->setParameterNotifyingHost(i, (float)getFilter()->getGUICtrls(i).getNumProp("value"));
-                                                getFilter()->endParameterChangeGesture(i);
+			float value = sliderThatWasMoved->getValue();//getFilter()->getGUICtrls(i).getNumProp("value");
+			getFilter()->beginParameterChangeGesture(i);
+			getFilter()->setParameterNotifyingHost(i, (float)sliderThatWasMoved->getValue());
+			getFilter()->endParameterChangeGesture(i);
 #endif
-                        }
-     else{// The next bit of code lets us change channel data even if Csound is not running
-        for(int i=0;i<(int)getFilter()->getGUICtrlsSize();i++)//find correct control from vector
-                if(getFilter()->getGUICtrls(i).getStringProp("name")==sliderThatWasMoved->getParentComponent()->getName()){
-                                getFilter()->getGUICtrls(i).setNumProp("value", (float)sliderThatWasMoved->getValue());
-                        getFilter()->getCsound()->SetChannel(getFilter()->getGUICtrls(i).getStringProp("channel").toUTF8(), sliderThatWasMoved->getValue());
-                        }
-                }
-                                
-//}
+            }
 #endif
 }
 
@@ -1297,12 +1295,12 @@ if(!getFilter()->isGuiEnabled()){
                                 //toggle button values
                                 if(getFilter()->getGUICtrls(i).getNumProp("value")==0){
                                 getFilter()->setParameterNotifyingHost(i, 1.f);
-                                getFilter()->getCsound()->SetChannel(getFilter()->getGUICtrls(i).getStringProp("channel").toUTF8(), 1.f);
+                                //getFilter()->getCsound()->SetChannel(getFilter()->getGUICtrls(i).getStringProp("channel").toUTF8(), 1.f);
                                 getFilter()->getGUICtrls(i).setNumProp("value", 1);
                                 }
                                 else{
                                 getFilter()->setParameterNotifyingHost(i, 0.f);
-                                getFilter()->getCsound()->SetChannel(getFilter()->getGUICtrls(i).getStringProp("channel").toUTF8(), 0.f);
+                                //getFilter()->getCsound()->SetChannel(getFilter()->getGUICtrls(i).getStringProp("channel").toUTF8(), 0.f);
                                 getFilter()->getGUICtrls(i).setNumProp("value", 0);
                                 }
                                 //toggle text values
@@ -1336,17 +1334,17 @@ if(!getFilter()->isGuiEnabled()){
                                 if(button->getToggleState()){
                                         button->setToggleState(true, false);
 										getFilter()->setParameterNotifyingHost(i, 1.f);
-										getFilter()->getCsound()->SetChannel(getFilter()->getGUICtrls(i).getStringProp("channel").toUTF8(), 1.f);
+										//getFilter()->getCsound()->SetChannel(getFilter()->getGUICtrls(i).getStringProp("channel").toUTF8(), 1.f);
 										getFilter()->getGUICtrls(i).setNumProp("value", 1);
                                 }
                                 else{
                                         button->setToggleState(false, false);
 										getFilter()->setParameterNotifyingHost(i, 0.f);
-										getFilter()->getCsound()->SetChannel(getFilter()->getGUICtrls(i).getStringProp("channel").toUTF8(), 0.f);
+										//getFilter()->getCsound()->SetChannel(getFilter()->getGUICtrls(i).getStringProp("channel").toUTF8(), 0.f);
 										getFilter()->getGUICtrls(i).setNumProp("value", 0);
                                         //Logger::writeToLog("pressed");
                                 }
-                                getFilter()->getCsound()->SetChannel(getFilter()->getGUICtrls(i).getStringProp("channel").toUTF8(), button->getToggleStateValue().getValue());
+                                //getFilter()->getCsound()->SetChannel(getFilter()->getGUICtrls(i).getStringProp("channel").toUTF8(), button->getToggleStateValue().getValue());
                                 getFilter()->setParameterNotifyingHost(i, button->getToggleStateValue().getValue());
                         }
                         }
@@ -1455,11 +1453,11 @@ if(combo->isEnabled()) // before sending data to on named channel
                         if(getFilter()->getGUICtrls(i).getStringProp("name").equalsIgnoreCase(combo->getName())){
                                 for(int y=0;y<(int)getFilter()->getGUICtrls(i).getItemsSize();y++)
                                         if(getFilter()->getGUICtrls(i).getItems(y).equalsIgnoreCase(combo->getItemText(combo->getSelectedItemIndex()))){
-                                                getFilter()->getCsound()->SetChannel(getFilter()->getGUICtrls(i).getStringProp("channel").toUTF8(), (float)combo->getSelectedItemIndex()+1);
+                                  //              getFilter()->getCsound()->SetChannel(getFilter()->getGUICtrls(i).getStringProp("channel").toUTF8(), (float)combo->getSelectedItemIndex()+1);
                                                 
 #ifndef Cabbage_Build_Standalone
                                                 getFilter()->getGUICtrls(i).setNumProp("value", (int)combo->getSelectedItemIndex());
-                                                getFilter()->getCsound()->SetChannel(getFilter()->getGUICtrls(i).getStringProp("channel").toUTF8(), combo->getSelectedItemIndex());
+                                                //getFilter()->getCsound()->SetChannel(getFilter()->getGUICtrls(i).getStringProp("channel").toUTF8(), combo->getSelectedItemIndex());
                                                 //Logger::writeToLog(String("comboEvent():")+String(getFilter()->getGUICtrls(i).getNumProp("sliderRange")));
                                                 getFilter()->setParameterNotifyingHost(i, (float)(combo->getSelectedItemIndex())/(getFilter()->getGUICtrls(i).getNumProp("sliderRange")));
 #else
@@ -1470,15 +1468,7 @@ if(combo->isEnabled()) // before sending data to on named channel
                         }
                 }
         }
-     else{// The next bit of code lets us change channel data even if Csound is not running
-        for(int i=0;i<(int)getFilter()->getGUICtrlsSize();i++)//find correct control from vector
-                        if(getFilter()->getGUICtrls(i).getStringProp("name").equalsIgnoreCase(combo->getName())){
-                                for(int y=0;y<(int)getFilter()->getGUICtrls(i).getItemsSize();y++)
-                                        if(getFilter()->getGUICtrls(i).getItems(y).equalsIgnoreCase(combo->getItemText(combo->getSelectedItemIndex()))){
-                                                getFilter()->getGUICtrls(i).setNumProp("value", (float)combo->getSelectedItemIndex());
-                                }
-                }
-         }
+		
 }//end of GUI enabled check
 #endif
 }
@@ -1659,14 +1649,15 @@ Array<int> tableSizes;
 		   getFilter()->getCsound()){
 #ifndef Cabbage_No_Csound
 		//this can only be done when it's safe to do so!!
-		if(cAttr.getNumberOfSoftwareChannels()>1)
-		for(int i=0;i<cAttr.getNumberOfSoftwareChannels();i++){
+		if(cAttr.getNumberOfTableChannels()>1)
+		for(int i=0;i<cAttr.getNumberOfTableChannels();i++){
 			tableSizes.add(getFilter()->getCsound()->TableLength(cAttr.getTableNumbers(i)));
 			if(tableSize<getFilter()->getCsound()->TableLength(cAttr.getTableNumbers(i))){
 			 tableSize = getFilter()->getCsound()->TableLength(cAttr.getTableNumbers(i));	 
 			}
 		}
 		else{
+		//dagerous to call this here, could cause crash....
         tableSize = getFilter()->getCsound()->TableLength(cAttr.getNumProp("tableNum"));
 		tableSizes.add(tableSize);
 		}
@@ -1698,13 +1689,15 @@ Array<int> tableSizes;
 				tableSizes,
 				colours,
 				cAttr.getNumProp("alpha")));    
-        int idx = layoutComps.size()-1;
-        float left = cAttr.getNumProp("left");
-        float top = cAttr.getNumProp("top");
-        float width = cAttr.getNumProp("width");
-        float height = cAttr.getNumProp("height");
+
+		int idx = layoutComps.size()-1;
+		float left = cAttr.getNumProp("left");
+		float top = cAttr.getNumProp("top");
+		float width = cAttr.getNumProp("width");
+		float height = cAttr.getNumProp("height");
 		layoutComps[idx]->setAlpha(cAttr.getNumProp("alpha"));
-        int relY=0,relX=0;
+
+		int relY=0,relX=0;
         if(layoutComps.size()>0){
         for(int y=0;y<layoutComps.size();y++){
         if(cAttr.getStringProp("reltoplant").length()>0){
@@ -1725,9 +1718,9 @@ Array<int> tableSizes;
         }
 		
 		 
-        
-		//for(int i=0;i<cAttr.getNumberOfSoftwareChannels();i++)
-        //((CabbageTable*)layoutComps[idx])->fillTable(0, tableValues);
+		for(int i=0;i<cAttr.getNumberOfTableChannels();i++)
+        cAttr.addTableChannelValues();
+		//((CabbageTable*)layoutComps[idx])->fillTable(0, tableValues);
 //      ((CabbageTable*)controls[idx])->table->addActionListener(this);
 
         //Logger::writeToLog(cAttr.getPropsString());
@@ -1739,12 +1732,12 @@ Array<int> tableSizes;
                                         /*********************************************************/
 void CabbagePluginAudioProcessorEditor::actionListenerCallback (const String& message){
 	//if message has been send from the processing block it's ok to update controls
-if(message == "ready to update after Ksmps")
-ksmpsYieldCallback();
+//if(message == "ready to update after Ksmps")
+//ksmpsYieldCallback();
 
 //the first part of this method receives messages from the GUI editor layout/Main panel and updates the 
 //source code accordingly. The second half if use for messages being sent from GUI widgets
-else if(message.contains("Message sent from CabbageMainPanel")){
+if(message.contains("Message sent from CabbageMainPanel")){
 
 	#ifdef Cabbage_GUI_Editor//if GUI editor has been enabled
 	StringArray csdArray;
@@ -1827,31 +1820,6 @@ else if(message.contains("Message sent from CabbageMainPanel")){
 			String plantFile = plantDir + "/" + repoEntryName.trim() + String(".plant");
 			File plant(plantFile);
 			plant.replaceWithText(repoEntry);
-			
-			/*
-						String repoEntryName = message.substring(String("Message sent from CabbageMainPanel").length());
-			String repoEntry = temp;
-			int cnt = 0;
-			//CabbageUtils::showMessage(repoEntryName);
-			if(temp.contains("plant(\"")){
-				repoEntry = "";
-				while(!csdArray[lineNumber+cnt].contains("}")){
-					repoEntry = repoEntry+csdArray[lineNumber+cnt]+"\n";
-					cnt++;
-				}
-				repoEntry = repoEntry+"}";
-			
-			}
-			//make sure host doesn't fail if there are no Plant entries
-			ScopedPointer<XmlElement> xml;
-			xml = new XmlElement("PLANTS");
-//			PropertySet pSet;
-			//pSet.setValue("PlantRepository", xml);
-			//appProperties->getUserSettings()->setFallbackPropertySet(&pSet);	
-			xml = appProperties->getUserSettings()->getXmlValue("PlantRepository");
-			if(xml)
-			xml->setAttribute(repoEntryName, repoEntry);
-			appProperties->getUserSettings()->setValue("PlantRepository", xml);*/
 	}
 	#endif
 
@@ -1975,26 +1943,6 @@ for(int i=0;i<(int)getFilter()->getGUICtrlsSize();i++)//find correct control fro
                                 values.clear();
                 }
         }       
-        //============================================================================================
-
-        //if message comes from a table
-/*
-        else if(type.equalsIgnoreCase(String("table"))){
-        //now we know it's a table, just check teh channel and away we go...
-                int tableNum = getFilter()->getGUICtrls(i).getNumProp("tableNum");
-                Array<float> table = ((CabbageTable*)controls[i])->getTable();
-                if(getFilter()->getGUICtrls(i).getStringProp("name")==name)
-                {       
-                        getFilter()->setParameterNotifyingHost(i, 0);
-                        for(int y=0;y<table.size();y++){
-                        getFilter()->getCsound()->TableSet(tableNum, y, table[y]);
-                        //Logger::writeToLog(String(table[y]));
-                        }
-                        getFilter()->setParameterNotifyingHost(i, 1);
-
-                }
-        }
-        */
 		}
 }
 
@@ -2113,7 +2061,7 @@ return true;
 //==========================================================================================
 //Gets called at the end of each k-cycle
 //==========================================================================================
-void CabbagePluginAudioProcessorEditor::ksmpsYieldCallback(){
+void CabbagePluginAudioProcessorEditor::timerCallback(){
 
 //const MessageManagerLock mmLock;
 // update our GUI so that whenever a VST parameter is changed in the 
@@ -2139,8 +2087,10 @@ for(int i=0;i<(int)getFilter()->getGUICtrlsSize();i++){
 #ifndef Cabbage_Build_Standalone
                 float val = getFilter()->getGUICtrls(i).getNumProp("sliderRange")*getFilter()->getParameter(i);
                 ((CabbageSlider*)controls[i])->slider->setValue(val, dontSendNotification);
+				
 #else
-                ((CabbageSlider*)controls[i])->slider->setValue(inValue, sendNotification);
+		((CabbageSlider*)controls[i])->slider->setValue(inValue, sendNotification);
+				
 #endif
         }
         }
@@ -2154,11 +2104,7 @@ for(int i=0;i<(int)getFilter()->getGUICtrlsSize();i++){
                 getFilter()->getGUICtrls(i).getStringProp("xyChannel").equalsIgnoreCase("X")){
         if(controls[i]){
 			int index = ((CabbageXYController*)controls[i])->XYAutoIndex;
-			//((CabbageXYController*)controls[i])->xypad->setXYValues(getFilter()->getXYAutomater(index)->getXValue(), 
-			//														getFilter()->getXYAutomater(index)->getYValue());
-			//Logger::writeToLog(String(getFilter()->getParameter(i)));
 			((CabbageXYController*)controls[i])->xypad->setXYValues(getFilter()->getParameter(i), getFilter()->getParameter(i+1));
-				//setXYValues(getFilter()->getParameter(i), getFilter()->getParameter(i+1));
                 }
         }
 
@@ -2208,7 +2154,8 @@ for(int i=0;i<(int)getFilter()->getGUILayoutCtrlsSize();i++){
 }
 #endif
   
-
+//the following code looks after updating any objects that don't get recognised as plugin parameters, for examples, table objects
+//don't get listed by the host as a paramters. Likewise the csoundoutput widget.. 
 for(int i=0;i<getFilter()->getGUILayoutCtrlsSize();i++){
         //String test = getFilter()->getGUILayoutCtrls(i).getStringProp("type");
         //Logger::writeToLog(test);
@@ -2227,27 +2174,23 @@ for(int i=0;i<getFilter()->getGUILayoutCtrlsSize();i++){
         else if(getFilter()->getGUILayoutCtrls(i).getStringProp("type").containsIgnoreCase("table")){
                 //int tableSize = getFilter()->getCsound()->TableLength(getFilter()->getGUILayoutCtrls(i).getNumProp("tableNum"));
 				int tableNumber = getFilter()->getGUILayoutCtrls(i).getNumProp("tableNum");
-                int numberOfTables = getFilter()->getGUILayoutCtrls(i).getNumberOfSoftwareChannels();
+                int numberOfTables = getFilter()->getGUILayoutCtrls(i).getNumberOfTableChannels();
 				
-				for(int y=0;y<getFilter()->getGUILayoutCtrls(i).getNumberOfSoftwareChannels();y++){
-				float val = getFilter()->getCsound()->GetChannel(getFilter()->getGUILayoutCtrls(i).getChannel(y).toUTF8());
+				for(int y=0;y<getFilter()->getGUILayoutCtrls(i).getNumberOfTableChannels();y++){
+				//float val = getFilter()->getCsound()->GetChannel(getFilter()->getGUILayoutCtrls(i).getChannel(y).toUTF8());
+				float val = getFilter()->getGUILayoutCtrls(i).getTableChannelValues(y);
+				
 				//cout << String(val) << "\n"; //getFilter()->getGUILayoutCtrls(i).getStringProp("channel");
-				
-				
+								
                 if(val<0)
 					{
+						int test = 0;
 						int tableNumber = getFilter()->getGUILayoutCtrls(i).getTableNumbers(y);
-						Array <float> tableValues = getFilter()->getTable(tableNumber);//change this to table number
+						Array <float> tableValues = getFilter()->getTable(tableNumber);
 						((CabbageTable*)layoutComps[i])->fillTable(y, tableValues);
-						getFilter()->getCsound()->SetChannel(getFilter()->getGUILayoutCtrls(i).getChannel(y).toUTF8(), 0.f);
+						//getFilter()->getCsound()->SetChannel(getFilter()->getGUILayoutCtrls(i).getChannel(y).toUTF8(), 0.f);
+						getFilter()->getGUILayoutCtrls(i).setTableChannelValues(y, 0.f);
 					}
-//					else{
-//					Array <float> tableValues = getFilter()->getTable(tableNumber);//change this to table number
-//					((CabbageTable*)layoutComps[i])->fillTable(0, tableValues);
-//					// cout << "val less than 0";
-//					getFilter()->getCsound()->SetChannel(getFilter()->getGUILayoutCtrls(i).getStringProp("channel").toUTF8(), 0.f);
-//					
-//						}
 				else
 					{
 					((CabbageTable*)layoutComps[i])->setScrubberPosition(0, val);	
@@ -2257,21 +2200,8 @@ for(int i=0;i<getFilter()->getGUILayoutCtrlsSize();i++){
 				
 
         }
-		
-//		
-//        else if(getFilter()->getGUILayoutCtrls(i).getStringProp("type").containsIgnoreCase("pvsview")){
-//                float val = getFilter()->getCsound()->GetChannel(getFilter()->getGUILayoutCtrls(i).getStringProp("channel").toUTF8());
-//                //Logger::writeToLog(String(getFilter()->getGUILayoutCtrls(i).getNumProp("pvsChannel")));
-//                if(val>0){
-//                getFilter()->getCsound()->PvsoutGet(getFilter()->getPVSDataOut(), getFilter()->getGUILayoutCtrls(i).getNumProp("pvsChannel"));
-//                ((CabbagePVSView*)layoutComps[i])->updatePVSStruct();
-//                getFilter()->getCsound()->SetChannel(getFilter()->getGUILayoutCtrls(i).getStringProp("channel").toUTF8(), 0.f);
-//                }
-//        }
 }
 
-//Check to see if I can use the same means to control sliders if they are in the host application. But 
-//      I can't unless I hack the proceeBlcok() method...
 #ifdef Cabbage_Build_Standalone
         //make sure that the instrument needs midi before turning this on
    MidiMessage message(0xf4, 0, 0, 0);
@@ -2313,8 +2243,8 @@ for(int i=0;i<getFilter()->getGUILayoutCtrlsSize();i++){
                                                 ((Button*)controls[i])->setToggleState(1, false);
                                 }
                                 getFilter()->getCsound()->SetChannel(getFilter()->getGUICtrls(i).getStringProp("channel").toUTF8(), value);                             
-        if(message.isController())
-      if(getFilter()->getMidiDebug()){
+								if(message.isController())
+										if(getFilter()->getMidiDebug()){
                                         String debugInfo =  String("MIDI Channel:    ")+String(message.getChannel())+String(" \t")+
                                                                                 String("MIDI Controller: ")+String(message.getControllerNumber())+String("\t")+
                                                                                 String("MIDI Value:      ")+String(message.getControllerValue())+String("\n");

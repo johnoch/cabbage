@@ -34,10 +34,15 @@ StandaloneFilterWindow::StandaloneFilterWindow (const String& title,
     : DocumentWindow (title, backgroundColour,
                       DocumentWindow::minimiseButton
                        | DocumentWindow::closeButton),
-      optionsButton ("options"), isGUIOn(false), pipeOpenedOk(false), AudioEnabled(true), isAFileOpen(false)
+      optionsButton ("options"), 
+	  isGUIOn(false), 
+	  pipeOpenedOk(false), 
+	  AudioEnabled(true), 
+	  isAFileOpen(false),
+	  standaloneMode(false)
 {
 	
-	
+	String defaultCSDFile = File(File::getSpecialLocation(File::currentExecutableFile)).withFileExtension(".csd").getFullPathName();
 	consoleMessages = "";
 	cabbageDance = 0;
 	setTitleBarButtonsRequired (DocumentWindow::minimiseButton | DocumentWindow::closeButton, false);
@@ -99,8 +104,8 @@ StandaloneFilterWindow::StandaloneFilterWindow (const String& title,
 
     deviceManager->initialise (filter->getNumInputChannels(),
                                filter->getNumOutputChannels(),
-                               savedState,
-                               true);
+                               0,
+                               false);
 
 	deviceManager->closeAudioDevice();
 
@@ -126,9 +131,13 @@ StandaloneFilterWindow::StandaloneFilterWindow (const String& title,
 		centreWithSize (getWidth(), getHeight());
 		
 	appProperties->getUserSettings()->setValue("AutoUpdate", var(0));
-	//	int val = appProperties->getUserSettings()->getValue("AutoUpdate", var(0)).getFloatValue();
-	//	if(val)
-	//		startTimer(100);
+	
+	//opens a default file that matches the name of the current executable
+	//this can be used to create more 'standalone' like apps
+	if(File(defaultCSDFile).existsAsFile()){
+		standaloneMode = true;
+		openFile(defaultCSDFile);
+	}
 }
 //==============================================================================
 // Destructor
@@ -169,7 +178,7 @@ StandaloneFilterWindow::~StandaloneFilterWindow()
 
         globalSettings->setValue ("filterState", data.toBase64Encoding());
     }
-
+	filter->suspendProcessing(true);
     deleteFilter();
 }
 
@@ -239,7 +248,7 @@ void StandaloneFilterWindow::actionListenerCallback (const String& message){
 	}
 
 	else if(message.contains("fileOpen")){
-	openFile();
+	openFile("");
 	}
 
 	else if(message.contains("fileSaveAs")){
@@ -264,7 +273,7 @@ void StandaloneFilterWindow::actionListenerCallback (const String& message){
 		resetFilter();
 
 	else if(message.contains("MENU COMMAND: open instrument"))
-		openFile();
+		openFile("");
 
 	else if(message.contains("MENU COMMAND: manual update GUI"))
 		filter->createGUI(csdFile.loadFileAsString());
@@ -376,6 +385,8 @@ void StandaloneFilterWindow::deleteFilter()
 //==============================================================================
 void StandaloneFilterWindow::resetFilter()
 {
+	
+//	filter->suspendProcessing(true);
 	deleteFilter();
 	deviceManager->closeAudioDevice();
 	filter = createCabbagePluginFilter(csdFile.getFullPathName(), false);
@@ -383,9 +394,8 @@ void StandaloneFilterWindow::resetFilter()
 	filter->addChangeListener(this);
 	filter->addActionListener(this);
 	filter->sendChangeMessage();
-	//filter->suspendProcessing(true);
 	filter->createGUI(csdFile.loadFileAsString());
-	filter->suspendProcessing(false);
+	
 	String test = filter->getPluginName();
 	setName(filter->getPluginName());
 
@@ -415,7 +425,7 @@ void StandaloneFilterWindow::resetFilter()
 	if(cabbageCsoundEditor->isVisible())
 		cabbageCsoundEditor->csoundEditor->textEditor->grabKeyboardFocus();
 	}
-
+filter->suspendProcessing(false);
 }
 
 //==============================================================================
@@ -489,7 +499,7 @@ const int numOuts = filter->getNumOutputChannels() <= 0 ? JucePlugin_MaxNumOutpu
 
     AudioDeviceSelectorComponent selectorComp (*deviceManager,
                                                numIns, numIns, numOuts, numOuts,
-                                               true, false, true, false);
+                                               true, false, true, true);
 
     selectorComp.setSize (400, 250);
 	setAlwaysOnTop(false);
@@ -535,58 +545,62 @@ void StandaloneFilterWindow::buttonClicked (Button*)
 	m.setLookAndFeel(lookAndFeel);
 	subMenu.setLookAndFeel(lookAndFeel);
 
-	m.addItem(1, String("Open Cabbage Instrument | Ctrl+o"));
-	
+	if(!standaloneMode){
+		m.addItem(1, String("Open Cabbage Instrument | Ctrl+o"));
+		subMenu.addItem(30, String("Effect"));
+		subMenu.addItem(31, String("Instrument"));
+		m.addSubMenu(String("New Cabbage..."), subMenu);
 
-	subMenu.addItem(30, String("Effect"));
-	subMenu.addItem(31, String("Instrument"));
-	m.addSubMenu(String("New Cabbage..."), subMenu);
-
-	m.addItem(2, String("View Source Editor"));
-	m.addSeparator();
+		m.addItem(2, String("View Source Editor"));
+		m.addSeparator();
+	}
 	if(AudioEnabled)
 	m.addItem(400, "Audio Enabled | Ctrl+m", true, true); 
 	else
 	m.addItem(400, "Audio Enabled | Ctrl+m", true, false); 
     m.addItem(4, TRANS("Audio Settings..."));
     m.addSeparator();
-	m.addItem(100, String("Toggle Edit-mode"));
-	m.addSeparator();
-	subMenu.clear();
-	subMenu.addItem(15, TRANS("Plugin Synth"));
-	subMenu.addItem(16, TRANS("Plugin Effect"));
-	m.addSubMenu(TRANS("Export..."), subMenu);
+	if(!standaloneMode){	
+		m.addItem(100, String("Toggle Edit-mode"));
+		m.addSeparator();
+		subMenu.clear();
+		subMenu.addItem(15, TRANS("Plugin Synth"));
+		subMenu.addItem(16, TRANS("Plugin Effect"));
+		m.addSubMenu(TRANS("Export..."), subMenu);
 #ifndef MACOSX
-	subMenu.clear();
-	subMenu.addItem(5, TRANS("Plugin Synth"));
-	subMenu.addItem(6, TRANS("Plugin Effect"));
-	m.addSubMenu(TRANS("Export Plugin As..."), subMenu);
+		subMenu.clear();
+		subMenu.addItem(5, TRANS("Plugin Synth"));
+		subMenu.addItem(6, TRANS("Plugin Effect"));
+		m.addSubMenu(TRANS("Export Plugin As..."), subMenu);
 #endif
-    m.addSeparator();
+		m.addSeparator();
+	}
+
 	int alwaysontop = appProperties->getUserSettings()->getValue("SetAlwaysOnTop", var(0)).getFloatValue(); 
 	if(alwaysontop)
 	m.addItem(7, String("Always on Top"), true, true);
 	else
 	m.addItem(7, String("Always on Top"), true, false);
-	m.addItem(8, String("Rebuild Instrument | Ctrl+b"));
-	m.addItem(9, String("Rebuild GUI | Ctrl+u"));
+	if(!standaloneMode){
+		m.addItem(8, String("Rebuild Instrument | Ctrl+b"));
+		m.addItem(9, String("Rebuild GUI | Ctrl+u"));
 	/*
 	if(filter->getMidiDebug())
     m.addItem(9, TRANS("Show MIDI Debug Information"), true, true);
 	else
 	m.addItem(9, TRANS("Show MIDI Debug Information"));
 	*/
-	subMenu.clear();
-	subMenu.addItem(11, TRANS("Effects"));
-	subMenu.addItem(12, TRANS("Synths"));
-	m.addSubMenu(TRANS("Batch Convert"), subMenu);
-	m.addSeparator();
+		subMenu.clear();
+		subMenu.addItem(11, TRANS("Effects"));
+		subMenu.addItem(12, TRANS("Synths"));
+		m.addSubMenu(TRANS("Batch Convert"), subMenu);
+		m.addSeparator();
 
-	int autoUpdate = appProperties->getUserSettings()->getValue("AutoUpdate", var(0)).getFloatValue();
-	if(!autoUpdate)
-	m.addItem(299, String("Auto-update"), true, false);
-	else
-	m.addItem(299, String("Auto-update"), true, true);
+		int autoUpdate = appProperties->getUserSettings()->getValue("AutoUpdate", var(0)).getFloatValue();
+		if(!autoUpdate)
+		m.addItem(299, String("Auto-update"), true, false);
+		else
+		m.addItem(299, String("Auto-update"), true, true);
 /*
 	m.addSeparator();
 	if(cabbageDance)
@@ -594,28 +608,25 @@ void StandaloneFilterWindow::buttonClicked (Button*)
 	else
 	m.addItem(99, String("Cabbage Dance"));
 */
+		subMenu.clear();
+
+		int pluginInfo = appProperties->getUserSettings()->getValue("DisablePluginInfo", var(0)).getFloatValue();
+		subMenu.addItem(203, "Set Cabbage Plant Directory");
+		subMenu.addItem(200, "Set Csound Manual Directory");
+		if(!pluginInfo)
+		subMenu.addItem(201, String("Disable Export Plugin Info"), true, false);
+		else
+		subMenu.addItem(201, String("Disable Export Plugin Info"), true, true);
+
+		int disableGUIEditWarning = appProperties->getUserSettings()->getValue("DisableGUIEditModeWarning", var(0)).getFloatValue();
+		if(!disableGUIEditWarning)
+		subMenu.addItem(202, String("Disable GUI Edit Mode warning"), true, true);
+		else
+		subMenu.addItem(202, String("Disable GUI Edit Mode warning"), true, false);
 
 
-
-	subMenu.clear();
-
-	int pluginInfo = appProperties->getUserSettings()->getValue("DisablePluginInfo", var(0)).getFloatValue();
-	subMenu.addItem(203, "Set Cabbage Plant Directory");
-	subMenu.addItem(200, "Set Csound Manual Directory");
-	if(!pluginInfo)
-	subMenu.addItem(201, String("Disable Export Plugin Info"), true, false);
-	else
-	subMenu.addItem(201, String("Disable Export Plugin Info"), true, true);
-
-	int disableGUIEditWarning = appProperties->getUserSettings()->getValue("DisableGUIEditModeWarning", var(0)).getFloatValue();
-	if(!disableGUIEditWarning)
-	subMenu.addItem(202, String("Disable GUI Edit Mode warning"), true, true);
-	else
-	subMenu.addItem(202, String("Disable GUI Edit Mode warning"), true, false);
-
-
-	m.addSubMenu("Preferences", subMenu);
-	
+		m.addSubMenu("Preferences", subMenu);
+	}
 	
 	
 	
@@ -624,7 +635,7 @@ void StandaloneFilterWindow::buttonClicked (Button*)
  
 	//----- open file ------
 	if(options==1){
-		openFile();
+		openFile("");
 	}
 	//----- view text editor ------
 	else if(options==2){
@@ -808,40 +819,48 @@ void StandaloneFilterWindow::buttonClicked (Button*)
 //==============================================================================
 // open/save/save as methods
 //==============================================================================
-void StandaloneFilterWindow::openFile()
+void StandaloneFilterWindow::openFile(String _csdfile)
 {
+if(_csdfile.length()>4){
+	csdFile = File(_csdfile);
+	originalCsdFile = csdFile;
+	lastSaveTime = csdFile.getLastModificationTime();
+	csdFile.setAsCurrentWorkingDirectory();
+	resetFilter();
+}	
+else{	
 #ifdef MACOSX
-	FileChooser openFC(String("Open a Cabbage .csd file..."), File::nonexistent, String("*.csd;*.vst"));
-	if(openFC.browseForFileToOpen()){
-		csdFile = openFC.getResult();
-		originalCsdFile = openFC.getResult();
-		lastSaveTime = csdFile.getLastModificationTime();
-		csdFile.setAsCurrentWorkingDirectory();
-		if(csdFile.getFileExtension()==(".vst")){
-			String csd = csdFile.getFullPathName();
-			csd << "/Contents/" << csdFile.getFileNameWithoutExtension() << ".csd";
-			csdFile = File(csd);
-		}
-		resetFilter();
-		//cabbageCsoundEditor->setCsoundFile(csdFile);
-	}	
-	
+		FileChooser openFC(String("Open a Cabbage .csd file..."), File::nonexistent, String("*.csd;*.vst"));
+		if(openFC.browseForFileToOpen()){
+			csdFile = openFC.getResult();
+			originalCsdFile = openFC.getResult();
+			lastSaveTime = csdFile.getLastModificationTime();
+			csdFile.setAsCurrentWorkingDirectory();
+			if(csdFile.getFileExtension()==(".vst")){
+				String csd = csdFile.getFullPathName();
+				csd << "/Contents/" << csdFile.getFileNameWithoutExtension() << ".csd";
+				csdFile = File(csd);
+			}
+			resetFilter();
+			//cabbageCsoundEditor->setCsoundFile(csdFile);
+		}			
 #else
-	FileChooser openFC(String("Open a Cabbage .csd file..."), File::nonexistent, String("*.csd"));
-	this->setAlwaysOnTop(false);
-	if(openFC.browseForFileToOpen()){
-		csdFile = openFC.getResult();
-		csdFile.getParentDirectory().setAsCurrentWorkingDirectory();
-		lastSaveTime = csdFile.getLastModificationTime();
-		resetFilter();
-		if(cabbageCsoundEditor)
-		cabbageCsoundEditor->setCsoundFile(csdFile);
-		isAFileOpen = true;
+		FileChooser openFC(String("Open a Cabbage .csd file..."), File::nonexistent, String("*.csd"));
+		this->setAlwaysOnTop(false);
+		if(openFC.browseForFileToOpen()){
+			csdFile = openFC.getResult();
+			csdFile.getParentDirectory().setAsCurrentWorkingDirectory();
+			lastSaveTime = csdFile.getLastModificationTime();
+			resetFilter();
+			if(cabbageCsoundEditor)
+			cabbageCsoundEditor->setCsoundFile(csdFile);
+			isAFileOpen = true;
+		}
+		if(appProperties->getUserSettings()->getValue("SetAlwaysOnTop", var(0)).getFloatValue())
+			setAlwaysOnTop((true));
+		else
+			setAlwaysOnTop(false);
 	}
-	if(appProperties->getUserSettings()->getValue("SetAlwaysOnTop", var(0)).getFloatValue())
-		setAlwaysOnTop((true));
-	else
-		setAlwaysOnTop(false);
 #endif
 }
 

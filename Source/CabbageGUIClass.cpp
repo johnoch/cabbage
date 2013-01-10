@@ -41,7 +41,8 @@ CabbageGUIClass::CabbageGUIClass(String compStr, int ID):
 								xyAutoIndex(0),
 								fileType(0),
 								workingDir(""),
-								alpha(1)
+								alpha(1),
+								sliderRange(1)
 {
 //Default values are assigned to all attributres 
 //before parsing begins
@@ -173,7 +174,6 @@ CabbageGUIClass::CabbageGUIClass(String compStr, int ID):
           name = "checkbox";
 		  caption = "";
 		  items.add("");
-		  sliderRange = 1;
 		  min = 0;
 		  max = 1;
 		  shape = "square";
@@ -1052,6 +1052,27 @@ void CabbageGUIClass::setNumProp(String prop, float val)
 
 
 }
+
+
+float CabbageGUIClass::getTableChannelValues(int index)
+{
+if(index<tableChannelValues.size())
+	return tableChannelValues.getReference(index);
+else
+	return 0.f;	
+}
+
+void CabbageGUIClass::addTableChannelValues()
+{
+tableChannelValues.add(0.f);
+}
+
+void CabbageGUIClass::setTableChannelValues(int index, float val)
+{
+if(index<tableChannelValues.size())
+tableChannelValues.set(index, val);		
+}
+
 
 String CabbageGUIClass::getPropsString()
 {

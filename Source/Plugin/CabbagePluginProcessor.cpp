@@ -77,14 +77,6 @@ csndIndex = 32;
 //set up PVS struct
 dataout = new PVSDATEXT;
 
-//char** command;
-//sprintf(command[0], "%s", const_cast<char*>(inputfile.toUTF8().getAddress()));
-//sprintf(command[1], "-+ignore_csopts=false");
-//command[1] = const_cast<char*>(inputfile.toUTF8().getAddress());
-//showMessage(command[0]);
-//showMessage(command[1]);
-
-
 if(!inputfile.isEmpty()){
 csCompileResult = csound->Compile(const_cast<char*>(inputfile.toUTF8().getAddress()));
 if(csCompileResult==0){
@@ -181,8 +173,8 @@ csound->SetHostData(this);
 csound->SetMessageCallback(CabbagePluginAudioProcessor::messageCallback);
 csound->SetExternalMidiInOpenCallback(OpenMidiInputDevice);
 csound->SetExternalMidiReadCallback(ReadMidiData); 
-csound->SetExternalMidiOutOpenCallback(OpenMidiOutputDevice);
-csound->SetExternalMidiWriteCallback(WriteMidiData);
+//csound->SetExternalMidiOutOpenCallback(OpenMidiOutputDevice);
+//csound->SetExternalMidiWriteCallback(WriteMidiData);
 
 patStepMatrix.clear();
 patternNames.clear();
@@ -205,7 +197,7 @@ if(csCompileResult==0){
         CSspout = csound->GetSpout();
         CSspin  = csound->GetSpin();
         cs_scale = csound->Get0dBFS();
-        //numCsoundChannels = csoundListChannels(csound->GetCsound(), &csoundChanList);
+        numCsoundChannels = csoundListChannels(csound->GetCsound(), &csoundChanList);
         for(int i=0;i<guiCtrls.size();i++){
                 csound->SetChannel( guiCtrls.getReference(i).getStringProp("channel").toUTF8(), 
                                                         guiCtrls.getReference(i).getNumProp("value"));
@@ -525,15 +517,123 @@ void CabbagePluginAudioProcessor::changeListenerCallback(ChangeBroadcaster *sour
 	XYPadAutomation* xyPad = dynamic_cast< XYPadAutomation*>(source);
 	if(xyPad){
 #ifndef Cabbage_No_Csound
-		csound->SetChannel(xyPad->xChannel.toUTF8(), xyPad->getXValue());
+		//messageQueue.addOutgoingChannelMessageToQueue(xyPad->xChannel.toUTF8(), xyPad->getXValue())
 		setParameterNotifyingHost(xyPad->paramIndex, xyPad->getXValue());
-		csound->SetChannel(xyPad->yChannel.toUTF8(), xyPad->getYValue());
+		//messageQueue.addOutgoingChannelMessageToQueue(xyPad->yChannel.toUTF8(), xyPad->getYValue())
 		setParameterNotifyingHost(xyPad->paramIndex+1, xyPad->getYValue());
 #endif
 	}
 
 }
 
+//==============================================================================
+// getTable data from Csound so table editor can draw table 
+//==============================================================================
+const Array<float> CabbagePluginAudioProcessor::getTable(int tableNum){
+		Array<float> points;
+		MYFLT* temp;
+		int tableSize = csound->GetTable(temp, tableNum);
+		if(tableSize>0)
+		points = Array<float>(temp, tableSize);
+		return points;        
+}
+
+
+//=================================================================================
+// Get and Set Parameter methods, called by our editor, and the plugin host...
+//=================================================================================
+float CabbagePluginAudioProcessor::getParameter (int index)
+{       
+/* this gets called at any time by our host or out GUI editor */	
+if(index<(int)guiCtrls.size())//make sure index isn't out of range
+return getGUICtrls(index).getNumProp("value");
+else 
+	return 0.0f;
+}
+
+void CabbagePluginAudioProcessor::setParameter (int index, float newValue)
+{
+#ifndef Cabbage_No_Csound
+/* this will get called by the plugin GUI sliders or 
+by the host, via automation. The timer thread in the plugin's editor
+will constantly update with the values that have been set here.
+We don't actually change any parameters here, we simply add the messages
+to a queue. See next method. The updates will only happen when it's safe to do. */
+float range, min, max;
+if(index<(int)guiCtrls.size())//make sure index isn't out of range
+   {
+	#ifndef Cabbage_Build_Standalone        
+    //scaling in here because incoming values in plugin mode range from 0-1
+	range = getGUICtrls(index).getNumProp("sliderRange");
+	min = getGUICtrls(index).getNumProp("min");
+	guiCtrls.getReference(index).setNumProp("value", (newValue*range)+min);
+	messageQueue.addOutgoingChannelMessageToQueue(guiCtrls.getReference(index).getStringProp("channel").toUTF8(),  (newValue*range)+min);
+	#else 
+	//no need to scale here when in standalone mode
+    guiCtrls.getReference(index).setNumProp("value", newValue);
+	messageQueue.addOutgoingChannelMessageToQueue(guiCtrls.getReference(index).getStringProp("channel").toUTF8(), newValue);
+	#endif
+   }
+#endif
+}
+
+//==============================================================================
+//this method gets called after a performKsmps() to update our GUI controls
+//with messages from Csound. For instance, a user might wish to change the position
+//of a GUI slider from Csound by using a chnset opcode. The speed at which this is
+//updated can be teaked, so as not to hog resources. It might be worth allowing users 
+//the option of setting how fast this update...  
+void CabbagePluginAudioProcessor::updateCabbageControls()
+{
+String chanName;
+MYFLT* val=0;
+//update all control widgets
+for(int index=0;index<getGUICtrlsSize();index++)
+	{
+	//sliderRange defaults to 1
+	float range = getGUICtrls(index).getNumProp("sliderRange");
+	float value = csound->GetChannel(guiCtrls.getReference(index).getStringProp("channel").toUTF8());
+	#ifdef Cabbage_Build_Standalone
+				//no scaling needed in standalone mode
+                getGUICtrls(index).setNumProp("value", value);				
+	#else
+                //when in plugin mode everything is scaled between 0 and 1, 
+                getGUICtrls(index).setNumProp("value", value/range);
+	#endif
+	}
+	
+//update all layout control widgets
+//currently this is only needed for table widgets as other layout controls
+//don't use channel messages...
+for(int index=0;index<getGUILayoutCtrlsSize();index++)
+	{	
+	if(getGUILayoutCtrls(index).getStringProp("type")=="table")
+		{
+		for(int y=0;y<getGUILayoutCtrls(index).getNumberOfTableChannels();y++){
+			float value = csound->GetChannel(getGUILayoutCtrls(index).getTableChannel(y).toUTF8());
+			getGUILayoutCtrls(index).setTableChannelValues(y, value);
+			}
+		}	
+	}
+}
+
+//==============================================================================
+//this method only gets called when it's safe to do so, i.e., between calls to performKsmps()
+//this method sends any channel messages that are in the queue to Csound
+#ifndef Cabbage_No_Csound
+
+void CabbagePluginAudioProcessor::sendOutgoingMessagesToCsound()
+{
+for(int i=0;i<messageQueue.getNumberOfOutgoingChannelMessagesInQueue();i++)
+		{
+		csound->SetChannel(messageQueue.getOutgoingChannelMessageFromQueue(i).channelName.toUTF8(), 
+						   messageQueue.getOutgoingChannelMessageFromQueue(i).value);
+		}
+	messageQueue.flushOutgoingChannelMessages();
+}
+
+//========================================================================
+// Standard plugin methods, getName, getNumParameters, setParamterName, get ProgramName, etc.... 
 //==============================================================================
 const String CabbagePluginAudioProcessor::getName() const
 {
@@ -544,61 +644,6 @@ int CabbagePluginAudioProcessor::getNumParameters()
 {
     return guiCtrls.size();
 }
-
-float CabbagePluginAudioProcessor::getParameter (int index)
-{       
-
-if(index<(int)guiCtrls.size()){//make sure index isn't out of range
-#ifndef Cabbage_No_Csound
-        MYFLT* val=0;
-                float range = getGUICtrls(index).getNumProp("sliderRange");
-                //String test = guiCtrls.getReference(index).getStringProp("channel");
-                //Logger::writeToLog(("channel:")+test);
-
-                csoundGetChannelPtr(getCsoundStruct(), &val, guiCtrls.getReference(index).getStringProp("channel").toUTF8(),
-                                CSOUND_CONTROL_CHANNEL | CSOUND_OUTPUT_CHANNEL);
-                //Logger::writeToLog(String("getParam: *val:")+String(*val));
-
-#ifdef Cabbage_Build_Standalone
-                return *val;
-#else
-                //Logger::writeToLog(String(*val/range));
-                return *val/range;
-#endif
-#endif
-}
-else return 0.f; 
-
-}
-
-void CabbagePluginAudioProcessor::setParameter (int index, float newValue)
-{
-/* this will get called by the plugin GUI sliders or 
-by the host, via automation. The timer thread in the plugin's editor
-will constantly update with the values that have been set here*/
-#ifndef Cabbage_No_Csound
-float range, min, max;
-if(index<(int)guiCtrls.size())//make sure index isn't out of range
-   {
- // if(guiCtrls.getReference(index).getNumProp("value") != newValue)
- //    {
-#ifndef Cabbage_Build_Standalone        
-        //scaling in here because incoming values in plugin mode range from 0-1
-                range = getGUICtrls(index).getNumProp("sliderRange");
-                min = getGUICtrls(index).getNumProp("min");
-                guiCtrls.getReference(index).setNumProp("value", (newValue*range)+min);
-                //Logger::writeToLog(guiCtrls.getReference(index).getStringProp("channel")+String(":")+String((newValue*range)+min));
-
-                csound->SetChannel(guiCtrls.getReference(index).getStringProp("channel").toUTF8(),  (newValue*range)+min);
-#else 
-        guiCtrls.getReference(index).setNumProp("value", newValue);
-        csound->SetChannel(guiCtrls.getReference(index).getStringProp("channel").toUTF8(), newValue);           
-#endif
- //    }
-   }
-#endif
-}
-
 
 const String CabbagePluginAudioProcessor::getParameterName (int index)
 {
@@ -725,22 +770,6 @@ if(!isGuiEnabled()){
                 }
         }
 
-
-//for(int i=0;i<(int)getGUICtrlsSize();i++)//find correct control from vector
-//        //if message came from an XY pad...
-//		if(getGUICtrls(i).getStringProp("type")=="xypad"){
-//
-//                if(getGUICtrls(i).getStringProp("xyChannel").equalsIgnoreCase("X")){       
-//#ifndef Cabbage_No_Csound
-//					if(xyAutomation[getGUICtrls(i).getNumProp("xyAutoIndex")]->isAutomating()){
-//					csound->SetChannel(getGUICtrls(i).getStringProp("xChannel").toUTF8(), xyAutomation[getGUICtrls(i).getNumProp("xyAutoIndex")]->getXValue());
-//                    csound->SetChannel(getGUICtrls(i).getStringProp("yChannel").toUTF8(), xyAutomation[getGUICtrls(i).getNumProp("xyAutoIndex")]->getYValue());
-//					}
-//#endif
-//                    }
-//		}
-		
-
 }// end of GUI enabled check
 			for(int y=0;y<xyAutomation.size();y++){
 				if(xyAutomation[y])
@@ -748,28 +777,7 @@ if(!isGuiEnabled()){
 				}
 #endif
 }
-//==============================================================================
-void CabbagePluginAudioProcessor::updateGUIControlsKsmps(int speed)
-{
-//counter to slow down timer, it's too fast
-if(yieldCounter>speed){
-	yieldCounter=0;
-if(getActiveEditor())
-	if((guiLayoutCtrls.size()>0) || guiCtrls.size()>0){
-#ifndef Cabbage_Build_Stanalone
-		MessageManagerLock lock;
-		((CabbagePluginAudioProcessorEditor*)getActiveEditor())->ksmpsYieldCallback();
-#else
-		MessageManagerLock lock;
-		sendActionMessage("ready to update after Ksmps");
 #endif
-	}
-}
-else
-	yieldCounter++;
-	
-}
-
 
 //==============================================================================
 void CabbagePluginAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& midiMessages)
@@ -793,7 +801,12 @@ if(!isSuspended()){
 			{
 				CSCompResult = csound->PerformKsmps();
 				getCallbackLock().enter();
-				updateGUIControlsKsmps(20);
+				//slow down calls to these functions, no need for them to be firing at k-rate
+				yieldCounter = (yieldCounter>10) ? 0 : yieldCounter+1;
+				if(yieldCounter==0){
+				sendOutgoingMessagesToCsound();
+				updateCabbageControls();
+				}
 				getCallbackLock().exit();
 				csndIndex = 0;
 			}
@@ -839,16 +852,16 @@ if(!isSuspended()){
 #ifndef Cabbage_No_Csound
 int CabbagePluginAudioProcessor::OpenMidiInputDevice(CSOUND * csound, void **userData, const char* /*devName*/)
 {
-*userData = csoundGetHostData(csound); 
+*userData = csoundGetHostData(csound);
 if(!userData)
 cout << "\n\ncan't open midi in\n\n";
-return 0;       
+return 0;
 }
 
 int CabbagePluginAudioProcessor::ReadMidiData(CSOUND* /*csound*/, void *userData,
 unsigned char *mbuf, int nbytes)
 {
-try{    
+try{
         CabbagePluginAudioProcessor *midiData = (CabbagePluginAudioProcessor *)userData;
         if(!userData){
                 cout << "\n\nInvalid";
@@ -880,14 +893,14 @@ try{
                    *mbuf++ = (unsigned char)message.getVelocity();
                    cnt += 3;
                    }
-                /*   
-                else if(message.isController()){
-                        *mbuf++ = (unsigned char)0x7B + message.getChannel();
-                        *mbuf++ = (unsigned char)message.getControllerNumber();
-                        *mbuf++ = (unsigned char)message.getControllerValue();
-                   cnt += 3;      
-                  }
-        */    
+                /*
+else if(message.isController()){
+*mbuf++ = (unsigned char)0x7B + message.getChannel();
+*mbuf++ = (unsigned char)message.getControllerNumber();
+*mbuf++ = (unsigned char)message.getControllerValue();
+cnt += 3;
+}
+*/
            }
            midiData->midiBuffer.clear();
         }
@@ -896,12 +909,11 @@ try{
 }
 catch(...){
         CabbageUtils::showMessage(String("If you insist on playing the keyboard\n \
-                                like a nutter please run Cabbage in standalone\n \
-                                mode, outside of WinXound, i.e., launch it on its\n \
-                                own and then load the csd file you wish to use."));
+like a nutter please run Cabbage in standalone\n \
+mode, outside of WinXound, i.e., launch it on its\n \
+own and then load the csd file you wish to use."));
         }
 }
-
 
 int CabbagePluginAudioProcessor::OpenMidiOutputDevice(CSOUND * csound, void **userData, const char* /*devName*/)
 {

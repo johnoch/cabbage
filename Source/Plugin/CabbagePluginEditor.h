@@ -54,7 +54,8 @@ class CabbagePluginAudioProcessorEditor  : public AudioProcessorEditor,
                                                                 public KeyListener,
                                                                 public ChangeBroadcaster,
                                                                 public ChangeListener,
-                                                                public ActionListener
+                                                                public ActionListener, 
+																public Timer
 																
 {
 public:
@@ -95,6 +96,7 @@ private:
         void InsertPVSViewer(CabbageGUIClass &cAttr);
         void buttonClicked (Button*);
         void mouseDown(const MouseEvent &e);
+		void timerCallback();
         bool LOCKED;
         void insertCabbageText(String text);
         int lineNumber;

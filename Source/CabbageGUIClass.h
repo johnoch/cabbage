@@ -31,7 +31,7 @@
 #include <sstream>
 
 #include "CabbageUtils.h"
-using namespace std;
+
 
 class CabbageGUIClass : public CabbageUtils
 {
@@ -47,6 +47,7 @@ class CabbageGUIClass : public CabbageUtils
 		int tableNum, textBox, numPresets, masterSnap, plantButton, xyAutoIndex, paramIndex;
 		Array<int> vuConfig;
 		Array<int> tableNumbers;
+		Array<float> tableChannelValues;
 
 		//JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CabbageGUIClass);
 public:
@@ -57,12 +58,16 @@ public:
 	double getNumProp(String prop);
 	double getNumProp(String prop, int index);
 	void setNumProp(String prop, float val);
+	void setTableChannelValues(int index, float val);
+	float getTableChannelValues(int index);
+	void addTableChannelValues();
 	void setStringProp(String prop, String val);
 	void setStringProp(String prop, int index, String value);
 	String getStringProp(String prop);
 	String getStringProp(String prop, int index);
 	String getPropsString();
 	String getColourProp(String prop);
+	
 	Rectangle<int> getComponentBounds();
 
 	inline int getNumPresets(){
@@ -126,7 +131,11 @@ public:
 		return channels[index];
 	}
 
-	inline int getNumberOfSoftwareChannels(){
+	inline String getTableChannel(int index){
+		return channels[index];
+	}
+
+	inline int getNumberOfTableChannels(){
 		return channels.size();
 	}
 
