@@ -240,7 +240,6 @@ void StandaloneFilterWindow::actionListenerCallback (const String& message){
 	setGuiEnabled(true);
 	filter->setGuiEnabled(true);
 	setCurrentLine(filter->getCurrentLine()+1);
-	
 	}
 	
 	else if(message.equalsIgnoreCase("fileSaved")){
@@ -266,6 +265,12 @@ void StandaloneFilterWindow::actionListenerCallback (const String& message){
 	else if(message.contains("fileUpdateGUI")){
 		filter->createGUI(cabbageCsoundEditor->getCurrentText());
 		csdFile.replaceWithText(cabbageCsoundEditor->getCurrentText()); 
+	if(cabbageCsoundEditor){
+	cabbageCsoundEditor->setName(csdFile.getFullPathName());
+	
+	if(cabbageCsoundEditor->isVisible())
+		cabbageCsoundEditor->csoundEditor->textEditor->grabKeyboardFocus();
+	}
 	}
 
 #ifdef Cabbage_Build_Standalone
@@ -299,69 +304,24 @@ else{}
 void StandaloneFilterWindow::changeListenerCallback(juce::ChangeBroadcaster* /*source*/)
 {
 String text = "";
-#ifdef Cabbage_Named_Pipe
-//#ifdef Cabbage_GUI_Editor
-//if(filter->isGuiEnabled()){
-//if(filter->getChangeMessageType().containsIgnoreCase("GUI_edit")){
-//setGuiEnabled(true);
-//setCurrentLine(filter->getCurrentLine()+1);
-//sendMessageToWinXound(String("CABBAGE_FILE_UPDATED"), csdFile.getFullPathName());
-//sendMessageToWinXound(String("CABBAGE_UPDATE"), "");
-//}
-//else if(filter->getChangeMessageType().containsIgnoreCase("GUI_lock")){
-//setGuiEnabled(false);
-//setCurrentLine(filter->getCurrentLine()+1);
-//sendMessageToWinXound(String("CABBAGE_FILE_UPDATED"), csdFile.getFullPathName());
-//sendMessageToWinXound(String("CABBAGE_UPDATE"), "");
-//if(getCurrentLine()>1)
-//sendMessageToWinXound(String("CABBAGE_SELECT_LINE"), getCurrentLine()); 
-//Logger::writeToLog(String(getCurrentLine()));
-//}
-//}
-//else
-//#endif
-//// MOD - Stefano Bonetti
-//  if(filter && ipConnection->isConnected()){
-//      for(int i=0;i<filter->getDebugMessageArray().size();i++)
-//      {
-//          if(filter->getDebugMessageArray().getReference(i).length()>0)
-//          {
-//              text += String(filter->getDebugMessageArray().getReference(i).toUTF8());
-//          }
-//          else 
-//          {
-//              sendMessageToWinXound(String("CABBAGE_DEBUG"), "Debug message string is empty?");
-//              break;
-//          }
-//
-//      }
-//
-//      filter->clearDebugMessageArray();
-//	  sendMessageToWinXound(String("CABBAGE_DEBUG"), text);
-//
-//  }
-#endif
-  // MOD - End
 
 for(int i=0;i<filter->getDebugMessageArray().size();i++)
       {
           if(filter->getDebugMessageArray().getReference(i).length()>0)
           {
               text += String(filter->getDebugMessageArray().getReference(i).toUTF8());
+			 
           }
-          else 
-          {
-              cabbageCsoundEditor->setCsoundOutputText(text);
-              break;
-          }
-
+		   
       }
+consoleMessages = consoleMessages+text+"\n";
+filter->clearDebugMessageArray();
+if(cabbageCsoundEditor){
+cabbageCsoundEditor->setCsoundOutputText(consoleMessages+"\n");
+consoleMessages="";
 
-      filter->clearDebugMessageArray();
-	  consoleMessages = consoleMessages+text+"\n"; 
-	  if(cabbageCsoundEditor)
-		  cabbageCsoundEditor->setCsoundOutputText(text+"\n");
-	  //sendMessageToWinXound(String("CABBAGE_DEBUG"), text);
+}
+
 
 }
 //==============================================================================
@@ -499,7 +459,7 @@ const int numOuts = filter->getNumOutputChannels() <= 0 ? JucePlugin_MaxNumOutpu
 
     AudioDeviceSelectorComponent selectorComp (*deviceManager,
                                                numIns, numIns, numOuts, numOuts,
-                                               true, false, true, true);
+                                               true, false, true, false);
 
     selectorComp.setSize (400, 250);
 	setAlwaysOnTop(false);
@@ -651,6 +611,8 @@ void StandaloneFilterWindow::buttonClicked (Button*)
 	cabbageCsoundEditor->setFullScreen(true);
 	cabbageCsoundEditor->toFront(true);
 	cabbageCsoundEditor->setCsoundOutputText(consoleMessages);
+	//Logger::writeToLog(consoleMessages);
+	cabbageCsoundEditor->csoundEditor->textEditor->setWantsKeyboardFocus(true);
 	cabbageCsoundEditor->csoundEditor->textEditor->grabKeyboardFocus();
 	}
 	//----- new effect ------

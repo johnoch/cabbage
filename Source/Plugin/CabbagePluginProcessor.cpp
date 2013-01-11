@@ -62,8 +62,10 @@ setPlayConfigDetails(2, 2, 44100, 512);
 #ifndef Cabbage_No_Csound
 //don't start of run Csound in edit mode
 csound = new Csound();
+
 csound->PreCompile();
 csound->SetHostData(this);
+csound->SetMessageCallback(CabbagePluginAudioProcessor::messageCallback);
 //for host midi to get sent to Csound, don't need this for standalone
 //but might use it in the future foir midi mapping to controls
 csound->SetExternalMidiInOpenCallback(OpenMidiInputDevice);
@@ -85,7 +87,7 @@ if(csCompileResult==0){
         csound->SetScoreOffsetSeconds(0);
         csound->RewindScore();
         
-        csound->SetMessageCallback(CabbagePluginAudioProcessor::messageCallback);
+        
 		//csound->SetYieldCallback(CabbagePluginAudioProcessor::yieldCallback);
         if(csound->GetSpout()==nullptr);
         CSspout = csound->GetSpout();
@@ -173,8 +175,8 @@ csound->SetHostData(this);
 csound->SetMessageCallback(CabbagePluginAudioProcessor::messageCallback);
 csound->SetExternalMidiInOpenCallback(OpenMidiInputDevice);
 csound->SetExternalMidiReadCallback(ReadMidiData); 
-//csound->SetExternalMidiOutOpenCallback(OpenMidiOutputDevice);
-//csound->SetExternalMidiWriteCallback(WriteMidiData);
+csound->SetExternalMidiOutOpenCallback(OpenMidiOutputDevice);
+csound->SetExternalMidiWriteCallback(WriteMidiData);
 
 patStepMatrix.clear();
 patternNames.clear();
@@ -184,7 +186,9 @@ csoundChanList = NULL;
 numCsoundChannels = 0;
 csndIndex = 32;
 startTimer(15);
+
 csCompileResult = csound->Compile(const_cast<char*>(csdFile.getFullPathName().toUTF8().getAddress()));
+
 if(csCompileResult==0){
 	Logger::writeToLog("compiled Ok");
         //simple hack to allow tables to be set up correctly. 
@@ -193,7 +197,7 @@ if(csCompileResult==0){
         csound->RewindScore();
         //set up PVS struct
 		dataout = new PVSDATEXT;
-        csound->SetMessageCallback(CabbagePluginAudioProcessor::messageCallback);
+        
         CSspout = csound->GetSpout();
         CSspin  = csound->GetSpin();
         cs_scale = csound->Get0dBFS();
@@ -467,7 +471,6 @@ if(this->getActiveEditor()){
 #ifndef Cabbage_No_Csound
 void CabbagePluginAudioProcessor::messageCallback(CSOUND* csound, int /*attr*/,  const char* fmt, va_list args)
 {
-try{
   CabbagePluginAudioProcessor* ud = (CabbagePluginAudioProcessor *) csoundGetHostData(csound);
   char msg[MAX_BUFFER_SIZE];
   vsnprintf(msg, MAX_BUFFER_SIZE, fmt, args);
@@ -475,22 +478,11 @@ try{
   ud->debugMessage += String(msg); //We have to append the incoming msg
   ud->csoundOutput += ud->debugMessage;
   ud->debugMessageArray.add(ud->debugMessage);
-  //if(ud->cabbageCsoundEditor)
-        //  if(ud->cabbageCsoundEditor->isShowing())
-                //ud->cabbageCsoundEditor->setCsoundOutputText(ud->csoundOutput);
-//#ifdef Cabbage_Named_Pipe && Cabbage_Build_Standalone
   ud->sendChangeMessage();
 // MOD - End
 //#endif
   ud->debugMessage = "";
   ud = nullptr;
-}
-catch(...){
-                CabbageUtils::showMessage(String("If you insist on playing the keyboard\n \
-                                like a nutter please run Cabbage in standalone\n \
-                                mode, outside of WinXound, i.e., launch it on its\n \
-                                own and then load the csd file you wish to use."));
-}
 }
 #endif
 
@@ -790,6 +782,9 @@ if(!isSuspended()){
 	keyboardState.processNextMidiBuffer (midiMessages, 0, buffer.getNumSamples(), true);
 	midiBuffer = midiMessages;
 	ccBuffer = midiMessages;
+	
+	if(!midiOutputBuffer.isEmpty())
+		midiMessages.swapWith(midiOutputBuffer);
 
 	for(int i=0;i<buffer.getNumSamples();i++, csndIndex++)
 	   {                                
@@ -838,10 +833,10 @@ if(!isSuspended()){
 		{
 			buffer.clear (i, 0, buffer.getNumSamples());
 		}
-
-
-	#endif
+		#endif
 }
+	if(!midiBuffer.isEmpty())
+	midiMessages.swapWith(midiOutputBuffer);
 }
 
 
@@ -858,10 +853,12 @@ cout << "\n\ncan't open midi in\n\n";
 return 0;
 }
 
+//==============================================================================
+// Reads MIDI input data from host, gets called every time there is MIDI input to our plugin
+//==============================================================================
 int CabbagePluginAudioProcessor::ReadMidiData(CSOUND* /*csound*/, void *userData,
 unsigned char *mbuf, int nbytes)
 {
-try{
         CabbagePluginAudioProcessor *midiData = (CabbagePluginAudioProcessor *)userData;
         if(!userData){
                 cout << "\n\nInvalid";
@@ -893,62 +890,44 @@ try{
                    *mbuf++ = (unsigned char)message.getVelocity();
                    cnt += 3;
                    }
-                /*
-else if(message.isController()){
-*mbuf++ = (unsigned char)0x7B + message.getChannel();
-*mbuf++ = (unsigned char)message.getControllerNumber();
-*mbuf++ = (unsigned char)message.getControllerValue();
-cnt += 3;
-}
-*/
            }
            midiData->midiBuffer.clear();
         }
 
-          return cnt;
-}
-catch(...){
-        CabbageUtils::showMessage(String("If you insist on playing the keyboard\n \
-like a nutter please run Cabbage in standalone\n \
-mode, outside of WinXound, i.e., launch it on its\n \
-own and then load the csd file you wish to use."));
-        }
+ return cnt;
 }
 
+//==============================================================================
+// Opens MIDI output device, adding -QN to your CsOptions will causes this method to be called
+// as soon as your plugin loads
+//==============================================================================
 int CabbagePluginAudioProcessor::OpenMidiOutputDevice(CSOUND * csound, void **userData, const char* /*devName*/)
 {
 *userData = csoundGetHostData(csound); 
 if(!userData)
-cout << "\n\ncan't open midi out\n\n";
+	Logger::writeToLog("\n\ncan't open midi out\n\n");
 return 0;       
 }
 
-int CabbagePluginAudioProcessor::WriteMidiData(CSOUND* /*csound*/, void *userData,
+//==============================================================================
+// Write MIDI data to plugin's MIDI output. Each time Csound outputs a midi message this
+// method should be called. Note: you must have -Q set in your CsOptions
+//==============================================================================
+int CabbagePluginAudioProcessor::WriteMidiData(CSOUND* /*csound*/, void *_userData,
 const unsigned char *mbuf, int nbytes)
 {
-        /*
-CabbagePluginAudioProcessor *midiData = (CabbagePluginAudioProcessor *)userData;
+CabbagePluginAudioProcessor *userData = (CabbagePluginAudioProcessor *)_userData;
 if(!userData){
-        cout << "\n\nInvalid";
-        return 0;
-        }
-midiData->midiBuffer->clear();
-int cnt=0;
-        *mbuf++;
-        *mbuf++;
-        MidiMessage message(0xf4, 0, 0, 0);
-        message.setChannel(1);
-        message.setNoteNumber(60);
-        message.setVelocity(127);
-        cnt += 3;
-        
-        midiData->midiBuffer->addEvent(message, 0);
-        midiData->keyboardState.processNextMidiEvent(message);
+	Logger::writeToLog("\n\nInvalid");
+    return 0;
+  }	
 
-  return cnt;
-  */
-        return 0;
+MidiMessage message(mbuf, nbytes, 0);
+//Logger::writeToLog(String(message.getNoteNumber()));
+userData->midiOutputBuffer.addEvent(message, 0);
+return nbytes;
 }
+
 #endif
 //==============================================================================
 bool CabbagePluginAudioProcessor::hasEditor() const

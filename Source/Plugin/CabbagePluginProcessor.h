@@ -167,7 +167,8 @@ public:
 	void createGUI(String source);
 	MidiKeyboardState keyboardState;
 	//midiBuffers
-	MidiBuffer midiBuffer;          
+	MidiBuffer midiBuffer;   
+	MidiBuffer midiOutputBuffer;
 	MidiBuffer ccBuffer;
 	bool showMIDI;
 	bool yieldCallbackBool;
