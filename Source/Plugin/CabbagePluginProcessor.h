@@ -28,9 +28,11 @@
 #include "../CabbageMessageSystem.h"
 
 
+
 #ifndef Cabbage_No_Csound
 #include "csound.hpp"
 #include "cwindow.h"
+#include "../csPerfThread.hpp"
 #endif
 
 //#ifndef Cabbage_Build_Standalone
@@ -69,6 +71,8 @@ class CabbagePluginAudioProcessor  : public AudioProcessor,
 
         //============== Csound related variables/methods ==============================
 #ifndef Cabbage_No_Csound
+		bool isNativeThreadRunning;
+		CsoundPerformanceThread* csoundPerfThread;
         PVSDATEXT* dataout;
         MYFLT cs_scale;
         ScopedPointer<Csound> csound;                           //Csound instance
@@ -84,6 +88,9 @@ class CabbagePluginAudioProcessor  : public AudioProcessor,
         static int OpenMidiOutputDevice(CSOUND * csnd, void **userData, const char *devName);
         static int ReadMidiData(CSOUND *csound, void *userData, unsigned char *mbuf, int nbytes);
         static int WriteMidiData(CSOUND *csound, void *userData, const unsigned char *mbuf, int nbytes);
+		static void YieldCallback(void* data);
+		
+		
 		void updateCabbageControls();
 		void sendOutgoingMessagesToCsound();
 		
@@ -124,6 +131,7 @@ public:
 		xyAutosCreated = val;
 	}
 
+	int performEntireScore();
     //==============================================================================
     void prepareToPlay (double sampleRate, int samplesPerBlock);
     void releaseResources();

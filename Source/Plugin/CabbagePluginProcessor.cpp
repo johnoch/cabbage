@@ -50,7 +50,8 @@ masterCounter(0),
 xyAutosCreated(false),
 updateTable(false),
 yieldCallbackBool(false),
-yieldCounter(10)
+yieldCounter(10),
+isNativeThreadRunning(false)
 {
 //reset patMatrix. If this has more than one we know that
 //pattern matrix object is being used
@@ -65,6 +66,10 @@ csound = new Csound();
 
 csound->PreCompile();
 csound->SetHostData(this);
+
+csoundPerfThread = new CsoundPerformanceThread(csound);
+csoundPerfThread->SetProcessCallback(CabbagePluginAudioProcessor::YieldCallback, (void*)this);
+
 csound->SetMessageCallback(CabbagePluginAudioProcessor::messageCallback);
 //for host midi to get sent to Csound, don't need this for standalone
 //but might use it in the future foir midi mapping to controls
@@ -72,6 +77,7 @@ csound->SetExternalMidiInOpenCallback(OpenMidiInputDevice);
 csound->SetExternalMidiReadCallback(ReadMidiData); 
 //csound->SetExternalMidiOutOpenCallback(OpenMidiOutputDevice);
 //csound->SetExternalMidiWriteCallback(WriteMidiData);
+
 csoundChanList = NULL;
 numCsoundChannels = 0;
 csndIndex = 32;
@@ -178,6 +184,7 @@ csound->SetExternalMidiReadCallback(ReadMidiData);
 csound->SetExternalMidiOutOpenCallback(OpenMidiOutputDevice);
 csound->SetExternalMidiWriteCallback(WriteMidiData);
 
+
 patStepMatrix.clear();
 patternNames.clear();
 patPfieldMatrix.clear();
@@ -235,6 +242,8 @@ patPfieldMatrix.clear();
 
         const MessageManagerLock mmLock;
         if(csound){
+				csoundPerfThread->Stop();
+				csoundPerfThread = nullptr;
                 csound->DeleteChannelList(csoundChanList);
                 Logger::writeToLog("about to cleanup Csound");
                 csound->Cleanup();
@@ -246,6 +255,22 @@ patPfieldMatrix.clear();
 
 #endif
 }
+
+int CabbagePluginAudioProcessor::performEntireScore(){
+	if(!isNativeThreadRunning){
+	//csound->SetYieldCallback(YieldCallback);
+	csoundPerfThread->Play();
+	isNativeThreadRunning = true;
+	}
+}
+
+void CabbagePluginAudioProcessor::YieldCallback(void* data){
+	CabbagePluginAudioProcessor *cabbage = (CabbagePluginAudioProcessor *)data;
+	cabbage->sendOutgoingMessagesToCsound();
+	cabbage->updateCabbageControls();
+	
+}
+
 
 //===========================================================
 // PARSE CSD FILE AND FILL GUI/GUI-LAYOUT VECTORs.
@@ -890,10 +915,16 @@ unsigned char *mbuf, int nbytes)
                    *mbuf++ = (unsigned char)message.getVelocity();
                    cnt += 3;
                    }
+				   else if(message.isController()){
+						*mbuf++ = (unsigned char)0xB0 + message.getChannel();
+				   *mbuf++ = (unsigned char)message.getControllerNumber();
+				   *mbuf++ = (unsigned char)message.getControllerValue();
+				   cnt += 3;
+				   }
+				 
            }
            midiData->midiBuffer.clear();
         }
-
  return cnt;
 }
 
@@ -907,7 +938,7 @@ int CabbagePluginAudioProcessor::OpenMidiOutputDevice(CSOUND * csound, void **us
 if(!userData)
 	Logger::writeToLog("\n\ncan't open midi out\n\n");
 return 0;       
-}
+} 
 
 //==============================================================================
 // Write MIDI data to plugin's MIDI output. Each time Csound outputs a midi message this

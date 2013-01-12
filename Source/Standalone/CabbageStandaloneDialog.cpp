@@ -93,9 +93,12 @@ StandaloneFilterWindow::StandaloneFilterWindow (const String& title,
     deviceManager->addAudioCallback (&player);
     deviceManager->addMidiInputCallback (String::empty, &player);
 
-
-    player.setProcessor (filter);
 	
+
+	int runningCsoundThread = appProperties->getUserSettings()->getValue("UseCsoundIO", var(0)).getFloatValue();
+    if(!runningCsoundThread)
+		player.setProcessor (filter);
+	else deviceManager->closeAudioDevice();
 
     ScopedPointer<XmlElement> savedState;
 
@@ -359,15 +362,22 @@ void StandaloneFilterWindow::resetFilter()
 	String test = filter->getPluginName();
 	setName(filter->getPluginName());
 
-    if (filter != nullptr)
-    {
-        if (deviceManager != nullptr){
-            player.setProcessor (filter);
-			deviceManager->restartLastAudioDevice();
+	int runningCabbageProcess = appProperties->getUserSettings()->getValue("UseCsoundIO", var(0)).getFloatValue();
+    
+	setContentOwned (filter->createEditorIfNeeded(), true);
+    if(runningCabbageProcess){
+		if (filter != nullptr)
+		{
+			if (deviceManager != nullptr){
+				player.setProcessor (filter);
+				deviceManager->restartLastAudioDevice();
+			}
 		}
-
-        setContentOwned (filter->createEditorIfNeeded(), true);
-    }
+		filter->suspendProcessing(false);
+	}
+	else{
+		filter->performEntireScore();
+	}
 
 
     PropertySet* const globalSettings = getGlobalSettings();
@@ -385,7 +395,7 @@ void StandaloneFilterWindow::resetFilter()
 	if(cabbageCsoundEditor->isVisible())
 		cabbageCsoundEditor->csoundEditor->textEditor->grabKeyboardFocus();
 	}
-filter->suspendProcessing(false);
+
 }
 
 //==============================================================================
@@ -555,7 +565,7 @@ void StandaloneFilterWindow::buttonClicked (Button*)
 		subMenu.addItem(12, TRANS("Synths"));
 		m.addSubMenu(TRANS("Batch Convert"), subMenu);
 		m.addSeparator();
-
+		m.addItem(2000, "Test me");
 		int autoUpdate = appProperties->getUserSettings()->getValue("AutoUpdate", var(0)).getFloatValue();
 		if(!autoUpdate)
 		m.addItem(299, String("Auto-update"), true, false);
@@ -584,6 +594,11 @@ void StandaloneFilterWindow::buttonClicked (Button*)
 		else
 		subMenu.addItem(202, String("Disable GUI Edit Mode warning"), true, false);
 
+		int csoundIO = appProperties->getUserSettings()->getValue("UseCsoundIO", var(0)).getFloatValue();
+		if(!csoundIO)
+		subMenu.addItem(204, String("Disable Csound IO"), true, false);
+		else
+		subMenu.addItem(204, String("Enable Csound IO"), true, true);
 
 		m.addSubMenu("Preferences", subMenu);
 	}
@@ -596,6 +611,10 @@ void StandaloneFilterWindow::buttonClicked (Button*)
 	//----- open file ------
 	if(options==1){
 		openFile("");
+	}
+	else if(options==2000){
+		filter->performEntireScore();
+		
 	}
 	//----- view text editor ------
 	else if(options==2){
@@ -739,6 +758,15 @@ void StandaloneFilterWindow::buttonClicked (Button*)
 			appProperties->getUserSettings()->setValue("PlantFileDir", browser.getResult().getFullPathName());
 		}	
 	}
+	//--------preference Csound IO
+	else if(options==204){
+		int val = appProperties->getUserSettings()->getValue("UseCsoundIO", var(0)).getFloatValue();
+		if(val==0) 
+			appProperties->getUserSettings()->setValue("UseCsoundIO", var(1));
+		else
+			appProperties->getUserSettings()->setValue("UseCsoundIO", var(0));
+	}
+	
 	//------- preference plugin info ------
 	else if(options==201){
 		int val = appProperties->getUserSettings()->getValue("DisablePluginInfo", var(0)).getFloatValue();

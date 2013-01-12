@@ -2114,7 +2114,7 @@ for(int i=0;i<(int)getFilter()->getGUICtrlsSize();i++){
 #ifdef Cabbage_Build_Standalone
                 //((CabbageComboBox*)controls[i])->combo->setSelectedId((int)getFilter()->getParameter(i), false);
 #else
-                Logger::writeToLog(String("timerCallback():")+String(getFilter()->getParameter(i)));
+                //Logger::writeToLog(String("timerCallback():")+String(getFilter()->getParameter(i)));
                 float val = getFilter()->getGUICtrls(i).getNumProp("sliderRange")*getFilter()->getParameter(i);
                 ((CabbageComboBox*)controls[i])->combo->setSelectedId(int(val), false);
 #endif
