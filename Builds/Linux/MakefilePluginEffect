@@ -52,6 +52,7 @@ ifeq ($(CONFIG),Release)
 endif
 
 OBJECTS := \
+  $(OBJDIR)/csPerfThread_f9d0b9cc.o \
   $(OBJDIR)/XYPad_6eaa3453.o \
   $(OBJDIR)/XYPadAutomation_2865c48a.o \
   $(OBJDIR)/CabbagePluginEditor_5a11f64e.o \
@@ -99,6 +100,11 @@ clean:
 strip:
 	@echo Stripping CabbagePluginEffect
 	-@strip --strip-unneeded $(OUTDIR)/$(TARGET)
+
+$(OBJDIR)/csPerfThread_f9d0b9cc.o: ../../Source/csPerfThread.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling csPerfThread.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/XYPad_6eaa3453.o: ../../Source/XYPad.cpp
 	-@mkdir -p $(OBJDIR)
