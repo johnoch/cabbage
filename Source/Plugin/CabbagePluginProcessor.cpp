@@ -21,14 +21,17 @@
 #include "CabbagePluginEditor.h"
 
 #define CABBAGE_VERSION "Cabbage v0.04.00 BETA"
-
 #define MAX_BUFFER_SIZE 1024
+
+//these two lines need to be copied to top part of csound.h
+//#define int32 int
+//#define uint32 unsigned int
+
 //==============================================================================
 // There are two different CabbagePluginAudioProcessor constructors. One for the
 // standalone application and the other for the plugin library
 //==============================================================================
 #ifdef Cabbage_Build_Standalone
-
 //===========================================================
 // STANDALONE - CONSTRUCTOR 
 //===========================================================
@@ -67,9 +70,6 @@ csound = new Csound();
 csound->PreCompile();
 csound->SetHostData(this);
 
-csoundPerfThread = new CsoundPerformanceThread(csound);
-csoundPerfThread->SetProcessCallback(CabbagePluginAudioProcessor::YieldCallback, (void*)this);
-
 csound->SetMessageCallback(CabbagePluginAudioProcessor::messageCallback);
 //for host midi to get sent to Csound, don't need this for standalone
 //but might use it in the future foir midi mapping to controls
@@ -77,6 +77,9 @@ csound->SetExternalMidiInOpenCallback(OpenMidiInputDevice);
 csound->SetExternalMidiReadCallback(ReadMidiData); 
 //csound->SetExternalMidiOutOpenCallback(OpenMidiOutputDevice);
 //csound->SetExternalMidiWriteCallback(WriteMidiData);
+
+csoundPerfThread = new CsoundPerformanceThread(csound);
+csoundPerfThread->SetProcessCallback(CabbagePluginAudioProcessor::YieldCallback, (void*)this);
 
 csoundChanList = NULL;
 numCsoundChannels = 0;
@@ -88,6 +91,7 @@ dataout = new PVSDATEXT;
 if(!inputfile.isEmpty()){
 csCompileResult = csound->Compile(const_cast<char*>(inputfile.toUTF8().getAddress()));
 if(csCompileResult==0){
+
         //simple hack to allow tables to be set up correctly. 
         csound->PerformKsmps();
         csound->SetScoreOffsetSeconds(0);
@@ -242,8 +246,10 @@ patPfieldMatrix.clear();
 
         const MessageManagerLock mmLock;
         if(csound){
+			if(csoundPerfThread){
 				csoundPerfThread->Stop();
 				csoundPerfThread = nullptr;
+			}
                 csound->DeleteChannelList(csoundChanList);
                 Logger::writeToLog("about to cleanup Csound");
                 csound->Cleanup();
@@ -257,11 +263,12 @@ patPfieldMatrix.clear();
 }
 
 int CabbagePluginAudioProcessor::performEntireScore(){
+
 	if(!isNativeThreadRunning){
-	//csound->SetYieldCallback(YieldCallback);
 	csoundPerfThread->Play();
 	isNativeThreadRunning = true;
 	}
+	return 1;
 }
 
 void CabbagePluginAudioProcessor::YieldCallback(void* data){

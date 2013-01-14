@@ -318,6 +318,22 @@ static int showYesNoMessage(String message, LookAndFeel* feel)
 	return result;
 }
 
+//======================================================================================
+static int getPreference(ApplicationProperties* appPrefs, String pref){
+	return appPrefs->getUserSettings()->getValue(pref, var(0)).getFloatValue();
+}
+
+static String getPreference(ApplicationProperties* appPrefs, String pref, String value){
+	return appPrefs->getUserSettings()->getValue(pref, "");
+}
+
+static void setPreference(ApplicationProperties* appPrefs, String pref, int value){	
+	appPrefs->getUserSettings()->setValue(pref, var(value));
+}
+
+static void setPreference(ApplicationProperties* appPrefs, String pref, String value){	
+	appPrefs->getUserSettings()->setValue(pref, var(value));
+}
 
 };
 
