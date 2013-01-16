@@ -51,7 +51,7 @@ StandaloneFilterWindow::StandaloneFilterWindow (const String& title,
 	timerRunning = false;
 	yAxis = 0;
 	optionsButton.setTriggeredOnMouseDown (true);
-	bool alwaysontop = appProperties->getUserSettings()->getValue("SetAlwaysOnTop", var(0)).getFloatValue();
+	bool alwaysontop = getPreference(appProperties, "SetAlwaysOnTop");
 	setAlwaysOnTop(alwaysontop);
 	this->setResizable(false, false);
 
@@ -90,40 +90,37 @@ StandaloneFilterWindow::StandaloneFilterWindow (const String& title,
     PropertySet* const globalSettings = getGlobalSettings();
 
     deviceManager = new AudioDeviceManager();
-    deviceManager->addAudioCallback (&player);
-    deviceManager->addMidiInputCallback (String::empty, &player);
+	deviceManager->addAudioCallback (&player);
+	deviceManager->addMidiInputCallback (String::empty, &player);
 
-	
-
-	int runningCsoundThread = appProperties->getUserSettings()->getValue("UseCsoundIO", var(0)).getFloatValue();
-    if(!runningCsoundThread)
-		player.setProcessor (filter);
-	else deviceManager->closeAudioDevice();
-
-    ScopedPointer<XmlElement> savedState;
-
-    if (globalSettings != nullptr)
-        savedState = globalSettings->getXmlValue ("audioSetup");
+	ScopedPointer<XmlElement> savedState;
+	if (globalSettings != nullptr)
+    savedState = globalSettings->getXmlValue ("audioSetup");
 
     deviceManager->initialise (filter->getNumInputChannels(),
-                               filter->getNumOutputChannels(),
-                               0,
-                               false);
-
+                               filter->getNumOutputChannels(), 0, false);
 	deviceManager->closeAudioDevice();
+	
 
-    if (globalSettings != nullptr)
-    {
-        MemoryBlock data;
+	int runningCabbageIO = getPreference(appProperties, "UseCabbageIO");
+    if(runningCabbageIO){	
+		player.setProcessor (filter);    
+		if (globalSettings != nullptr)
+		{
+			MemoryBlock data;
 
-        if (data.fromBase64Encoding (globalSettings->getValue ("filterState"))
-             && data.getSize() > 0)
-        {
-            filter->setStateInformation (data.getData(), data.getSize());
-        }
-    }
+			if (data.fromBase64Encoding (globalSettings->getValue ("filterState"))
+				 && data.getSize() > 0)
+			{
+				filter->setStateInformation (data.getData(), data.getSize());
+			}
+		}
 
-    setContentOwned (filter->createEditorIfNeeded(), true);
+		
+	}
+	else deviceManager->closeAudioDevice();
+
+	setContentOwned (filter->createEditorIfNeeded(), true);
 
     const int x = globalSettings->getIntValue ("windowX", -100);
     const int y = globalSettings->getIntValue ("windowY", -100);
@@ -133,7 +130,7 @@ StandaloneFilterWindow::StandaloneFilterWindow (const String& title,
     else
 		centreWithSize (getWidth(), getHeight());
 		
-	appProperties->getUserSettings()->setValue("AutoUpdate", var(0));
+	setPreference(appProperties, "AutoUpdate",0);
 	
 	//opens a default file that matches the name of the current executable
 	//this can be used to create more 'standalone' like apps
@@ -348,8 +345,11 @@ void StandaloneFilterWindow::deleteFilter()
 //==============================================================================
 void StandaloneFilterWindow::resetFilter()
 {
-	
-//	filter->suspendProcessing(true);
+//first we check that the audio device is up and running ok
+
+
+
+
 	deleteFilter();
 	deviceManager->closeAudioDevice();
 	filter = createCabbagePluginFilter(csdFile.getFullPathName(), false);
@@ -362,7 +362,7 @@ void StandaloneFilterWindow::resetFilter()
 	String test = filter->getPluginName();
 	setName(filter->getPluginName());
 
-	int runningCabbageProcess = appProperties->getUserSettings()->getValue("UseCsoundIO", var(0)).getFloatValue();
+	int runningCabbageProcess = getPreference(appProperties, "UseCabbageIO");
     
 	setContentOwned (filter->createEditorIfNeeded(), true);
     if(runningCabbageProcess){
@@ -457,13 +457,17 @@ PropertySet* StandaloneFilterWindow::getGlobalSettings()
        ApplicationProperties::setStorageParameters() in your plugin's constructor to
        tell it where to save the file.
     */
-	appProperties->getUserSettings()->setValue("htmlHelp", String("some directory"));
+	getPreference(appProperties, "htmlHelp", "some directory");
 	return appProperties->getUserSettings();
 }
 
 void StandaloneFilterWindow::showAudioSettingsDialog()
 {
-
+//int runningCabbageProcess = appProperties->getUserSettings()->getValue("UseCabbageIO", var(0)).getFloatValue();
+//if(!runningCabbageProcess){
+//	showMessage("Cabbage is currently letting Csound access the audio and MIDI inputs/outputs. If you wish to use Cabbage IO please enable it from the preferences.", &this->getLookAndFeel());
+//	return;
+//}
 const int numIns = filter->getNumInputChannels() <= 0 ? JucePlugin_MaxNumInputChannels : filter->getNumInputChannels();
 const int numOuts = filter->getNumOutputChannels() <= 0 ? JucePlugin_MaxNumOutputChannels : filter->getNumOutputChannels();
 
@@ -476,7 +480,7 @@ const int numOuts = filter->getNumOutputChannels() <= 0 ? JucePlugin_MaxNumOutpu
 	selectorComp.setLookAndFeel(lookAndFeel);
 	Colour col(44, 44, 44);
 	DialogWindow::showModalDialog(TRANS("Audio Settings"), &selectorComp, this, col, true, false, false);
-	bool alwaysontop = appProperties->getUserSettings()->getValue("SetAlwaysOnTop", var(0)).getFloatValue();
+	bool alwaysontop = getPreference(appProperties, "SetAlwaysOnTop");
 	setAlwaysOnTop(alwaysontop);
 
 }
@@ -546,7 +550,7 @@ void StandaloneFilterWindow::buttonClicked (Button*)
 		m.addSeparator();
 	}
 
-	int alwaysontop = appProperties->getUserSettings()->getValue("SetAlwaysOnTop", var(0)).getFloatValue(); 
+	int alwaysontop = getPreference(appProperties, "SetAlwaysOnTop"); 
 	if(alwaysontop)
 	m.addItem(7, String("Always on Top"), true, true);
 	else
@@ -566,7 +570,7 @@ void StandaloneFilterWindow::buttonClicked (Button*)
 		m.addSubMenu(TRANS("Batch Convert"), subMenu);
 		m.addSeparator();
 		m.addItem(2000, "Test me");
-		int autoUpdate = appProperties->getUserSettings()->getValue("AutoUpdate", var(0)).getFloatValue();
+		int autoUpdate = getPreference(appProperties, "AutoUpdate");
 		if(!autoUpdate)
 		m.addItem(299, String("Auto-update"), true, false);
 		else
@@ -580,7 +584,7 @@ void StandaloneFilterWindow::buttonClicked (Button*)
 */
 		subMenu.clear();
 
-		int pluginInfo = appProperties->getUserSettings()->getValue("DisablePluginInfo", var(0)).getFloatValue();
+		int pluginInfo = getPreference(appProperties, "DisablePluginInfo");
 		subMenu.addItem(203, "Set Cabbage Plant Directory");
 		subMenu.addItem(200, "Set Csound Manual Directory");
 		if(!pluginInfo)
@@ -588,17 +592,17 @@ void StandaloneFilterWindow::buttonClicked (Button*)
 		else
 		subMenu.addItem(201, String("Disable Export Plugin Info"), true, true);
 
-		int disableGUIEditWarning = appProperties->getUserSettings()->getValue("DisableGUIEditModeWarning", var(0)).getFloatValue();
+		int disableGUIEditWarning = getPreference(appProperties, "DisableGUIEditModeWarning");
 		if(!disableGUIEditWarning)
 		subMenu.addItem(202, String("Disable GUI Edit Mode warning"), true, true);
 		else
 		subMenu.addItem(202, String("Disable GUI Edit Mode warning"), true, false);
 
-		int csoundIO = appProperties->getUserSettings()->getValue("UseCsoundIO", var(0)).getFloatValue();
+		int csoundIO = getPreference(appProperties, "UseCabbageIO");
 		if(!csoundIO)
-		subMenu.addItem(204, String("Disable Csound IO"), true, false);
+		subMenu.addItem(204, String("Use Cabbage IO"), true, false);
 		else
-		subMenu.addItem(204, String("Enable Csound IO"), true, true);
+		subMenu.addItem(204, String("Use Cabbage IO"), true, true);
 
 		m.addSubMenu("Preferences", subMenu);
 	}
@@ -660,6 +664,8 @@ void StandaloneFilterWindow::buttonClicked (Button*)
 	//----- audio settings ------
    	else if(options==4){
         showAudioSettingsDialog();
+		int val = getPreference(appProperties, "UseCabbageIO");
+		if(!val)
 		resetFilter();
 	}
 
@@ -693,13 +699,13 @@ void StandaloneFilterWindow::buttonClicked (Button*)
 	//----- always on top  ------
 	else if(options==7)
 
-	if(appProperties->getUserSettings()->getValue("SetAlwaysOnTop", var(0)).getFloatValue()){
+	if(getPreference(appProperties, "SetAlwaysOnTop")){
 		this->setAlwaysOnTop(false);
-		appProperties->getUserSettings()->setValue("SetAlwaysOnTop", var(0));
+		setPreference(appProperties, "SetAlwaysOnTop", 0);
 	}
 	else{
 		this->setAlwaysOnTop(true);
-		appProperties->getUserSettings()->setValue("SetAlwaysOnTop", var(1));
+		setPreference(appProperties, "SetAlwaysOnTop", 1);
 	}
 	
 	//----- update instrument  ------
@@ -719,13 +725,13 @@ void StandaloneFilterWindow::buttonClicked (Button*)
 
 	//----- auto-update file when saved remotely ------
 	else if(options==299){
-		int val = appProperties->getUserSettings()->getValue("AutoUpdate", var(0)).getFloatValue();
+		int val = getPreference(appProperties, "AutoUpdate");
 		if(val==0){
-			appProperties->getUserSettings()->setValue("AutoUpdate", var(1));
+			setPreference(appProperties, "AutoUpdate", 1);
 			startTimer(100);	
 			}
 		else{
-			appProperties->getUserSettings()->setValue("AutoUpdate", var(0));
+			setPreference(appProperties, "AutoUpdate", 0);
 			stopTimer();
 		}
 		}
@@ -744,32 +750,32 @@ void StandaloneFilterWindow::buttonClicked (Button*)
 	*/
 	//------- preference Csound manual dir ------
 	else if(options==200){
-		String dir = appProperties->getUserSettings()->getValue("CsoundHelpDir", "");
+		String dir = getPreference(appProperties, "CsoundHelpDir", "");
 		FileChooser browser(String("Please select the Csound manual directory..."), File(dir), String("*.csd"));
 		if(browser.browseForDirectory()){
-			appProperties->getUserSettings()->setValue("CsoundHelpDir", browser.getResult().getFullPathName());
+			setPreference(appProperties, "CsoundHelpDir", browser.getResult().getFullPathName());
 		}	
 	}
 	//------- preference Csound manual dir ------
 	else if(options==203){
-		String dir = appProperties->getUserSettings()->getValue("PlantFileDir", "");
+		String dir = getPreference(appProperties, "PlantFileDir", "");
 		FileChooser browser(String("Please select your Plant file directory..."), File(dir), String("*.csd"));
 		if(browser.browseForDirectory()){
-			appProperties->getUserSettings()->setValue("PlantFileDir", browser.getResult().getFullPathName());
+			setPreference(appProperties, "PlantFileDir", browser.getResult().getFullPathName());
 		}	
 	}
 	//--------preference Csound IO
 	else if(options==204){
-		int val = appProperties->getUserSettings()->getValue("UseCsoundIO", var(0)).getFloatValue();
+		int val = getPreference(appProperties, "UseCabbageIO");
 		if(val==0) 
-			appProperties->getUserSettings()->setValue("UseCsoundIO", var(1));
+			setPreference(appProperties, "UseCabbageIO", 1);
 		else
-			appProperties->getUserSettings()->setValue("UseCsoundIO", var(0));
+			setPreference(appProperties, "UseCabbageIO", 0);
 	}
 	
 	//------- preference plugin info ------
 	else if(options==201){
-		int val = appProperties->getUserSettings()->getValue("DisablePluginInfo", var(0)).getFloatValue();
+		int val = getPreference(appProperties, "DisablePluginInfo");
 		if(val==0)
 			appProperties->getUserSettings()->setValue("DisablePluginInfo", var(1));
 		else
@@ -777,15 +783,15 @@ void StandaloneFilterWindow::buttonClicked (Button*)
 	}
 	//------- preference disable gui edit warning ------
 	else if(options==202){
-		int val = appProperties->getUserSettings()->getValue("DisableGUIEditModeWarning", var(0)).getFloatValue();
+		int val = getPreference(appProperties, "DisableGUIEditModeWarning");
 		if(val==0) 
-			appProperties->getUserSettings()->setValue("DisableGUIEditModeWarning", var(1));
+			setPreference(appProperties, "DisableGUIEditModeWarning", 1);
 		else
-			appProperties->getUserSettings()->setValue("DisableGUIEditModeWarning", var(0));
+			setPreference(appProperties, "DisableGUIEditModeWarning", 0);
 	}
 	//------- enable GUI edito mode------
 	else if(options==100){
-		int val = appProperties->getUserSettings()->getValue("DisableGUIEditModeWarning", var(0)).getFloatValue();
+		int val = getPreference(appProperties, "DisableGUIEditModeWarning");
 		if(val)
 			showMessage("Warning!! This feature is bleeding edge! (that's programmer speak for totally untested and likely to crash hard!). If you like to live on the edge, disable this warning under the 'Preferences' menu command and try 'Edit Mode' again, otherwise just let it be...", oldLookAndFeel);
 		else{
@@ -798,7 +804,7 @@ void StandaloneFilterWindow::buttonClicked (Button*)
 		((CabbagePluginAudioProcessorEditor*)filter->getActiveEditor())->setEditMode(true);
 		filter->setGuiEnabled(true);
 		stopTimer();
-		appProperties->getUserSettings()->setValue("AutoUpdate", var(0));
+		setPreference(appProperties, "AutoUpdate", 0);
 		}
 	else showMessage("Open or create a file first", &getLookAndFeel());
 		}
@@ -846,7 +852,7 @@ else{
 			cabbageCsoundEditor->setCsoundFile(csdFile);
 			isAFileOpen = true;
 		}
-		if(appProperties->getUserSettings()->getValue("SetAlwaysOnTop", var(0)).getFloatValue())
+		if(getPreference(appProperties, "SetAlwaysOnTop"))
 			setAlwaysOnTop((true));
 		else
 			setAlwaysOnTop(false);
@@ -871,7 +877,7 @@ FileChooser saveFC(String("Save Cabbage file as..."), File::nonexistent, String(
 		cabbageCsoundEditor->setCsoundFile(csdFile);
 		resetFilter();
 	}
-	if(appProperties->getUserSettings()->getValue("SetAlwaysOnTop", var(0)).getFloatValue())
+	if(getPreference(appProperties, "SetAlwaysOnTop"))
 		setAlwaysOnTop(true);
 	else
 		setAlwaysOnTop(false);
@@ -949,7 +955,7 @@ if(!csdFile.exists()){
 			String info;
 			info = String("Your plugin has been created. It's called:\n\n")+dll.getFullPathName()+String("\n\nIn order to modify this plugin you only have to edit the associated .csd file. You do not need to export every time you make changes.\n\nTo turn off this notice visit 'Preferences' in the main 'options' menu");
 			
-			int val = appProperties->getUserSettings()->getValue("DisablePluginInfo", var(0)).getFloatValue();
+			int val = getPreference(appProperties, "DisablePluginInfo");
 			if(!val)
 			showMessage(info, lookAndFeel);
 			

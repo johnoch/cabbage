@@ -135,6 +135,7 @@ private:
         ScopedPointer<MidiKeyboardComponent> midiKeyboard;
         ScopedPointer<LookAndFeel> feely;
         ScopedPointer<OldSchoolLookAndFeel> oldSchoolLook;
+		Array<float> incomingValues;
 
         AudioPlayHead::CurrentPositionInfo hostInfo;
     void changeListenerCallback (ChangeBroadcaster *source);

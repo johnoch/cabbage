@@ -21,14 +21,17 @@
 #include "CabbagePluginEditor.h"
 
 #define CABBAGE_VERSION "Cabbage v0.04.00 BETA"
-
 #define MAX_BUFFER_SIZE 1024
+
+//these two lines need to be copied to top part of csound.h
+//#define int32 int
+//#define uint32 unsigned int
+
 //==============================================================================
 // There are two different CabbagePluginAudioProcessor constructors. One for the
 // standalone application and the other for the plugin library
 //==============================================================================
 #ifdef Cabbage_Build_Standalone
-
 //===========================================================
 // STANDALONE - CONSTRUCTOR 
 //===========================================================
@@ -67,9 +70,6 @@ csound = new Csound();
 csound->PreCompile();
 csound->SetHostData(this);
 
-csoundPerfThread = new CsoundPerformanceThread(csound);
-csoundPerfThread->SetProcessCallback(CabbagePluginAudioProcessor::YieldCallback, (void*)this);
-
 csound->SetMessageCallback(CabbagePluginAudioProcessor::messageCallback);
 //for host midi to get sent to Csound, don't need this for standalone
 //but might use it in the future foir midi mapping to controls
@@ -77,6 +77,9 @@ csound->SetExternalMidiInOpenCallback(OpenMidiInputDevice);
 csound->SetExternalMidiReadCallback(ReadMidiData); 
 //csound->SetExternalMidiOutOpenCallback(OpenMidiOutputDevice);
 //csound->SetExternalMidiWriteCallback(WriteMidiData);
+
+csoundPerfThread = new CsoundPerformanceThread(csound);
+csoundPerfThread->SetProcessCallback(CabbagePluginAudioProcessor::YieldCallback, (void*)this);
 
 csoundChanList = NULL;
 numCsoundChannels = 0;
@@ -88,6 +91,7 @@ dataout = new PVSDATEXT;
 if(!inputfile.isEmpty()){
 csCompileResult = csound->Compile(const_cast<char*>(inputfile.toUTF8().getAddress()));
 if(csCompileResult==0){
+
         //simple hack to allow tables to be set up correctly. 
         csound->PerformKsmps();
         csound->SetScoreOffsetSeconds(0);
@@ -158,7 +162,7 @@ File thisFile(File::getSpecialLocation(File::currentExecutableFile));
 #endif
 csdFile = thisFile.withFileExtension(String(".csd")).getFullPathName();
 
-//Logger::writeToLog(File::getSpecialLocation(File::currentExecutableFile).getFullPathName());
+Logger::writeToLog(File::getSpecialLocation(File::currentExecutableFile).getFullPathName());
         
 if(csdFile.exists())
 Logger::writeToLog("File exists:"+String(csdFile.getFullPathName()));
@@ -170,7 +174,7 @@ Logger::writeToLog(csdFile.getFullPathName());
 
 File(csdFile.getFullPathName()).setAsCurrentWorkingDirectory();
 
-createGUI(csdFile.loadFileAsString());
+
 
 #ifndef Cabbage_No_Csound
 csound = new Csound();
@@ -209,12 +213,6 @@ if(csCompileResult==0){
         CSspin  = csound->GetSpin();
         cs_scale = csound->Get0dBFS();
         numCsoundChannels = csoundListChannels(csound->GetCsound(), &csoundChanList);
-        for(int i=0;i<guiCtrls.size();i++){
-                csound->SetChannel( guiCtrls.getReference(i).getStringProp("channel").toUTF8(), 
-                                                        guiCtrls.getReference(i).getNumProp("value"));
-        //        setParameter(i, guiCtrls.getReference(i).getNumProp("value")); 
-        }
-
         csndIndex = csound->GetKsmps();
         csoundStatus = true;
         debugMessageArray.add(VERSION);
@@ -223,10 +221,9 @@ if(csCompileResult==0){
 else{
         Logger::writeToLog("Csound couldn't compile your file");
         csoundStatus=false;
-        //debugMessage = "Csound did not compile correctly. Check for snytax errors by compiling with WinXound";
 } 
 #endif
-
+createGUI(csdFile.loadFileAsString());
 }
 #endif
 
@@ -242,13 +239,14 @@ patPfieldMatrix.clear();
 
         const MessageManagerLock mmLock;
         if(csound){
+			if(csoundPerfThread){
 				csoundPerfThread->Stop();
 				csoundPerfThread = nullptr;
+			}
                 csound->DeleteChannelList(csoundChanList);
                 Logger::writeToLog("about to cleanup Csound");
                 csound->Cleanup();
                 csound->Reset();
-				//csound->SetYieldCallback(nullCallback);
                 csound = nullptr;
                 Logger::writeToLog("Csound cleaned up");
         }
@@ -257,11 +255,12 @@ patPfieldMatrix.clear();
 }
 
 int CabbagePluginAudioProcessor::performEntireScore(){
+
 	if(!isNativeThreadRunning){
-	//csound->SetYieldCallback(YieldCallback);
 	csoundPerfThread->Play();
 	isNativeThreadRunning = true;
 	}
+	return 1;
 }
 
 void CabbagePluginAudioProcessor::YieldCallback(void* data){
@@ -457,6 +456,15 @@ bool multiLine = false;
                 else break;
         }
 
+
+//init all channels with their init val
+for(int i=0;i<guiCtrls.size();i++)
+{
+csound->SetChannel( guiCtrls.getReference(i).getStringProp("channel").toUTF8(), 
+										guiCtrls.getReference(i).getNumProp("value"));
+Logger::writeToLog(guiCtrls.getReference(i).getStringProp("channel")+": "+String(guiCtrls.getReference(i).getNumProp("value")));
+}
+
 #ifdef Cabbage_Build_Standalone
 
 if(this->getActiveEditor()){
@@ -468,11 +476,9 @@ if(this->getActiveEditor()){
 	//((CabbagePluginAudioProcessorEditor*)getActiveEditor())->setEditMode(true);
 }
 
+int tet=0;
 #ifndef Cabbage_No_Csound
-                //init all channels with their init val
-                for(int i=0;i<guiCtrls.size();i++)
-                csound->SetChannel( guiCtrls.getReference(i).getStringProp("channel").toUTF8(), 
-                                                        guiCtrls.getReference(i).getNumProp("value"));
+
 #endif
 #endif
 }
@@ -561,9 +567,15 @@ const Array<float> CabbagePluginAudioProcessor::getTable(int tableNum){
 //=================================================================================
 float CabbagePluginAudioProcessor::getParameter (int index)
 {       
+//Logger::writeToLog("parameterGet:"+String(index)+String(":")+String(getGUICtrls(index).getNumProp("value")));
+float range = getGUICtrls(index).getNumProp("sliderRange");
 /* this gets called at any time by our host or out GUI editor */	
 if(index<(int)guiCtrls.size())//make sure index isn't out of range
-return getGUICtrls(index).getNumProp("value");
+	#ifndef Cabbage_Build_Standalone 
+	return getGUICtrls(index).getNumProp("value")/range;
+	#else
+	return getGUICtrls(index).getNumProp("value");
+	#endif
 else 
 	return 0.0f;
 }
@@ -577,14 +589,17 @@ will constantly update with the values that have been set here.
 We don't actually change any parameters here, we simply add the messages
 to a queue. See next method. The updates will only happen when it's safe to do. */
 float range, min, max;
+//Logger::writeToLog("parameterSet:"+String(newValue));
 if(index<(int)guiCtrls.size())//make sure index isn't out of range
    {
 	#ifndef Cabbage_Build_Standalone        
     //scaling in here because incoming values in plugin mode range from 0-1
 	range = getGUICtrls(index).getNumProp("sliderRange");
 	min = getGUICtrls(index).getNumProp("min");
+	float value = (newValue*range)+min;
 	guiCtrls.getReference(index).setNumProp("value", (newValue*range)+min);
 	messageQueue.addOutgoingChannelMessageToQueue(guiCtrls.getReference(index).getStringProp("channel").toUTF8(),  (newValue*range)+min);
+	//Logger::writeToLog(String("parameterSet:"+String((newValue*range)+min)));
 	#else 
 	//no need to scale here when in standalone mode
     guiCtrls.getReference(index).setNumProp("value", newValue);
@@ -607,16 +622,8 @@ MYFLT* val=0;
 //update all control widgets
 for(int index=0;index<getGUICtrlsSize();index++)
 	{
-	//sliderRange defaults to 1
-	float range = getGUICtrls(index).getNumProp("sliderRange");
 	float value = csound->GetChannel(guiCtrls.getReference(index).getStringProp("channel").toUTF8());
-	#ifdef Cabbage_Build_Standalone
-				//no scaling needed in standalone mode
-                getGUICtrls(index).setNumProp("value", value);				
-	#else
-                //when in plugin mode everything is scaled between 0 and 1, 
-                getGUICtrls(index).setNumProp("value", value/range);
-	#endif
+    getGUICtrls(index).setNumProp("value", value);
 	}
 	
 //update all layout control widgets

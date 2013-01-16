@@ -109,6 +109,8 @@ for(int index=0;index<getFilter()->getGUILayoutCtrlsSize();index++)
 
 //start timer. Timer callback updates our GUI control states/positions, etc. with data from Csound
 startTimer(20);
+resized();
+
 }
 
 
@@ -1111,6 +1113,10 @@ void CabbagePluginAudioProcessorEditor::InsertSlider(CabbageGUIClass &cAttr)
         ((CabbageSlider*)controls[idx])->slider->setSkewFactor(cAttr.getNumProp("sliderSkew"));
         ((CabbageSlider*)controls[idx])->slider->setRange(cAttr.getNumProp("min"), cAttr.getNumProp("max"), (double)cAttr.getNumProp("sliderIncr"));
         ((CabbageSlider*)controls[idx])->slider->setValue(cAttr.getNumProp("value"));
+		
+		//add initial values to incomingValues array
+		incomingValues.add(cAttr.getNumProp("value"));
+
         ((CabbageSlider*)controls[idx])->slider->addListener(this);
 
         controls[idx]->getProperties().set(String("midiChan"), cAttr.getNumProp("midiChan"));
@@ -1133,11 +1139,14 @@ for(int i=0;i<(int)getFilter()->getGUICtrlsSize();i++)//find correct control fro
 			float range = getFilter()->getGUICtrls(i).getNumProp("sliderRange");
 			//normalise parameters in plugin mode.
 			getFilter()->beginParameterChangeGesture(i);
+			getFilter()->setParameter(i, (float)((sliderThatWasMoved->getValue()-min)/range));
 			getFilter()->setParameterNotifyingHost(i, (float)((sliderThatWasMoved->getValue()-min)/range));
+			//getFilter()->setParameterNotifyingHost(i, (float)sliderThatWasMoved->getValue());
 			getFilter()->endParameterChangeGesture(i);
 #else
 			float value = sliderThatWasMoved->getValue();//getFilter()->getGUICtrls(i).getNumProp("value");
 			getFilter()->beginParameterChangeGesture(i);
+			getFilter()->setParameter(i, (float)sliderThatWasMoved->getValue());
 			getFilter()->setParameterNotifyingHost(i, (float)sliderThatWasMoved->getValue());
 			getFilter()->endParameterChangeGesture(i);
 #endif
@@ -1190,6 +1199,8 @@ void CabbagePluginAudioProcessorEditor::InsertButton(CabbageGUIClass &cAttr)
         ((CabbageButton*)controls[idx])->button->setWantsKeyboardFocus(true);
 #endif
 
+		//add initial values to incomingValues array
+		incomingValues.add(cAttr.getNumProp("value"));
 		//showMessage(controls[idx]->getParentComponent()->getName());
 }
 
@@ -1251,7 +1262,8 @@ void CabbagePluginAudioProcessorEditor::InsertCheckBox(CabbageGUIClass &cAttr)
         ((CabbageCheckbox*)controls[idx])->button->setWantsKeyboardFocus(true);
 #endif
         
-
+		//add initial values to incomingValues array
+		incomingValues.add(cAttr.getNumProp("value"));
 }
 
                                                 /*****************************************************/
@@ -1345,7 +1357,7 @@ if(!getFilter()->isGuiEnabled()){
                                         //Logger::writeToLog("pressed");
                                 }
                                 //getFilter()->getCsound()->SetChannel(getFilter()->getGUICtrls(i).getStringProp("channel").toUTF8(), button->getToggleStateValue().getValue());
-                                getFilter()->setParameterNotifyingHost(i, button->getToggleStateValue().getValue());
+                                //getFilter()->setParameterNotifyingHost(i, button->getToggleStateValue().getValue());
                         }
                         }
         }
@@ -1436,8 +1448,10 @@ void CabbagePluginAudioProcessorEditor::InsertComboBox(CabbageGUIClass &cAttr)
         ((CabbageComboBox*)controls[idx])->setName(cAttr.getStringProp("name"));
         ((CabbageComboBox*)controls[idx])->combo->addListener(this);
 
-		
+		//add initial values to incomingValues array
+		incomingValues.add(cAttr.getNumProp("value"));
 }
+
                                         /******************************************/
                                         /*             combobBox event            */
                                         /******************************************/
@@ -1568,7 +1582,10 @@ else{
         //Logger::writeToLog(String("Y:")+String(valueY));
         ((CabbageXYController*)controls[idx])->xypad->setXYValues(valueX, valueY);
 		getFilter()->setParameter(idx, valueX);
+		//add initial values to incomingValues array
+		incomingValues.add(valueX);
 		getFilter()->setParameter(idx+1, valueY);
+		incomingValues.add(valueY);
 #ifdef Cabbage_Build_Standalone 
         controls[idx]->setWantsKeyboardFocus(false);
 #endif
@@ -1804,18 +1821,7 @@ if(message.contains("Message sent from CabbageMainPanel")){
 				repoEntry = repoEntry+"}";
 			
 			}
-			//make sure host doesn't fail if there are no Plant entries
-			//ScopedPointer<XmlElement> xml;
-			//xml = new XmlElement("PLANTS");
-//			PropertySet pSet;
-			//pSet.setValue("PlantRepository", xml);
-			//appProperties->getUserSettings()->setFallbackPropertySet(&pSet);	
-			//xml = appProperties->getUserSettings()->getXmlValue("PlantRepository");
-			//if(xml)
-			//xml->setAttribute(repoEntryName, repoEntry);
-			//showMessage(repoEntryName);
-			//showMessage(repoEntry);
-			//appProperties->getUserSettings()->setValue("PlantRepository", xml);
+
 			String plantDir = appProperties->getUserSettings()->getValue("PlantFileDir", "");	
 			String plantFile = plantDir + "/" + repoEntryName.trim() + String(".plant");
 			File plant(plantFile);
@@ -2059,11 +2065,9 @@ return true;
 }
 
 //==========================================================================================
-//Gets called at the end of each k-cycle
+//Gets called periodically to update GUI controls with values coming from Csound
 //==========================================================================================
 void CabbagePluginAudioProcessorEditor::timerCallback(){
-
-//const MessageManagerLock mmLock;
 // update our GUI so that whenever a VST parameter is changed in the 
 // host the corresponding GUI control gets updated. 
 
@@ -2077,27 +2081,33 @@ for(int y=0;y<getFilter()->getXYAutomaterSize();y++){
 				}
    
 //#ifndef Cabbage_Build_Standalone
-for(int i=0;i<(int)getFilter()->getGUICtrlsSize();i++){
-        inValue = getFilter()->getParameter(i);
-        //Logger::writeToLog(getFilter()->getGUICtrls(i).getStringProp("type"));
+for(int i=0;i<(int)getFilter()->getGUICtrlsSize();i++)
+	{
+	//only update controls if their value has changed...
+    if(incomingValues[i]!=getFilter()->getParameter(i))
+		{    
+		inValue = getFilter()->getParameter(i);
+
         if(getFilter()->getGUICtrls(i).getStringProp("type")==String("hslider")||
                         getFilter()->getGUICtrls(i).getStringProp("type")==String("rslider")||
                         getFilter()->getGUICtrls(i).getStringProp("type")==String("vslider")){
         if(controls[i]){
-#ifndef Cabbage_Build_Standalone
+		#ifndef Cabbage_Build_Standalone
                 float val = getFilter()->getGUICtrls(i).getNumProp("sliderRange")*getFilter()->getParameter(i);
                 ((CabbageSlider*)controls[i])->slider->setValue(val, dontSendNotification);
+				incomingValues.set(i, val);
 				
-#else
+		#else
 		((CabbageSlider*)controls[i])->slider->setValue(inValue, sendNotification);
-				
-#endif
+		incomingValues.set(i, inValue);		
+		#endif
         }
         }
         
         else if(getFilter()->getGUICtrls(i).getStringProp("type")==String("button")){
         if(controls[i])
                 ((CabbageButton*)controls[i])->button->setButtonText(getFilter()->getGUICtrls(i).getItems(1-(int)inValue));
+				incomingValues.set(i, 1-(int)inValue);
         }
   
         else if(getFilter()->getGUICtrls(i).getStringProp("type")==String("xypad") &&
@@ -2105,29 +2115,35 @@ for(int i=0;i<(int)getFilter()->getGUICtrlsSize();i++){
         if(controls[i]){
 			int index = ((CabbageXYController*)controls[i])->XYAutoIndex;
 			((CabbageXYController*)controls[i])->xypad->setXYValues(getFilter()->getParameter(i), getFilter()->getParameter(i+1));
+			incomingValues.set(i, getFilter()->getParameter(i));
+			incomingValues.set(i, getFilter()->getParameter(i+1));
+			
                 }
         }
 
         //no automation for comboboxes, still problematic! 
         else if(getFilter()->getGUICtrls(i).getStringProp("type")==String("combobox")){
         //if(controls[i])
-#ifdef Cabbage_Build_Standalone
+		#ifdef Cabbage_Build_Standalone
                 //((CabbageComboBox*)controls[i])->combo->setSelectedId((int)getFilter()->getParameter(i), false);
-#else
+		#else
                 //Logger::writeToLog(String("timerCallback():")+String(getFilter()->getParameter(i)));
                 float val = getFilter()->getGUICtrls(i).getNumProp("sliderRange")*getFilter()->getParameter(i);
                 ((CabbageComboBox*)controls[i])->combo->setSelectedId(int(val), false);
-#endif
+				incomingValues.set(i, val);
+		#endif
         }
 
         else if(getFilter()->getGUICtrls(i).getStringProp("type")==String("checkbox")){
         if(controls[i]){
-			int valy = getFilter()->getGUICtrls(i).getNumProp("value");
-                        ((CabbageCheckbox*)controls[i])->button->setToggleState((bool)getFilter()->getGUICtrls(i).getNumProp("value"), false);
-                        //getFilter()->getCsound()->SetChannel(getFilter()->getGUICtrls(i).getStringProp("channel").toUTF8(), inValue);
+			int val = getFilter()->getGUICtrls(i).getNumProp("value");
+                        ((CabbageCheckbox*)controls[i])->button->setToggleState((bool)val, false);
+                        incomingValues.set(i, val);
                         }
                 }
+		}
 }
+
 #ifndef Cabbage_Build_Standalone
 for(int i=0;i<(int)getFilter()->getGUILayoutCtrlsSize();i++){
         if(getFilter()->getGUILayoutCtrls(i).getStringProp("type")==String("hostbpm")){     
@@ -2165,11 +2181,11 @@ for(int i=0;i<getFilter()->getGUILayoutCtrlsSize();i++){
         }
         else if(getFilter()->getGUILayoutCtrls(i).getStringProp("type").containsIgnoreCase("vumeter")){
                 //Logger::writeToLog(layoutComps[i]->getName());
-                for(int y=0;y<((CabbageVUMeter*)layoutComps[i])->getNoMeters();y++){
+                //for(int y=0;y<((CabbageVUMeter*)layoutComps[i])->getNoMeters();y++){
                 //String chann = getFilter()->getGUILayoutCtrls(i).getStringProp("channel", y);
-                float val = getFilter()->getCsound()->GetChannel(getFilter()->getGUILayoutCtrls(i).getStringProp("channel", y).toUTF8());
-                ((CabbageVUMeter*)layoutComps[i])->vuMeter->setVULevel(y, val);
-                }
+                //float val = getFilter()->getCsound()->GetChannel(getFilter()->getGUILayoutCtrls(i).getStringProp("channel", y).toUTF8());
+                //((CabbageVUMeter*)layoutComps[i])->vuMeter->setVULevel(y, val);
+                //}
         }
         else if(getFilter()->getGUILayoutCtrls(i).getStringProp("type").containsIgnoreCase("table")){
                 //int tableSize = getFilter()->getCsound()->TableLength(getFilter()->getGUILayoutCtrls(i).getNumProp("tableNum"));
@@ -2201,6 +2217,7 @@ for(int i=0;i<getFilter()->getGUILayoutCtrlsSize();i++){
 
         }
 }
+
 
 #ifdef Cabbage_Build_Standalone
         //make sure that the instrument needs midi before turning this on

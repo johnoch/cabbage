@@ -72,7 +72,7 @@ class CabbagePluginAudioProcessor  : public AudioProcessor,
         //============== Csound related variables/methods ==============================
 #ifndef Cabbage_No_Csound
 		bool isNativeThreadRunning;
-		CsoundPerformanceThread* csoundPerfThread;
+		ScopedPointer<CsoundPerformanceThread> csoundPerfThread;
         PVSDATEXT* dataout;
         MYFLT cs_scale;
         ScopedPointer<Csound> csound;                           //Csound instance
