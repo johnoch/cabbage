@@ -457,29 +457,25 @@ bool multiLine = false;
         }
 
 
-//init all channels with their init val
-for(int i=0;i<guiCtrls.size();i++)
-{
-csound->SetChannel( guiCtrls.getReference(i).getStringProp("channel").toUTF8(), 
-										guiCtrls.getReference(i).getNumProp("value"));
-Logger::writeToLog(guiCtrls.getReference(i).getStringProp("channel")+": "+String(guiCtrls.getReference(i).getNumProp("value")));
-}
+		//init all channels with their init val
+		for(int i=0;i<guiCtrls.size();i++)
+		{
+		csound->SetChannel( guiCtrls.getReference(i).getStringProp("channel").toUTF8(), 
+												guiCtrls.getReference(i).getNumProp("value"));
+		Logger::writeToLog(guiCtrls.getReference(i).getStringProp("channel")+": "+String(guiCtrls.getReference(i).getNumProp("value")));
+		}
 
-#ifdef Cabbage_Build_Standalone
+		#ifdef Cabbage_Build_Standalone
 
-if(this->getActiveEditor()){
-	getActiveEditor()->repaint();
-	//((CabbagePluginAudioProcessorEditor*)getActiveEditor())->setEditMode(false);
-		((CabbagePluginAudioProcessorEditor*)getActiveEditor())->setEditMode(false);
-	((CabbagePluginAudioProcessorEditor*)getActiveEditor())->InsertGUIControls();
-	((CabbagePluginAudioProcessorEditor*)getActiveEditor())->setEditMode(checkGUI);
-	//((CabbagePluginAudioProcessorEditor*)getActiveEditor())->setEditMode(true);
-}
+		if(this->getActiveEditor()){
+			getActiveEditor()->repaint();
+			//((CabbagePluginAudioProcessorEditor*)getActiveEditor())->setEditMode(false);
+				((CabbagePluginAudioProcessorEditor*)getActiveEditor())->setEditMode(false);
+			((CabbagePluginAudioProcessorEditor*)getActiveEditor())->InsertGUIControls();
+			((CabbagePluginAudioProcessorEditor*)getActiveEditor())->setEditMode(checkGUI);
+			//((CabbagePluginAudioProcessorEditor*)getActiveEditor())->setEditMode(true);
+		}
 
-int tet=0;
-#ifndef Cabbage_No_Csound
-
-#endif
 #endif
 }
 
@@ -541,9 +537,9 @@ void CabbagePluginAudioProcessor::changeListenerCallback(ChangeBroadcaster *sour
 	if(xyPad){
 #ifndef Cabbage_No_Csound
 		//messageQueue.addOutgoingChannelMessageToQueue(xyPad->xChannel.toUTF8(), xyPad->getXValue())
-		setParameterNotifyingHost(xyPad->paramIndex, xyPad->getXValue());
+		setParameterNotifyingHost(xyPad->paramIndex, xyPad->getXValue()/xyPad->getXRange());
 		//messageQueue.addOutgoingChannelMessageToQueue(xyPad->yChannel.toUTF8(), xyPad->getYValue())
-		setParameterNotifyingHost(xyPad->paramIndex+1, xyPad->getYValue());
+		setParameterNotifyingHost(xyPad->paramIndex+1, xyPad->getYValue()/xyPad->getYRange());
 #endif
 	}
 

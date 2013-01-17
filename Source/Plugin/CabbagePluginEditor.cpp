@@ -1582,10 +1582,14 @@ else{
         //Logger::writeToLog(String("Y:")+String(valueY));
         ((CabbageXYController*)controls[idx])->xypad->setXYValues(valueX, valueY);
 		getFilter()->setParameter(idx, valueX);
-		//add initial values to incomingValues array
-		incomingValues.add(valueX);
 		getFilter()->setParameter(idx+1, valueY);
+		
+		//add initial values to incomingValues array
+		if(!cAttr.getStringProp("name").contains("dummy")){
 		incomingValues.add(valueY);
+		incomingValues.add(valueX);
+		
+		}
 #ifdef Cabbage_Build_Standalone 
         controls[idx]->setWantsKeyboardFocus(false);
 #endif
