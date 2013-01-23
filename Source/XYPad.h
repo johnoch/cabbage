@@ -315,6 +315,7 @@ private:
 	OwnedArray<XYValueDisplay> valueDisplays;
 	OwnedArray<XYToggle> xyToggles;
 	
+	
 	ScopedPointer<CabbageLookAndFeel> lookAndFeel;
 	ScopedPointer<CabbageLookAndFeelBasic> lookAndFeelBasic;
 	bool canvasHasFocus;
