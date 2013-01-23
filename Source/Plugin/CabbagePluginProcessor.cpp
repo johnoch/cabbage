@@ -162,7 +162,7 @@ File thisFile(File::getSpecialLocation(File::currentExecutableFile));
 #endif
 csdFile = thisFile.withFileExtension(String(".csd")).getFullPathName();
 
-//Logger::writeToLog(File::getSpecialLocation(File::currentExecutableFile).getFullPathName());
+showMessage(File::getSpecialLocation(File::currentExecutableFile).getFullPathName());
         
 if(csdFile.exists())
 Logger::writeToLog("File exists:"+String(csdFile.getFullPathName()));

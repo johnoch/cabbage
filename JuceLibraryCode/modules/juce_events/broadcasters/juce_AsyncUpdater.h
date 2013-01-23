@@ -45,6 +45,7 @@ public:
     AsyncUpdater();
 
     /** Destructor.
+
         If there are any pending callbacks when the object is deleted, these are lost.
     */
     virtual ~AsyncUpdater();

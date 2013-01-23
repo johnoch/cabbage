@@ -322,7 +322,7 @@ void Process::terminate()
     ExitProcess (0);
 }
 
-bool juce_isRunningInWine()
+bool juce_IsRunningInWine()
 {
     HMODULE ntdll = GetModuleHandleA ("ntdll");
     return ntdll != 0 && GetProcAddress (ntdll, "wine_get_version") != nullptr;
@@ -561,11 +561,6 @@ bool ChildProcess::start (const String& command)
         activeProcess = nullptr;
 
     return activeProcess != nullptr;
-}
-
-bool ChildProcess::start (const StringArray& args)
-{
-    return start (args.joinIntoString (" "));
 }
 
 bool ChildProcess::isRunning() const

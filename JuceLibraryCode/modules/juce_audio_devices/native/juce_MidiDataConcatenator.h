@@ -48,11 +48,10 @@ public:
         pendingDataTime = 0;
     }
 
-    template <typename UserDataType, typename CallbackType>
-    void pushMidiData (const void* inputData, int numBytes, double time,
-                       UserDataType* input, CallbackType& callback)
+    void pushMidiData (const void* data, int numBytes, double time,
+                       MidiInput* input, MidiInputCallback& callback)
     {
-        const uint8* d = static_cast <const uint8*> (inputData);
+        const uint8* d = static_cast <const uint8*> (data);
 
         while (numBytes > 0)
         {
@@ -106,9 +105,8 @@ public:
     }
 
 private:
-    template <typename UserDataType, typename CallbackType>
     void processSysex (const uint8*& d, int& numBytes, double time,
-                       UserDataType* input, CallbackType& callback)
+                       MidiInput* input, MidiInputCallback& callback)
     {
         if (*d == 0xf0)
         {

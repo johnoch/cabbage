@@ -133,12 +133,6 @@ public:
         */
         DialogWindow* launchAsync();
 
-        /** Creates a new DialogWindow instance with these settings.
-            This method simply creates the window, it doesn't run it modally. In most cases
-            you'll want to use launchAsync() or runModal() instead.
-        */
-        DialogWindow* create();
-
        #if JUCE_MODAL_LOOPS_PERMITTED || DOXYGEN
         /** Launches and runs the dialog modally, returning the status code that was
             used to terminate the modal loop.

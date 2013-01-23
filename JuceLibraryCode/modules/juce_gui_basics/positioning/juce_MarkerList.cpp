@@ -263,7 +263,8 @@ void MarkerList::ValueTreeWrapper::applyTo (MarkerList& markerList)
 
     StringArray updatedMarkers;
 
-    for (int i = 0; i < numMarkers; ++i)
+    int i;
+    for (i = 0; i < numMarkers; ++i)
     {
         const ValueTree marker (state.getChild (i));
         const String name (marker [nameProperty].toString());
@@ -271,7 +272,7 @@ void MarkerList::ValueTreeWrapper::applyTo (MarkerList& markerList)
         updatedMarkers.add (name);
     }
 
-    for (int i = markerList.getNumMarkers(); --i >= 0;)
+    for (i = markerList.getNumMarkers(); --i >= 0;)
         if (! updatedMarkers.contains (markerList.getMarker (i)->name))
             markerList.removeMarker (i);
 }

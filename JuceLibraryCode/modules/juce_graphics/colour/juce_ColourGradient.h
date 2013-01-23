@@ -165,8 +165,8 @@ private:
     {
         ColourPoint() noexcept {}
 
-        ColourPoint (const double pos, const Colour& col) noexcept
-            : position (pos), colour (col)
+        ColourPoint (const double position_, const Colour& colour_) noexcept
+            : position (position_), colour (colour_)
         {}
 
         bool operator== (const ColourPoint& other) const noexcept;

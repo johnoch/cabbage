@@ -126,6 +126,7 @@
     </Bscmake>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\Source\csPerfThread.cpp" />
     <ClCompile Include="..\..\Source\Editor\CabbageCsoundEditor.cpp" />
     <ClCompile Include="..\..\Source\Editor\CabbageEditorCommandManager.cpp" />
     <ClCompile Include="..\..\Source\Editor\CabbageEditorWindow.cpp" />
@@ -1180,6 +1181,7 @@
     <ClCompile Include="..\..\Source\XYPadAutomation.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\Source\csPerfThread.hpp" />
     <ClInclude Include="..\..\Source\Editor\CabbageCsoundEditor.h" />
     <ClInclude Include="..\..\Source\Editor\CabbageEditorCommandManager.h" />
     <ClInclude Include="..\..\Source\Editor\CabbageEditorWindow.h" />

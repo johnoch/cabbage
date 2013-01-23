@@ -121,12 +121,11 @@ public:
 
         actualBufferSize = preferredBufferSize;
 
-        inputBuffer.setSize  (jmax (1, numInputChannels),  actualBufferSize);
+        inputBuffer.setSize (jmax (1, numInputChannels), actualBufferSize);
         outputBuffer.setSize (jmax (1, numOutputChannels), actualBufferSize);
-        outputBuffer.clear();
 
-        recorder = engine.createRecorder (numInputChannels,  sampleRate);
-        player   = engine.createPlayer   (numOutputChannels, sampleRate);
+        recorder = engine.createRecorder (numInputChannels, sampleRate);
+        player   = engine.createPlayer (numOutputChannels, sampleRate);
 
         startThread (8);
 
@@ -169,7 +168,9 @@ public:
 
     void stop()
     {
-        if (AudioIODeviceCallback* const oldCallback = setCallback (nullptr))
+        AudioIODeviceCallback* const oldCallback = setCallback (nullptr);
+
+        if (oldCallback != nullptr)
             oldCallback->audioDeviceStopped();
     }
 
@@ -180,23 +181,31 @@ public:
 
         while (! threadShouldExit())
         {
-            if (player != nullptr)      player->writeBuffer (outputBuffer, *this);
-            if (recorder != nullptr)    recorder->readNextBlock (inputBuffer, *this);
+            if (player != nullptr && ! threadShouldExit())
+                player->writeBuffer (outputBuffer, *this);
 
-            const ScopedLock sl (callbackLock);
+            if (recorder != nullptr)
+                recorder->readNextBlock (inputBuffer, *this);
 
-            if (callback != nullptr)
-            {
-                callback->audioDeviceIOCallback (numInputChannels > 0 ? (const float**) inputBuffer.getArrayOfChannels() : nullptr,
-                                                 numInputChannels,
-                                                 numOutputChannels > 0 ? outputBuffer.getArrayOfChannels() : nullptr,
-                                                 numOutputChannels,
-                                                 actualBufferSize);
-            }
-            else
-            {
-                outputBuffer.clear();
-            }
+            invokeCallback();
+        }
+    }
+
+    void invokeCallback()
+    {
+        const ScopedLock sl (callbackLock);
+
+        if (callback != nullptr)
+        {
+            callback->audioDeviceIOCallback (numInputChannels > 0 ? (const float**) inputBuffer.getArrayOfChannels() : nullptr,
+                                             numInputChannels,
+                                             numOutputChannels > 0 ? outputBuffer.getArrayOfChannels() : nullptr,
+                                             numOutputChannels,
+                                             actualBufferSize);
+        }
+        else
+        {
+            outputBuffer.clear();
         }
     }
 
@@ -231,8 +240,9 @@ private:
             if (library.open ("libOpenSLES.so"))
             {
                 typedef SLresult (*CreateEngineFunc) (SLObjectItf*, SLuint32, const SLEngineOption*, SLuint32, const SLInterfaceID*, const SLboolean*);
+                CreateEngineFunc createEngine = (CreateEngineFunc) library.getFunction ("slCreateEngine");
 
-                if (CreateEngineFunc createEngine = (CreateEngineFunc) library.getFunction ("slCreateEngine"))
+                if (createEngine != nullptr)
                 {
                     check (createEngine (&engineObject, 0, nullptr, 0, nullptr, nullptr));
 

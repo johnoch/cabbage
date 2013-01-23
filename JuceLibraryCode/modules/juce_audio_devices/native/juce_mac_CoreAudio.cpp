@@ -214,7 +214,7 @@ public:
 
             if (OK (AudioObjectGetPropertyData (deviceID, &pa, 0, 0, &size, ranges)))
             {
-                bufferSizes.add ((int) (ranges[0].mMinimum + 15) & ~15);
+                bufferSizes.add ((int) ranges[0].mMinimum);
 
                 for (int i = 32; i < 2048; i += 32)
                 {
@@ -560,13 +560,14 @@ public:
     void audioCallback (const AudioBufferList* inInputData,
                         AudioBufferList* outOutputData)
     {
+        int i;
         const ScopedLock sl (callbackLock);
 
         if (callback != nullptr)
         {
             if (inputDevice == 0)
             {
-                for (int i = numInputChans; --i >= 0;)
+                for (i = numInputChans; --i >= 0;)
                 {
                     const CallbackDetailsForChannel& info = inputChannelInfo[i];
                     float* dest = tempInputBuffers [i];
@@ -611,7 +612,7 @@ public:
                                                      bufferSize);
                 }
 
-                for (int i = numOutputChans; --i >= 0;)
+                for (i = numOutputChans; --i >= 0;)
                 {
                     const CallbackDetailsForChannel& info = outputChannelInfo[i];
                     const float* src = tempOutputBuffers [i];
@@ -632,7 +633,7 @@ public:
         }
         else
         {
-            for (int i = jmin (numOutputChans, numOutputChannelInfos); --i >= 0;)
+            for (i = jmin (numOutputChans, numOutputChannelInfos); --i >= 0;)
             {
                 const CallbackDetailsForChannel& info = outputChannelInfo[i];
                 float* dest = ((float*) outOutputData->mBuffers[info.streamNum].mData)

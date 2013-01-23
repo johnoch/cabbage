@@ -47,20 +47,22 @@ AlertWindow::AlertWindow (const String& title,
 
     setMessage (message);
 
-    Desktop& desktop = Desktop::getInstance();
-    for (int i = desktop.getNumComponents(); --i >= 0;)
+    for (int i = Desktop::getInstance().getNumComponents(); --i >= 0;)
     {
-        if (Component* const c = desktop.getComponent (i))
+        Component* const c = Desktop::getInstance().getComponent (i);
+
+        if (c != nullptr && c->isAlwaysOnTop() && c->isShowing())
         {
-            if (c->isAlwaysOnTop() && c->isShowing())
-            {
-                setAlwaysOnTop (true);
-                break;
-            }
+            setAlwaysOnTop (true);
+            break;
         }
     }
 
+    if (! JUCEApplication::isStandaloneApp())
+        setAlwaysOnTop (true); // for a plugin, make it always-on-top because the host windows are often top-level
+
     AlertWindow::lookAndFeelChanged();
+
     constrainer.setMinimumOnscreenAmounts (0x10000, 0x10000, 0x10000, 0x10000);
 }
 

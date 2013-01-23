@@ -113,6 +113,7 @@ public:
         return S_OK;
     }
 
+
 private:
     InputStream& source;
 
@@ -159,7 +160,10 @@ public:
     ~WMAudioReader()
     {
         if (wmSyncReader != nullptr)
+        {
             wmSyncReader->Close();
+            wmSyncReader = nullptr;
+        }
     }
 
     bool readSamples (int** destSamples, int numDestChannels, int startOffsetInDestBuffer,
@@ -177,23 +181,17 @@ public:
             bufferStart = bufferEnd = 0;
         }
 
-        const int stride = numChannels * sizeof (int16);
-        bool firstLoop = true;
-
         while (numSamples > 0)
         {
             if (bufferEnd <= bufferStart)
             {
-                ComSmartPtr<INSSBuffer> sampleBuffer;
+                INSSBuffer* sampleBuffer = nullptr;
                 QWORD sampleTime, duration;
                 DWORD flags, outputNum;
                 WORD streamNum;
-                int64 readBufferStart;
 
-                HRESULT hr = wmSyncReader->GetNextSample (1, sampleBuffer.resetAndGetPointerAddress(), &sampleTime,
+                HRESULT hr = wmSyncReader->GetNextSample (0, &sampleBuffer, &sampleTime,
                                                           &duration, &flags, &outputNum, &streamNum);
-
-                readBufferStart = (int64)floor((sampleTime * sampleRate) * 0.0000001);
 
                 if (sampleBuffer != nullptr)
                 {
@@ -212,15 +210,7 @@ public:
 
                     buffer.ensureSize (bufferEnd);
                     memcpy (buffer.getData(), rawData, bufferEnd);
-
-                    if (firstLoop && readBufferStart < startSampleInFile)
-                    {
-                        bufferStart += stride * (int) (startSampleInFile - readBufferStart);
-
-                        if (bufferStart > bufferEnd)
-                            bufferStart = bufferEnd;
-                    }
-
+                    sampleBuffer->Release();
                 }
                 else
                 {
@@ -229,11 +219,9 @@ public:
                     buffer.ensureSize (bufferEnd);
                     buffer.fillWith (0);
                 }
-
-                firstLoop = false;
             }
 
-
+            const int stride = numChannels * sizeof (int16);
             const int16* const rawData = static_cast <const int16*> (addBytesToPointer (buffer.getData(), bufferStart));
             const int numToDo = jmin (numSamples, (bufferEnd - bufferStart) / stride);
 
@@ -253,9 +241,6 @@ public:
             }
 
             bufferStart += numToDo * stride;
-            if (bufferEnd - bufferStart < stride)
-                bufferStart = bufferEnd;
-
             startOffsetInDestBuffer += numToDo;
             numSamples -= numToDo;
             currentPosition += numToDo;
@@ -334,8 +319,7 @@ private:
 
 //==============================================================================
 WindowsMediaAudioFormat::WindowsMediaAudioFormat()
-    : AudioFormat (TRANS (WindowsMediaCodec::wmFormatName),
-                   StringArray (WindowsMediaCodec::extensions))
+    : AudioFormat (TRANS (WindowsMediaCodec::wmFormatName), StringArray (WindowsMediaCodec::extensions))
 {
 }
 

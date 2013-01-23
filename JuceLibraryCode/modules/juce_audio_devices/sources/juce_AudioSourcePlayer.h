@@ -95,9 +95,6 @@ public:
     /** Implementation of the AudioIODeviceCallback method. */
     void audioDeviceStopped();
 
-    /** An alternative method for initialising the source without an AudioIODevice. */
-    void prepareToPlay (double sampleRate, int blockSize);
-
 private:
     //==============================================================================
     CriticalSection readLock;

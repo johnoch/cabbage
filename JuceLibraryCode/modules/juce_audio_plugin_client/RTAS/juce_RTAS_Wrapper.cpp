@@ -156,9 +156,7 @@ public:
     {
         asyncUpdater = new InternalAsyncUpdater (*this);
         juceFilter = createPluginFilter();
-        jassert (juceFilter != nullptr);  // your createPluginFilter() method must return an object!
-
-        juceFilter->wrapperType = AudioProcessor::wrapperType_RTAS;
+        jassert (juceFilter != 0);
 
         AddChunk (juceChunkType, "Juce Audio Plugin Data");
 
@@ -278,8 +276,13 @@ public:
            #if JUCE_WINDOWS
             if (wrapper != nullptr)
             {
-                if (ComponentPeer* const peer = wrapper->getPeer())
-                    peer->repaint (wrapper->getLocalBounds());  // (seems to be required in PT6.4, but not in 7.x)
+                ComponentPeer* const peer = wrapper->getPeer();
+
+                if (peer != nullptr)
+                {
+                    // (seems to be required in PT6.4, but not in 7.x)
+                    peer->repaint (wrapper->getLocalBounds());
+                }
             }
            #endif
         }
@@ -295,12 +298,13 @@ public:
 
         void deleteEditorComp()
         {
-            if (editorComp != nullptr || wrapper != nullptr)
+            if (editorComp != 0 || wrapper != nullptr)
             {
                 JUCE_AUTORELEASEPOOL
                 PopupMenu::dismissAllActiveMenus();
 
-                if (juce::Component* const modalComponent = juce::Component::getCurrentlyModalComponent())
+                juce::Component* const modalComponent = juce::Component::getCurrentlyModalComponent();
+                if (modalComponent != nullptr)
                     modalComponent->exitModalState (0);
 
                 filter->editorBeingDeleted (editorComp);
@@ -366,7 +370,9 @@ public:
 
             void resized()
             {
-                if (juce::Component* const ed = getEditor())
+                juce::Component* const ed = getEditor();
+
+                if (ed != nullptr)
                     ed->setBounds (getLocalBounds());
 
                 repaint();
@@ -424,8 +430,8 @@ public:
 
     void GetViewRect (Rect* size)
     {
-        if (JuceCustomUIView* const v = getView())
-            v->updateSize();
+        if (getView() != nullptr)
+            getView()->updateSize();
 
         CEffectProcessRTAS::GetViewRect (size);
     }
@@ -439,8 +445,8 @@ public:
     {
         CEffectProcessRTAS::SetViewPort (port);
 
-        if (JuceCustomUIView* const v = getView())
-            v->attachToWindow (port);
+        if (getView() != nullptr)
+            getView()->attachToWindow (port);
     }
 
     //==============================================================================
@@ -473,7 +479,9 @@ protected:
         if (MIDILogIn() == noErr)
         {
            #if JucePlugin_WantsMidiInput
-            if (CEffectType* const type = dynamic_cast <CEffectType*> (this->GetProcessType()))
+            CEffectType* const type = dynamic_cast <CEffectType*> (this->GetProcessType());
+
+            if (type != nullptr)
             {
                 char nodeName [64];
                 type->GetProcessTypeName (63, nodeName);
@@ -526,19 +534,25 @@ protected:
             return;
         }
 
+        if (mBypassed)
+        {
+            bypassBuffers (inputs, outputs, numSamples);
+            return;
+        }
+
        #if JucePlugin_WantsMidiInput
         midiEvents.clear();
 
         const Cmn_UInt32 bufferSize = mRTGlobals->mHWBufferSizeInSamples;
 
-        if (midiBufferNode != nullptr)
+        if (midiBufferNode != 0)
         {
             if (midiBufferNode->GetAdvanceScheduleTime() != bufferSize)
                 midiBufferNode->SetAdvanceScheduleTime (bufferSize);
 
             if (midiBufferNode->FillMIDIBuffer (mRTGlobals->mRunningTime, numSamples) == noErr)
             {
-                jassert (midiBufferNode->GetBufferPtr() != nullptr);
+                jassert (midiBufferNode->GetBufferPtr() != 0);
                 const int numMidiEvents = midiBufferNode->GetBufferSize();
 
                 for (int i = 0; i < numMidiEvents; ++i)
@@ -589,10 +603,7 @@ protected:
 
                 AudioSampleBuffer chans (channels, totalChans, numSamples);
 
-                if (mBypassed)
-                    juceFilter->processBlockBypassed (chans, midiEvents);
-                else
-                    juceFilter->processBlock (chans, midiEvents);
+                juceFilter->processBlock (chans, midiEvents);
             }
         }
 
@@ -930,14 +941,7 @@ public:
             type->DefineStemFormats (getFormatForChans (channelConfigs [i][0] != 0 ? channelConfigs [i][0] : channelConfigs [i][1]),
                                      getFormatForChans (channelConfigs [i][1] != 0 ? channelConfigs [i][1] : channelConfigs [i][0]));
 
-           #if ! JucePlugin_RTASDisableBypass
             type->AddGestalt (pluginGestalt_CanBypass);
-           #endif
-
-           #if JucePlugin_RTASDisableMultiMono
-            type->AddGestalt (pluginGestalt_DoesntSupportMultiMono);
-           #endif
-
             type->AddGestalt (pluginGestalt_SupportsVariableQuanta);
             type->AttachEffectProcessCreator (createNewProcess);
 

@@ -23,8 +23,14 @@
   ==============================================================================
 */
 
-AudioFormatManager::AudioFormatManager()  : defaultFormatIndex (0) {}
-AudioFormatManager::~AudioFormatManager() {}
+AudioFormatManager::AudioFormatManager()
+    : defaultFormatIndex (0)
+{
+}
+
+AudioFormatManager::~AudioFormatManager()
+{
+}
 
 //==============================================================================
 void AudioFormatManager::registerFormat (AudioFormat* newFormat, const bool makeThisTheDefaultFormat)
@@ -65,14 +71,12 @@ void AudioFormatManager::registerBasicFormats()
 
    #if JUCE_MAC || JUCE_IOS
     registerFormat (new CoreAudioFormat(), false);
-   #endif
-
-   #if JUCE_USE_MP3AUDIOFORMAT
-    registerFormat (new MP3AudioFormat(), false);
-   #endif
-
-   #if JUCE_USE_WINDOWS_MEDIA_FORMAT
+   #elif JUCE_USE_WINDOWS_MEDIA_FORMAT
     registerFormat (new WindowsMediaAudioFormat(), false);
+   #elif JUCE_USE_MP3AUDIOFORMAT
+    // The software MP3 decoder is only used as a default format if
+    // there isn't an OS-provided alternative.
+    registerFormat (new MP3AudioFormat(), false);
    #endif
 }
 
@@ -113,13 +117,14 @@ String AudioFormatManager::getWildcardForAllFormats() const
 {
     StringArray extensions;
 
-    for (int i = 0; i < getNumKnownFormats(); ++i)
+    int i;
+    for (i = 0; i < getNumKnownFormats(); ++i)
         extensions.addArray (getKnownFormat(i)->getFileExtensions());
 
     extensions.trim();
     extensions.removeEmptyStrings();
 
-    for (int i = 0; i < extensions.size(); ++i)
+    for (i = 0; i < extensions.size(); ++i)
         extensions.set (i, (extensions[i].startsWithChar ('.') ? "*" : "*.") + extensions[i]);
 
     extensions.removeDuplicates (true);
@@ -138,9 +143,17 @@ AudioFormatReader* AudioFormatManager::createReaderFor (const File& file)
         AudioFormat* const af = getKnownFormat(i);
 
         if (af->canHandleFile (file))
-            if (InputStream* const in = file.createInputStream())
-                if (AudioFormatReader* const r = af->createReaderFor (in, true))
+        {
+            InputStream* const in = file.createInputStream();
+
+            if (in != nullptr)
+            {
+                AudioFormatReader* const r = af->createReaderFor (in, true);
+
+                if (r != nullptr)
                     return r;
+            }
+        }
     }
 
     return nullptr;
@@ -160,7 +173,9 @@ AudioFormatReader* AudioFormatManager::createReaderFor (InputStream* audioFileSt
 
         for (int i = 0; i < getNumKnownFormats(); ++i)
         {
-            if (AudioFormatReader* const r = getKnownFormat(i)->createReaderFor (in, false))
+            AudioFormatReader* const r = getKnownFormat(i)->createReaderFor (in, false);
+
+            if (r != nullptr)
             {
                 in.release();
                 return r;

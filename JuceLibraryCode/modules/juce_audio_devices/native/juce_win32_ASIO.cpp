@@ -26,6 +26,14 @@
 #undef WINDOWS
 #undef log
 
+// #define ASIO_DEBUGGING 1
+
+#if ASIO_DEBUGGING
+ #define log(a) { Logger::writeToLog (a); DBG (a) }
+#else
+ #define log(a) {}
+#endif
+
 /* The ASIO SDK *should* declare its callback functions as being __cdecl, but different versions seem
    to be pretty random about whether or not they do this. If you hit an error using these functions
    it'll be because you're trying to build using __stdcall, in which case you'd need to either get hold of
@@ -36,7 +44,7 @@
 //==============================================================================
 namespace ASIODebugging
 {
-   #if ASIO_DEBUGGING
+  #if ASIO_DEBUGGING
     static void log (const String& context, long error)
     {
         const char* err = "unknown error";
@@ -49,15 +57,13 @@ namespace ASIODebugging
         else if (error == ASE_NoClock)          err = "No Clock";
         else if (error == ASE_NoMemory)         err = "Out of memory";
 
-        log ("ASIO error: " + context + " - " + err);
+        log ("!!error: " + context + " - " + err);
     }
 
-    #define log(a) { Logger::writeToLog (a); DBG (a) }
     #define logError(a, b) ASIODebugging::log ((a), (b))
-   #else
-    #define log(a) {}
+  #else
     #define logError(a, b) {}
-   #endif
+  #endif
 }
 
 //==============================================================================
@@ -298,12 +304,12 @@ class ASIOAudioIODevice  : public AudioIODevice,
                            private Timer
 {
 public:
-    ASIOAudioIODevice (const String& devName, const CLSID clsID, const int slotNumber,
-                       const String& dllForDirectLoading)
-       : AudioIODevice (devName, "ASIO"),
+    ASIOAudioIODevice (const String& name_, const CLSID classId_, const int slotNumber,
+                       const String& optionalDllForDirectLoading_)
+       : AudioIODevice (name_, "ASIO"),
          asioObject (nullptr),
-         classId (clsID),
-         optionalDllForDirectLoading (dllForDirectLoading),
+         classId (classId_),
+         optionalDllForDirectLoading (optionalDllForDirectLoading_),
          currentBitDepth (16),
          currentSampleRate (0),
          deviceIsOpen (false),
@@ -313,9 +319,7 @@ public:
          insideControlPanelModalLoop (false),
          shouldUsePreferredSize (false)
     {
-        name = devName;
-        inBuffers.calloc (4);
-        outBuffers.calloc (4);
+        name = name_;
 
         jassert (currentASIODev [slotNumber] == nullptr);
         currentASIODev [slotNumber] = this;
@@ -442,8 +446,8 @@ public:
         currentBlockSizeSamples = bufferSizeSamples;
         currentChansOut.clear();
         currentChansIn.clear();
-        inBuffers.clear (totalNumInputChans + 1);
-        outBuffers.clear (totalNumOutputChans + 1);
+        zeromem (inBuffers, sizeof (inBuffers));
+        zeromem (outBuffers, sizeof (outBuffers));
 
         updateSampleRates();
 
@@ -460,7 +464,8 @@ public:
         bool isSourceSet = false;
 
         // careful not to remove this loop because it does more than just logging!
-        for (int i = 0; i < numSources; ++i)
+        int i;
+        for (i = 0; i < numSources; ++i)
         {
             String s ("clock: ");
             s += clocks[i].name;
@@ -556,7 +561,8 @@ public:
             numActiveOutputChans = 0;
 
             ASIOBufferInfo* info = bufferInfos;
-            for (int i = 0; i < totalNumInputChans; ++i)
+            int i;
+            for (i = 0; i < totalNumInputChans; ++i)
             {
                 if (inputChannels[i])
                 {
@@ -569,7 +575,7 @@ public:
                 }
             }
 
-            for (int i = 0; i < totalNumOutputChans; ++i)
+            for (i = 0; i < totalNumOutputChans; ++i)
             {
                 if (outputChannels[i])
                 {
@@ -617,7 +623,7 @@ public:
                 Array <int> types;
                 currentBitDepth = 16;
 
-                for (int i = 0; i < (int) totalNumInputChans; ++i)
+                for (i = 0; i < jmin ((int) totalNumInputChans, (int) maxASIOChannels); ++i)
                 {
                     if (inputChannels[i])
                     {
@@ -639,7 +645,7 @@ public:
                 jassert (numActiveInputChans == n);
                 n = 0;
 
-                for (int i = 0; i < (int) totalNumOutputChans; ++i)
+                for (i = 0; i < jmin ((int) totalNumOutputChans, (int) maxASIOChannels); ++i)
                 {
                     if (outputChannels[i])
                     {
@@ -660,14 +666,14 @@ public:
 
                 jassert (numActiveOutputChans == n);
 
-                for (int i = types.size(); --i >= 0;)
+                for (i = types.size(); --i >= 0;)
                 {
                     log ("channel format: " + String (types[i]));
                 }
 
                 jassert (n <= totalBuffers);
 
-                for (int i = 0; i < numActiveOutputChans; ++i)
+                for (i = 0; i < numActiveOutputChans; ++i)
                 {
                     outputFormat[i].clear (bufferInfos [numActiveInputChans + i].buffers[0], currentBlockSizeSamples);
                     outputFormat[i].clear (bufferInfos [numActiveInputChans + i].buffers[1], currentBlockSizeSamples);
@@ -911,9 +917,14 @@ private:
     AudioIODeviceCallback* volatile currentCallback;
     CriticalSection callbackLock;
 
-    HeapBlock<ASIOBufferInfo> bufferInfos;
-    HeapBlock<float*> inBuffers, outBuffers;
-    HeapBlock<ASIOSampleFormat> inputFormat, outputFormat;
+    enum { maxASIOChannels = 160 };
+
+    ASIOBufferInfo bufferInfos [maxASIOChannels];
+    float* inBuffers [maxASIOChannels];
+    float* outBuffers [maxASIOChannels];
+
+    ASIOSampleFormat inputFormat [maxASIOChannels];
+    ASIOSampleFormat outputFormat [maxASIOChannels];
 
     WaitableEvent event1;
     HeapBlock <float> tempBuffer;
@@ -1042,13 +1053,6 @@ private:
                 {
                     log (String ((int) totalNumInputChans) + " in, " + String ((int) totalNumOutputChans) + " out");
 
-                    const int chansToAllocate = totalNumInputChans + totalNumOutputChans + 4;
-                    bufferInfos.calloc (chansToAllocate);
-                    inBuffers.calloc (chansToAllocate);
-                    outBuffers.calloc (chansToAllocate);
-                    inputFormat.calloc (chansToAllocate);
-                    outputFormat.calloc (chansToAllocate);
-
                     if ((err = asioObject->getBufferSize (&minSize, &maxSize, &preferredSize, &granularity)) == 0)
                     {
                         // find a list of buffer sizes..
@@ -1056,9 +1060,9 @@ private:
 
                         if (granularity >= 0)
                         {
-                            granularity = jmax (16, (int) granularity);
+                            granularity = jmax (1, (int) granularity);
 
-                            for (int i = jmax ((int) (minSize + 15) & ~15, (int) granularity); i < jmin (6400, (int) maxSize); i += granularity)
+                            for (int i = jmax ((int) minSize, (int) granularity); i < jmin (6400, (int) maxSize); i += granularity)
                                 bufferSizes.addIfNotAlreadyThere (granularity * (i / granularity));
                         }
                         else if (granularity < 0)
@@ -1296,16 +1300,17 @@ private:
 
             if (currentCallback != nullptr)
             {
-                for (int i = 0; i < numActiveInputChans; ++i)
+                int i;
+                for (i = 0; i < numActiveInputChans; ++i)
                 {
-                    jassert (inBuffers[i] != nullptr);
+                    jassert (inBuffers[i]!= nullptr);
                     inputFormat[i].convertToFloat (infos[i].buffers[bi], inBuffers[i], samps);
                 }
 
-                currentCallback->audioDeviceIOCallback (const_cast <const float**> (inBuffers.getData()), numActiveInputChans,
+                currentCallback->audioDeviceIOCallback ((const float**) inBuffers, numActiveInputChans,
                                                         outBuffers, numActiveOutputChans, samps);
 
-                for (int i = 0; i < numActiveOutputChans; ++i)
+                for (i = 0; i < numActiveOutputChans; ++i)
                 {
                     jassert (outBuffers[i] != nullptr);
                     outputFormat[i].convertFromFloat (outBuffers[i], infos [numActiveInputChans + i].buffers[bi], samps);
@@ -1610,7 +1615,8 @@ AudioIODeviceType* AudioIODeviceType::createAudioIODeviceType_ASIO()
     return new ASIOAudioIODeviceType();
 }
 
-AudioIODevice* juce_createASIOAudioIODeviceForGUID (const String& name, void* guid,
+AudioIODevice* juce_createASIOAudioIODeviceForGUID (const String& name,
+                                                    void* guid,
                                                     const String& optionalDllForDirectLoading)
 {
     const int freeSlot = ASIOAudioIODeviceType::findFreeSlot();

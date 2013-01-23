@@ -36,10 +36,10 @@ extern jobject createOpenGLView (ComponentPeer*);
 class OpenGLContext::NativeContext
 {
 public:
-    NativeContext (Component& comp,
+    NativeContext (Component& component_,
                    const OpenGLPixelFormat& pixelFormat,
                    void* /*contextToShareWith*/)
-        : component (comp),
+        : component (component_),
           isInsideGLCallback (false)
     {
         {

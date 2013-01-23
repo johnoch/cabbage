@@ -158,13 +158,13 @@ StringArray Font::findAllTypefaceStyles (const String& family)
     return results;
 }
 
-extern bool juce_isRunningInWine();
+extern bool juce_IsRunningInWine();
 
 struct DefaultFontNames
 {
     DefaultFontNames()
     {
-        if (juce_isRunningInWine())
+        if (juce_IsRunningInWine())
         {
             // If we're running in Wine, then use fonts that might be available on Linux..
             defaultSans     = "Bitstream Vera Sans";

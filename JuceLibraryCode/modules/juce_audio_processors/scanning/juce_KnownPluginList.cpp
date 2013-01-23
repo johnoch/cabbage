@@ -99,7 +99,7 @@ namespace
 
 bool KnownPluginList::isListingUpToDate (const String& fileOrIdentifier) const
 {
-    if (getTypeForFile (fileOrIdentifier) == nullptr)
+    if (getTypeForFile (fileOrIdentifier) == 0)
         return false;
 
     for (int i = types.size(); --i >= 0;)
@@ -121,6 +121,8 @@ bool KnownPluginList::scanAndAddFile (const String& fileOrIdentifier,
                                       OwnedArray <PluginDescription>& typesFound,
                                       AudioPluginFormat& format)
 {
+    bool addedOne = false;
+
     if (dontRescanIfAlreadyInList
          && getTypeForFile (fileOrIdentifier) != nullptr)
     {
@@ -143,9 +145,6 @@ bool KnownPluginList::scanAndAddFile (const String& fileOrIdentifier,
             return false;
     }
 
-    if (blacklist.contains (fileOrIdentifier))
-        return false;
-
     OwnedArray <PluginDescription> found;
     format.findAllTypesForFile (found, fileOrIdentifier);
 
@@ -154,11 +153,14 @@ bool KnownPluginList::scanAndAddFile (const String& fileOrIdentifier,
         PluginDescription* const desc = found.getUnchecked(i);
         jassert (desc != nullptr);
 
-        addType (*desc);
-        typesFound.add (new PluginDescription (*desc));
+        if (addType (*desc))
+        {
+            addedOne = true;
+            typesFound.add (new PluginDescription (*desc));
+        }
     }
 
-    return found.size() > 0;
+    return addedOne;
 }
 
 void KnownPluginList::scanAndAddDragAndDroppedFiles (AudioPluginFormatManager& formatManager,
@@ -194,44 +196,10 @@ void KnownPluginList::scanAndAddDragAndDroppedFiles (AudioPluginFormatManager& f
     }
 }
 
-const StringArray& KnownPluginList::getBlacklistedFiles() const
-{
-    return blacklist;
-}
-
-void KnownPluginList::addToBlacklist (const String& pluginID)
-{
-    if (! blacklist.contains (pluginID))
-    {
-        blacklist.add (pluginID);
-        sendChangeMessage();
-    }
-}
-
-void KnownPluginList::removeFromBlacklist (const String& pluginID)
-{
-    const int index = blacklist.indexOf (pluginID);
-
-    if (index >= 0)
-    {
-        blacklist.remove (index);
-        sendChangeMessage();
-    }
-}
-
-void KnownPluginList::clearBlacklistedFiles()
-{
-    if (blacklist.size() > 0)
-    {
-        blacklist.clear();
-        sendChangeMessage();
-    }
-}
-
 //==============================================================================
 struct PluginSorter
 {
-    PluginSorter (KnownPluginList::SortMethod sortMethod) noexcept  : method (sortMethod) {}
+    PluginSorter (KnownPluginList::SortMethod method_) noexcept  : method (method_) {}
 
     int compareElements (const PluginDescription* const first,
                          const PluginDescription* const second) const
@@ -280,16 +248,12 @@ XmlElement* KnownPluginList::createXml() const
     for (int i = 0; i < types.size(); ++i)
         e->addChildElement (types.getUnchecked(i)->createXml());
 
-    for (int i = 0; i < blacklist.size(); ++i)
-        e->createNewChildElement ("BLACKLISTED")->setAttribute ("id", blacklist[i]);
-
     return e;
 }
 
 void KnownPluginList::recreateFromXml (const XmlElement& xml)
 {
     clear();
-    clearBlacklistedFiles();
 
     if (xml.hasTagName ("KNOWNPLUGINS"))
     {
@@ -297,147 +261,117 @@ void KnownPluginList::recreateFromXml (const XmlElement& xml)
         {
             PluginDescription info;
 
-            if (e->hasTagName ("BLACKLISTED"))
-                blacklist.add (e->getStringAttribute ("id"));
-            else if (info.loadFromXml (*e))
+            if (info.loadFromXml (*e))
                 addType (info);
         }
     }
 }
 
 //==============================================================================
-struct PluginTreeUtils
+// This is used to turn a bunch of paths into a nested menu structure.
+class PluginFilesystemTree
 {
-    static void buildTreeByFolder (KnownPluginList::PluginTree& tree, const Array <PluginDescription*>& allPlugins)
+public:
+    void buildTree (const Array <PluginDescription*>& allPlugins)
     {
         for (int i = 0; i < allPlugins.size(); ++i)
         {
-            PluginDescription* const pd = allPlugins.getUnchecked (i);
-
-            String path (pd->fileOrIdentifier.replaceCharacter ('\\', '/')
-                                             .upToLastOccurrenceOf ("/", false, false));
+            String path (allPlugins.getUnchecked(i)
+                            ->fileOrIdentifier.replaceCharacter ('\\', '/')
+                                              .upToLastOccurrenceOf ("/", false, false));
 
             if (path.substring (1, 2) == ":")
                 path = path.substring (2);
 
-            addPlugin (tree, pd, path);
+            addPlugin (allPlugins.getUnchecked(i), path);
         }
 
-        optimise (tree);
+        optimise();
     }
 
-    static void buildTreeByCategory (KnownPluginList::PluginTree& tree,
-                                     const Array <PluginDescription*>& sorted,
-                                     const KnownPluginList::SortMethod sortMethod)
+    void addToMenu (PopupMenu& m, const OwnedArray <PluginDescription>& allPlugins) const
     {
-        String lastType;
-        ScopedPointer<KnownPluginList::PluginTree> current (new KnownPluginList::PluginTree());
-
-        for (int i = 0; i < sorted.size(); ++i)
+        int i;
+        for (i = 0; i < subFolders.size(); ++i)
         {
-            const PluginDescription* const pd = sorted.getUnchecked(i);
-            String thisType (sortMethod == KnownPluginList::sortByCategory ? pd->category
-                                                                           : pd->manufacturerName);
+            const PluginFilesystemTree* const sub = subFolders.getUnchecked(i);
 
-            if (! thisType.containsNonWhitespaceChars())
-                thisType = "Other";
+            PopupMenu subMenu;
+            sub->addToMenu (subMenu, allPlugins);
 
-            if (thisType != lastType)
-            {
-                if (current->plugins.size() + current->subFolders.size() > 0)
-                {
-                    current->folder = lastType;
-                    tree.subFolders.add (current.release());
-                    current = new KnownPluginList::PluginTree();
-                }
-
-                lastType = thisType;
-            }
-
-            current->plugins.add (pd);
+           #if JUCE_MAC
+            // avoid the special AU formatting nonsense on Mac..
+            m.addSubMenu (sub->folder.fromFirstOccurrenceOf (":", false, false), subMenu);
+           #else
+            m.addSubMenu (sub->folder, subMenu);
+           #endif
         }
 
-        if (current->plugins.size() + current->subFolders.size() > 0)
+        for (i = 0; i < plugins.size(); ++i)
         {
-            current->folder = lastType;
-            tree.subFolders.add (current.release());
+            PluginDescription* const plugin = plugins.getUnchecked(i);
+
+            m.addItem (allPlugins.indexOf (plugin) + menuIdBase,
+                       plugin->name, true, false);
         }
     }
 
-    static void addPlugin (KnownPluginList::PluginTree& tree, PluginDescription* const pd, String path)
+private:
+    String folder;
+    OwnedArray <PluginFilesystemTree> subFolders;
+    Array <PluginDescription*> plugins;
+
+    void addPlugin (PluginDescription* const pd, const String& path)
     {
         if (path.isEmpty())
         {
-            tree.plugins.add (pd);
+            plugins.add (pd);
         }
         else
         {
-           #if JUCE_MAC
-            if (path.containsChar (':'))
-                path = path.fromFirstOccurrenceOf (":", false, false); // avoid the special AU formatting nonsense on Mac..
-           #endif
-
             const String firstSubFolder (path.upToFirstOccurrenceOf ("/", false, false));
-            const String remainingPath  (path.fromFirstOccurrenceOf ("/", false, false));
+            const String remainingPath (path.fromFirstOccurrenceOf ("/", false, false));
 
-            for (int i = tree.subFolders.size(); --i >= 0;)
+            for (int i = subFolders.size(); --i >= 0;)
             {
-                KnownPluginList::PluginTree& subFolder = *tree.subFolders.getUnchecked(i);
-
-                if (subFolder.folder.equalsIgnoreCase (firstSubFolder))
+                if (subFolders.getUnchecked(i)->folder.equalsIgnoreCase (firstSubFolder))
                 {
-                    addPlugin (subFolder, pd, remainingPath);
+                    subFolders.getUnchecked(i)->addPlugin (pd, remainingPath);
                     return;
                 }
             }
 
-            KnownPluginList::PluginTree* const newFolder = new KnownPluginList::PluginTree();
+            PluginFilesystemTree* const newFolder = new PluginFilesystemTree();
             newFolder->folder = firstSubFolder;
-            tree.subFolders.add (newFolder);
-            addPlugin (*newFolder, pd, remainingPath);
+            subFolders.add (newFolder);
+
+            newFolder->addPlugin (pd, remainingPath);
         }
     }
 
     // removes any deeply nested folders that don't contain any actual plugins
-    static void optimise (KnownPluginList::PluginTree& tree)
+    void optimise()
     {
-        for (int i = tree.subFolders.size(); --i >= 0;)
+        for (int i = subFolders.size(); --i >= 0;)
         {
-            KnownPluginList::PluginTree& sub = *tree.subFolders.getUnchecked(i);
-            optimise (sub);
+            PluginFilesystemTree* const sub = subFolders.getUnchecked(i);
 
-            if (sub.plugins.size() == 0)
+            sub->optimise();
+
+            if (sub->plugins.size() == 0)
             {
-                for (int j = 0; j < sub.subFolders.size(); ++j)
-                    tree.subFolders.add (sub.subFolders.getUnchecked(j));
+                for (int j = 0; j < sub->subFolders.size(); ++j)
+                    subFolders.add (sub->subFolders.getUnchecked(j));
 
-                sub.subFolders.clear (false);
-                tree.subFolders.remove (i);
+                sub->subFolders.clear (false);
+                subFolders.remove (i);
             }
-        }
-    }
-
-    static void addToMenu (const KnownPluginList::PluginTree& tree, PopupMenu& m, const OwnedArray <PluginDescription>& allPlugins)
-    {
-        for (int i = 0; i < tree.subFolders.size(); ++i)
-        {
-            const KnownPluginList::PluginTree& sub = *tree.subFolders.getUnchecked(i);
-
-            PopupMenu subMenu;
-            addToMenu (sub, subMenu, allPlugins);
-            m.addSubMenu (sub.folder, subMenu);
-        }
-
-        for (int i = 0; i < tree.plugins.size(); ++i)
-        {
-            const PluginDescription* const plugin = tree.plugins.getUnchecked(i);
-
-            m.addItem (allPlugins.indexOf (plugin) + menuIdBase, plugin->name, true, false);
         }
     }
 };
 
-KnownPluginList::PluginTree* KnownPluginList::createTree (const SortMethod sortMethod) const
+//==============================================================================
+void KnownPluginList::addToMenu (PopupMenu& menu, const SortMethod sortMethod) const
 {
     Array <PluginDescription*> sorted;
 
@@ -448,34 +382,57 @@ KnownPluginList::PluginTree* KnownPluginList::createTree (const SortMethod sortM
             sorted.addSorted (sorter, types.getUnchecked(i));
     }
 
-    PluginTree* tree = new PluginTree();
-
-    if (sortMethod == sortByCategory || sortMethod == sortByManufacturer)
+    if (sortMethod == sortByCategory
+         || sortMethod == sortByManufacturer)
     {
-        PluginTreeUtils::buildTreeByCategory (*tree, sorted, sortMethod);
+        String lastSubMenuName;
+        PopupMenu sub;
+
+        for (int i = 0; i < sorted.size(); ++i)
+        {
+            const PluginDescription* const pd = sorted.getUnchecked(i);
+            String thisSubMenuName (sortMethod == sortByCategory ? pd->category
+                                                                 : pd->manufacturerName);
+
+            if (! thisSubMenuName.containsNonWhitespaceChars())
+                thisSubMenuName = "Other";
+
+            if (thisSubMenuName != lastSubMenuName)
+            {
+                if (sub.getNumItems() > 0)
+                {
+                    menu.addSubMenu (lastSubMenuName, sub);
+                    sub.clear();
+                }
+
+                lastSubMenuName = thisSubMenuName;
+            }
+
+            sub.addItem (types.indexOf (pd) + menuIdBase, pd->name, true, false);
+        }
+
+        if (sub.getNumItems() > 0)
+            menu.addSubMenu (lastSubMenuName, sub);
     }
     else if (sortMethod == sortByFileSystemLocation)
     {
-        PluginTreeUtils::buildTreeByFolder (*tree, sorted);
+        PluginFilesystemTree root;
+        root.buildTree (sorted);
+        root.addToMenu (menu, types);
     }
     else
     {
         for (int i = 0; i < sorted.size(); ++i)
-            tree->plugins.add (sorted.getUnchecked(i));
+        {
+            const PluginDescription* const pd = sorted.getUnchecked(i);
+            menu.addItem (types.indexOf (pd) + menuIdBase, pd->name, true, false);
+        }
     }
-
-    return tree;
-}
-
-//==============================================================================
-void KnownPluginList::addToMenu (PopupMenu& menu, const SortMethod sortMethod) const
-{
-    ScopedPointer<PluginTree> tree (createTree (sortMethod));
-    PluginTreeUtils::addToMenu (*tree, menu, types);
 }
 
 int KnownPluginList::getIndexChosenByMenu (const int menuResultCode) const
 {
     const int i = menuResultCode - menuIdBase;
+
     return isPositiveAndBelow (i, types.size()) ? i : -1;
 }

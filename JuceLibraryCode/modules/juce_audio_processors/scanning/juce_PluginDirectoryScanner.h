@@ -105,10 +105,6 @@ public:
     */
     const StringArray& getFailedFiles() const noexcept              { return failedFiles; }
 
-    /** Reads the given dead-mans-pedal file and applies its contents to the list. */
-    static void applyBlacklistingsFromDeadMansPedal (KnownPluginList& listToApplyTo,
-                                                     const File& deadMansPedalFile);
-
 private:
     //==============================================================================
     KnownPluginList& list;
@@ -119,6 +115,7 @@ private:
     int nextIndex;
     float progress;
 
+    StringArray getDeadMansPedalFile();
     void setDeadMansPedalFile (const StringArray& newContents);
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PluginDirectoryScanner);

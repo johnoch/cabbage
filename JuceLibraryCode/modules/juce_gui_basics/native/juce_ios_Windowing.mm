@@ -224,13 +224,13 @@ int JUCE_CALLTYPE NativeMessageBox::showYesNoCancelBox (AlertWindow::AlertIconTy
 //==============================================================================
 bool DragAndDropContainer::performExternalDragDropOfFiles (const StringArray& files, const bool canMoveFiles)
 {
-    jassertfalse;    // no such thing on iOS!
+    jassertfalse;    // no such thing on the iphone!
     return false;
 }
 
 bool DragAndDropContainer::performExternalDragDropOfText (const String& text)
 {
-    jassertfalse;    // no such thing on iOS!
+    jassertfalse;    // no such thing on the iphone!
     return false;
 }
 
@@ -289,7 +289,7 @@ void Desktop::setMousePosition (const Point<int>&)
 
 Desktop::DisplayOrientation Desktop::getCurrentOrientation() const
 {
-    return Orientations::convertToJuce ([[UIApplication sharedApplication] statusBarOrientation]);
+    return convertToJuceOrientation ([[UIApplication sharedApplication] statusBarOrientation]);
 }
 
 void Desktop::Displays::findDisplays()

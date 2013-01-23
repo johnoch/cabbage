@@ -322,7 +322,8 @@ void TableHeaderComponent::resizeColumnsToFit (int firstColumnIndex, int targetT
     targetTotalWidth = jmax (targetTotalWidth, 0);
 
     StretchableObjectResizer sor;
-    for (int i = firstColumnIndex; i < columns.size(); ++i)
+    int i;
+    for (i = firstColumnIndex; i < columns.size(); ++i)
     {
         ColumnInfo* const ci = columns.getUnchecked(i);
 
@@ -333,7 +334,7 @@ void TableHeaderComponent::resizeColumnsToFit (int firstColumnIndex, int targetT
     sor.resizeToFit (targetTotalWidth);
 
     int visIndex = 0;
-    for (int i = firstColumnIndex; i < columns.size(); ++i)
+    for (i = firstColumnIndex; i < columns.size(); ++i)
     {
         ColumnInfo* const ci = columns.getUnchecked(i);
 

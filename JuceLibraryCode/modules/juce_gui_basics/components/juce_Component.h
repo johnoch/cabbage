@@ -776,8 +776,11 @@ public:
     TargetClass* findParentComponentOfClass() const
     {
         for (Component* p = parentComponent; p != nullptr; p = p->parentComponent)
-            if (TargetClass* const target = dynamic_cast <TargetClass*> (p))
+        {
+            TargetClass* const target = dynamic_cast <TargetClass*> (p);
+            if (target != nullptr)
                 return target;
+        }
 
         return nullptr;
     }
@@ -2255,7 +2258,6 @@ private:
         bool isDisabledFlag             : 1;
         bool childCompFocusedFlag       : 1;
         bool dontClipGraphicsFlag       : 1;
-        bool mouseDownWasBlocked        : 1;
       #if JUCE_DEBUG
         bool isInsidePaintCall          : 1;
       #endif

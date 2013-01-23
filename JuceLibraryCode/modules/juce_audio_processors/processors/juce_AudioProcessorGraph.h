@@ -50,7 +50,8 @@ class JUCE_API  AudioProcessorGraph   : public AudioProcessor,
 {
 public:
     //==============================================================================
-    /** Creates an empty graph. */
+    /** Creates an empty graph.
+    */
     AudioProcessorGraph();
 
     /** Destructor.
@@ -151,6 +152,7 @@ public:
 
     //==============================================================================
     /** Deletes all nodes and connections from this graph.
+
         Any processor objects in the graph will be deleted.
     */
     void clear();
@@ -197,6 +199,7 @@ public:
     const Connection* getConnection (int index) const                   { return connections [index]; }
 
     /** Searches for a connection between some specified channels.
+
         If no such connection is found, this returns nullptr.
     */
     const Connection* getConnectionBetween (uint32 sourceNodeId,
@@ -210,7 +213,8 @@ public:
     bool isConnected (uint32 possibleSourceNodeId,
                       uint32 possibleDestNodeId) const;
 
-    /** Returns true if it would be legal to connect the specified points. */
+    /** Returns true if it would be legal to connect the specified points.
+    */
     bool canConnect (uint32 sourceNodeId, int sourceChannelIndex,
                      uint32 destNodeId, int destChannelIndex) const;
 
@@ -222,16 +226,21 @@ public:
     bool addConnection (uint32 sourceNodeId, int sourceChannelIndex,
                         uint32 destNodeId, int destChannelIndex);
 
-    /** Deletes the connection with the specified index. */
+    /** Deletes the connection with the specified index.
+
+        Returns true if a connection was actually deleted.
+    */
     void removeConnection (int index);
 
     /** Deletes any connection between two specified points.
+
         Returns true if a connection was actually deleted.
     */
     bool removeConnection (uint32 sourceNodeId, int sourceChannelIndex,
                            uint32 destNodeId, int destChannelIndex);
 
-    /** Removes all connections from the specified node. */
+    /** Removes all connections from the specified node.
+    */
     bool disconnectNode (uint32 nodeId);
 
     /** Returns true if the given connection's channel numbers map on to valid
@@ -320,7 +329,6 @@ public:
         const String getOutputChannelName (int channelIndex) const;
         bool isInputChannelStereoPair (int index) const;
         bool isOutputChannelStereoPair (int index) const;
-        bool silenceInProducesSilenceOut() const;
         bool acceptsMidi() const;
         bool producesMidi() const;
 
@@ -365,7 +373,6 @@ public:
     const String getOutputChannelName (int channelIndex) const;
     bool isInputChannelStereoPair (int index) const;
     bool isOutputChannelStereoPair (int index) const;
-    bool silenceInProducesSilenceOut() const;
 
     bool acceptsMidi() const;
     bool producesMidi() const;
@@ -385,7 +392,7 @@ public:
     const String getProgramName (int)               { return String::empty; }
     void changeProgramName (int, const String&)     { }
 
-    void getStateInformation (juce::MemoryBlock&);
+    void getStateInformation (juce::MemoryBlock& destData);
     void setStateInformation (const void* data, int sizeInBytes);
 
 private:

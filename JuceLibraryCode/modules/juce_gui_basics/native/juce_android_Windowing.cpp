@@ -334,26 +334,26 @@ public:
     }
 
     //==============================================================================
-    void handleMouseDownCallback (int index, float x, float y, int64 time)
+    void handleMouseDownCallback (float x, float y, int64 time)
     {
         lastMousePos.setXY ((int) x, (int) y);
         currentModifiers = currentModifiers.withoutMouseButtons();
-        handleMouseEvent (index, lastMousePos, currentModifiers, time);
+        handleMouseEvent (0, lastMousePos, currentModifiers, time);
         currentModifiers = currentModifiers.withoutMouseButtons().withFlags (ModifierKeys::leftButtonModifier);
-        handleMouseEvent (index, lastMousePos, currentModifiers, time);
+        handleMouseEvent (0, lastMousePos, currentModifiers, time);
     }
 
-    void handleMouseDragCallback (int index, float x, float y, int64 time)
+    void handleMouseDragCallback (float x, float y, int64 time)
     {
         lastMousePos.setXY ((int) x, (int) y);
-        handleMouseEvent (index, lastMousePos, currentModifiers, time);
+        handleMouseEvent (0, lastMousePos, currentModifiers, time);
     }
 
-    void handleMouseUpCallback (int index, float x, float y, int64 time)
+    void handleMouseUpCallback (float x, float y, int64 time)
     {
         lastMousePos.setXY ((int) x, (int) y);
         currentModifiers = currentModifiers.withoutMouseButtons();
-        handleMouseEvent (index, lastMousePos, currentModifiers, time);
+        handleMouseEvent (0, lastMousePos, currentModifiers, time);
     }
 
     //==============================================================================
@@ -553,12 +553,12 @@ Point<int> AndroidComponentPeer::lastMousePos;
           peer->juceMethodInvocation; \
   }
 
-JUCE_VIEW_CALLBACK (void, handlePaint,      (JNIEnv* env, jobject view, jobject canvas),                          handlePaintCallback (env, canvas))
-JUCE_VIEW_CALLBACK (void, handleMouseDown,  (JNIEnv* env, jobject view, jint i, jfloat x, jfloat y, jlong time),  handleMouseDownCallback (i, (float) x, (float) y, (int64) time))
-JUCE_VIEW_CALLBACK (void, handleMouseDrag,  (JNIEnv* env, jobject view, jint i, jfloat x, jfloat y, jlong time),  handleMouseDragCallback (i, (float) x, (float) y, (int64) time))
-JUCE_VIEW_CALLBACK (void, handleMouseUp,    (JNIEnv* env, jobject view, jint i, jfloat x, jfloat y, jlong time),  handleMouseUpCallback (i, (float) x, (float) y, (int64) time))
-JUCE_VIEW_CALLBACK (void, viewSizeChanged,  (JNIEnv* env, jobject view),                                          handleMovedOrResized())
-JUCE_VIEW_CALLBACK (void, focusChanged,     (JNIEnv* env, jobject view, jboolean hasFocus),                       handleFocusChangeCallback (hasFocus))
+JUCE_VIEW_CALLBACK (void, handlePaint,      (JNIEnv* env, jobject view, jobject canvas),                    handlePaintCallback (env, canvas))
+JUCE_VIEW_CALLBACK (void, handleMouseDown,  (JNIEnv* env, jobject view, jfloat x, jfloat y, jlong time),    handleMouseDownCallback ((float) x, (float) y, (int64) time))
+JUCE_VIEW_CALLBACK (void, handleMouseDrag,  (JNIEnv* env, jobject view, jfloat x, jfloat y, jlong time),    handleMouseDragCallback ((float) x, (float) y, (int64) time))
+JUCE_VIEW_CALLBACK (void, handleMouseUp,    (JNIEnv* env, jobject view, jfloat x, jfloat y, jlong time),    handleMouseUpCallback ((float) x, (float) y, (int64) time))
+JUCE_VIEW_CALLBACK (void, viewSizeChanged,  (JNIEnv* env, jobject view),                                    handleMovedOrResized())
+JUCE_VIEW_CALLBACK (void, focusChanged,     (JNIEnv* env, jobject view, jboolean hasFocus),                 handleFocusChangeCallback (hasFocus))
 
 //==============================================================================
 ComponentPeer* Component::createNewPeer (int styleFlags, void*)
@@ -715,7 +715,7 @@ Image juce_createIconForFile (const File& file)
 }
 
 //==============================================================================
-void* CustomMouseCursorInfo::create() const                                                     { return nullptr; }
+void* MouseCursor::createMouseCursorFromImage (const Image&, int, int)                          { return nullptr; }
 void* MouseCursor::createStandardMouseCursor (const MouseCursor::StandardCursorType)            { return nullptr; }
 void MouseCursor::deleteMouseCursor (void* const /*cursorHandle*/, const bool /*isStandard*/)   {}
 

@@ -103,6 +103,7 @@ private:
     double volatile sampleRate;
     bool wasSourceLooping, isPrepared;
 
+    friend class SharedBufferingAudioSourceThread;
     bool readNextBufferChunk();
     void readBufferSection (int64 start, int length, int bufferOffset);
     int useTimeSlice();

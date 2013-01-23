@@ -49,10 +49,17 @@ public:
             const ModifierKeys mods (ModifierKeys::getCurrentModifiers());
 
             if (! mods.isAnyMouseButtonDown())
-                if (Component* const comp = Desktop::getInstance().findComponentAt (screenPos))
-                    if (ComponentPeer* const peer = comp->getPeer())
-                        if (! peer->isFocused())
-                            peer->handleMouseEvent (0, screenPos - peer->getScreenPosition(), mods, Time::currentTimeMillis());
+            {
+                Component* comp = Desktop::getInstance().findComponentAt (screenPos);
+
+                if (comp != nullptr)
+                {
+                    ComponentPeer* const peer = comp->getPeer();
+
+                    if (peer != nullptr && ! peer->isFocused())
+                        peer->handleMouseEvent (0, screenPos - peer->getScreenPosition(), mods, Time::currentTimeMillis());
+                }
+            }
         }
     }
 

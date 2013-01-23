@@ -26,7 +26,10 @@
 class AsyncUpdater::AsyncUpdaterMessage  : public CallbackMessage
 {
 public:
-    AsyncUpdaterMessage (AsyncUpdater& au)  : owner (au) {}
+    AsyncUpdaterMessage (AsyncUpdater& owner_)
+        : owner (owner_)
+    {
+    }
 
     void messageCallback()
     {

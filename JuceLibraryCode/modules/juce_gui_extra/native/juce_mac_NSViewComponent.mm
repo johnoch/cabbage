@@ -27,13 +27,13 @@ class NSViewAttachment  : public ReferenceCountedObject,
                           public ComponentMovementWatcher
 {
 public:
-    NSViewAttachment (NSView* const v, Component& comp)
-        : ComponentMovementWatcher (&comp),
-          view (v),
-          owner (comp),
+    NSViewAttachment (NSView* const view_, Component& owner_)
+        : ComponentMovementWatcher (&owner_),
+          view (view_),
+          owner (owner_),
           currentPeer (nullptr)
     {
-        [view retain];
+        [view_ retain];
 
         if (owner.isShowing())
             componentPeerChanged();

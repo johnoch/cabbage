@@ -76,7 +76,7 @@ public:
 
         @see activeWindowStatusChanged
     */
-    bool isActiveWindow() const noexcept                    { return isCurrentlyActive; }
+    bool isActiveWindow() const noexcept                    { return windowIsActive_; }
 
     //==============================================================================
     /** This will set the bounds of the window so that it's centred in front of another
@@ -153,7 +153,7 @@ protected:
 
 private:
     friend class TopLevelWindowManager;
-    bool useDropShadow, useNativeTitleBar, isCurrentlyActive;
+    bool useDropShadow, useNativeTitleBar, windowIsActive_;
     ScopedPointer <DropShadower> shadower;
 
     void setWindowActive (bool isNowActive);

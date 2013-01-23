@@ -340,7 +340,8 @@ void RectangleList::swapWith (RectangleList& otherList) noexcept
 //==============================================================================
 void RectangleList::consolidate()
 {
-    for (int i = 0; i < getNumRectangles() - 1; ++i)
+    int i;
+    for (i = 0; i < getNumRectangles() - 1; ++i)
     {
         Rectangle<int>& r = rects.getReference (i);
         const int rx1 = r.pos.x;
@@ -393,7 +394,7 @@ void RectangleList::consolidate()
         }
     }
 
-    for (int i = 0; i < rects.size() - 1; ++i)
+    for (i = 0; i < rects.size() - 1; ++i)
     {
         Rectangle<int>& r = rects.getReference (i);
 

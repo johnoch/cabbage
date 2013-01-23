@@ -40,15 +40,15 @@ namespace RenderingHelpers
 class TranslationOrTransform
 {
 public:
-    TranslationOrTransform (int x, int y) noexcept
-        : xOffset (x), yOffset (y), isOnlyTranslated (true), isIntegerScaling (true)
+    TranslationOrTransform (int xOffset_, int yOffset_) noexcept
+        : xOffset (xOffset_), yOffset (yOffset_), isOnlyTranslated (true)
     {
     }
 
     TranslationOrTransform (const TranslationOrTransform& other) noexcept
         : complexTransform (other.complexTransform),
           xOffset (other.xOffset), yOffset (other.yOffset),
-          isOnlyTranslated (other.isOnlyTranslated), isIntegerScaling (other.isIntegerScaling)
+          isOnlyTranslated (other.isOnlyTranslated)
     {
     }
 
@@ -91,7 +91,6 @@ public:
         {
             complexTransform = getTransformWith (t);
             isOnlyTranslated = false;
-            isIntegerScaling = isIntegerScale (complexTransform);
         }
     }
 
@@ -121,12 +120,6 @@ public:
                              static_cast <Type> (yOffset));
     }
 
-    template <typename Type>
-    Rectangle<float> transformed (const Rectangle<Type>& r) const noexcept
-    {
-        return r.toFloat().transformed (complexTransform);
-    }
-
     Rectangle<int> deviceSpaceToUserSpace (const Rectangle<int>& r) const noexcept
     {
         return isOnlyTranslated ? r.translated (-xOffset, -yOffset)
@@ -135,7 +128,7 @@ public:
 
     AffineTransform complexTransform;
     int xOffset, yOffset;
-    bool isOnlyTranslated, isIntegerScaling;
+    bool isOnlyTranslated;
 
 private:
     static inline bool isIntegerTranslation (const AffineTransform& t) noexcept
@@ -143,19 +136,6 @@ private:
         const int tx = (int) (t.getTranslationX() * 256.0f);
         const int ty = (int) (t.getTranslationY() * 256.0f);
         return ((tx | ty) & 0xf8) == 0;
-    }
-
-    static inline bool isIntegerScale (const AffineTransform& t) noexcept
-    {
-        if (t.mat01 != 0 || t.mat10 != 0)
-            return false;
-
-        const int tx = (int) (t.getTranslationX() * 256.0f);
-        const int ty = (int) (t.getTranslationY() * 256.0f);
-        const int txs = (int) (t.mat00 * 256.0f);
-        const int tys = (int) (t.mat11 * 256.0f);
-
-        return ((tx | ty | txs | tys) & 0xf8) == 0;
     }
 };
 
@@ -413,11 +393,11 @@ namespace GradientPixelIterators
     {
     public:
         Linear (const ColourGradient& gradient, const AffineTransform& transform,
-                const PixelARGB* const colours, const int numColours)
-            : lookupTable (colours),
-              numEntries (numColours)
+                const PixelARGB* const lookupTable_, const int numEntries_)
+            : lookupTable (lookupTable_),
+              numEntries (numEntries_)
         {
-            jassert (numColours >= 0);
+            jassert (numEntries_ >= 0);
             Point<float> p1 (gradient.point1);
             Point<float> p2 (gradient.point2);
 
@@ -487,13 +467,13 @@ namespace GradientPixelIterators
     {
     public:
         Radial (const ColourGradient& gradient, const AffineTransform&,
-                const PixelARGB* const colours, const int numColours)
-            : lookupTable (colours),
-              numEntries (numColours),
+                const PixelARGB* const lookupTable_, const int numEntries_)
+            : lookupTable (lookupTable_),
+              numEntries (numEntries_),
               gx1 (gradient.point1.x),
               gy1 (gradient.point1.y)
         {
-            jassert (numColours >= 0);
+            jassert (numEntries_ >= 0);
             const Point<float> diff (gradient.point1 - gradient.point2);
             maxDist = diff.x * diff.x + diff.y * diff.y;
             invScale = numEntries / std::sqrt (maxDist);
@@ -530,8 +510,8 @@ namespace GradientPixelIterators
     {
     public:
         TransformedRadial (const ColourGradient& gradient, const AffineTransform& transform,
-                           const PixelARGB* const colours, const int numColours)
-            : Radial (gradient, transform, colours, numColours),
+                           const PixelARGB* const lookupTable_, const int numEntries_)
+            : Radial (gradient, transform, lookupTable_, numEntries_),
               inverseTransform (transform.inverted())
         {
             tM10 = inverseTransform.mat10;
@@ -575,8 +555,9 @@ namespace EdgeTableFillers
     class SolidColour
     {
     public:
-        SolidColour (const Image::BitmapData& image, const PixelARGB& colour)
-            : data (image), sourceColour (colour)
+        SolidColour (const Image::BitmapData& data_, const PixelARGB& colour)
+            : data (data_),
+              sourceColour (colour)
         {
             if (sizeof (PixelType) == 3 && data.pixelStride == sizeof (PixelType))
             {
@@ -746,10 +727,10 @@ namespace EdgeTableFillers
     class Gradient  : public GradientType
     {
     public:
-        Gradient (const Image::BitmapData& dest, const ColourGradient& gradient, const AffineTransform& transform,
-                  const PixelARGB* const colours, const int numColours)
-            : GradientType (gradient, transform, colours, numColours - 1),
-              destData (dest)
+        Gradient (const Image::BitmapData& destData_, const ColourGradient& gradient, const AffineTransform& transform,
+                  const PixelARGB* const lookupTable_, const int numEntries_)
+            : GradientType (gradient, transform, lookupTable_, numEntries_ - 1),
+              destData (destData_)
         {
         }
 
@@ -827,13 +808,13 @@ namespace EdgeTableFillers
     class ImageFill
     {
     public:
-        ImageFill (const Image::BitmapData& dest, const Image::BitmapData& src,
-                   const int alpha, const int x, const int y)
-            : destData (dest),
-              srcData (src),
-              extraAlpha (alpha + 1),
-              xOffset (repeatPattern ? negativeAwareModulo (x, src.width)  - src.width  : x),
-              yOffset (repeatPattern ? negativeAwareModulo (y, src.height) - src.height : y)
+        ImageFill (const Image::BitmapData& destData_, const Image::BitmapData& srcData_,
+                   const int extraAlpha_, const int x, const int y)
+            : destData (destData_),
+              srcData (srcData_),
+              extraAlpha (extraAlpha_ + 1),
+              xOffset (repeatPattern ? negativeAwareModulo (x, srcData_.width) - srcData_.width : x),
+              yOffset (repeatPattern ? negativeAwareModulo (y, srcData_.height) - srcData_.height : y)
         {
         }
 
@@ -988,17 +969,17 @@ namespace EdgeTableFillers
     class TransformedImageFill
     {
     public:
-        TransformedImageFill (const Image::BitmapData& dest, const Image::BitmapData& src,
-                              const AffineTransform& transform, const int alpha, const bool higherQuality)
+        TransformedImageFill (const Image::BitmapData& destData_, const Image::BitmapData& srcData_,
+                              const AffineTransform& transform, const int extraAlpha_, const bool betterQuality_)
             : interpolator (transform,
-                            higherQuality ? 0.5f : 0.0f,
-                            higherQuality ? -128 : 0),
-              destData (dest),
-              srcData (src),
-              extraAlpha (alpha + 1),
-              betterQuality (higherQuality),
-              maxX (src.width  - 1),
-              maxY (src.height - 1),
+                            betterQuality_ ? 0.5f : 0.0f,
+                            betterQuality_ ? -128 : 0),
+              destData (destData_),
+              srcData (srcData_),
+              extraAlpha (extraAlpha_ + 1),
+              betterQuality (betterQuality_),
+              maxX (srcData_.width - 1),
+              maxY (srcData_.height - 1),
               scratchSize (2048)
         {
             scratchBuffer.malloc (scratchSize);
@@ -1372,29 +1353,29 @@ namespace EdgeTableFillers
         {
         public:
             TransformedImageSpanInterpolator (const AffineTransform& transform,
-                                              const float offsetFloat, const int offsetInt) noexcept
+                                              const float pixelOffset_, const int pixelOffsetInt_) noexcept
                 : inverseTransform (transform.inverted()),
-                  pixelOffset (offsetFloat), pixelOffsetInt (offsetInt)
+                  pixelOffset (pixelOffset_), pixelOffsetInt (pixelOffsetInt_)
             {}
 
-            void setStartOfLine (float sx, float sy, const int numPixels) noexcept
+            void setStartOfLine (float x, float y, const int numPixels) noexcept
             {
                 jassert (numPixels > 0);
 
-                sx += pixelOffset;
-                sy += pixelOffset;
-                float x1 = sx, y1 = sy;
-                sx += numPixels;
-                inverseTransform.transformPoints (x1, y1, sx, sy);
+                x += pixelOffset;
+                y += pixelOffset;
+                float x1 = x, y1 = y;
+                x += numPixels;
+                inverseTransform.transformPoints (x1, y1, x, y);
 
-                xBresenham.set ((int) (x1 * 256.0f), (int) (sx * 256.0f), numPixels, pixelOffsetInt);
-                yBresenham.set ((int) (y1 * 256.0f), (int) (sy * 256.0f), numPixels, pixelOffsetInt);
+                xBresenham.set ((int) (x1 * 256.0f), (int) (x * 256.0f), numPixels, pixelOffsetInt);
+                yBresenham.set ((int) (y1 * 256.0f), (int) (y * 256.0f), numPixels, pixelOffsetInt);
             }
 
-            void next (int& px, int& py) noexcept
+            void next (int& x, int& y) noexcept
             {
-                px = xBresenham.n;  xBresenham.stepToNext();
-                py = yBresenham.n;  yBresenham.stepToNext();
+                x = xBresenham.n;  xBresenham.stepToNext();
+                y = yBresenham.n;  yBresenham.stepToNext();
             }
 
         private:
@@ -1403,12 +1384,12 @@ namespace EdgeTableFillers
             public:
                 BresenhamInterpolator() noexcept {}
 
-                void set (const int n1, const int n2, const int numSteps_, const int offsetInt) noexcept
+                void set (const int n1, const int n2, const int numSteps_, const int pixelOffsetInt) noexcept
                 {
                     numSteps = numSteps_;
                     step = (n2 - n1) / numSteps;
                     remainder = modulo = (n2 - n1) % numSteps;
-                    n = n1 + offsetInt;
+                    n = n1 + pixelOffsetInt;
 
                     if (modulo <= 0)
                     {
@@ -1684,8 +1665,8 @@ namespace ClipRegions
             RectangleList inverse (edgeTable.getMaximumBounds());
 
             if (inverse.subtract (r))
-                for (const Rectangle<int>* i = inverse.begin(), * const e = inverse.end(); i != e; ++i)
-                    edgeTable.excludeRectangle (*i);
+                for (RectangleList::Iterator iter (inverse); iter.next();)
+                    edgeTable.excludeRectangle (*iter.getRectangle());
 
             return edgeTable.isEmpty() ? nullptr : this;
         }
@@ -1967,14 +1948,17 @@ namespace ClipRegions
         template <class Renderer>
         void iterate (Renderer& r) const noexcept
         {
-            for (const Rectangle<int>* i = clip.begin(), * const e = clip.end(); i != e; ++i)
-            {
-                const int x = i->getX();
-                const int w = i->getWidth();
-                jassert (w > 0);
-                const int bottom = i->getBottom();
+            RectangleList::Iterator iter (clip);
 
-                for (int y = i->getY(); y < bottom; ++y)
+            while (iter.next())
+            {
+                const Rectangle<int> rect (*iter.getRectangle());
+                const int x = rect.getX();
+                const int w = rect.getWidth();
+                jassert (w > 0);
+                const int bottom = rect.getBottom();
+
+                for (int y = rect.getY(); y < bottom; ++y)
                 {
                     r.setEdgeTableYPos (y);
                     r.handleEdgeTableLineFull (x, w);
@@ -1987,16 +1971,18 @@ namespace ClipRegions
         class SubRectangleIterator
         {
         public:
-            SubRectangleIterator (const RectangleList& clipList, const Rectangle<int>& clipBounds)
-                : clip (clipList), area (clipBounds)
+            SubRectangleIterator (const RectangleList& clip_, const Rectangle<int>& area_)
+                : clip (clip_), area (area_)
             {}
 
             template <class Renderer>
             void iterate (Renderer& r) const noexcept
             {
-                for (const Rectangle<int>* i = clip.begin(), * const e = clip.end(); i != e; ++i)
+                RectangleList::Iterator iter (clip);
+
+                while (iter.next())
                 {
-                    const Rectangle<int> rect (i->getIntersection (area));
+                    const Rectangle<int> rect (iter.getRectangle()->getIntersection (area));
 
                     if (! rect.isEmpty())
                     {
@@ -2024,8 +2010,8 @@ namespace ClipRegions
         class SubRectangleIteratorFloat
         {
         public:
-            SubRectangleIteratorFloat (const RectangleList& clipList, const Rectangle<float>& clipBounds) noexcept
-                : clip (clipList), area (clipBounds)
+            SubRectangleIteratorFloat (const RectangleList& clip_, const Rectangle<float>& area_) noexcept
+                : clip (clip_), area (area_)
             {
             }
 
@@ -2033,13 +2019,14 @@ namespace ClipRegions
             void iterate (Renderer& r) const noexcept
             {
                 const RenderingHelpers::FloatRectangleRasterisingInfo f (area);
+                RectangleList::Iterator iter (clip);
 
-                for (const Rectangle<int>* i = clip.begin(), * const e = clip.end(); i != e; ++i)
+                while (iter.next())
                 {
-                    const int clipLeft   = i->getX();
-                    const int clipRight  = i->getRight();
-                    const int clipTop    = i->getY();
-                    const int clipBottom = i->getBottom();
+                    const int clipLeft   = iter.getRectangle()->getX();
+                    const int clipRight  = iter.getRectangle()->getRight();
+                    const int clipTop    = iter.getRectangle()->getY();
+                    const int clipBottom = iter.getRectangle()->getBottom();
 
                     if (f.totalBottom > clipTop && f.totalTop < clipBottom && f.totalRight > clipLeft && f.totalLeft < clipRight)
                     {
@@ -2120,17 +2107,17 @@ namespace ClipRegions
 class SoftwareRendererSavedState
 {
 public:
-    SoftwareRendererSavedState (const Image& im, const Rectangle<int>& clipBounds)
-        : image (im), clip (new ClipRegions::RectangleListRegion (clipBounds)),
+    SoftwareRendererSavedState (const Image& image_, const Rectangle<int>& clip_)
+        : image (image_), clip (new ClipRegions::RectangleListRegion (clip_)),
           transform (0, 0),
           interpolationQuality (Graphics::mediumResamplingQuality),
           transparencyLayerAlpha (1.0f)
     {
     }
 
-    SoftwareRendererSavedState (const Image& im, const RectangleList& clipList, const int x, const int y)
-        : image (im), clip (new ClipRegions::RectangleListRegion (clipList)),
-          transform (x, y),
+    SoftwareRendererSavedState (const Image& image_, const RectangleList& clip_, const int xOffset_, const int yOffset_)
+        : image (image_), clip (new ClipRegions::RectangleListRegion (clip_)),
+          transform (xOffset_, yOffset_),
           interpolationQuality (Graphics::mediumResamplingQuality),
           transparencyLayerAlpha (1.0f)
     {
@@ -2520,7 +2507,9 @@ public:
 
     void restore()
     {
-        if (StateObjectType* const top = stack.getLast())
+        StateObjectType* const top = stack.getLast();
+
+        if (top != nullptr)
         {
             currentState = top;
             stack.removeLast (1, false);

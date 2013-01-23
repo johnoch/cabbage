@@ -72,8 +72,8 @@ public:
     */
     virtual void handlePartialSysexMessage (MidiInput* source,
                                             const uint8* messageData,
-                                            int numBytesSoFar,
-                                            double timestamp)
+                                            const int numBytesSoFar,
+                                            const double timestamp)
     {
         // (this bit is just to avoid compiler warnings about unused variables)
         (void) source; (void) messageData; (void) numBytesSoFar; (void) timestamp;

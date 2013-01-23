@@ -60,8 +60,11 @@ public:
     void sendPropertyChangeMessage (ValueTree& tree, const Identifier& property)
     {
         for (int i = valueTreesWithListeners.size(); --i >= 0;)
-            if (ValueTree* const v = valueTreesWithListeners[i])
+        {
+            ValueTree* const v = valueTreesWithListeners[i];
+            if (v != nullptr)
                 v->listeners.call (&ValueTree::Listener::valueTreePropertyChanged, tree, property);
+        }
     }
 
     void sendPropertyChangeMessage (const Identifier& property)
@@ -75,8 +78,11 @@ public:
     void sendChildAddedMessage (ValueTree& tree, ValueTree& child)
     {
         for (int i = valueTreesWithListeners.size(); --i >= 0;)
-            if (ValueTree* const v = valueTreesWithListeners[i])
+        {
+            ValueTree* const v = valueTreesWithListeners[i];
+            if (v != nullptr)
                 v->listeners.call (&ValueTree::Listener::valueTreeChildAdded, tree, child);
+        }
     }
 
     void sendChildAddedMessage (ValueTree child)
@@ -90,8 +96,11 @@ public:
     void sendChildRemovedMessage (ValueTree& tree, ValueTree& child)
     {
         for (int i = valueTreesWithListeners.size(); --i >= 0;)
-            if (ValueTree* const v = valueTreesWithListeners[i])
+        {
+            ValueTree* const v = valueTreesWithListeners[i];
+            if (v != nullptr)
                 v->listeners.call (&ValueTree::Listener::valueTreeChildRemoved, tree, child);
+        }
     }
 
     void sendChildRemovedMessage (ValueTree child)
@@ -105,8 +114,11 @@ public:
     void sendChildOrderChangedMessage (ValueTree& tree)
     {
         for (int i = valueTreesWithListeners.size(); --i >= 0;)
-            if (ValueTree* const v = valueTreesWithListeners[i])
+        {
+            ValueTree* const v = valueTreesWithListeners[i];
+            if (v != nullptr)
                 v->listeners.call (&ValueTree::Listener::valueTreeChildOrderChanged, tree);
+        }
     }
 
     void sendChildOrderChangedMessage()
@@ -122,12 +134,18 @@ public:
         ValueTree tree (this);
 
         for (int j = children.size(); --j >= 0;)
-            if (SharedObject* const child = children.getObjectPointer (j))
+        {
+            SharedObject* const child = children.getObjectPointer (j);
+            if (child != nullptr)
                 child->sendParentChangeMessage();
+        }
 
         for (int i = valueTreesWithListeners.size(); --i >= 0;)
-            if (ValueTree* const v = valueTreesWithListeners[i])
+        {
+            ValueTree* const v = valueTreesWithListeners[i];
+            if (v != nullptr)
                 v->listeners.call (&ValueTree::Listener::valueTreeParentChanged, tree);
+        }
     }
 
     const var& getProperty (const Identifier& name) const noexcept
@@ -149,7 +167,9 @@ public:
         }
         else
         {
-            if (const var* const existingValue = properties.getVarPointer (name))
+            const var* const existingValue = properties.getVarPointer (name);
+
+            if (existingValue != nullptr)
             {
                 if (*existingValue != newValue)
                     undoManager->perform (new SetPropertyAction (this, name, newValue, *existingValue, false, false));
@@ -250,9 +270,15 @@ public:
 
     bool isAChildOf (const SharedObject* const possibleParent) const noexcept
     {
-        for (const SharedObject* p = parent; p != nullptr; p = p->parent)
+        const SharedObject* p = parent;
+
+        while (p != nullptr)
+        {
             if (p == possibleParent)
                 return true;
+
+            p = p->parent;
+        }
 
         return false;
     }
@@ -585,9 +611,10 @@ public:
 
         UndoableAction* createCoalescedAction (UndoableAction* nextAction)
         {
-            if (MoveChildAction* next = dynamic_cast <MoveChildAction*> (nextAction))
-                if (next->parent == parent && next->startIndex == endIndex)
-                    return new MoveChildAction (parent, startIndex, next->endIndex);
+            MoveChildAction* next = dynamic_cast <MoveChildAction*> (nextAction);
+
+            if (next != nullptr && next->parent == parent && next->startIndex == endIndex)
+                return new MoveChildAction (parent, startIndex, next->endIndex);
 
             return nullptr;
         }
@@ -987,7 +1014,6 @@ ValueTree ValueTree::readFromStream (InputStream& input)
     }
 
     const int numChildren = input.readCompressedInt();
-    v.object->children.ensureStorageAllocated (numChildren);
 
     for (int i = 0; i < numChildren; ++i)
     {

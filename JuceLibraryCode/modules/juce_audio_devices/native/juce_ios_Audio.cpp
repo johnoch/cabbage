@@ -23,10 +23,10 @@
   ==============================================================================
 */
 
-class iOSAudioIODevice  : public AudioIODevice
+class IPhoneAudioIODevice  : public AudioIODevice
 {
 public:
-    iOSAudioIODevice (const String& deviceName)
+    IPhoneAudioIODevice (const String& deviceName)
         : AudioIODevice (deviceName, "Audio"),
           actualBufferSize (0),
           isRunning (false),
@@ -43,7 +43,7 @@ public:
         updateDeviceInfo();
     }
 
-    ~iOSAudioIODevice()
+    ~IPhoneAudioIODevice()
     {
         getSessionHolder().activeDevices.removeFirstMatchingValue (this);
         close();
@@ -157,15 +157,15 @@ public:
     int getOutputLatencyInSamples()               { return 0; } //xxx
     int getInputLatencyInSamples()                { return 0; } //xxx
 
-    void start (AudioIODeviceCallback* newCallback)
+    void start (AudioIODeviceCallback* callback_)
     {
-        if (isRunning && callback != newCallback)
+        if (isRunning && callback != callback_)
         {
-            if (newCallback != nullptr)
-                newCallback->audioDeviceAboutToStart (this);
+            if (callback_ != nullptr)
+                callback_->audioDeviceAboutToStart (this);
 
             const ScopedLock sl (callbackLock);
-            callback = newCallback;
+            callback = callback_;
         }
     }
 
@@ -325,12 +325,7 @@ private:
             CFNumberGetValue (routeChangeReasonRef, kCFNumberSInt32Type, &routeChangeReason);
 
             if (routeChangeReason == kAudioSessionRouteChangeReason_OldDeviceUnavailable)
-            {
-                const ScopedLock sl (callbackLock);
-
-                if (callback != nullptr)
-                    callback->audioDeviceError ("Old device unavailable");
-            }
+                fixAudioRouteIfSetToReceiver();
         }
 
         updateDeviceInfo();
@@ -362,13 +357,13 @@ private:
 
         static void interruptionListenerCallback (void* client, UInt32 interruptionType)
         {
-            const Array <iOSAudioIODevice*>& activeDevices = static_cast <AudioSessionHolder*> (client)->activeDevices;
+            const Array <IPhoneAudioIODevice*>& activeDevices = static_cast <AudioSessionHolder*> (client)->activeDevices;
 
             for (int i = activeDevices.size(); --i >= 0;)
                 activeDevices.getUnchecked(i)->interruptionListener (interruptionType);
         }
 
-        Array <iOSAudioIODevice*> activeDevices;
+        Array <IPhoneAudioIODevice*> activeDevices;
     };
 
     static AudioSessionHolder& getSessionHolder()
@@ -379,15 +374,20 @@ private:
 
     void interruptionListener (const UInt32 interruptionType)
     {
-        if (interruptionType == kAudioSessionBeginInterruption)
+        /*if (interruptionType == kAudioSessionBeginInterruption)
         {
-            close();
+            isRunning = false;
+            AudioOutputUnitStop (audioUnit);
 
-            const ScopedLock sl (callbackLock);
-
-            if (callback != nullptr)
-                callback->audioDeviceError ("iOS audio session interruption");
-        }
+            if (juce_iPhoneShowModalAlert ("Audio Interrupted",
+                                           "This could have been interrupted by another application or by unplugging a headset",
+                                           @"Resume",
+                                           @"Cancel"))
+            {
+                isRunning = true;
+                routingChanged (nullptr);
+            }
+        }*/
 
         if (interruptionType == kAudioSessionEndInterruption)
         {
@@ -401,12 +401,12 @@ private:
     static OSStatus processStatic (void* client, AudioUnitRenderActionFlags* flags, const AudioTimeStamp* time,
                                    UInt32 /*busNumber*/, UInt32 numFrames, AudioBufferList* data)
     {
-        return static_cast <iOSAudioIODevice*> (client)->process (flags, time, numFrames, data);
+        return static_cast <IPhoneAudioIODevice*> (client)->process (flags, time, numFrames, data);
     }
 
     static void routingChangedStatic (void* client, AudioSessionPropertyID, UInt32 /*inDataSize*/, const void* propertyValue)
     {
-        static_cast <iOSAudioIODevice*> (client)->routingChanged (propertyValue);
+        static_cast <IPhoneAudioIODevice*> (client)->routingChanged (propertyValue);
     }
 
     //==================================================================================================
@@ -495,15 +495,17 @@ private:
         }
     }
 
-    JUCE_DECLARE_NON_COPYABLE (iOSAudioIODevice);
+    JUCE_DECLARE_NON_COPYABLE (IPhoneAudioIODevice);
 };
 
 
 //==============================================================================
-class iOSAudioIODeviceType  : public AudioIODeviceType
+class IPhoneAudioIODeviceType  : public AudioIODeviceType
 {
 public:
-    iOSAudioIODeviceType()  : AudioIODeviceType ("iOS Audio")
+    //==============================================================================
+    IPhoneAudioIODeviceType()
+        : AudioIODeviceType ("iPhone Audio")
     {
     }
 
@@ -511,7 +513,7 @@ public:
 
     StringArray getDeviceNames (bool wantInputNames) const
     {
-        return StringArray ("iOS Audio");
+        return StringArray ("iPhone Audio");
     }
 
     int getDefaultDeviceIndex (bool forInput) const
@@ -530,18 +532,18 @@ public:
                                  const String& inputDeviceName)
     {
         if (outputDeviceName.isNotEmpty() || inputDeviceName.isNotEmpty())
-            return new iOSAudioIODevice (outputDeviceName.isNotEmpty() ? outputDeviceName
-                                                                       : inputDeviceName);
+            return new IPhoneAudioIODevice (outputDeviceName.isNotEmpty() ? outputDeviceName
+                                                                          : inputDeviceName);
 
         return nullptr;
     }
 
 private:
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (iOSAudioIODeviceType);
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (IPhoneAudioIODeviceType);
 };
 
 //==============================================================================
 AudioIODeviceType* AudioIODeviceType::createAudioIODeviceType_iOSAudio()
 {
-    return new iOSAudioIODeviceType();
+    return new IPhoneAudioIODeviceType();
 }

@@ -216,17 +216,9 @@ public:
     /** Creates a Path object to represent this region. */
     Path toPath() const;
 
-    //==============================================================================
-    /** Standard method for iterating the rectangles in the list. */
-    const Rectangle<int>* begin() const noexcept     { return rects.begin(); }
-    /** Standard method for iterating the rectangles in the list. */
-    const Rectangle<int>* end() const noexcept       { return rects.end(); }
 
     //==============================================================================
-    /** An iterator for accessing all the rectangles in a RectangleList.
-        Note that this class is deprectated in favour of just using the standard
-        RectangleList::begin() and RectangleList::end() methods, which are more efficient.
-    */
+    /** An iterator for accessing all the rectangles in a RectangleList. */
     class JUCE_API  Iterator
     {
     public:

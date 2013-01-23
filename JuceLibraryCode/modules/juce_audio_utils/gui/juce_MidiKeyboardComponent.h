@@ -134,7 +134,7 @@ public:
     void setOrientation (Orientation newOrientation);
 
     /** Returns the keyboard's current direction. */
-    Orientation getOrientation() const noexcept                     { return orientation; }
+    const Orientation getOrientation() const noexcept               { return orientation; }
 
     /** Sets the range of midi notes that the keyboard will be limited to.
 

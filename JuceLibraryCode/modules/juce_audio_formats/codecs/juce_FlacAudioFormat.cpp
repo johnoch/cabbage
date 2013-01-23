@@ -46,12 +46,6 @@ namespace FlacNamespace
   #define SIZE_MAX 0xffffffff
  #endif
 
- #if JUCE_CLANG
-  #pragma clang diagnostic push
-  #pragma clang diagnostic ignored "-Wconversion"
-  #pragma clang diagnostic ignored "-Wshadow"
- #endif
-
  #define __STDC_LIMIT_MACROS 1
  #include "flac/all.h"
  #include "flac/libFLAC/bitmath.c"
@@ -73,10 +67,6 @@ namespace FlacNamespace
 #else
  #include <FLAC/all.h>
 #endif
-
- #if JUCE_CLANG
-  #pragma clang diagnostic pop
- #endif
 }
 
 #undef max

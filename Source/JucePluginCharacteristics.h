@@ -53,8 +53,8 @@
 #define JucePlugin_AUExportPrefix       JuceProjectAU
 #define JucePlugin_AUExportPrefixQuoted "CaabageAU"
 #define JucePlugin_AUManufacturerCode   JucePlugin_ManufacturerCode
-#define JucePlugin_CFBundleIdentifier   com.yourcompany.Test
-#define JucePlugin_AUCocoaViewClassName JuceProjectAU_V1
+#define JucePlugin_CFBundleIdentifier   com.Cabbage.Test
+#define JucePlugin_AUCocoaViewClassName CabbageProjectAU_V1
 #define JucePlugin_RTASCategory         ePlugInCategory_None
 #define JucePlugin_RTASManufacturerCode JucePlugin_ManufacturerCode
 #define JucePlugin_RTASProductId        JucePlugin_PluginCode

@@ -210,9 +210,6 @@ public:
     */
     void setNeedsToBeSaved (bool needsToBeSaved);
 
-    /** Attempts to reload the settings from the file. */
-    bool reload();
-
     //==============================================================================
     /** Returns the file that's being used. */
     const File& getFile() const noexcept            { return file; }
@@ -232,6 +229,7 @@ private:
     InterProcessLock::ScopedLockType* createProcessLock() const;
 
     void timerCallback();
+    void initialise();
     bool saveAsXml();
     bool saveAsBinary();
     bool loadAsXml();

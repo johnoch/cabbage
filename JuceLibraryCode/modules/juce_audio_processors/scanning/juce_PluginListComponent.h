@@ -37,9 +37,10 @@
 */
 class JUCE_API  PluginListComponent   : public Component,
                                         public FileDragAndDropTarget,
-                                        private ListBoxModel,
+                                        public ListBoxModel,
                                         private ChangeListener,
-                                        private ButtonListener  // (can't use Button::Listener due to idiotic VC2005 bug)
+                                        private ButtonListener,  // (can't use Button::Listener due to idiotic VC2005 bug)
+                                        private Timer
 {
 public:
     //==============================================================================
@@ -57,9 +58,6 @@ public:
 
     /** Destructor. */
     ~PluginListComponent();
-
-    /** Changes the text in the panel's button. */
-    void setOptionsButtonText (const String& newText);
 
     //==============================================================================
     /** @internal */
@@ -83,25 +81,16 @@ private:
     ListBox listBox;
     TextButton optionsButton;
     PropertiesFile* propertiesToUse;
-
-    class Scanner;
-    friend class Scanner;
-    friend class ScopedPointer<Scanner>;
-    ScopedPointer<Scanner> currentScanner;
+    int typeToScan;
 
     void scanFor (AudioPluginFormat*);
-    void scanFinished (const StringArray&);
-
-    static void optionsMenuStaticCallback (int, PluginListComponent*);
-    void optionsMenuCallback (int);
+    static void optionsMenuStaticCallback (int result, PluginListComponent*);
+    void optionsMenuCallback (int result);
     void updateList();
-    void removeSelected();
-    void showSelectedFolder();
-    bool canShowSelectedFolder() const;
-    void removeMissingPlugins();
 
     void buttonClicked (Button*);
     void changeListenerCallback (ChangeBroadcaster*);
+    void timerCallback();
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PluginListComponent);
 };

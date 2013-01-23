@@ -183,7 +183,7 @@ void TooltipWindow::timerCallback()
         // appear after a timeout..
         if (newTip.isNotEmpty()
              && newTip != tipShowing
-             && now > lastCompChangeTime + (unsigned int) millisecondsBeforeTipAppears)
+             && now > lastCompChangeTime + millisecondsBeforeTipAppears)
         {
             showFor (newTip);
         }

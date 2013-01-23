@@ -25,9 +25,6 @@
 
 extern Display* display;
 extern XContext windowHandleXContext;
-typedef void (*WindowMessageReceiveCallback) (XEvent&);
-extern WindowMessageReceiveCallback dispatchWindowMessage;
-
 
 //==============================================================================
 struct Atoms
@@ -58,22 +55,16 @@ struct Atoms
         XdndTypeList                    = getCreating ("XdndTypeList");
         XdndActionList                  = getCreating ("XdndActionList");
         XdndActionCopy                  = getCreating ("XdndActionCopy");
-        XdndActionPrivate               = getCreating ("XdndActionPrivate");
         XdndActionDescription           = getCreating ("XdndActionDescription");
 
-        allowedMimeTypes[0]             = getCreating ("UTF8_STRING");
-        allowedMimeTypes[1]             = getCreating ("text/plain;charset=utf-8");
-        allowedMimeTypes[2]             = getCreating ("text/plain");
-        allowedMimeTypes[3]             = getCreating ("text/uri-list");
-
-        externalAllowedFileMimeTypes[0] = getCreating ("text/uri-list");
-        externalAllowedTextMimeTypes[0] = getCreating ("text/plain");
+        allowedMimeTypes[0]             = getCreating ("text/plain");
+        allowedMimeTypes[1]             = getCreating ("text/uri-list");
 
         allowedActions[0]               = getCreating ("XdndActionMove");
         allowedActions[1]               = XdndActionCopy;
         allowedActions[2]               = getCreating ("XdndActionLink");
         allowedActions[3]               = getCreating ("XdndActionAsk");
-        allowedActions[4]               = XdndActionPrivate;
+        allowedActions[4]               = getCreating ("XdndActionPrivate");
     }
 
     static const Atoms& get()
@@ -93,26 +84,14 @@ struct Atoms
          ActiveWin, Pid, WindowType, WindowState,
          XdndAware, XdndEnter, XdndLeave, XdndPosition, XdndStatus,
          XdndDrop, XdndFinished, XdndSelection, XdndTypeList, XdndActionList,
-         XdndActionDescription, XdndActionCopy, XdndActionPrivate,
+         XdndActionDescription, XdndActionCopy,
          allowedActions[5],
-         allowedMimeTypes[4],
-         externalAllowedFileMimeTypes[1],
-         externalAllowedTextMimeTypes[1];
+         allowedMimeTypes[2];
 
     static const unsigned long DndVersion;
 
     static Atom getIfExists (const char* name)    { return XInternAtom (display, name, True); }
     static Atom getCreating (const char* name)    { return XInternAtom (display, name, False); }
-
-    static String getName (const Atom atom)
-    {
-        if (atom == None)
-            return "None";
-
-        return String (XGetAtomName (display, atom));
-    }
-
-    static bool isMimeTypeFile (const Atom atom)  { return getName (atom).equalsIgnoreCase ("text/uri-list"); }
 };
 
 const unsigned long Atoms::DndVersion = 3;
@@ -780,15 +759,6 @@ namespace PixmapHelpers
     }
 }
 
-static void* createDraggingHandCursor()
-{
-    static unsigned char dragHandData[] = { 71,73,70,56,57,97,16,0,16,0,145,2,0,0,0,0,255,255,255,0,
-      0,0,0,0,0,33,249,4,1,0,0,2,0,44,0,0,0,0,16,0, 16,0,0,2,52,148,47,0,200,185,16,130,90,12,74,139,107,84,123,39,
-      132,117,151,116,132,146,248,60,209,138,98,22,203,114,34,236,37,52,77,217, 247,154,191,119,110,240,193,128,193,95,163,56,60,234,98,135,2,0,59 };
-    const int dragHandDataSize = 99;
-
-    return CustomMouseCursorInfo (ImageFileFormat::loadFrom (dragHandData, dragHandDataSize), 8, 7).create();
-}
 
 //==============================================================================
 class LinuxComponentPeer  : public ComponentPeer
@@ -803,7 +773,6 @@ public:
         // it's dangerous to create a window on a thread other than the message thread..
         jassert (MessageManager::getInstance()->currentThreadHasLockedMessageManager());
 
-        dispatchWindowMessage = windowMessageReceive;
         repainter = new LinuxRepaintManager (this);
 
         createWindow (parentToAddTo);
@@ -819,21 +788,6 @@ public:
         deleteIconPixmaps();
         destroyWindow();
         windowH = 0;
-    }
-
-    // (this callback is hooked up in the messaging code)
-    static void windowMessageReceive (XEvent& event)
-    {
-        if (event.xany.window != None)
-        {
-            if (LinuxComponentPeer* const peer = getPeerFor (event.xany.window))
-                peer->handleWindowMessage (event);
-        }
-        else if (event.xany.type == KeymapNotify)
-        {
-            const XKeymapEvent& keymapEvent = (const XKeymapEvent&) event.xkeymap;
-            memcpy (Keys::keyStates, keymapEvent.key_vector, 32);
-        }
     }
 
     //==============================================================================
@@ -963,7 +917,7 @@ public:
         return screenPosition - getScreenPosition();
     }
 
-    void setAlpha (float /* newAlpha */)
+    void setAlpha (float newAlpha)
     {
         //xxx todo!
     }
@@ -1109,7 +1063,7 @@ public:
         return BorderSize<int>();
     }
 
-    bool setAlwaysOnTop (bool /* alwaysOnTop */)
+    bool setAlwaysOnTop (bool alwaysOnTop)
     {
         return false;
     }
@@ -1265,28 +1219,26 @@ public:
     }
 
     //==============================================================================
-    void handleWindowMessage (XEvent& event)
+    void handleWindowMessage (XEvent* event)
     {
-        switch (event.xany.type)
+        switch (event->xany.type)
         {
-            case KeyPressEventType:     handleKeyPressEvent (event.xkey); break;
-            case KeyRelease:            handleKeyReleaseEvent (event.xkey); break;
-            case ButtonPress:           handleButtonPressEvent (event.xbutton); break;
-            case ButtonRelease:         handleButtonReleaseEvent (event.xbutton); break;
-            case MotionNotify:          handleMotionNotifyEvent (event.xmotion); break;
-            case EnterNotify:           handleEnterNotifyEvent (event.xcrossing); break;
-            case LeaveNotify:           handleLeaveNotifyEvent (event.xcrossing); break;
+            case KeyPressEventType:     handleKeyPressEvent ((XKeyEvent*) &event->xkey); break;
+            case KeyRelease:            handleKeyReleaseEvent ((const XKeyEvent*) &event->xkey); break;
+            case ButtonPress:           handleButtonPressEvent ((const XButtonPressedEvent*) &event->xbutton); break;
+            case ButtonRelease:         handleButtonReleaseEvent ((const XButtonReleasedEvent*) &event->xbutton); break;
+            case MotionNotify:          handleMotionNotifyEvent ((const XPointerMovedEvent*) &event->xmotion); break;
+            case EnterNotify:           handleEnterNotifyEvent ((const XEnterWindowEvent*) &event->xcrossing); break;
+            case LeaveNotify:           handleLeaveNotifyEvent ((const XLeaveWindowEvent*) &event->xcrossing); break;
             case FocusIn:               handleFocusInEvent(); break;
             case FocusOut:              handleFocusOutEvent(); break;
-            case Expose:                handleExposeEvent (event.xexpose); break;
-            case MappingNotify:         handleMappingNotify (event.xmapping); break;
-            case ClientMessage:         handleClientMessageEvent (event.xclient, event); break;
+            case Expose:                handleExposeEvent ((XExposeEvent*) &event->xexpose); break;
+            case MappingNotify:         handleMappingNotify ((XMappingEvent*) &event->xmapping); break;
+            case ClientMessage:         handleClientMessageEvent ((XClientMessageEvent*) &event->xclient, event); break;
             case SelectionNotify:       handleDragAndDropSelection (event); break;
-            case ConfigureNotify:       handleConfigureNotifyEvent (event.xconfigure); break;
+            case ConfigureNotify:       handleConfigureNotifyEvent ((XConfigureEvent*) &event->xconfigure); break;
             case ReparentNotify:        handleReparentNotifyEvent(); break;
             case GravityNotify:         handleGravityNotify(); break;
-            case SelectionClear:        handleExternalSelectionClear(); break;
-            case SelectionRequest:      handleExternalSelectionRequest (event); break;
 
             case CirculateNotify:
             case CreateNotify:
@@ -1303,11 +1255,15 @@ public:
                 mapped = false;
                 break;
 
+            case SelectionClear:
+            case SelectionRequest:
+                break;
+
             default:
                #if JUCE_USE_XSHM
                 {
                     ScopedXLock xlock;
-                    if (event.xany.type == XShmGetEventBase (display))
+                    if (event->xany.type == XShmGetEventBase (display))
                         repainter->notifyPaintCompleted();
                 }
                #endif
@@ -1315,7 +1271,7 @@ public:
         }
     }
 
-    void handleKeyPressEvent (XKeyEvent& keyEvent)
+    void handleKeyPressEvent (XKeyEvent* const keyEvent)
     {
         char utf8 [64] = { 0 };
         juce_wchar unicodeChar = 0;
@@ -1325,18 +1281,18 @@ public:
 
         {
             ScopedXLock xlock;
-            updateKeyStates (keyEvent.keycode, true);
+            updateKeyStates (keyEvent->keycode, true);
 
             const char* oldLocale = ::setlocale (LC_ALL, 0);
             ::setlocale (LC_ALL, "");
-            XLookupString (&keyEvent, utf8, sizeof (utf8), &sym, 0);
+            XLookupString (keyEvent, utf8, sizeof (utf8), &sym, 0);
             ::setlocale (LC_ALL, oldLocale);
 
             unicodeChar = *CharPointer_UTF8 (utf8);
             keyCode = (int) unicodeChar;
 
             if (keyCode < 0x20)
-                keyCode = XkbKeycodeToKeysym (display, keyEvent.keycode, 0, currentModifiers.isShiftDown() ? 1 : 0);
+                keyCode = XkbKeycodeToKeysym (display, keyEvent->keycode, 0, currentModifiers.isShiftDown() ? 1 : 0);
 
             keyDownChange = (sym != NoSymbol) && ! updateKeyModifiersFromSym (sym, true);
         }
@@ -1414,7 +1370,7 @@ public:
             handleKeyPress (keyCode, unicodeChar);
     }
 
-    static bool isKeyReleasePartOfAutoRepeat (const XKeyEvent& keyReleaseEvent)
+    static bool isKeyReleasePartOfAutoRepeat (const XKeyEvent* const keyReleaseEvent)
     {
         if (XPending (display))
         {
@@ -1423,23 +1379,23 @@ public:
 
             // Look for a subsequent key-down event with the same timestamp and keycode
             return e.type == KeyPressEventType
-                    && e.xkey.keycode == keyReleaseEvent.keycode
-                    && e.xkey.time == keyReleaseEvent.time;
+                    && e.xkey.keycode == keyReleaseEvent->keycode
+                    && e.xkey.time == keyReleaseEvent->time;
         }
 
         return false;
     }
 
-    void handleKeyReleaseEvent (const XKeyEvent& keyEvent)
+    void handleKeyReleaseEvent (const XKeyEvent* const keyEvent)
     {
         if (! isKeyReleasePartOfAutoRepeat (keyEvent))
         {
-            updateKeyStates (keyEvent.keycode, false);
+            updateKeyStates (keyEvent->keycode, false);
             KeySym sym;
 
             {
                 ScopedXLock xlock;
-                sym = XkbKeycodeToKeysym (display, keyEvent.keycode, 0, 0);
+                sym = XkbKeycodeToKeysym (display, keyEvent->keycode, 0, 0);
             }
 
             const ModifierKeys oldMods (currentModifiers);
@@ -1453,13 +1409,7 @@ public:
         }
     }
 
-    template <typename EventType>
-    static Point<int> getMousePos (const EventType& e) noexcept
-    {
-        return Point<int> (e.x, e.y);
-    }
-
-    void handleWheelEvent (const XButtonPressedEvent& buttonPressEvent, const float amount)
+    void handleWheelEvent (const XButtonPressedEvent* const buttonPressEvent, const float amount)
     {
         MouseWheelDetails wheel;
         wheel.deltaX = 0.0f;
@@ -1467,21 +1417,23 @@ public:
         wheel.isReversed = false;
         wheel.isSmooth = false;
 
-        handleMouseWheel (0, getMousePos (buttonPressEvent), getEventTime (buttonPressEvent), wheel);
+        handleMouseWheel (0, Point<int> (buttonPressEvent->x, buttonPressEvent->y),
+                          getEventTime (buttonPressEvent->time), wheel);
     }
 
-    void handleButtonPressEvent (const XButtonPressedEvent& buttonPressEvent, int buttonModifierFlag)
+    void handleButtonPressEvent (const XButtonPressedEvent* const buttonPressEvent, int buttonModifierFlag)
     {
         currentModifiers = currentModifiers.withFlags (buttonModifierFlag);
         toFront (true);
-        handleMouseEvent (0, getMousePos (buttonPressEvent), currentModifiers, getEventTime (buttonPressEvent));
+        handleMouseEvent (0, Point<int> (buttonPressEvent->x, buttonPressEvent->y), currentModifiers,
+                          getEventTime (buttonPressEvent->time));
     }
 
-    void handleButtonPressEvent (const XButtonPressedEvent& buttonPressEvent)
+    void handleButtonPressEvent (const XButtonPressedEvent* const buttonPressEvent)
     {
-        updateKeyModifiers (buttonPressEvent.state);
+        updateKeyModifiers (buttonPressEvent->state);
 
-        switch (pointerMap [buttonPressEvent.button - Button1])
+        switch (pointerMap [buttonPressEvent->button - Button1])
         {
             case Keys::WheelUp:         handleWheelEvent (buttonPressEvent,  50.0f / 256.0f); break;
             case Keys::WheelDown:       handleWheelEvent (buttonPressEvent, -50.0f / 256.0f); break;
@@ -1494,11 +1446,11 @@ public:
         clearLastMousePos();
     }
 
-    void handleButtonReleaseEvent (const XButtonReleasedEvent& buttonRelEvent)
+    void handleButtonReleaseEvent (const XButtonReleasedEvent* const buttonRelEvent)
     {
-        updateKeyModifiers (buttonRelEvent.state);
+        updateKeyModifiers (buttonRelEvent->state);
 
-        switch (pointerMap [buttonRelEvent.button - Button1])
+        switch (pointerMap [buttonRelEvent->button - Button1])
         {
             case Keys::LeftButton:      currentModifiers = currentModifiers.withoutFlags (ModifierKeys::leftButtonModifier); break;
             case Keys::RightButton:     currentModifiers = currentModifiers.withoutFlags (ModifierKeys::rightButtonModifier); break;
@@ -1506,18 +1458,16 @@ public:
             default: break;
         }
 
-        if (dragState.dragging)
-            handleExternalDragButtonReleaseEvent();
-
-        handleMouseEvent (0, getMousePos (buttonRelEvent), currentModifiers, getEventTime (buttonRelEvent));
+        handleMouseEvent (0, Point<int> (buttonRelEvent->x, buttonRelEvent->y), currentModifiers,
+                          getEventTime (buttonRelEvent->time));
 
         clearLastMousePos();
     }
 
-    void handleMotionNotifyEvent (const XPointerMovedEvent& movedEvent)
+    void handleMotionNotifyEvent (const XPointerMovedEvent* const movedEvent)
     {
-        updateKeyModifiers (movedEvent.state);
-        const Point<int> mousePos (movedEvent.x_root, movedEvent.y_root);
+        updateKeyModifiers (movedEvent->state);
+        const Point<int> mousePos (movedEvent->x_root, movedEvent->y_root);
 
         if (lastMousePos != mousePos)
         {
@@ -1547,34 +1497,31 @@ public:
                 }
             }
 
-            if (dragState.dragging)
-                handleExternalDragMotionNotify();
-
-            handleMouseEvent (0, mousePos - getScreenPosition(), currentModifiers, getEventTime (movedEvent));
+            handleMouseEvent (0, mousePos - getScreenPosition(), currentModifiers, getEventTime (movedEvent->time));
         }
     }
 
-    void handleEnterNotifyEvent (const XEnterWindowEvent& enterEvent)
+    void handleEnterNotifyEvent (const XEnterWindowEvent* const enterEvent)
     {
         clearLastMousePos();
 
         if (! currentModifiers.isAnyMouseButtonDown())
         {
-            updateKeyModifiers (enterEvent.state);
-            handleMouseEvent (0, getMousePos (enterEvent), currentModifiers, getEventTime (enterEvent));
+            updateKeyModifiers (enterEvent->state);
+            handleMouseEvent (0, Point<int> (enterEvent->x, enterEvent->y), currentModifiers, getEventTime (enterEvent->time));
         }
     }
 
-    void handleLeaveNotifyEvent (const XLeaveWindowEvent& leaveEvent)
+    void handleLeaveNotifyEvent (const XLeaveWindowEvent* const leaveEvent)
     {
         // Suppress the normal leave if we've got a pointer grab, or if
         // it's a bogus one caused by clicking a mouse button when running
         // in a Window manager
-        if (((! currentModifiers.isAnyMouseButtonDown()) && leaveEvent.mode == NotifyNormal)
-             || leaveEvent.mode == NotifyUngrab)
+        if (((! currentModifiers.isAnyMouseButtonDown()) && leaveEvent->mode == NotifyNormal)
+             || leaveEvent->mode == NotifyUngrab)
         {
-            updateKeyModifiers (leaveEvent.state);
-            handleMouseEvent (0, getMousePos (leaveEvent), currentModifiers, getEventTime (leaveEvent));
+            updateKeyModifiers (leaveEvent->state);
+            handleMouseEvent (0, Point<int> (leaveEvent->x, leaveEvent->y), currentModifiers, getEventTime (leaveEvent->time));
         }
     }
 
@@ -1592,37 +1539,37 @@ public:
             handleFocusLoss();
     }
 
-    void handleExposeEvent (XExposeEvent& exposeEvent)
+    void handleExposeEvent (XExposeEvent* exposeEvent)
     {
         // Batch together all pending expose events
         XEvent nextEvent;
         ScopedXLock xlock;
 
-        if (exposeEvent.window != windowH)
+        if (exposeEvent->window != windowH)
         {
             Window child;
-            XTranslateCoordinates (display, exposeEvent.window, windowH,
-                                   exposeEvent.x, exposeEvent.y, &exposeEvent.x, &exposeEvent.y,
+            XTranslateCoordinates (display, exposeEvent->window, windowH,
+                                   exposeEvent->x, exposeEvent->y, &exposeEvent->x, &exposeEvent->y,
                                    &child);
         }
 
-        repaint (Rectangle<int> (exposeEvent.x, exposeEvent.y,
-                                 exposeEvent.width, exposeEvent.height));
+        repaint (Rectangle<int> (exposeEvent->x, exposeEvent->y,
+                                 exposeEvent->width, exposeEvent->height));
 
         while (XEventsQueued (display, QueuedAfterFlush) > 0)
         {
             XPeekEvent (display, &nextEvent);
-            if (nextEvent.type != Expose || nextEvent.xany.window != exposeEvent.window)
+            if (nextEvent.type != Expose || nextEvent.xany.window != exposeEvent->window)
                 break;
 
             XNextEvent (display, &nextEvent);
-            const XExposeEvent& nextExposeEvent = (const XExposeEvent&) nextEvent.xexpose;
-            repaint (Rectangle<int> (nextExposeEvent.x, nextExposeEvent.y,
-                                     nextExposeEvent.width, nextExposeEvent.height));
+            XExposeEvent* nextExposeEvent = (XExposeEvent*) &nextEvent.xexpose;
+            repaint (Rectangle<int> (nextExposeEvent->x, nextExposeEvent->y,
+                                     nextExposeEvent->width, nextExposeEvent->height));
         }
     }
 
-    void handleConfigureNotifyEvent (XConfigureEvent& confEvent)
+    void handleConfigureNotifyEvent (XConfigureEvent* const confEvent)
     {
         updateBounds();
         updateBorderSize();
@@ -1638,8 +1585,8 @@ public:
                 currentModalComp->inputAttemptWhenModal();
         }
 
-        if (confEvent.window == windowH
-             && confEvent.above != 0
+        if (confEvent->window == windowH
+             && confEvent->above != 0
              && isFrontWindow())
         {
             handleBroughtToFront();
@@ -1671,32 +1618,32 @@ public:
         handleMovedOrResized();
     }
 
-    void handleMappingNotify (XMappingEvent& mappingEvent)
+    void handleMappingNotify (XMappingEvent* const mappingEvent)
     {
-        if (mappingEvent.request != MappingPointer)
+        if (mappingEvent->request != MappingPointer)
         {
             // Deal with modifier/keyboard mapping
             ScopedXLock xlock;
-            XRefreshKeyboardMapping (&mappingEvent);
+            XRefreshKeyboardMapping (mappingEvent);
             updateModifierMappings();
         }
     }
 
-    void handleClientMessageEvent (XClientMessageEvent& clientMsg, XEvent& event)
+    void handleClientMessageEvent (XClientMessageEvent* const clientMsg, XEvent* event)
     {
         const Atoms& atoms = Atoms::get();
 
-        if (clientMsg.message_type == atoms.Protocols && clientMsg.format == 32)
+        if (clientMsg->message_type == atoms.Protocols && clientMsg->format == 32)
         {
-            const Atom atom = (Atom) clientMsg.data.l[0];
+            const Atom atom = (Atom) clientMsg->data.l[0];
 
             if (atom == atoms.ProtocolList [Atoms::PING])
             {
                 Window root = RootWindow (display, DefaultScreen (display));
 
-                clientMsg.window = root;
+                clientMsg->window = root;
 
-                XSendEvent (display, root, False, NoEventMask, &event);
+                XSendEvent (display, root, False, NoEventMask, event);
                 XFlush (display);
             }
             else if (atom == atoms.ProtocolList [Atoms::TAKE_FOCUS])
@@ -1706,11 +1653,11 @@ public:
                     XWindowAttributes atts;
 
                     ScopedXLock xlock;
-                    if (clientMsg.window != 0
-                         && XGetWindowAttributes (display, clientMsg.window, &atts))
+                    if (clientMsg->window != 0
+                         && XGetWindowAttributes (display, clientMsg->window, &atts))
                     {
                         if (atts.map_state == IsViewable)
-                            XSetInputFocus (display, clientMsg.window, RevertToParent, clientMsg.data.l[1]);
+                            XSetInputFocus (display, clientMsg->window, RevertToParent, clientMsg->data.l[1]);
                     }
                 }
             }
@@ -1719,59 +1666,30 @@ public:
                 handleUserClosingWindow();
             }
         }
-        else if (clientMsg.message_type == atoms.XdndEnter)
+        else if (clientMsg->message_type == atoms.XdndEnter)
         {
             handleDragAndDropEnter (clientMsg);
         }
-        else if (clientMsg.message_type == atoms.XdndLeave)
+        else if (clientMsg->message_type == atoms.XdndLeave)
         {
-            handleDragExit (dragInfo);
             resetDragAndDrop();
         }
-        else if (clientMsg.message_type == atoms.XdndPosition)
+        else if (clientMsg->message_type == atoms.XdndPosition)
         {
             handleDragAndDropPosition (clientMsg);
         }
-        else if (clientMsg.message_type == atoms.XdndDrop)
+        else if (clientMsg->message_type == atoms.XdndDrop)
         {
             handleDragAndDropDrop (clientMsg);
         }
-        else if (clientMsg.message_type == atoms.XdndStatus)
+        else if (clientMsg->message_type == atoms.XdndStatus)
         {
-            handleExternalDragAndDropStatus (clientMsg);
+            handleDragAndDropStatus (clientMsg);
         }
-        else if (clientMsg.message_type == atoms.XdndFinished)
+        else if (clientMsg->message_type == atoms.XdndFinished)
         {
-            externalResetDragAndDrop();
+            resetDragAndDrop();
         }
-    }
-
-    bool externalDragTextInit (const String& text)
-    {
-        if (dragState.dragging)
-            return false;
-
-        return externalDragInit (true, text);
-    }
-
-    bool externalDragFileInit (const StringArray& files, bool /*canMoveFiles*/)
-    {
-        if (dragState.dragging)
-            return false;
-
-        StringArray uriList;
-
-        for (int i = 0; i < files.size(); ++i)
-        {
-            const String& f = files[i];
-
-            if (f.matchesWildcard ("?*://*", false))
-                uriList.add (f);
-            else
-                uriList.add ("file://" + f);
-        }
-
-        return externalDragInit (false, uriList.joinIntoString ("\r\n"));
     }
 
     //==============================================================================
@@ -1881,12 +1799,14 @@ private:
 
                 if (peer->depth == 32)
                 {
-                    for (const Rectangle<int>* i = originalRepaintRegion.begin(), * const e = originalRepaintRegion.end(); i != e; ++i)
-                        image.clear (*i - totalArea.getPosition());
+                    RectangleList::Iterator i (originalRepaintRegion);
+
+                    while (i.next())
+                        image.clear (*i.getRectangle() - totalArea.getPosition());
                 }
 
                 {
-                    ScopedPointer<LowLevelGraphicsContext> context (peer->getComponent().getLookAndFeel()
+                    ScopedPointer<LowLevelGraphicsContext> context (peer->component.getLookAndFeel()
                                                                       .createGraphicsContext (image, -totalArea.getPosition(), adjustedList));
                     peer->handlePaint (*context);
                 }
@@ -1894,16 +1814,17 @@ private:
                 if (! peer->maskedRegion.isEmpty())
                     originalRepaintRegion.subtract (peer->maskedRegion);
 
-                for (const Rectangle<int>* i = originalRepaintRegion.begin(), * const e = originalRepaintRegion.end(); i != e; ++i)
+                for (RectangleList::Iterator i (originalRepaintRegion); i.next();)
                 {
                    #if JUCE_USE_XSHM
                     shmCompletedDrawing = false;
                    #endif
+                    const Rectangle<int>& r = *i.getRectangle();
 
                     static_cast<XBitmapImage*> (image.getPixelData())
                         ->blitToWindow (peer->windowH,
-                                        i->getX(), i->getY(), i->getWidth(), i->getHeight(),
-                                        i->getX() - totalArea.getX(), i->getY() - totalArea.getY());
+                                        r.getX(), r.getY(), r.getWidth(), r.getHeight(),
+                                        r.getX() - totalArea.getX(), r.getY() - totalArea.getY());
                 }
             }
 
@@ -1983,13 +1904,19 @@ private:
         switch (sym)
         {
             case XK_Shift_L:
-            case XK_Shift_R:        modifier = ModifierKeys::shiftModifier; break;
+            case XK_Shift_R:
+                modifier = ModifierKeys::shiftModifier;
+                break;
 
             case XK_Control_L:
-            case XK_Control_R:      modifier = ModifierKeys::ctrlModifier; break;
+            case XK_Control_R:
+                modifier = ModifierKeys::ctrlModifier;
+                break;
 
             case XK_Alt_L:
-            case XK_Alt_R:          modifier = ModifierKeys::altModifier; break;
+            case XK_Alt_R:
+                modifier = ModifierKeys::altModifier;
+                break;
 
             case XK_Num_Lock:
                 if (press)
@@ -2028,7 +1955,9 @@ private:
         Keys::AltMask = 0;
         Keys::NumLockMask = 0;
 
-        if (XModifierKeymap* const mapping = XGetModifierMapping (display))
+        XModifierKeymap* mapping = XGetModifierMapping (display);
+
+        if (mapping)
         {
             for (int i = 0; i < 8; i++)
             {
@@ -2284,12 +2213,6 @@ private:
                  | ExposureMask | StructureNotifyMask | FocusChangeMask;
     }
 
-    template <typename EventType>
-    static int64 getEventTime (const EventType& t)
-    {
-        return getEventTime (t.time);
-    }
-
     static int64 getEventTime (::Time t)
     {
         static int64 eventTimeOffset = 0x12345678;
@@ -2353,53 +2276,14 @@ private:
     }
 
     //==============================================================================
-    struct DragState
-    {
-        DragState() noexcept
-           : isText (false), dragging (false), expectingStatus (false),
-             canDrop (false), targetWindow (None), xdndVersion (-1)
-        {
-        }
-
-        bool isText;
-        bool dragging;         // currently performing outgoing external dnd as Xdnd source, have grabbed mouse
-        bool expectingStatus;  // XdndPosition sent, waiting for XdndStatus
-        bool canDrop;          // target window signals it will accept the drop
-        Window targetWindow;   // potential drop target
-        int xdndVersion;       // negotiated version with target
-        Rectangle<int> silentRect;
-        String textOrFiles;
-
-        const Atom* getMimeTypes() const noexcept   { return isText ? Atoms::get().externalAllowedTextMimeTypes
-                                                                    : Atoms::get().externalAllowedFileMimeTypes; }
-
-        int getNumMimeTypes() const noexcept { return isText ? numElementsInArray (Atoms::get().externalAllowedTextMimeTypes)
-                                                             : numElementsInArray (Atoms::get().externalAllowedFileMimeTypes); }
-
-        bool matchesTarget (Atom targetType) const
-        {
-            for (int i = getNumMimeTypes(); --i >= 0;)
-                if (getMimeTypes()[i] == targetType)
-                    return true;
-
-            return false;
-        }
-    };
-
-    //==============================================================================
     void resetDragAndDrop()
     {
-        dragInfo.clear();
+        dragInfo.files.clear();
+        dragInfo.text = String::empty;
         dragInfo.position = Point<int> (-1, -1);
         dragAndDropCurrentMimeType = 0;
         dragAndDropSourceWindow = 0;
         srcMimeTypeAtomList.clear();
-        finishAfterDropDataReceived = false;
-    }
-
-    void resetExternalDragState()
-    {
-        dragState = DragState();
     }
 
     void sendDragAndDropMessage (XClientMessageEvent& msg)
@@ -2414,61 +2298,6 @@ private:
         XSendEvent (display, dragAndDropSourceWindow, False, 0, (XEvent*) &msg);
     }
 
-    bool sendExternalDragAndDropMessage (XClientMessageEvent& msg, const Window targetWindow)
-    {
-        msg.type      = ClientMessage;
-        msg.display   = display;
-        msg.window    = targetWindow;
-        msg.format    = 32;
-        msg.data.l[0] = windowH;
-
-        ScopedXLock xlock;
-        return XSendEvent (display, targetWindow, False, 0, (XEvent*) &msg) != 0;
-    }
-
-    void sendExternalDragAndDropDrop (const Window targetWindow)
-    {
-        XClientMessageEvent msg = { 0 };
-        msg.message_type = Atoms::get().XdndDrop;
-        msg.data.l[2] = CurrentTime;
-
-        sendExternalDragAndDropMessage (msg, targetWindow);
-    }
-
-    void sendExternalDragAndDropEnter (const Window targetWindow)
-    {
-        XClientMessageEvent msg = { 0 };
-        msg.message_type = Atoms::get().XdndEnter;
-
-        const Atom* mimeTypes  = dragState.getMimeTypes();
-        const int numMimeTypes = dragState.getNumMimeTypes();
-
-        msg.data.l[1] = (dragState.xdndVersion << 24) | (numMimeTypes > 3);
-        msg.data.l[2] = numMimeTypes > 0 ? mimeTypes[0] : 0;
-        msg.data.l[3] = numMimeTypes > 1 ? mimeTypes[1] : 0;
-        msg.data.l[4] = numMimeTypes > 2 ? mimeTypes[2] : 0;
-
-        sendExternalDragAndDropMessage (msg, targetWindow);
-    }
-
-    void sendExternalDragAndDropPosition (const Window targetWindow)
-    {
-        XClientMessageEvent msg = { 0 };
-        msg.message_type = Atoms::get().XdndPosition;
-
-        const Point<int> mousePos (Desktop::getInstance().getMousePosition());
-
-        if (dragState.silentRect.contains (mousePos)) // we've been asked to keep silent
-            return;
-
-        msg.data.l[1] = 0;
-        msg.data.l[2] = (mousePos.x << 16) | mousePos.y;
-        msg.data.l[3] = CurrentTime;
-        msg.data.l[4] = Atoms::get().XdndActionCopy; // this is all JUCE currently supports
-
-        dragState.expectingStatus = sendExternalDragAndDropMessage (msg, targetWindow);
-    }
-
     void sendDragAndDropStatus (const bool acceptDrop, Atom dropAction)
     {
         XClientMessageEvent msg = { 0 };
@@ -2479,11 +2308,11 @@ private:
         sendDragAndDropMessage (msg);
     }
 
-    void sendExternalDragAndDropLeave (const Window targetWindow)
+    void sendDragAndDropLeave()
     {
         XClientMessageEvent msg = { 0 };
         msg.message_type = Atoms::get().XdndLeave;
-        sendExternalDragAndDropMessage (msg, targetWindow);
+        sendDragAndDropMessage (msg);
     }
 
     void sendDragAndDropFinish()
@@ -2493,185 +2322,77 @@ private:
         sendDragAndDropMessage (msg);
     }
 
-    void handleExternalSelectionClear()
+    void handleDragAndDropStatus (const XClientMessageEvent* const clientMsg)
     {
-        if (dragState.dragging)
-            externalResetDragAndDrop();
-    }
-
-    void handleExternalSelectionRequest (const XEvent& evt)
-    {
-        Atom targetType = evt.xselectionrequest.target;
-
-        XEvent s;
-        s.xselection.type = SelectionNotify;
-        s.xselection.requestor = evt.xselectionrequest.requestor;
-        s.xselection.selection = evt.xselectionrequest.selection;
-        s.xselection.target = targetType;
-        s.xselection.property = None;
-        s.xselection.time = evt.xselectionrequest.time;
-
-        if (dragState.matchesTarget (targetType))
+        if ((clientMsg->data.l[1] & 1) == 0)
         {
-            s.xselection.property = evt.xselectionrequest.property;
+            sendDragAndDropLeave();
 
-            xchangeProperty (evt.xselectionrequest.requestor,
-                             evt.xselectionrequest.property,
-                             targetType, 8,
-                             dragState.textOrFiles.toUTF8().getAddress(),
-                             dragState.textOrFiles.getNumBytesAsUTF8());
-        }
+            if (dragInfo.files.size() > 0)
+                handleDragExit (dragInfo);
 
-        XSendEvent (display, evt.xselectionrequest.requestor, True, 0, &s);
-    }
-
-    void handleExternalDragAndDropStatus (const XClientMessageEvent& clientMsg)
-    {
-        if (dragState.expectingStatus)
-        {
-            dragState.expectingStatus = false;
-            dragState.canDrop = false;
-            dragState.silentRect = Rectangle<int>();
-
-            if ((clientMsg.data.l[1] & 1) != 0
-                 && ((Atom) clientMsg.data.l[4] == Atoms::get().XdndActionCopy
-                      || (Atom) clientMsg.data.l[4] == Atoms::get().XdndActionPrivate))
-            {
-                if ((clientMsg.data.l[1] & 2) == 0) // target requests silent rectangle
-                    dragState.silentRect.setBounds (clientMsg.data.l[2] >> 16,
-                                                    clientMsg.data.l[2] & 0xffff,
-                                                    clientMsg.data.l[3] >> 16,
-                                                    clientMsg.data.l[3] & 0xffff);
-
-                dragState.canDrop = true;
-            }
+            dragInfo.files.clear();
         }
     }
 
-    void handleExternalDragButtonReleaseEvent()
-    {
-        if (dragState.dragging)
-            XUngrabPointer (display, CurrentTime);
-
-        if (dragState.canDrop)
-        {
-            sendExternalDragAndDropDrop (dragState.targetWindow);
-        }
-        else
-        {
-            sendExternalDragAndDropLeave (dragState.targetWindow);
-            externalResetDragAndDrop();
-        }
-    }
-
-    void handleExternalDragMotionNotify()
-    {
-        Window targetWindow = externalFindDragTargetWindow (RootWindow (display, DefaultScreen (display)));
-
-        if (dragState.targetWindow != targetWindow)
-        {
-            if (dragState.targetWindow != None)
-                sendExternalDragAndDropLeave (dragState.targetWindow);
-
-            dragState.canDrop = false;
-            dragState.silentRect = Rectangle<int>();
-
-            if (targetWindow == None)
-                return;
-
-            GetXProperty prop (targetWindow, Atoms::get().XdndAware,
-                               0, 2, false, AnyPropertyType);
-
-            if (prop.success
-                 && prop.data != None
-                 && prop.actualFormat == 32
-                 && prop.numItems == 1)
-            {
-                dragState.xdndVersion = jmin ((int) prop.data[0], (int) Atoms::DndVersion);
-            }
-            else
-            {
-                dragState.xdndVersion = -1;
-                return;
-            }
-
-            sendExternalDragAndDropEnter (targetWindow);
-            dragState.targetWindow = targetWindow;
-        }
-
-        if (! dragState.expectingStatus)
-            sendExternalDragAndDropPosition (targetWindow);
-    }
-
-    void handleDragAndDropPosition (const XClientMessageEvent& clientMsg)
+    void handleDragAndDropPosition (const XClientMessageEvent* const clientMsg)
     {
         if (dragAndDropSourceWindow == 0)
             return;
 
-        dragAndDropSourceWindow = clientMsg.data.l[0];
+        dragAndDropSourceWindow = clientMsg->data.l[0];
 
-        Point<int> dropPos ((int) clientMsg.data.l[2] >> 16,
-                            (int) clientMsg.data.l[2] & 0xffff);
+        Point<int> dropPos ((int) clientMsg->data.l[2] >> 16,
+                            (int) clientMsg->data.l[2] & 0xffff);
         dropPos -= getScreenPosition();
-
-        const Atoms& atoms = Atoms::get();
-        Atom targetAction = atoms.XdndActionCopy;
-
-        for (int i = numElementsInArray (atoms.allowedActions); --i >= 0;)
-        {
-            if ((Atom) clientMsg.data.l[4] == atoms.allowedActions[i])
-            {
-                targetAction = atoms.allowedActions[i];
-                break;
-            }
-        }
-
-        sendDragAndDropStatus (true, targetAction);
 
         if (dragInfo.position != dropPos)
         {
             dragInfo.position = dropPos;
 
-            if (dragInfo.isEmpty())
+            const Atoms& atoms = Atoms::get();
+            Atom targetAction = atoms.XdndActionCopy;
+
+            for (int i = numElementsInArray (atoms.allowedActions); --i >= 0;)
+            {
+                if ((Atom) clientMsg->data.l[4] == atoms.allowedActions[i])
+                {
+                    targetAction = atoms.allowedActions[i];
+                    break;
+                }
+            }
+
+            sendDragAndDropStatus (true, targetAction);
+
+            if (dragInfo.files.size() == 0)
                 updateDraggedFileList (clientMsg);
 
-            if (! dragInfo.isEmpty())
+            if (dragInfo.files.size() > 0)
                 handleDragMove (dragInfo);
         }
     }
 
-    void handleDragAndDropDrop (const XClientMessageEvent& clientMsg)
+    void handleDragAndDropDrop (const XClientMessageEvent* const clientMsg)
     {
-        if (dragInfo.isEmpty())
-        {
-            // no data, transaction finished in handleDragAndDropSelection()
-            finishAfterDropDataReceived = true;
+        if (dragInfo.files.size() == 0)
             updateDraggedFileList (clientMsg);
-        }
-        else
-        {
-            handleDragAndDropDataReceived();  // data was already received
-        }
-    }
 
-    void handleDragAndDropDataReceived()
-    {
         DragInfo dragInfoCopy (dragInfo);
 
         sendDragAndDropFinish();
         resetDragAndDrop();
 
-        if (! dragInfoCopy.isEmpty())
+        if (dragInfoCopy.files.size() > 0)
             handleDragDrop (dragInfoCopy);
     }
 
-    void handleDragAndDropEnter (const XClientMessageEvent& clientMsg)
+    void handleDragAndDropEnter (const XClientMessageEvent* const clientMsg)
     {
-        dragInfo.clear();
+        dragInfo.files.clear();
         srcMimeTypeAtomList.clear();
 
         dragAndDropCurrentMimeType = 0;
-        const unsigned long dndCurrentVersion = static_cast <unsigned long> (clientMsg.data.l[1] & 0xff000000) >> 24;
+        const unsigned long dndCurrentVersion = static_cast <unsigned long> (clientMsg->data.l[1] & 0xff000000) >> 24;
 
         if (dndCurrentVersion < 3 || dndCurrentVersion > Atoms::DndVersion)
         {
@@ -2679,9 +2400,9 @@ private:
             return;
         }
 
-        dragAndDropSourceWindow = clientMsg.data.l[0];
+        dragAndDropSourceWindow = clientMsg->data.l[0];
 
-        if ((clientMsg.data.l[1] & 1) != 0)
+        if ((clientMsg->data.l[1] & 1) != 0)
         {
             ScopedXLock xlock;
             GetXProperty prop (dragAndDropSourceWindow, Atoms::get().XdndTypeList, 0, 0x8000000L, false, XA_ATOM);
@@ -2702,8 +2423,8 @@ private:
         if (srcMimeTypeAtomList.size() == 0)
         {
             for (int i = 2; i < 5; ++i)
-                if (clientMsg.data.l[i] != None)
-                    srcMimeTypeAtomList.add (clientMsg.data.l[i]);
+                if (clientMsg->data.l[i] != None)
+                    srcMimeTypeAtomList.add (clientMsg->data.l[i]);
 
             if (srcMimeTypeAtomList.size() == 0)
             {
@@ -2721,11 +2442,11 @@ private:
         handleDragAndDropPosition (clientMsg);
     }
 
-    void handleDragAndDropSelection (const XEvent& evt)
+    void handleDragAndDropSelection (const XEvent* const evt)
     {
-        dragInfo.clear();
+        dragInfo.files.clear();
 
-        if (evt.xselection.property != None)
+        if (evt->xselection.property != 0)
         {
             StringArray lines;
 
@@ -2734,8 +2455,8 @@ private:
 
                 for (;;)
                 {
-                    GetXProperty prop (evt.xany.window, evt.xselection.property,
-                                       dropData.getSize() / 4, 65536, false, AnyPropertyType);
+                    GetXProperty prop (evt->xany.window, evt->xselection.property,
+                                       dropData.getSize() / 4, 65536, true, AnyPropertyType);
 
                     if (! prop.success)
                         break;
@@ -2749,30 +2470,20 @@ private:
                 lines.addLines (dropData.toString());
             }
 
-            if (Atoms::isMimeTypeFile (dragAndDropCurrentMimeType))
-            {
-                for (int i = 0; i < lines.size(); ++i)
-                    dragInfo.files.add (URL::removeEscapeChars (lines[i].replace ("file://", String::empty, true)));
+            for (int i = 0; i < lines.size(); ++i)
+                dragInfo.files.add (URL::removeEscapeChars (lines[i].fromFirstOccurrenceOf ("file://", false, true)));
 
-                dragInfo.files.trim();
-                dragInfo.files.removeEmptyStrings();
-            }
-            else
-            {
-                dragInfo.text = lines.joinIntoString ("\n");
-            }
-
-            if (finishAfterDropDataReceived)
-                handleDragAndDropDataReceived();
+            dragInfo.files.trim();
+            dragInfo.files.removeEmptyStrings();
         }
     }
 
-    void updateDraggedFileList (const XClientMessageEvent& clientMsg)
+    void updateDraggedFileList (const XClientMessageEvent* const clientMsg)
     {
-        jassert (dragInfo.isEmpty());
+        dragInfo.files.clear();
 
         if (dragAndDropSourceWindow != None
-             && dragAndDropCurrentMimeType != None)
+             && dragAndDropCurrentMimeType != 0)
         {
             ScopedXLock xlock;
             XConvertSelection (display,
@@ -2780,93 +2491,13 @@ private:
                                dragAndDropCurrentMimeType,
                                Atoms::getCreating ("JXSelectionWindowProperty"),
                                windowH,
-                               clientMsg.data.l[2]);
+                               clientMsg->data.l[2]);
         }
     }
 
-    static bool isWindowDnDAware (Window w)
-    {
-        int numProperties = 0;
-        Atom* const atoms = XListProperties (display, w, &numProperties);
-
-        bool dndAwarePropFound = false;
-        for (int i = 0; i < numProperties; ++i)
-            if (atoms[i] == Atoms::get().XdndAware)
-                dndAwarePropFound = true;
-
-        if (atoms != nullptr)
-            XFree (atoms);
-
-        return dndAwarePropFound;
-    }
-
-    Window externalFindDragTargetWindow (Window targetWindow)
-    {
-        if (targetWindow == None)
-            return None;
-
-        if (isWindowDnDAware (targetWindow))
-            return targetWindow;
-
-        Window child, phonyWin;
-        int phony;
-        unsigned int uphony;
-
-        XQueryPointer (display, targetWindow, &phonyWin, &child,
-                       &phony, &phony, &phony, &phony, &uphony);
-
-        return externalFindDragTargetWindow (child);
-    }
-
-    bool externalDragInit (bool isText, const String& textOrFiles)
-    {
-        ScopedXLock xlock;
-
-        resetExternalDragState();
-        dragState.isText = isText;
-        dragState.textOrFiles = textOrFiles;
-        dragState.targetWindow = windowH;
-
-        const int pointerGrabMask = Button1MotionMask | ButtonReleaseMask;
-
-        if (XGrabPointer (display, windowH, True, pointerGrabMask,
-                          GrabModeAsync, GrabModeAsync, None, None, CurrentTime) == GrabSuccess)
-        {
-            // No other method of changing the pointer seems to work, this call is needed from this very context
-            XChangeActivePointerGrab (display, pointerGrabMask, (Cursor) createDraggingHandCursor(), CurrentTime);
-
-            const Atoms& atoms = Atoms::get();
-            XSetSelectionOwner (display, atoms.XdndSelection, windowH, CurrentTime);
-
-            // save the available types to XdndTypeList
-            xchangeProperty (windowH, atoms.XdndTypeList, XA_ATOM, 32,
-                             dragState.getMimeTypes(),
-                             dragState.getNumMimeTypes());
-
-            dragState.dragging = true;
-            handleExternalDragMotionNotify();
-            return true;
-        }
-
-        return false;
-    }
-
-    void externalResetDragAndDrop()
-    {
-        if (dragState.dragging)
-        {
-            ScopedXLock xlock;
-            XUngrabPointer (display, CurrentTime);
-        }
-
-        resetExternalDragState();
-    }
-
-    DragState dragState;
     DragInfo dragInfo;
     Atom dragAndDropCurrentMimeType;
     Window dragAndDropSourceWindow;
-    bool finishAfterDropDataReceived;
 
     Array <Atom> srcMimeTypeAtomList;
 
@@ -2949,7 +2580,7 @@ ModifierKeys ModifierKeys::getCurrentModifiersRealtime() noexcept
 
 
 //==============================================================================
-void Desktop::setKioskComponent (Component* kioskModeComponent, bool enableOrDisable, bool /* allowMenusAndBars */)
+void Desktop::setKioskComponent (Component* kioskModeComponent, bool enableOrDisable, bool allowMenusAndBars)
 {
     if (enableOrDisable)
         kioskModeComponent->setBounds (Desktop::getInstance().getDisplays().getMainDisplay().totalArea);
@@ -2959,6 +2590,33 @@ void Desktop::setKioskComponent (Component* kioskModeComponent, bool enableOrDis
 ComponentPeer* Component::createNewPeer (int styleFlags, void* nativeWindowToAttachTo)
 {
     return new LinuxComponentPeer (*this, styleFlags, (Window) nativeWindowToAttachTo);
+}
+
+
+//==============================================================================
+// (this callback is hooked up in the messaging code)
+void juce_windowMessageReceive (XEvent* event)
+{
+    if (event->xany.window != None)
+    {
+        if (LinuxComponentPeer* const peer = LinuxComponentPeer::getPeerFor (event->xany.window))
+            peer->handleWindowMessage (event);
+    }
+    else
+    {
+        switch (event->xany.type)
+        {
+            case KeymapNotify:
+            {
+                const XKeymapEvent* const keymapEvent = (const XKeymapEvent*) &event->xkeymap;
+                memcpy (Keys::keyStates, keymapEvent->key_vector, 32);
+                break;
+            }
+
+            default:
+                break;
+        }
+    }
 }
 
 //==============================================================================
@@ -3142,13 +2800,11 @@ bool Desktop::isScreenSaverEnabled()
 }
 
 //==============================================================================
-void* CustomMouseCursorInfo::create() const
+void* MouseCursor::createMouseCursorFromImage (const Image& image, int hotspotX, int hotspotY)
 {
     ScopedXLock xlock;
     const unsigned int imageW = image.getWidth();
     const unsigned int imageH = image.getHeight();
-    int hotspotX = hotspot.x;
-    int hotspotY = hotspot.y;
 
   #if JUCE_USE_XCURSOR
     {
@@ -3279,7 +2935,7 @@ void* MouseCursor::createStandardMouseCursor (MouseCursor::StandardCursorType ty
     {
         case NormalCursor:
         case ParentCursor:                  return None; // Use parent cursor
-        case NoCursor:                      return CustomMouseCursorInfo (Image (Image::ARGB, 16, 16, true), 0, 0).create();
+        case NoCursor:                      return createMouseCursorFromImage (Image (Image::ARGB, 16, 16, true), 0, 0);
 
         case WaitCursor:                    shape = XC_watch; break;
         case IBeamCursor:                   shape = XC_xterm; break;
@@ -3296,7 +2952,16 @@ void* MouseCursor::createStandardMouseCursor (MouseCursor::StandardCursorType ty
         case BottomLeftCornerResizeCursor:  shape = XC_bottom_left_corner; break;
         case BottomRightCornerResizeCursor: shape = XC_bottom_right_corner; break;
         case CrosshairCursor:               shape = XC_crosshair; break;
-        case DraggingHandCursor:            return createDraggingHandCursor();
+
+        case DraggingHandCursor:
+        {
+            static unsigned char dragHandData[] = { 71,73,70,56,57,97,16,0,16,0,145,2,0,0,0,0,255,255,255,0,
+              0,0,0,0,0,33,249,4,1,0,0,2,0,44,0,0,0,0,16,0, 16,0,0,2,52,148,47,0,200,185,16,130,90,12,74,139,107,84,123,39,
+              132,117,151,116,132,146,248,60,209,138,98,22,203,114,34,236,37,52,77,217, 247,154,191,119,110,240,193,128,193,95,163,56,60,234,98,135,2,0,59 };
+            const int dragHandDataSize = 99;
+
+            return createMouseCursorFromImage (ImageFileFormat::loadFrom (dragHandData, dragHandDataSize), 8, 7);
+        }
 
         case CopyingCursor:
         {
@@ -3306,7 +2971,7 @@ void* MouseCursor::createStandardMouseCursor (MouseCursor::StandardCursorType ty
               252,114,147,74,83,5,50,68,147,208,217,16,71,149,252,124,5,0,59,0,0 };
             const int copyCursorSize = 119;
 
-            return CustomMouseCursorInfo (ImageFileFormat::loadFrom (copyCursorData, copyCursorSize), 1, 3).create();
+            return createMouseCursorFromImage (ImageFileFormat::loadFrom (copyCursorData, copyCursorSize), 1, 3);
         }
 
         default:
@@ -3331,7 +2996,7 @@ void MouseCursor::showInAllWindows() const
 }
 
 //==============================================================================
-Image juce_createIconForFile (const File& /* file */)
+Image juce_createIconForFile (const File& file)
 {
     return Image::null;
 }
@@ -3339,31 +3004,13 @@ Image juce_createIconForFile (const File& /* file */)
 //==============================================================================
 bool DragAndDropContainer::performExternalDragDropOfFiles (const StringArray& files, const bool canMoveFiles)
 {
-    if (files.size() == 0)
-        return false;
-
-    if (MouseInputSource* draggingSource = Desktop::getInstance().getDraggingMouseSource(0))
-        if (Component* sourceComp = draggingSource->getComponentUnderMouse())
-            if (LinuxComponentPeer* const lp = dynamic_cast <LinuxComponentPeer*> (sourceComp->getPeer()))
-                return lp->externalDragFileInit (files, canMoveFiles);
-
-    // This method must be called in response to a component's mouseDown or mouseDrag event!
-    jassertfalse;
+    jassertfalse;    // not implemented!
     return false;
 }
 
 bool DragAndDropContainer::performExternalDragDropOfText (const String& text)
 {
-    if (text.isEmpty())
-        return false;
-
-    if (MouseInputSource* draggingSource = Desktop::getInstance().getDraggingMouseSource(0))
-        if (Component* sourceComp = draggingSource->getComponentUnderMouse())
-            if (LinuxComponentPeer* const lp = dynamic_cast <LinuxComponentPeer*> (sourceComp->getPeer()))
-                return lp->externalDragTextInit (text);
-
-    // This method must be called in response to a component's mouseDown or mouseDrag event!
-    jassertfalse;
+    jassertfalse;    // not implemented!
     return false;
 }
 
@@ -3377,16 +3024,16 @@ void LookAndFeel::playAlertSound()
 //==============================================================================
 void JUCE_CALLTYPE NativeMessageBox::showMessageBox (AlertWindow::AlertIconType iconType,
                                                      const String& title, const String& message,
-                                                     Component* /* associatedComponent */)
+                                                     Component* associatedComponent)
 {
-    AlertWindow::showMessageBox (iconType, title, message);
+    AlertWindow::showMessageBox (AlertWindow::NoIcon, title, message);
 }
 
 void JUCE_CALLTYPE NativeMessageBox::showMessageBoxAsync (AlertWindow::AlertIconType iconType,
                                                           const String& title, const String& message,
-                                                          Component* /* associatedComponent */)
+                                                          Component* associatedComponent)
 {
-    AlertWindow::showMessageBoxAsync (iconType, title, message);
+    AlertWindow::showMessageBoxAsync (AlertWindow::NoIcon, title, message);
 }
 
 bool JUCE_CALLTYPE NativeMessageBox::showOkCancelBox (AlertWindow::AlertIconType iconType,

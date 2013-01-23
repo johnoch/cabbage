@@ -129,9 +129,10 @@ bool InterprocessConnection::isConnected() const
 String InterprocessConnection::getConnectedHostName() const
 {
     if (pipe != nullptr)
+    {
         return "localhost";
-
-    if (socket != nullptr)
+    }
+    else if (socket != nullptr)
     {
         if (! socket->isLocal())
             return socket->getHostName();
@@ -235,13 +236,14 @@ void InterprocessConnection::connectionLostInt()
 
 struct DataDeliveryMessage  : public Message
 {
-    DataDeliveryMessage (InterprocessConnection* ipc, const MemoryBlock& d)
-        : owner (ipc), data (d)
+    DataDeliveryMessage (InterprocessConnection* owner_, const MemoryBlock& data_)
+        : owner (owner_), data (data_)
     {}
 
     void messageCallback()
     {
-        if (InterprocessConnection* const ipc = owner)
+        InterprocessConnection* const ipc = owner;
+        if (ipc != nullptr)
             ipc->messageReceived (data);
     }
 

@@ -192,7 +192,7 @@ void CallOutBox::updatePosition (const Rectangle<int>& newAreaToPointTo, const R
         float distanceFromCentre = centre.getDistanceFrom (targets[i]);
 
         if (! (centrePointArea.contains (lines[i].getStart()) || centrePointArea.contains (lines[i].getEnd())))
-            distanceFromCentre += 1000.0f;
+            distanceFromCentre *= 50.0f;
 
         if (distanceFromCentre < nearest)
         {

@@ -110,7 +110,6 @@ public:
 private:
     GLuint textureID;
     int width, height;
-    OpenGLContext* ownerContext;
 
     void create (int w, int h, const void*, GLenum type);
 

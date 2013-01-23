@@ -27,11 +27,12 @@ class OpenGLContext::CachedImage  : public CachedComponentImage,
                                     public Thread
 {
 public:
-    CachedImage (OpenGLContext& c, Component& comp,
-                 const OpenGLPixelFormat& pixelFormat, void* contextToShareWith)
+    CachedImage (OpenGLContext& context_,
+                 Component& component_,
+                 const OpenGLPixelFormat& pixelFormat,
+                 void* contextToShareWith)
         : Thread ("OpenGL Rendering"),
-          context (c), component (comp),
-          scale (1.0),
+          context (context_), component (component_),
          #if JUCE_OPENGL_ES
           shadersAvailable (true),
          #else
@@ -70,7 +71,9 @@ public:
     //==============================================================================
     void paint (Graphics&)
     {
-        if (ComponentPeer* const peer = component.getPeer())
+        ComponentPeer* const peer = component.getPeer();
+
+        if (peer != nullptr)
             peer->addMaskedRegion (peer->getComponent().getLocalArea (&component, component.getLocalBounds()));
     }
 
@@ -101,14 +104,14 @@ public:
     }
 
     //==============================================================================
-    bool ensureFrameBufferSize()
+    bool ensureFrameBufferSize (int width, int height)
     {
         const int fbW = cachedImageFrameBuffer.getWidth();
         const int fbH = cachedImageFrameBuffer.getHeight();
 
-        if (fbW != viewportArea.getWidth() || fbH != viewportArea.getHeight() || ! cachedImageFrameBuffer.isValid())
+        if (fbW != width || fbH != height || ! cachedImageFrameBuffer.isValid())
         {
-            if (! cachedImageFrameBuffer.initialise (context, viewportArea.getWidth(), viewportArea.getHeight()))
+            if (! cachedImageFrameBuffer.initialise (context, width, height))
                 return false;
 
             validArea.clear();
@@ -118,19 +121,18 @@ public:
         return true;
     }
 
-    void clearRegionInFrameBuffer (const RectangleList& list, const float scale)
+    void clearRegionInFrameBuffer (const RectangleList& list)
     {
         glClearColor (0, 0, 0, 0);
         glEnable (GL_SCISSOR_TEST);
 
         const GLuint previousFrameBufferTarget = OpenGLFrameBuffer::getCurrentFrameBufferTarget();
         cachedImageFrameBuffer.makeCurrentRenderingTarget();
-        const int imageH = cachedImageFrameBuffer.getHeight();
 
-        for (const Rectangle<int>* i = list.begin(), * const e = list.end(); i != e; ++i)
+        for (RectangleList::Iterator i (list); i.next();)
         {
-            const Rectangle<int> r ((i->toFloat() * scale).getSmallestIntegerContainer());
-            glScissor (r.getX(), imageH - r.getBottom(), r.getWidth(), r.getHeight());
+            const Rectangle<int>& r = *i.getRectangle();
+            glScissor (r.getX(), component.getHeight() - r.getBottom(), r.getWidth(), r.getHeight());
             glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
         }
 
@@ -141,22 +143,13 @@ public:
 
     bool renderFrame()
     {
-        ScopedPointer<MessageManagerLock> mmLock;
-
-        if (context.renderComponents && needsUpdate)
-        {
-            mmLock = new MessageManagerLock (this);  // need to acquire this before locking the context.
-            if (! mmLock->lockWasGained())
-                return false;
-        }
-
         if (! context.makeActive())
             return false;
 
         NativeContext::Locker locker (*nativeContext);
 
         JUCE_CHECK_OPENGL_ERROR
-        glViewport (0, 0, viewportArea.getWidth(), viewportArea.getHeight());
+        glViewport (0, 0, component.getWidth(), component.getHeight());
 
         if (context.renderer != nullptr)
         {
@@ -165,76 +158,50 @@ public:
         }
 
         if (context.renderComponents)
-        {
-            if (needsUpdate)
-            {
-                needsUpdate = false;
-                paintComponent();
-                mmLock = nullptr;
-            }
-
-            glViewport (0, 0, viewportArea.getWidth(), viewportArea.getHeight());
-            drawComponentBuffer();
-        }
+            paintComponent();
 
         context.swapBuffers();
         return true;
     }
 
-    void updateViewportSize (bool canTriggerUpdate)
-    {
-        const double newScale = Desktop::getInstance().getDisplays()
-                                    .getDisplayContaining (component.getScreenBounds().getCentre()).scale;
-
-        Rectangle<int> newArea (roundToInt (component.getWidth() * newScale),
-                                roundToInt (component.getHeight() * newScale));
-
-        if (scale != newScale || viewportArea != newArea)
-        {
-            scale = newScale;
-            viewportArea = newArea;
-
-            if (canTriggerUpdate)
-                invalidateAll();
-        }
-    }
-
     void paintComponent()
     {
-        // you mustn't set your own cached image object when attaching a GL context!
-        jassert (get (component) == this);
-
-        updateViewportSize (false);
-
-        if (! ensureFrameBufferSize())
-            return;
-
-        RectangleList invalid (viewportArea);
-        invalid.subtract (validArea);
-        validArea = viewportArea;
-
-        if (! invalid.isEmpty())
+        if (needsUpdate)
         {
-            clearRegionInFrameBuffer (invalid, (float) scale);
+            MessageManagerLock mm (this);
+            if (! mm.lockWasGained())
+                return;
 
+            needsUpdate = false;
+
+            // you mustn't set your own cached image object when attaching a GL context!
+            jassert (get (component) == this);
+
+            const Rectangle<int> bounds (component.getLocalBounds());
+            if (! ensureFrameBufferSize (bounds.getWidth(), bounds.getHeight()))
+                return;
+
+            RectangleList invalid (bounds);
+            invalid.subtract (validArea);
+            validArea = bounds;
+
+            if (! invalid.isEmpty())
             {
-                ScopedPointer<LowLevelGraphicsContext> g (createOpenGLGraphicsContext (context, cachedImageFrameBuffer));
-                g->addTransform (AffineTransform::scale ((float) scale));
-                g->clipToRectangleList (invalid);
+                clearRegionInFrameBuffer (invalid);
 
-                paintOwner (*g);
-                JUCE_CHECK_OPENGL_ERROR
+                {
+                    ScopedPointer<LowLevelGraphicsContext> g (createOpenGLGraphicsContext (context, cachedImageFrameBuffer));
+                    g->clipToRectangleList (invalid);
+                    paintOwner (*g);
+                    JUCE_CHECK_OPENGL_ERROR
+                }
+
+                context.makeActive();
             }
 
-            if (! context.isActive())
-                context.makeActive();
+            JUCE_CHECK_OPENGL_ERROR
         }
 
-        JUCE_CHECK_OPENGL_ERROR
-    }
-
-    void drawComponentBuffer()
-    {
        #if ! JUCE_ANDROID
         glEnable (GL_TEXTURE_2D);
         clearGLError();
@@ -243,7 +210,7 @@ public:
         glBindTexture (GL_TEXTURE_2D, cachedImageFrameBuffer.getTextureID());
 
         const Rectangle<int> cacheBounds (cachedImageFrameBuffer.getWidth(), cachedImageFrameBuffer.getHeight());
-        context.copyTexture (cacheBounds, cacheBounds, cacheBounds.getWidth(), cacheBounds.getHeight());
+        context.copyTexture (cacheBounds, cacheBounds, context.getWidth(), context.getHeight());
         glBindTexture (GL_TEXTURE_2D, 0);
         JUCE_CHECK_OPENGL_ERROR
     }
@@ -333,7 +300,7 @@ public:
         const int defaultFPS = 60;
 
         const int elapsed = (int) (Time::getMillisecondCounter() - frameRenderStartTime);
-        wait (jmax (1, (1000 / defaultFPS - 1) - elapsed));
+        wait (jmax (1, (1000 / defaultFPS) - elapsed));
     }
 
     //==============================================================================
@@ -350,8 +317,6 @@ public:
 
     OpenGLFrameBuffer cachedImageFrameBuffer;
     RectangleList validArea;
-    Rectangle<int> viewportArea;
-    double scale;
 
     StringArray associatedObjectNames;
     ReferenceCountedArray<ReferenceCountedObject> associatedObjects;
@@ -369,10 +334,11 @@ void OpenGLContext::NativeContext::contextCreatedCallback()
 {
     isInsideGLCallback = true;
 
-    if (CachedImage* const c = CachedImage::get (component))
+    CachedImage* const c = CachedImage::get (component);
+    jassert (c != nullptr);
+
+    if (c != nullptr)
         c->initialiseOnThread();
-    else
-        jassertfalse;
 
     isInsideGLCallback = false;
 }
@@ -381,7 +347,9 @@ void OpenGLContext::NativeContext::renderCallback()
 {
     isInsideGLCallback = true;
 
-    if (CachedImage* const c = CachedImage::get (component))
+    CachedImage* const c = CachedImage::get (component);
+
+    if (c != nullptr)
         c->renderFrame();
 
     isInsideGLCallback = false;
@@ -392,8 +360,8 @@ void OpenGLContext::NativeContext::renderCallback()
 class OpenGLContext::Attachment  : public ComponentMovementWatcher
 {
 public:
-    Attachment (OpenGLContext& c, Component& comp)
-       : ComponentMovementWatcher (&comp), context (c)
+    Attachment (OpenGLContext& context_, Component& comp)
+       : ComponentMovementWatcher (&comp), context (context_)
     {
         if (canBeAttached (comp))
             attach();
@@ -411,12 +379,12 @@ public:
         if (isAttached (comp) != canBeAttached (comp))
             componentVisibilityChanged();
 
+        context.width  = comp.getWidth();
+        context.height = comp.getHeight();
+
         if (comp.getWidth() > 0 && comp.getHeight() > 0
              && context.nativeContext != nullptr)
         {
-            if (CachedImage* const c = CachedImage::get (comp))
-                c->updateViewportSize (true);
-
             context.nativeContext->updateWindowPosition (comp.getTopLevelComponent()
                                                             ->getLocalArea (&comp, comp.getLocalBounds()));
         }
@@ -476,14 +444,13 @@ private:
                                                              context.contextToShareWith);
         comp.setCachedComponentImage (newCachedImage);
         newCachedImage->start(); // (must wait until this is attached before starting its thread)
-        newCachedImage->updateViewportSize (true);
     }
 
     void detach()
     {
         Component& comp = *getComponent();
-
-        if (CachedImage* const oldCachedImage = CachedImage::get (comp))
+        CachedImage* oldCachedImage = CachedImage::get (comp);
+        if (oldCachedImage != nullptr)
             oldCachedImage->stop(); // (must stop this before detaching it from the component)
 
         comp.setCachedComponentImage (nullptr);
@@ -494,7 +461,7 @@ private:
 //==============================================================================
 OpenGLContext::OpenGLContext()
     : nativeContext (nullptr), renderer (nullptr), contextToShareWith (nullptr),
-      renderComponents (true)
+      width (0), height (0), renderComponents (true)
 {
 }
 
@@ -546,6 +513,10 @@ void OpenGLContext::attachTo (Component& component)
     if (getTargetComponent() != &component)
     {
         detach();
+
+        width  = component.getWidth();
+        height = component.getHeight();
+
         attachment = new Attachment (*this, component);
     }
 }
@@ -554,6 +525,7 @@ void OpenGLContext::detach()
 {
     attachment = nullptr;
     nativeContext = nullptr;
+    width = height = 0;
 }
 
 bool OpenGLContext::isAttached() const noexcept
@@ -587,8 +559,13 @@ void OpenGLContext::deactivateCurrentContext()      { NativeContext::deactivateC
 
 void OpenGLContext::triggerRepaint()
 {
-    if (CachedImage* const cachedImage = getCachedImage())
+    CachedImage* const cachedImage = getCachedImage();
+
+    if (cachedImage != nullptr)
+    {
         cachedImage->triggerRepaint();
+        cachedImage->component.repaint();
+    }
 }
 
 void OpenGLContext::swapBuffers()

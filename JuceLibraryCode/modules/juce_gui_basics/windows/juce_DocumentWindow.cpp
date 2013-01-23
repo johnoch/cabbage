@@ -107,10 +107,11 @@ void DocumentWindow::setTitleBarHeight (const int newHeight)
     repaintTitleBar();
 }
 
-void DocumentWindow::setTitleBarButtonsRequired (const int buttons, const bool onLeft)
+void DocumentWindow::setTitleBarButtonsRequired (const int requiredButtons_,
+                                                 const bool positionTitleBarButtonsOnLeft_)
 {
-    requiredButtons = buttons;
-    positionTitleBarButtonsOnLeft = onLeft;
+    requiredButtons = requiredButtons_;
+    positionTitleBarButtonsOnLeft = positionTitleBarButtonsOnLeft_;
     lookAndFeelChanged();
 }
 

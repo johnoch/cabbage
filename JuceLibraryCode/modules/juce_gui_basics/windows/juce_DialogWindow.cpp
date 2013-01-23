@@ -102,16 +102,11 @@ DialogWindow::LaunchOptions::LaunchOptions() noexcept
 {
 }
 
-DialogWindow* DialogWindow::LaunchOptions::create()
+DialogWindow* DialogWindow::LaunchOptions::launchAsync()
 {
     jassert (content != nullptr); // You need to provide some kind of content for the dialog!
 
-    return new DefaultDialogWindow (*this);
-}
-
-DialogWindow* DialogWindow::LaunchOptions::launchAsync()
-{
-    DialogWindow* const d = create();
+    DefaultDialogWindow* const d = new DefaultDialogWindow (*this);
     d->enterModalState (true, nullptr, true);
     return d;
 }

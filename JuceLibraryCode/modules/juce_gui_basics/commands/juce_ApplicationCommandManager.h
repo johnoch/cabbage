@@ -109,11 +109,13 @@ public:
 
     //==============================================================================
     /** Clears the current list of all commands.
+
         Note that this will also clear the contents of the KeyPressMappingSet.
     */
     void clearCommands();
 
     /** Adds a command to the list of registered commands.
+
         @see registerAllCommandsForTarget
     */
     void registerCommand (const ApplicationCommandInfo& newCommand);
@@ -129,6 +131,7 @@ public:
     void registerAllCommandsForTarget (ApplicationCommandTarget* target);
 
     /** Removes the command with a specified ID.
+
         Note that this will also remove any key mappings that are mapped to the command.
     */
     void removeCommand (CommandID commandID);
@@ -147,11 +150,13 @@ public:
 
     //==============================================================================
     /** Returns the number of commands that have been registered.
+
         @see registerCommand
     */
     int getNumCommands() const noexcept                                             { return commands.size(); }
 
     /** Returns the details about one of the registered commands.
+
         The index is between 0 and (getNumCommands() - 1).
     */
     const ApplicationCommandInfo* getCommandForIndex (int index) const noexcept     { return commands [index]; }
@@ -190,6 +195,7 @@ public:
     StringArray getCommandCategories() const;
 
     /** Returns a list of all the command UIDs in a particular category.
+
         @see getCommandCategories()
     */
     Array<CommandID> getCommandsInCategory (const String& categoryName) const;
@@ -208,6 +214,7 @@ public:
 
     //==============================================================================
     /** Invokes the given command directly, sending it to the default target.
+
         This is just an easy way to call invoke() without having to fill out the InvocationInfo
         structure.
     */
@@ -311,7 +318,7 @@ private:
     ScopedPointer <KeyPressMappingSet> keyMappings;
     ApplicationCommandTarget* firstTarget;
 
-    void sendListenerInvokeCallback (const ApplicationCommandTarget::InvocationInfo&);
+    void sendListenerInvokeCallback (const ApplicationCommandTarget::InvocationInfo& info);
     void handleAsyncUpdate();
     void globalFocusChanged (Component*);
 
