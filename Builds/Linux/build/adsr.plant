@@ -1,1 +1,6 @@
+groupbox bounds(15, 120, 240, 100), text("ADSR amplitude"), plant("ADSR"){ 
+rslider bounds(0, 30, 60, 60), text("A"), colour("orange"), channel("att"), range(0.01,3, .5)
+rslider bounds(60, 30, 60, 60), text("D"), colour("orange"), channel("dec"), range(0,1, .5)
+rslider bounds(120, 30, 60, 60), text("S"), colour("orange"), channel("sus"), range(0,1,.8)
 rslider bounds(180, 30, 60, 60), text("R"), colour("orange"), channel("rel"), range(0.01,3, .2)
+}
