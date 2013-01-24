@@ -20,10 +20,15 @@ class CabbageStandalone : public JUCEApplication
 			options.osxLibrarySubFolder = "Preferences";
 
 			appProperties = new ApplicationProperties();
+			//set fallback file for default properties...
+
+			appProperties->setStorageParameters (options);
+
 			defaultPropSet = new PropertySet();
 			ScopedPointer<XmlElement> xml;
 			xml = new XmlElement("PLANTS");
-			String plantDir = File::getSpecialLocation(File::currentApplicationFile).getFullPathName();
+			String plantDir = appProperties->getCommonSettings(true)->getFile().getParentDirectory().getFullPathName();
+			Logger::writeToLog(plantDir);
 			defaultPropSet->setValue("PlantFileDir", plantDir);
 			defaultPropSet->setValue("DisablePluginInfo", 0);
 			defaultPropSet->setValue("AutoUpdate", 0);
@@ -32,7 +37,7 @@ class CabbageStandalone : public JUCEApplication
 			defaultPropSet->setValue("SetAlwaysOnTop", 1);	
 			defaultPropSet->setValue("PlantRepository", xml);
 			defaultPropSet->setValue("EditorColourScheme", 0);
-			appProperties->setStorageParameters (options);
+			
 			appProperties->getUserSettings()->setFallbackPropertySet(defaultPropSet);
 			filterWindow = new StandaloneFilterWindow (String("Cabbage"), Colours::black);
             filterWindow->setTitleBarButtonsRequired (DocumentWindow::allButtons, false);

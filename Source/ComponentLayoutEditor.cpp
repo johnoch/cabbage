@@ -199,17 +199,11 @@ void ChildAlias::mouseDown (const MouseEvent& e)
 			alert.addTextEditor("textEditor", "name", "");
 			alert.runModalLoop();
 			this->getTopLevelComponent()->setAlwaysOnTop(true);
-//			if(alert.getTextEditorContents("textEditor").containsAnyOf("$%^&*()-+ "))
-//				CabbageUtils::showMessage("Invalid name, please try again(names cannot contains white spaces of the following characters: $ % ^ & * ( ) - + ). Nothing has been added to your user repository", &getLookAndFeel());
-
-						//make sure host doesn't fail if there are no Plant entries
-//				ScopedPointer<XmlElement> xml;
-//				xml = new XmlElement("PLANTS");
-//				xml = appProperties->getUserSettings()->getXmlValue("PlantRepository");
 				bool clashingNames=false;
 				int result; 
 				
-				String plantDir = appProperties->getUserSettings()->getValue("PlantFileDir", "");				
+				String plantDir = appProperties->getUserSettings()->getValue("PlantFileDir", "");	
+				Logger::writeToLog(plantDir);
 				Array<File> tempfiles;
 				StringArray plants;   
 				addFileToPpopupMenu(m, tempfiles, plantDir, "*.plant");

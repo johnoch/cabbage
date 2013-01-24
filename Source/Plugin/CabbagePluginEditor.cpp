@@ -138,7 +138,7 @@ if(presetFileText.length()>1)
 //===========================================================================
 void CabbagePluginAudioProcessorEditor::changeListenerCallback(ChangeBroadcaster *source)
 {
-
+//see actionListener...
 
 }
 //==============================================================================
@@ -1752,10 +1752,6 @@ Array<int> tableSizes;
                                         /*     actionlistener method (xypad/table/snapshot)      */
                                         /*********************************************************/
 void CabbagePluginAudioProcessorEditor::actionListenerCallback (const String& message){
-	//if message has been send from the processing block it's ok to update controls
-//if(message == "ready to update after Ksmps")
-//ksmpsYieldCallback();
-
 //the first part of this method receives messages from the GUI editor layout/Main panel and updates the 
 //source code accordingly. The second half if use for messages being sent from GUI widgets
 if(message.contains("Message sent from CabbageMainPanel")){
@@ -1826,8 +1822,11 @@ if(message.contains("Message sent from CabbageMainPanel")){
 			
 			}
 
-			String plantDir = appProperties->getUserSettings()->getValue("PlantFileDir", "");	
+			String plantDir = appProperties->getUserSettings()->getValue("PlantFileDir", "");
+			if(plantDir.length()<2)
+			plantDir = getFilter()->getCsoundInputFile().getCurrentWorkingDirectory().getFullPathName();
 			String plantFile = plantDir + "/" + repoEntryName.trim() + String(".plant");
+			Logger::writeToLog(plantFile);
 			File plant(plantFile);
 			plant.replaceWithText(repoEntry);
 	}
