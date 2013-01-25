@@ -32,11 +32,11 @@ class CabbageStandalone : public JUCEApplication
 			defaultPropSet->setValue("PlantFileDir", plantDir);
 			defaultPropSet->setValue("DisablePluginInfo", 0);
 			defaultPropSet->setValue("AutoUpdate", 0);
-			defaultPropSet->setValue("UseCabbageIO", 0);
+			defaultPropSet->setValue("UseCabbageIO", 1);
 			defaultPropSet->setValue("DisableGUIEditModeWarning", 0);
 			defaultPropSet->setValue("SetAlwaysOnTop", 1);	
 			defaultPropSet->setValue("PlantRepository", xml);
-			defaultPropSet->setValue("EditorColourScheme", 0);
+			defaultPropSet->setValue("EditorColourScheme", 1);
 			
 			appProperties->getUserSettings()->setFallbackPropertySet(defaultPropSet);
 			filterWindow = new StandaloneFilterWindow (String("Cabbage"), Colours::black);
