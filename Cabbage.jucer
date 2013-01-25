@@ -3,12 +3,16 @@
 <JUCERPROJECT id="O3pIoB" name="Cabbage" projectType="guiapp" version="1.0.0"
               jucerVersion="3.0.0">
   <EXPORTFORMATS>
-    <XCODE_MAC targetFolder="Builds/MacOSX" juceFolder="..\juce\modules">
+    <XCODE_MAC targetFolder="Builds/MacOSX" juceFolder="./JuceLibraryCode/"
+               extraDefs="MACOSX&#10;USE_DOUBLE&#10;Cabbage_Build_Standalone"
+               extraFrameworks="/Library/Frameworks/CsoundLib64">
       <CONFIGURATIONS>
         <CONFIGURATION name="Debug" isDebug="1" optimisation="1" targetName="Cabbage"
-                       osxSDK="default" osxCompatibility="default" osxArchitecture="default"/>
+                       osxSDK="default" osxCompatibility="default" osxArchitecture="default"
+                       headerPath="/Library/Frameworks/CsoundLib.framework/Versions/Current/Headers&#10;"/>
         <CONFIGURATION name="Release" isDebug="0" optimisation="2" targetName="Cabbage"
-                       osxSDK="default" osxCompatibility="default" osxArchitecture="default"/>
+                       osxSDK="default" osxCompatibility="default" osxArchitecture="default"
+                       headerPath="/Library/Frameworks/CsoundLib.framework/Versions/Current/Headers&#10;"/>
       </CONFIGURATIONS>
     </XCODE_MAC>
     <VS2010 targetFolder="Builds/VisualStudio2010" libraryType="1" juceFolder="..\juce\modules">
