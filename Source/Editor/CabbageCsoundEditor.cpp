@@ -1,4 +1,3 @@
-
 #include "CabbageCsoundEditor.h"
 #include "../Standalone/CabbageStandaloneDialog.h"
 
@@ -215,7 +214,7 @@ void CsoundEditor::getCommandInfo (const CommandID commandID, ApplicationCommand
 		result.defaultKeypresses.add(KeyPress(KeyPress::F1Key));
 #else
 			result.setInfo (String("View Help Ctrl+1"), String("View Help"), CommandCategories::help, 0);
-			result.addDefaultKeypress (String('1'), ModifierKeys::commandModifier);		
+			result.addDefaultKeypress ('1', ModifierKeys::commandModifier);		
 #endif
 		break;
 		
