@@ -837,6 +837,9 @@ else{
 				csd << "/Contents/" << csdFile.getFileNameWithoutExtension() << ".csd";
 				csdFile = File(csd);
 			}
+			if(cabbageCsoundEditor)
+				cabbageCsoundEditor->setCsoundFile(csdFile);
+			isAFileOpen = true;
 			resetFilter();
 			//cabbageCsoundEditor->setCsoundFile(csdFile);
 		}			
@@ -856,8 +859,9 @@ else{
 			setAlwaysOnTop((true));
 		else
 			setAlwaysOnTop(false);
-	}
 #endif
+	}
+
 }
 
 void StandaloneFilterWindow::saveFile()
