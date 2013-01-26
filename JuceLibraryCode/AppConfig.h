@@ -34,6 +34,8 @@
 //if you define this in the IDE make sure to remove it when building from the command line...
 #ifdef Cabbage_Plugin_Synth
 #define JucePlugin_IsSynth             1
+#else
+#define JucePlugin_IsSynth             0
 #endif
 #define JucePlugin_WantsMidiInput       1
 #define JucePlugin_ProducesMidiOutput   1
