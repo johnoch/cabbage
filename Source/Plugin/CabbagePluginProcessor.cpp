@@ -154,8 +154,7 @@ yieldCounter(10)
 //Therefore we need to find the name of the library and append a '.csd' to it. 
         
 #ifdef MACOSX
-String osxCSD = File::getSpecialLocation(File::currentExecutableFile).getFullPathName()+String("/Contents/")+File::getSpecialLocation(File::currentApplicationFile).getFileName();
-File thisFile(osxCSD); 
+String osxCSD = File::getSpecialLocation(File::currentApplicationFile).getFullPathName()+String("/Contents/")+File::getSpecialLocation(File::currentApplicationFile).getFileName();File thisFile(osxCSD); 
 Logger::writeToLog("MACOSX defined OK");
 #else 
 File thisFile(File::getSpecialLocation(File::currentExecutableFile)); 
