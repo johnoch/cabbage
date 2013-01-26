@@ -1,20 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Session Name="/home/rory/Sourcecode/cabbage/Builds/Linux/CabbagePlugin/CabbagePlugin.workspace">
-  <int Value="5" Name="m_selectedTab"/>
+  <int Value="8" Name="m_selectedTab"/>
   <wxString Value="/home/rory/Sourcecode/cabbage/Builds/Linux/CabbagePlugin/CabbagePlugin.workspace" Name="m_workspaceName"/>
   <TabInfoArray Name="TabInfoArray">
-    <TabInfo>
-      <wxString Value="/home/rory/Sourcecode/cabbage/Source/Standalone/CabbageStandaloneDialog.cpp" Name="FileName"/>
-      <int Value="212" Name="FirstVisibleLine"/>
-      <int Value="212" Name="CurrentLine"/>
-      <wxArrayString Name="Bookmarks"/>
-    </TabInfo>
-    <TabInfo>
-      <wxString Value="/home/rory/Sourcecode/cabbage/Source/Standalone/CabbageStandaloneDialog.h" Name="FileName"/>
-      <int Value="149" Name="FirstVisibleLine"/>
-      <int Value="149" Name="CurrentLine"/>
-      <wxArrayString Name="Bookmarks"/>
-    </TabInfo>
     <TabInfo>
       <wxString Value="/home/rory/Sourcecode/cabbage/Source/Plugin/CabbagePluginEditor.cpp" Name="FileName"/>
       <int Value="2135" Name="FirstVisibleLine"/>
@@ -29,13 +17,13 @@
     </TabInfo>
     <TabInfo>
       <wxString Value="/home/rory/Sourcecode/cabbage/Source/Plugin/CabbagePluginProcessor.h" Name="FileName"/>
-      <int Value="312" Name="FirstVisibleLine"/>
-      <int Value="330" Name="CurrentLine"/>
+      <int Value="0" Name="FirstVisibleLine"/>
+      <int Value="32" Name="CurrentLine"/>
       <wxArrayString Name="Bookmarks"/>
     </TabInfo>
     <TabInfo>
       <wxString Value="/home/rory/Sourcecode/cabbage/Source/Plugin/CabbagePluginProcessor.cpp" Name="FileName"/>
-      <int Value="453" Name="FirstVisibleLine"/>
+      <int Value="555" Name="FirstVisibleLine"/>
       <int Value="555" Name="CurrentLine"/>
       <wxArrayString Name="Bookmarks"/>
     </TabInfo>
@@ -58,33 +46,27 @@
       <wxArrayString Name="Bookmarks"/>
     </TabInfo>
     <TabInfo>
-      <wxString Value="/home/rory/Sourcecode/cabbage/Source/CabbageMainPanel.h" Name="FileName"/>
-      <int Value="108" Name="FirstVisibleLine"/>
-      <int Value="120" Name="CurrentLine"/>
-      <wxArrayString Name="Bookmarks"/>
-    </TabInfo>
-    <TabInfo>
       <wxString Value="/home/rory/Sourcecode/cabbage/Source/ComponentLayoutEditor.h" Name="FileName"/>
       <int Value="17" Name="FirstVisibleLine"/>
       <int Value="17" Name="CurrentLine"/>
       <wxArrayString Name="Bookmarks"/>
     </TabInfo>
     <TabInfo>
-      <wxString Value="/home/rory/Sourcecode/cabbage/Builds/Linux/Makefile" Name="FileName"/>
-      <int Value="27" Name="FirstVisibleLine"/>
-      <int Value="27" Name="CurrentLine"/>
-      <wxArrayString Name="Bookmarks"/>
-    </TabInfo>
-    <TabInfo>
       <wxString Value="/home/rory/Sourcecode/cabbage/Builds/Linux/MakefilePluginSynth" Name="FileName"/>
-      <int Value="22" Name="FirstVisibleLine"/>
-      <int Value="22" Name="CurrentLine"/>
+      <int Value="81" Name="FirstVisibleLine"/>
+      <int Value="92" Name="CurrentLine"/>
       <wxArrayString Name="Bookmarks"/>
     </TabInfo>
     <TabInfo>
-      <wxString Value="/home/rory/Sourcecode/cabbage/JuceLibraryCode/AppConfig.h" Name="FileName"/>
-      <int Value="22" Name="FirstVisibleLine"/>
-      <int Value="22" Name="CurrentLine"/>
+      <wxString Value="/home/rory/Sourcecode/cabbage/Builds/Linux/MakefilePluginEffect" Name="FileName"/>
+      <int Value="0" Name="FirstVisibleLine"/>
+      <int Value="11" Name="CurrentLine"/>
+      <wxArrayString Name="Bookmarks"/>
+    </TabInfo>
+    <TabInfo>
+      <wxString Value="/home/rory/Sourcecode/cabbage/Source/csPerfThread.cpp" Name="FileName"/>
+      <int Value="14" Name="FirstVisibleLine"/>
+      <int Value="26" Name="CurrentLine"/>
       <wxArrayString Name="Bookmarks"/>
     </TabInfo>
   </TabInfoArray>
