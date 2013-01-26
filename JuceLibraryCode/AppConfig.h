@@ -18,7 +18,43 @@
 // [BEGIN_USER_CODE_SECTION]
 
 // (You can add your own code in this section, and the Introjucer will not overwrite it)
-#include "../Source/JucePluginCharacteristics.h"
+// Audio plugin settings..
+#define JucePlugin_Build_VST    1  // (If you change this value, you'll also need to re-export the projects using the Jucer)
+#define JucePlugin_Build_AU     1  // (If you change this value, you'll also need to re-export the projects using the Jucer)
+#define JucePlugin_Build_RTAS   0  // (If you change this value, you'll also need to re-export the projects using the Jucer)
+
+#define JucePlugin_Name                 "CabbageEffectNam"
+#define JucePlugin_Desc                 "CabbagePlugin"
+#define JucePlugin_Manufacturer         "Cabbage"
+#define JucePlugin_ManufacturerCode     'Cabb'
+#define JucePlugin_PluginCode           'RORY'
+#define JucePlugin_MaxNumInputChannels  2
+#define JucePlugin_MaxNumOutputChannels 2
+#define JucePlugin_PreferredChannelConfigurations   {1, 1}, {2, 2}
+//if you define this in the IDE make sure to remove it when building from the command line...
+#ifdef Cabbage_Plugin_Synth
+#define JucePlugin_IsSynth             1
+#endif
+#define JucePlugin_WantsMidiInput       1
+#define JucePlugin_ProducesMidiOutput   1
+#define JucePlugin_SilenceInProducesSilenceOut  1
+#define JucePlugin_TailLengthSeconds    0
+#define JucePlugin_EditorRequiresKeyboardFocus  1
+#define JucePlugin_VersionCode          0x10000
+#define JucePlugin_VersionString        "0.0.0"
+#define JucePlugin_VSTUniqueID          JucePlugin_PluginCode
+#define JucePlugin_VSTCategory          kPlugCategEffect
+#define JucePlugin_AUMainType           kAudioUnitType_Effect
+#define JucePlugin_AUSubType            JucePlugin_PluginCode
+#define JucePlugin_AUExportPrefix       JuceProjectAU
+#define JucePlugin_AUExportPrefixQuoted "CaabageAU"
+#define JucePlugin_AUManufacturerCode   JucePlugin_ManufacturerCode
+#define JucePlugin_CFBundleIdentifier   com.Cabbage.Test
+#define JucePlugin_AUCocoaViewClassName CabbageProjectAU_V1
+#define JucePlugin_RTASCategory         ePlugInCategory_None
+#define JucePlugin_RTASManufacturerCode JucePlugin_ManufacturerCode
+#define JucePlugin_RTASProductId        JucePlugin_PluginCode
+#define JUCE_USE_VSTSDK_2_4             1
 
 // [END_USER_CODE_SECTION]
 
@@ -161,44 +197,6 @@
 
 
 //==============================================================================
-// Audio plugin settings..
-#define JucePlugin_Build_VST    1  // (If you change this value, you'll also need to re-export the projects using the Jucer)
-#define JucePlugin_Build_AU     1  // (If you change this value, you'll also need to re-export the projects using the Jucer)
-#define JucePlugin_Build_RTAS   0  // (If you change this value, you'll also need to re-export the projects using the Jucer)
 
-#define JucePlugin_Name                 "CabbageEffectNam"
-#define JucePlugin_Desc                 "CabbagePlugin"
-#define JucePlugin_Manufacturer         "Cabbage"
-#define JucePlugin_ManufacturerCode     'Cabbu'
-#define JucePlugin_PluginCode           'RORY'
-#define JucePlugin_MaxNumInputChannels  2
-#define JucePlugin_MaxNumOutputChannels 2
-#define JucePlugin_PreferredChannelConfigurations   {1, 1}, {2, 2}
-//if you define this in the IDE make sure to remove it when building from the command line...
-#ifndef Cabbage_Plugin_Synth
-#define JucePlugin_IsSynth             1
-#else
-#define JucePlugin_IsSynth              0
-#endif
-#define JucePlugin_WantsMidiInput       1
-#define JucePlugin_ProducesMidiOutput   1
-#define JucePlugin_SilenceInProducesSilenceOut  1
-#define JucePlugin_TailLengthSeconds    0
-#define JucePlugin_EditorRequiresKeyboardFocus  1
-#define JucePlugin_VersionCode          0x10000
-#define JucePlugin_VersionString        "0.0.0"
-#define JucePlugin_VSTUniqueID          JucePlugin_PluginCode
-#define JucePlugin_VSTCategory          kPlugCategEffect
-#define JucePlugin_AUMainType           kAudioUnitType_Effect
-#define JucePlugin_AUSubType            JucePlugin_PluginCode
-#define JucePlugin_AUExportPrefix       JuceProjectAU
-#define JucePlugin_AUExportPrefixQuoted "CaabageAU"
-#define JucePlugin_AUManufacturerCode   JucePlugin_ManufacturerCode
-#define JucePlugin_CFBundleIdentifier   com.Cabbage.Test
-#define JucePlugin_AUCocoaViewClassName CabbageProjectAU_V1
-#define JucePlugin_RTASCategory         ePlugInCategory_None
-#define JucePlugin_RTASManufacturerCode JucePlugin_ManufacturerCode
-#define JucePlugin_RTASProductId        JucePlugin_PluginCode
-#define JUCE_USE_VSTSDK_2_4             1
 
 #endif  // __JUCE_APPCONFIG_CXQEYL__
