@@ -528,6 +528,7 @@ AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 
 //==========================================================================
 //action listener. Listen to messages being sent form xypad automations
+//when a message is sent we update our parameters..
 //==========================================================================
 void CabbagePluginAudioProcessor::changeListenerCallback(ChangeBroadcaster *source)
 {
@@ -535,13 +536,10 @@ void CabbagePluginAudioProcessor::changeListenerCallback(ChangeBroadcaster *sour
 	XYPadAutomation* xyPad = dynamic_cast< XYPadAutomation*>(source);
 	if(xyPad){
 #ifndef Cabbage_No_Csound
-		//messageQueue.addOutgoingChannelMessageToQueue(xyPad->xChannel.toUTF8(), xyPad->getXValue())
-		setParameterNotifyingHost(xyPad->paramIndex, xyPad->getXValue()/xyPad->getXRange());
-		//messageQueue.addOutgoingChannelMessageToQueue(xyPad->yChannel.toUTF8(), xyPad->getYValue())
-		setParameterNotifyingHost(xyPad->paramIndex+1, xyPad->getYValue()/xyPad->getYRange());
+		setParameterNotifyingHost(xyPad->paramIndex, xyPad->getXValue());
+		setParameterNotifyingHost(xyPad->paramIndex+1, xyPad->getYValue());
 #endif
 	}
-
 }
 
 //==============================================================================
