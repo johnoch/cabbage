@@ -1,36 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Session Name="/home/rory/Sourcecode/cabbage/Builds/Linux/CabbageStandalone/CabbageStandalone.workspace">
-  <int Value="3" Name="m_selectedTab"/>
+  <int Value="1" Name="m_selectedTab"/>
   <wxString Value="/home/rory/Sourcecode/cabbage/Builds/Linux/CabbageStandalone/CabbageStandalone.workspace" Name="m_workspaceName"/>
   <TabInfoArray Name="TabInfoArray">
     <TabInfo>
-      <wxString Value="/home/rory/Sourcecode/cabbage/Source/CabbageUtils.h" Name="FileName"/>
-      <int Value="280" Name="FirstVisibleLine"/>
-      <int Value="309" Name="CurrentLine"/>
+      <wxString Value="/home/rory/Sourcecode/cabbage/Source/Plugin/CabbagePluginEditor.cpp" Name="FileName"/>
+      <int Value="1481" Name="FirstVisibleLine"/>
+      <int Value="1481" Name="CurrentLine"/>
       <wxArrayString Name="Bookmarks"/>
     </TabInfo>
     <TabInfo>
-      <wxString Value="/home/rory/Sourcecode/cabbage/Source/CabbageGUIClass.cpp" Name="FileName"/>
-      <int Value="334" Name="FirstVisibleLine"/>
-      <int Value="334" Name="CurrentLine"/>
-      <wxArrayString Name="Bookmarks"/>
-    </TabInfo>
-    <TabInfo>
-      <wxString Value="/home/rory/Sourcecode/cabbage/Source/XYPad.cpp" Name="FileName"/>
-      <int Value="417" Name="FirstVisibleLine"/>
-      <int Value="417" Name="CurrentLine"/>
-      <wxArrayString Name="Bookmarks"/>
-    </TabInfo>
-    <TabInfo>
-      <wxString Value="/home/rory/Sourcecode/cabbage/Source/Standalone/CabbageStandaloneDialog.cpp" Name="FileName"/>
-      <int Value="890" Name="FirstVisibleLine"/>
-      <int Value="890" Name="CurrentLine"/>
-      <wxArrayString Name="Bookmarks"/>
-    </TabInfo>
-    <TabInfo>
-      <wxString Value="/home/rory/Sourcecode/cabbage/JuceLibraryCode/AppConfig.h" Name="FileName"/>
-      <int Value="30" Name="FirstVisibleLine"/>
-      <int Value="30" Name="CurrentLine"/>
+      <wxString Value="/home/rory/Sourcecode/cabbage/Source/Plugin/CabbagePluginProcessor.cpp" Name="FileName"/>
+      <int Value="585" Name="FirstVisibleLine"/>
+      <int Value="585" Name="CurrentLine"/>
       <wxArrayString Name="Bookmarks"/>
     </TabInfo>
   </TabInfoArray>

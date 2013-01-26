@@ -1458,32 +1458,28 @@ void CabbagePluginAudioProcessorEditor::InsertComboBox(CabbageGUIClass &cAttr)
 void CabbagePluginAudioProcessorEditor::comboBoxChanged (ComboBox* combo)
 {
 #ifndef Cabbage_No_Csound
-if(getFilter()->isGuiEnabled()){
 if(combo->isEnabled()) // before sending data to on named channel
     {
-                for(int i=0;i<(int)getFilter()->getGUICtrlsSize();i++){//find correct control from vector
-                        String test = combo->getName();
-                        String test2 = getFilter()->getGUICtrls(i).getStringProp("name");
-                        if(getFilter()->getGUICtrls(i).getStringProp("name").equalsIgnoreCase(combo->getName())){
-                                for(int y=0;y<(int)getFilter()->getGUICtrls(i).getItemsSize();y++)
-                                        if(getFilter()->getGUICtrls(i).getItems(y).equalsIgnoreCase(combo->getItemText(combo->getSelectedItemIndex()))){
-                                  //              getFilter()->getCsound()->SetChannel(getFilter()->getGUICtrls(i).getStringProp("channel").toUTF8(), (float)combo->getSelectedItemIndex()+1);
-                                                
+	for(int i=0;i<(int)getFilter()->getGUICtrlsSize();i++){//find correct control from vector
+			String test = combo->getName();
+			String test2 = getFilter()->getGUICtrls(i).getStringProp("name");
+			if(getFilter()->getGUICtrls(i).getStringProp("name").equalsIgnoreCase(combo->getName())){
+					for(int y=0;y<(int)getFilter()->getGUICtrls(i).getItemsSize();y++)
+							if(getFilter()->getGUICtrls(i).getItems(y).equalsIgnoreCase(combo->getItemText(combo->getSelectedItemIndex()))){
+					  //              getFilter()->getCsound()->SetChannel(getFilter()->getGUICtrls(i).getStringProp("channel").toUTF8(), (float)combo->getSelectedItemIndex()+1);
+									
 #ifndef Cabbage_Build_Standalone
-                                                getFilter()->getGUICtrls(i).setNumProp("value", (int)combo->getSelectedItemIndex());
-                                                //getFilter()->getCsound()->SetChannel(getFilter()->getGUICtrls(i).getStringProp("channel").toUTF8(), combo->getSelectedItemIndex());
-                                                //Logger::writeToLog(String("comboEvent():")+String(getFilter()->getGUICtrls(i).getNumProp("sliderRange")));
-                                                getFilter()->setParameterNotifyingHost(i, (float)(combo->getSelectedItemIndex())/(getFilter()->getGUICtrls(i).getNumProp("sliderRange")));
+									getFilter()->setParameter(i, (float)(combo->getSelectedItemIndex())/(getFilter()->getGUICtrls(i).getNumProp("maxItems")));
+									getFilter()->setParameterNotifyingHost(i, (float)(combo->getSelectedItemIndex())/(getFilter()->getGUICtrls(i).getNumProp("maxItems")));
 #else
-                                                getFilter()->getGUICtrls(i).setNumProp("value", (int)combo->getSelectedItemIndex()+1);
-                                                getFilter()->setParameterNotifyingHost(i, (float)(combo->getSelectedItemIndex()+1));
+									getFilter()->setParameter(i, (float)(combo->getSelectedItemIndex()+1));
+									getFilter()->setParameterNotifyingHost(i, (float)(combo->getSelectedItemIndex()+1));
 #endif
-                                        }
-                        }
-                }
-        }
+							}
+			}
+		}
+	}
 		
-}//end of GUI enabled check
 #endif
 }
 

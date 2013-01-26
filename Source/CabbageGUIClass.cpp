@@ -39,7 +39,7 @@ CabbageGUIClass::CabbageGUIClass(String compStr, int ID):
 								left(0),
 								top(0), 
 								xyAutoIndex(0),
-								fileType(0),
+								fileType(""),
 								workingDir(""),
 								alpha(1),
 								sliderRange(1)

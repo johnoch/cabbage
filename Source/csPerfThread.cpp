@@ -24,7 +24,7 @@
 #include <iostream>
 #include <exception>
 
-#include "csound.hpp"
+#include <csound.hpp>
 #include "csPerfThread.hpp"
 
 // ----------------------------------------------------------------------------

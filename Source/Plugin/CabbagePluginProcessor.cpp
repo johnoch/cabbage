@@ -154,7 +154,8 @@ yieldCounter(10)
 //Therefore we need to find the name of the library and append a '.csd' to it. 
         
 #ifdef MACOSX
-String osxCSD = File::getSpecialLocation(File::currentApplicationFile).getFullPathName()+String("/Contents/")+File::getSpecialLocation(File::currentApplicationFile).getFileName();File thisFile(osxCSD); 
+String osxCSD = File::getSpecialLocation(File::currentExecutableFile).getFullPathName()+String("/Contents/")+File::getSpecialLocation(File::currentApplicationFile).getFileName();
+File thisFile(osxCSD); 
 Logger::writeToLog("MACOSX defined OK");
 #else 
 File thisFile(File::getSpecialLocation(File::currentExecutableFile)); 
@@ -262,11 +263,11 @@ int CabbagePluginAudioProcessor::performEntireScore(){
 	return 1;
 }
 
+//this callback will be employed when users run with Csound audio IO rather than Cabbage
 void CabbagePluginAudioProcessor::YieldCallback(void* data){
 	CabbagePluginAudioProcessor *cabbage = (CabbagePluginAudioProcessor *)data;
 	cabbage->sendOutgoingMessagesToCsound();
-	cabbage->updateCabbageControls();
-	
+	cabbage->updateCabbageControls();	
 }
 
 
@@ -418,9 +419,9 @@ bool multiLine = false;
                                                                         cAttr.setStringProp(String("preset"), presetFlag.trim());
                                                                 //showMessage(cAttr.getStringProp("preset"));
                                                         }
-        //xypad contain two control paramters, one for x axis and another for y. As such we add two 
-        //to our contorl vector so that plugin hosts display two sliders. We name one of the xypad pads
-        // 'dummy' so that our editor doesn't display it. Our editor only needs to show one xypad. 
+												//xypad contain two control paramters, one for x axis and another for y. As such we add two 
+												//to our contorl vector so that plugin hosts display two sliders. We name one of the xypad pads
+												// 'dummy' so that our editor doesn't display it. Our editor only needs to show one xypad. 
                                                         if(tokes.getReference(0).equalsIgnoreCase(String("xypad"))){
                                                                 cAttr.setStringProp(String("xyChannel"), String("X"));
                                                                 cAttr.setNumProp("sliderRange",  cAttr.getNumProp("xypadRangeX"));
@@ -528,7 +529,6 @@ AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 
 //==========================================================================
 //action listener. Listen to messages being sent form xypad automations
-//when a message is sent we update our parameters..
 //==========================================================================
 void CabbagePluginAudioProcessor::changeListenerCallback(ChangeBroadcaster *source)
 {
