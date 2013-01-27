@@ -535,10 +535,13 @@ void CabbagePluginAudioProcessor::changeListenerCallback(ChangeBroadcaster *sour
 	//is message coming from an xypad
 	XYPadAutomation* xyPad = dynamic_cast< XYPadAutomation*>(source);
 	if(xyPad){
-#ifndef Cabbage_No_Csound
+	#ifdef Cabbage_Build_Standalone
+		setParameterNotifyingHost(xyPad->paramIndex, xyPad->getXValue());
+		setParameterNotifyingHost(xyPad->paramIndex+1, xyPad->getYValue());
+	#else
 		setParameterNotifyingHost(xyPad->paramIndex, xyPad->getXValue()/xyPad->getXRange());
-		setParameterNotifyingHost(xyPad->paramIndex+1, xyPad->getYValue()/xyPad->getYRange());
-#endif
+		setParameterNotifyingHost(xyPad->paramIndex+1, xyPad->getYValue()/xyPad->getYRange());	
+	#endif
 	}
 }
 
