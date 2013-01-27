@@ -545,16 +545,11 @@ void StandaloneFilterWindow::buttonClicked (Button*)
 		subMenu.clear();
 		subMenu.addItem(5, TRANS("Plugin Synth"));
 		subMenu.addItem(6, TRANS("Plugin Effect"));
-		m.addSubMenu(TRANS("Export Plugin As..."), subMenu);
+		m.addSubMenu(TRANS("Export As..."), subMenu);
 #endif
 		m.addSeparator();
 	}
 
-	int alwaysontop = getPreference(appProperties, "SetAlwaysOnTop"); 
-	if(alwaysontop)
-	m.addItem(7, String("Always on Top"), true, true);
-	else
-	m.addItem(7, String("Always on Top"), true, false);
 	if(!standaloneMode){
 		m.addItem(8, String("Rebuild Instrument | Ctrl+b"));
 		m.addItem(9, String("Rebuild GUI | Ctrl+u"));
@@ -569,12 +564,8 @@ void StandaloneFilterWindow::buttonClicked (Button*)
 		subMenu.addItem(12, TRANS("Synths"));
 		m.addSubMenu(TRANS("Batch Convert"), subMenu);
 		m.addSeparator();
-		m.addItem(2000, "Test me");
-		int autoUpdate = getPreference(appProperties, "AutoUpdate");
-		if(!autoUpdate)
-		m.addItem(299, String("Auto-update"), true, false);
-		else
-		m.addItem(299, String("Auto-update"), true, true);
+		//m.addItem(2000, "Test me");
+
 /*
 	m.addSeparator();
 	if(cabbageDance)
@@ -583,7 +574,12 @@ void StandaloneFilterWindow::buttonClicked (Button*)
 	m.addItem(99, String("Cabbage Dance"));
 */
 		subMenu.clear();
-
+		int alwaysontop = getPreference(appProperties, "SetAlwaysOnTop"); 
+		if(alwaysontop)
+		subMenu.addItem(7, String("Always on Top"), true, true);
+		else
+		subMenu.addItem(7, String("Always on Top"), true, false);
+		//preferences....
 		int pluginInfo = getPreference(appProperties, "DisablePluginInfo");
 		subMenu.addItem(203, "Set Cabbage Plant Directory");
 		subMenu.addItem(200, "Set Csound Manual Directory");
@@ -591,6 +587,12 @@ void StandaloneFilterWindow::buttonClicked (Button*)
 		subMenu.addItem(201, String("Disable Export Plugin Info"), true, false);
 		else
 		subMenu.addItem(201, String("Disable Export Plugin Info"), true, true);
+
+		int autoUpdate = getPreference(appProperties, "AutoUpdate");
+		if(!autoUpdate)
+		subMenu.addItem(299, String("Auto-update"), true, false);
+		else
+		subMenu.addItem(299, String("Auto-update"), true, true);
 
 		int disableGUIEditWarning = getPreference(appProperties, "DisableGUIEditModeWarning");
 		if(!disableGUIEditWarning)
@@ -605,6 +607,8 @@ void StandaloneFilterWindow::buttonClicked (Button*)
 		subMenu.addItem(204, String("Use Cabbage IO"), true, true);
 
 		m.addSubMenu("Preferences", subMenu);
+		
+		
 	}
 	
 	
