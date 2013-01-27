@@ -2112,12 +2112,17 @@ for(int i=0;i<(int)getFilter()->getGUICtrlsSize();i++)
         else if(getFilter()->getGUICtrls(i).getStringProp("type")==String("xypad") &&
                 getFilter()->getGUICtrls(i).getStringProp("xyChannel").equalsIgnoreCase("X")){
         if(controls[i]){
-			int index = ((CabbageXYController*)controls[i])->XYAutoIndex;
-			((CabbageXYController*)controls[i])->xypad->setXYValues(getFilter()->getParameter(i), getFilter()->getParameter(i+1));
+		#ifndef Cabbage_Build_Standalone
+			float xRange = getFilter()->getGUICtrls(i).getNumProp("sliderRange");
+			float yRange = getFilter()->getGUICtrls(i+1).getNumProp("sliderRange");
+			((CabbageXYController*)controls[i])->xypad->setXYValues(getFilter()->getParameter(i)*xRange, getFilter()->getParameter(i+1)*yRange);
+		#else
+			((CabbageXYController*)controls[i])->xypad->setXYValues(getFilter()->getParameter(i), getFilter()->getParameter(i+1));		
+		#endif
+
 			incomingValues.set(i, getFilter()->getParameter(i));
-			incomingValues.set(i, getFilter()->getParameter(i+1));
-			
-                }
+			incomingValues.set(i+1, getFilter()->getParameter(i+1));
+		}
         }
 
         //no automation for comboboxes, still problematic! 
