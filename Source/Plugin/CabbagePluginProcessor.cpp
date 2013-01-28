@@ -592,10 +592,13 @@ if(index<(int)guiCtrls.size())//make sure index isn't out of range
     //scaling in here because incoming values in plugin mode range from 0-1
 	range = getGUICtrls(index).getNumProp("sliderRange");
 	min = getGUICtrls(index).getNumProp("min");
-	float value = (newValue*range)+min;
-	guiCtrls.getReference(index).setNumProp("value", (newValue*range)+min);
-	messageQueue.addOutgoingChannelMessageToQueue(guiCtrls.getReference(index).getStringProp("channel").toUTF8(),  (newValue*range)+min);
-	//Logger::writeToLog(String("parameterSet:"+String((newValue*range)+min)));
+	if(getGUICtrls(index).getStringProp("type")=="xypad")
+	newValue = (newValue*range);
+	else
+	newValue = (newValue*range)+min;
+	guiCtrls.getReference(index).setNumProp("value", newValue);
+	messageQueue.addOutgoingChannelMessageToQueue(guiCtrls.getReference(index).getStringProp("channel").toUTF8(),  newValue);
+	//Logger::writeToLog(String("parameterSet:"+String(newValue)));
 	#else 
 	//no need to scale here when in standalone mode
     guiCtrls.getReference(index).setNumProp("value", newValue);

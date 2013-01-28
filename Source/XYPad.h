@@ -299,6 +299,9 @@ public:
 	void mouseUp (const MouseEvent& e);
 	void mouseEnter (const MouseEvent& e);
 	void displayXYValues(float xValue, float yValue);
+	bool isAutomationActive(){
+		return xyPadAutomation->isAutomationOn;
+	}
 	ScopedPointer<Slider> speedSlider;
 	XYPadAutomation* xyPadAutomation;
 	

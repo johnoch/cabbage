@@ -322,8 +322,6 @@ Point<float> XYCanvas::checkBounds(Point<float> pt)
 void XYCanvas::setBallPositionFromXYValues(float xValue, float yValue)
 {
 	//Sets the ball position from the x and y output values
-	//ballX = (((xValue-xMin)/xRange)*(getWidth()-ballSize));
-	//ballY = ((1-((yValue-yMin)/yRange))*(getHeight()-ballSize));
 	ballX = (((xValue-xMin)/xRange)*(getWidth()-ballSize));
 	ballY = ((1-((yValue-yMin)/yRange))*(getHeight()-ballSize));
 	repaint();

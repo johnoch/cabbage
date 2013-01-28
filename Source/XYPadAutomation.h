@@ -63,6 +63,7 @@ public:
 	int updateCounter;
 	int paramIndex;
 	int creationCounter;
+	bool isAutomationOn;
 	
 	float getYRange(){
 		return yRange;
@@ -84,7 +85,7 @@ private:
 	int selectedToggle;
 	Path ballPath;
 	float currentPointAlongPath, ballPathDirection;
-	bool isAutomationOn;
+	
 	
 	
 	
