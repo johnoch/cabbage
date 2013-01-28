@@ -1052,7 +1052,8 @@ void CabbageLookAndFeel::drawGroupComponentOutline (Graphics &g, int w, int h, c
 	Font font = CabbageUtils::getTitleFont();
 #ifndef MACOSX
 	font.setFallbackFontName("Verdana"); 
-#endif	g.setFont (font);
+#endif	
+g.setFont (font);
 
 	if (fontColour.length()>1){
 		col = Colour::fromString(fontColour);

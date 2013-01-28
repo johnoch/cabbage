@@ -156,11 +156,9 @@ void XYPadAutomation::update()
 		}
 		else if (selectedToggle == 1) {  //2nd automation type
 			Point<float> pt = ballPath.getPointAlongPath(currentPointAlongPath, AffineTransform::identity);
-		
 			xValue = (((pt.getX()/(float)availableBounds.getWidth()) * xRange) + xMin);
 			yValue = ((pt.getY()/(float)availableBounds.getHeight()) * yRange);
 			yValue = ((yRange-yValue) + yMin); //inverting and adding yMin
-
 			currentPointAlongPath += ballPathDirection*(10*speedSliderValue);
 			if (currentPointAlongPath > ballPath.getLength()) {
 				currentPointAlongPath = ballPath.getLength();

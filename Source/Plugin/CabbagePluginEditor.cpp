@@ -2192,15 +2192,10 @@ for(int i=0;i<getFilter()->getGUILayoutCtrlsSize();i++){
                 //}
         }
         else if(getFilter()->getGUILayoutCtrls(i).getStringProp("type").containsIgnoreCase("table")){
-                //int tableSize = getFilter()->getCsound()->TableLength(getFilter()->getGUILayoutCtrls(i).getNumProp("tableNum"));
 				int tableNumber = getFilter()->getGUILayoutCtrls(i).getNumProp("tableNum");
-                int numberOfTables = getFilter()->getGUILayoutCtrls(i).getNumberOfTableChannels();
-				
+                int numberOfTables = getFilter()->getGUILayoutCtrls(i).getNumberOfTableChannels();				
 				for(int y=0;y<getFilter()->getGUILayoutCtrls(i).getNumberOfTableChannels();y++){
-				//float val = getFilter()->getCsound()->GetChannel(getFilter()->getGUILayoutCtrls(i).getChannel(y).toUTF8());
-				float val = getFilter()->getGUILayoutCtrls(i).getTableChannelValues(y);
-				
-				//cout << String(val) << "\n"; //getFilter()->getGUILayoutCtrls(i).getStringProp("channel");
+				float val = getFilter()->getGUILayoutCtrls(i).getTableChannelValues(y);				
 								
                 if(val<0)
 					{
@@ -2208,8 +2203,7 @@ for(int i=0;i<getFilter()->getGUILayoutCtrlsSize();i++){
 						int tableNumber = getFilter()->getGUILayoutCtrls(i).getTableNumbers(y);
 						Array <float> tableValues = getFilter()->getTable(tableNumber);
 						((CabbageTable*)layoutComps[i])->fillTable(y, tableValues);
-						//getFilter()->getCsound()->SetChannel(getFilter()->getGUILayoutCtrls(i).getChannel(y).toUTF8(), 0.f);
-						getFilter()->getGUILayoutCtrls(i).setTableChannelValues(y, 0.f);
+						getFilter()->messageQueue.addOutgoingChannelMessageToQueue(getFilter()->getGUILayoutCtrls(i).getChannel(y).toUTF8(), 0);
 					}
 				else
 					{
@@ -2217,8 +2211,6 @@ for(int i=0;i<getFilter()->getGUILayoutCtrlsSize();i++){
 					}
 					
 				}
-				
-
         }
 }
 

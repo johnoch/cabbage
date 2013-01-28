@@ -650,6 +650,17 @@ for(int i=0;i<messageQueue.getNumberOfOutgoingChannelMessagesInQueue();i++)
 						   messageQueue.getOutgoingChannelMessageFromQueue(i).value);
 		}
 	messageQueue.flushOutgoingChannelMessages();
+
+//for(int index=0;index<getGUILayoutCtrlsSize();index++)
+//	{	
+//	if(getGUILayoutCtrls(index).getStringProp("type")=="table")
+//		{
+//		for(int y=0;y<getGUILayoutCtrls(index).getNumberOfTableChannels();y++){
+//			csound->SetChannel(getGUILayoutCtrls(i).getTableChannelValues(y);
+//			}
+//		}	
+//	}	
+	
 }
 
 //========================================================================
