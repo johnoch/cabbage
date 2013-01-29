@@ -1006,7 +1006,7 @@ if(!csdFile.exists()){
 		plist.append(String("<key>CFBundleIdentifier</key>\n"), MAXBYTES);
 		plist.append(String("<string>com.Cabbage.CabbagePlugin</string>\n"), MAXBYTES);
 		plist.append(String("<key>CFBundleName</key>\n"), MAXBYTES);
-		plist.append(String("<string>CabbagePlugin</string>\n"), MAXBYTES);
+		plist.append(String("<string>")+String(saveFC.getResult().getFileNameWithoutExtension())+String("</string>\n"), MAXBYTES);
 		plist.append(String("<key>CFBundlePackageType</key>\n"), MAXBYTES);
 		plist.append(String("<string>BNDL</string>\n"), MAXBYTES);
 		plist.append(String("<key>CFBundleShortVersionString</key>\n"), MAXBYTES);
