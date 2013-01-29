@@ -591,14 +591,19 @@ if(index<(int)guiCtrls.size())//make sure index isn't out of range
 	#ifndef Cabbage_Build_Standalone        
     //scaling in here because incoming values in plugin mode range from 0-1
 	range = getGUICtrls(index).getNumProp("sliderRange");
+	Logger::writeToLog("inValue:"+String(newValue));
 	min = getGUICtrls(index).getNumProp("min");
+	
 	if(getGUICtrls(index).getStringProp("type")=="xypad")
-	newValue = (newValue*range);
+		newValue = (newValue*range);
+	else if(getGUICtrls(index).getStringProp("type")=="combobox")//combo box value need to be rounded...
+		newValue = (int)(newValue*range)+min;
 	else
-	newValue = (newValue*range)+min;
+		newValue = (newValue*range)+min;
+		
 	guiCtrls.getReference(index).setNumProp("value", newValue);
 	messageQueue.addOutgoingChannelMessageToQueue(guiCtrls.getReference(index).getStringProp("channel").toUTF8(),  newValue);
-	//Logger::writeToLog(String("parameterSet:"+String(newValue)));
+	Logger::writeToLog(String("parameterSet:"+String(newValue)));
 	#else 
 	//no need to scale here when in standalone mode
     guiCtrls.getReference(index).setNumProp("value", newValue);

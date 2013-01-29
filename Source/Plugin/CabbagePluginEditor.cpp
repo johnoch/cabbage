@@ -1469,8 +1469,8 @@ if(combo->isEnabled()) // before sending data to on named channel
 					  //              getFilter()->getCsound()->SetChannel(getFilter()->getGUICtrls(i).getStringProp("channel").toUTF8(), (float)combo->getSelectedItemIndex()+1);
 									
 #ifndef Cabbage_Build_Standalone
-									getFilter()->setParameter(i, (float)(combo->getSelectedItemIndex())/(getFilter()->getGUICtrls(i).getNumProp("maxItems")));
-									getFilter()->setParameterNotifyingHost(i, (float)(combo->getSelectedItemIndex())/(getFilter()->getGUICtrls(i).getNumProp("maxItems")));
+									getFilter()->setParameter(i, (float)(combo->getSelectedItemIndex())/(getFilter()->getGUICtrls(i).getNumProp("sliderRange")));
+									getFilter()->setParameterNotifyingHost(i, (float)(combo->getSelectedItemIndex())/(getFilter()->getGUICtrls(i).getNumProp("sliderRange")));
 #else
 									getFilter()->setParameter(i, (float)(combo->getSelectedItemIndex()+1));
 									getFilter()->setParameterNotifyingHost(i, (float)(combo->getSelectedItemIndex()+1));
