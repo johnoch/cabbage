@@ -995,66 +995,7 @@ if(!csdFile.exists()){
 			showMessage("this feature is coming soon");
 			//VST = thisFile.getParentDirectory().getFullPathName() + String("\\CabbageVSTfx.component");
 		}
-		//showMessage(thisFile.getFullPathName()+"/Contents/CabbagePluginSynth.dat");
-		String plist  = String("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
-		plist.append(String("<!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">"), MAXBYTES);
-		plist.append(String("<plist version=\"1.0\">"), MAXBYTES);
-		plist.append(String("<dict>"), MAXBYTES);
-		plist.append(String("	<key>BuildMachineOSBuild</key>"), MAXBYTES);
-		plist.append(String("	<string>10K549</string>"), MAXBYTES);
-		plist.append(String("	<key>CFBundleExecutable</key>"), MAXBYTES);
-		plist.append(String("   <string>")+String(saveFC.getResult().getFileNameWithoutExtension())+String("</string>\n"), MAXBYTES);
-		plist.append(String("	<key>CFBundleName</key>"), MAXBYTES);
-		plist.append(String("   <string>")+String(saveFC.getResult().getFileNameWithoutExtension())+String("</string>\n"), MAXBYTES);
-		plist.append(String("	<key>CFBundlePackageType</key>"), MAXBYTES);
-		plist.append(String("	<string>APPL</string>"), MAXBYTES);
-		plist.append(String("	<key>CFBundleShortVersionString</key>"), MAXBYTES);
-		plist.append(String("	<string>1.0.0</string>"), MAXBYTES);
-		plist.append(String("	<key>CFBundleSignature</key>"), MAXBYTES);
-		plist.append(String("	<string>????</string>"), MAXBYTES);
-		plist.append(String("	<key>CFBundleVersion</key>"), MAXBYTES);
-		plist.append(String("	<string>1.0.0</string>"), MAXBYTES);
-		plist.append(String("	<key>DTCompiler</key>"), MAXBYTES);
-		plist.append(String("	<string>com.apple.compilers.llvm.clang.1_0</string>"), MAXBYTES);
-		plist.append(String("	<key>DTPlatformBuild</key>"), MAXBYTES);
-		plist.append(String("	<string>10M2518</string>"), MAXBYTES);
-		plist.append(String("	<key>DTPlatformVersion</key>"), MAXBYTES);
-		plist.append(String("	<string>PG</string>"), MAXBYTES);
-		plist.append(String("	<key>DTSDKBuild</key>"), MAXBYTES);
-		plist.append(String("	<string>10K549</string>"), MAXBYTES);
-		plist.append(String("	<key>DTSDKName</key>"), MAXBYTES);
-		plist.append(String("	<string></string>"), MAXBYTES);
-		plist.append(String("	<key>DTXcode</key>"), MAXBYTES);
-		plist.append(String("	<string>0400</string>"), MAXBYTES);
-		plist.append(String("	<key>DTXcodeBuild</key>"), MAXBYTES);
-		plist.append(String("	<string>10M2518</string>"), MAXBYTES);
-		plist.append(String("	<key>NSHumanReadableCopyright</key>"), MAXBYTES);
-		plist.append(String("	<string></string>"), MAXBYTES);
-		plist.append(String("</dict>"), MAXBYTES);
-		plist.append(String("</plist>"), MAXBYTES);
-		
-		/*
-		String plist  = String("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
-		plist.append(String("<!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">\n"), MAXBYTES);
-		plist.append(String("<plist version=\"1.0\">\n"), MAXBYTES);
-		plist.append(String("<dict>\n"), MAXBYTES);
-		plist.append(String("<key>CFBundleExecutable</key>\n"), MAXBYTES);
-		plist.append(String("<string>")+String(saveFC.getResult().getFileNameWithoutExtension())+String("</string>\n"), MAXBYTES);
-		plist.append(String("<key>CFBundleIdentifier</key>\n"), MAXBYTES);
-		plist.append(String("<string>com.Cabbage.CabbagePlugin</string>\n"), MAXBYTES);
-		plist.append(String("<key>CFBundleName</key>\n"), MAXBYTES);
-		plist.append(String("<string>")+String(saveFC.getResult().getFileNameWithoutExtension())+String("</string>\n"), MAXBYTES);
-		plist.append(String("<key>CFBundlePackageType</key>\n"), MAXBYTES);
-		plist.append(String("<string>BNDL</string>\n"), MAXBYTES);
-		plist.append(String("<key>CFBundleShortVersionString</key>\n"), MAXBYTES);
-		plist.append(String("<string>1.0.0</string>\n"), MAXBYTES);
-		plist.append(String("<key>CFBundleSignature</key>\n"), MAXBYTES);
-		plist.append(String("<string>PTul</string>\n"), MAXBYTES);
-		plist.append(String("<key>CFBundleVersion</key>\n"), MAXBYTES);
-		plist.append(String("<string>1.0.0</string>\n"), MAXBYTES);
-		plist.append(String("</dict>\n"), MAXBYTES);
-		plist.append(String("</plist>\n"), MAXBYTES);
-		*/
+
 		//create a copy of the data package and write it to the new location given by user
 		File VSTData(VST);
 		if(!VSTData.exists()){
@@ -1076,8 +1017,12 @@ if(!csdFile.exists()){
 		
 		
 		File pl(dll.getFullPathName()+String("/Contents/Info.plist"));
-		//showMessage(pl.getFullPathName());
-		//pl.replaceWithText(plist);
+		String newPList = pl.loadFileAsString();
+		//write our identifiers to the plist file 
+		newPList = newPList.replace("CabbagePlugin", saveFC.getResult().getFileNameWithoutExtension());
+		newPList = newPList.replace("NewProject", saveFC.getResult().getFileNameWithoutExtension());
+		//write plist file
+		pl.replaceWithText(newPList);
 
 		
 		
