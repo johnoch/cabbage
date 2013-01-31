@@ -34,7 +34,6 @@ public:
 	String channelName;
 	MYFLT value;
 
-
 	CabbageChannelMessage(String chan, double val):channelName(chan), value(val){}
 	~CabbageChannelMessage(){}
 	

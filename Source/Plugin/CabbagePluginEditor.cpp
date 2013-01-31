@@ -29,6 +29,7 @@
 #endif
 
 
+
 //==============================================================================
 CabbagePluginAudioProcessorEditor::CabbagePluginAudioProcessorEditor (CabbagePluginAudioProcessor* ownerFilter)
 : AudioProcessorEditor (ownerFilter), lineNumber(0), inValue(0), authorText(""), keyIsPressed(false), xyPadIndex(0)
@@ -52,6 +53,11 @@ layoutEditor->setTargetComponent(componentPanel);
 componentPanel = new Component();
 addAndMakeVisible(componentPanel);
 #endif
+
+resizeLimits.setSizeLimits (150, 150, 800, 800);
+resizer = new CabbageCornerResizer(this, this, &resizeLimits);
+
+ 
 
 #ifndef Cabbage_No_Csound
 if(getFilter()->getCsound())
@@ -87,6 +93,8 @@ layoutEditor->updateFrames();
 #endif
 
 #ifdef Cabbage_Build_Standalone
+		//add resizer when in standalone mode only
+		addAndMakeVisible (resizer);
         //only want to grab keyboard focus on standalone mode as DAW handle their own keystrokes
         componentPanel->setWantsKeyboardFocus(true);
         componentPanel->toFront(true);
@@ -322,6 +330,10 @@ void CabbagePluginAudioProcessorEditor::insertCabbageText(String text)
 //==============================================================================
 void CabbagePluginAudioProcessorEditor::resized()
 {
+Logger::writeToLog("width:"+String(getWidth()));
+Logger::writeToLog("height:"+String(getHeight()));
+resizer->setBounds (getWidth() - 16, getHeight() - 16, 16, 16);
+this->setSize(this->getWidth(), this->getHeight());	
 if(componentPanel)componentPanel->setBounds(0, 0, this->getWidth(), this->getHeight());
 #ifdef Cabbage_GUI_Editor
 if(layoutEditor)layoutEditor->setBounds(0, 0, this->getWidth(), this->getHeight());
@@ -717,6 +729,7 @@ void CabbagePluginAudioProcessorEditor::SetupWindow(CabbageGUIClass &cAttr)
         int height = cAttr.getNumProp("height");
         setSize(width, height);
         componentPanel->setBounds(left, top, width, height);
+
         if(cAttr.getColourProp("colour").length()>2)
         formColour = Colour::fromString(cAttr.getColourProp("colour"));
         else
@@ -1795,6 +1808,8 @@ if(message.contains("Message sent from CabbageMainPanel")){
 					 //	csdArray.set(lineNumber+y, tempArray[y-1]);//.replace("bounds()", componentPanel->getCurrentChildBounds(y-1), true));
 					}
 				}
+			
+				
 				getFilter()->updateCsoundFile(csdArray.joinIntoString("\n"));
 				getFilter()->setCurrentLineText(csdArray[lineNumber]);
 				getFilter()->setGuiEnabled(true);
@@ -2022,6 +2037,29 @@ int tableSize=0;
 
 }
 
+//=============================================================================
+void CabbagePluginAudioProcessorEditor::updateSize(){
+#ifdef Cabbage_Build_Standalone
+if(!getFilter()->getCsoundInputFile().loadFileAsString().isEmpty()){
+		//break up lines in csd file into a string array
+		StringArray csdArray;
+		csdArray.addLines(getFilter()->getCsoundInputFileText());
+		for(int i=0; i<csdArray.size(); i++){
+					CabbageGUIClass CAttr(csdArray[i], -99);
+					if(csdArray[i].contains("</Cabbage>"))
+						break;
+
+					if(csdArray[i].contains("form")){
+					String newSize = "size("+String(getWidth())+", "+String(getHeight())+")";
+					Logger::writeToLog(newSize);
+					csdArray.set(i, replaceIdentifier(csdArray[i], "size", newSize));
+					}
+			}
+	getFilter()->updateCsoundFile(csdArray.joinIntoString("\n"));
+	getFilter()->sendActionMessage("GUI Update");
+}
+#endif	
+}
 //=============================================================================
 bool CabbagePluginAudioProcessorEditor::keyPressed(const juce::KeyPress &key ,Component *)
 {

@@ -29,6 +29,7 @@
 
 class CabbageMainPanel;
 class ComponentLayoutEditor;
+class CabbageCornerResizer;
 //==============================================================================
 class CabbagePlantWindow  : public DocumentWindow
 {
@@ -46,6 +47,7 @@ public:
         JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CabbagePlantWindow);
 };
 
+//==============================================================================
 class CabbagePluginAudioProcessorEditor  : public AudioProcessorEditor,
                                                                 public CabbageUtils,
                                                                 public SliderListener,
@@ -69,6 +71,7 @@ public:
 	void setEditMode(bool on);
 	void InsertGUIControls();
 	void ksmpsYieldCallback();
+	void updateSize();
 
 private:
         
@@ -96,6 +99,7 @@ private:
         void InsertPVSViewer(CabbageGUIClass &cAttr);
         void buttonClicked (Button*);
         void mouseDown(const MouseEvent &e);
+
 		void timerCallback();
         bool LOCKED;
         void insertCabbageText(String text);
@@ -118,6 +122,7 @@ private:
 		return false;
 	    }
 		bool keyIsPressed;
+		bool isMouseDown;
         OwnedArray<Component> controls;
         OwnedArray<Component> layoutComps;
 
@@ -136,9 +141,11 @@ private:
         ScopedPointer<LookAndFeel> feely;
         ScopedPointer<OldSchoolLookAndFeel> oldSchoolLook;
 		Array<float> incomingValues;
+		ScopedPointer<CabbageCornerResizer> resizer;
+		ComponentBoundsConstrainer resizeLimits;
 
         AudioPlayHead::CurrentPositionInfo hostInfo;
-    void changeListenerCallback (ChangeBroadcaster *source);
+		void changeListenerCallback (ChangeBroadcaster *source);
         Colour formColour, fontColour;
         String authorText;
         String formPic;
@@ -152,8 +159,20 @@ private:
 
 
 //==============================================================================
-/**
-*/
+class CabbageCornerResizer : public ResizableCornerComponent
+{
+	CabbagePluginAudioProcessorEditor* editor;
+public:
+	CabbageCornerResizer(CabbagePluginAudioProcessorEditor* parent, Component* comp, ComponentBoundsConstrainer *constrainer):
+						ResizableCornerComponent(comp, constrainer), editor(parent){};
+	~CabbageCornerResizer(){};
+
+	void mouseUp(const MouseEvent &e){
+		editor->updateSize();
+		}
+						
+	
+};
 
 #endif  // __PLUGINEDITOR_H_F4EBBBA1__
 
