@@ -1022,7 +1022,7 @@ if(!csdFile.exists()){
 		newPList = newPList.replace("CabbagePlugin", saveFC.getResult().getFileNameWithoutExtension());
 		newPList = newPList.replace("NewProject", saveFC.getResult().getFileNameWithoutExtension());
 		//write plist file
-		pl.replaceWithText(newPList);
+		//pl.replaceWithText(newPList);
 
 		
 		
