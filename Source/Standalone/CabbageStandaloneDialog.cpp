@@ -1004,10 +1004,10 @@ if(!csdFile.exists()){
 		}
 		
 		
-		String plugType;
-		if(type.contains(String("AU")))
-			plugType = String(".component");
-		else plugType = String(".vst");
+		String plugType = ".component";
+//		if(type.contains(String("AU")))
+//			plugType = String(".component");
+//		else plugType = String(".vst");
 		
 		File dll(saveFC.getResult().withFileExtension(plugType).getFullPathName());
 		
@@ -1036,8 +1036,16 @@ if(!csdFile.exists()){
 		//if plugin already exists there is no point in rewriting the binaries
 		if(!File(saveFC.getResult().withFileExtension(".vst").getFullPathName()+("/Contents/MacOS/")+saveFC.getResult().getFileNameWithoutExtension()).exists()){		
 		File bin(dll.getFullPathName()+String("/Contents/MacOS/CabbagePlugin"));
-		bin.moveFileTo(dll.getFullPathName()+String("/Contents/MacOS/")+saveFC.getResult().getFileNameWithoutExtension());
-		setUniquePluginID(bin, loc_csdFile);
+			//if(bin.exists())showMessage("binary exists");
+		
+				
+			File pluginBinary(dll.getFullPathName()+String("/Contents/MacOS/")+saveFC.getResult().getFileNameWithoutExtension());
+			
+			bin.moveFileTo(pluginBinary);				
+			//else
+			//showMessage("could not copy library binary file");
+		
+		setUniquePluginID(pluginBinary, loc_csdFile, true);
 		}
 		
 		String info;
@@ -1058,20 +1066,20 @@ if(!csdFile.exists()){
 //==============================================================================
 // Set unique plugin ID for each plugin based on the file name 
 //==============================================================================
-int StandaloneFilterWindow::setUniquePluginID(File binFile, File csdFile){
-String newID;
-StringArray csdText;
-csdText.addLines(csdFile.loadFileAsString());
-//read contents of csd file to find pluginID
-for(int i=0;i<csdText.size();i++)
+int StandaloneFilterWindow::setUniquePluginID(File binFile, File csdFile, bool AU){
+	String newID;
+	StringArray csdText;
+	csdText.addLines(csdFile.loadFileAsString());
+	//read contents of csd file to find pluginID
+	for(int i=0;i<csdText.size();i++)
     {
-	StringArray tokes;
-	tokes.addTokens(csdText[i].trimEnd(), ", ", "\"");
-	if(tokes.getReference(0).equalsIgnoreCase(String("form"))){
+		StringArray tokes;
+		tokes.addTokens(csdText[i].trimEnd(), ", ", "\"");
+		if(tokes.getReference(0).equalsIgnoreCase(String("form"))){
 			CabbageGUIClass cAttr(csdText[i].trimEnd(), 0);		
 			if(cAttr.getStringProp("pluginID").length()!=4){
-			showMessage(String("Your plugin ID is not the right size. It MUST be 4 characters long. Some hosts may not be able to load your plugin"), lookAndFeel);
-			return 0;
+				showMessage(String("Your plugin ID is not the right size. It MUST be 4 characters long. Some hosts may not be able to load your plugin"), lookAndFeel);
+				return 0;
 			}
 			else{
 				newID = cAttr.getStringProp("pluginID");
@@ -1079,53 +1087,67 @@ for(int i=0;i<csdText.size();i++)
 			}			
 		}
 	}
-
-size_t file_size;
-const char *pluginID = "YROR";
-
-long loc;
-fstream mFile(binFile.getFullPathName().toUTF8(), ios_base::in | ios_base::out | ios_base::binary);
-if(mFile.is_open())
-  {
-	mFile.seekg (0, ios::end);
-	file_size = mFile.tellg();
-	//set plugin ID
-	mFile.seekg (0, ios::beg);
-	unsigned char* buffer = (unsigned char*)malloc(sizeof(unsigned char)*file_size);
-  	mFile.read((char*)&buffer[0], file_size);
-	loc = cabbageFindPluginID(buffer, file_size, pluginID);
-	if (loc < 0)
-		showMessage(String("Internel Cabbage Error: The pluginID was not found"));
-	else {
-		mFile.seekg (loc, ios::beg);	
-		mFile.write(newID.toUTF8(), 4);	
-	}
-
-#ifdef WIN32
-	//set plugin name based on .csd file
-	const char *pluginName = "CabbageEffectNam";
-	String plugLibName = csdFile.getFileNameWithoutExtension();
-	if(plugLibName.length()<16)
-		for(int y=plugLibName.length();y<16;y++)
-			plugLibName.append(String(" "), 1);
 	
-	mFile.seekg (0, ios::beg);
-	buffer = (unsigned char*)malloc(sizeof(unsigned char)*file_size);
-  	mFile.read((char*)&buffer[0], file_size);
-	loc = cabbageFindPluginID(buffer, file_size, pluginName);
-	if (loc < 0)
-		showMessage(String("Plugin name could not be set?!?"));
-	else {
-		//showMessage("plugin name set!");
-		mFile.seekg (loc, ios::beg);	
-		mFile.write(csdFile.getFileNameWithoutExtension().toUTF8(), 16);	
+	size_t file_size;
+	const char *pluginID;
+	//if(!AU)
+		pluginID = "YROR";
+	//else
+	//	pluginID = "RORY";
+	
+	
+	long loc;
+	showMessage(binFile.getFullPathName());
+	fstream mFile(binFile.getFullPathName().toUTF8(), ios_base::in | ios_base::out | ios_base::binary);
+	if(mFile.is_open())
+	{
+		mFile.seekg (0, ios::end);
+		file_size = mFile.tellg();
+		unsigned char* buffer = (unsigned char*)malloc(sizeof(unsigned char)*file_size);
+		//set plugin ID, do this a few times in case the plugin ID appear in more than one place.
+		for(int r=0;r<10;r++){
+			mFile.seekg (0, ios::beg);
+			
+			mFile.read((char*)&buffer[0], file_size);
+			loc = cabbageFindPluginID(buffer, file_size, pluginID);
+			if (loc < 0)
+				//showMessage(String("Internel Cabbage Error: The pluginID was not found"));
+				break;
+			else {
+				//showMessage("The plugin ID was found!");
+				mFile.seekg (loc, ios::beg);	
+				mFile.write(newID.toUTF8(), 4);	
+			}
+		}
+		
+		//set plugin name based on .csd file
+		const char *pluginName = "CabbageEffectNam";
+		String plugLibName = csdFile.getFileNameWithoutExtension();
+		if(plugLibName.length()<16)
+			for(int y=plugLibName.length();y<16;y++)
+				plugLibName.append(String(" "), 1);
+		
+		mFile.seekg (0, ios::beg);
+		buffer = (unsigned char*)malloc(sizeof(unsigned char)*file_size);
+		mFile.read((char*)&buffer[0], file_size);
+		loc = cabbageFindPluginID(buffer, file_size, pluginName);
+		if (loc < 0)
+			showMessage(String("Plugin name could not be set?!?"));
+		else {
+			//showMessage("plugin name set!");
+			mFile.seekg (loc, ios::beg);	
+			mFile.write(csdFile.getFileNameWithoutExtension().toUTF8(), 16);	
+		}
+		//#endif
+		
 	}
-#endif
-
-}
+else
+	showMessage("File could not be opened");
+	
 mFile.close();
 return 1;
 }
+
 
 //==============================================================================
 // Batch process multiple csd files to convert them to plugins libs. 
