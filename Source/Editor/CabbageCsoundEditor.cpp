@@ -388,7 +388,7 @@ bool CsoundEditor::perform (const InvocationInfo& info)
 			else
 			urlCabbage = String(OSXPath+"cabbage.html#_")+opcode.trim();				
 #endif
-showMessage(urlCabbage);
+
 			ChildProcess process;
 			File temp1(urlCsound.toString(false));
 			if(temp1.exists()){

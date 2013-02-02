@@ -338,8 +338,8 @@ void CabbagePluginAudioProcessorEditor::insertCabbageText(String text)
 //==============================================================================
 void CabbagePluginAudioProcessorEditor::resized()
 {
-Logger::writeToLog("width:"+String(getWidth()));
-Logger::writeToLog("height:"+String(getHeight()));
+//Logger::writeToLog("width:"+String(getWidth()));
+//Logger::writeToLog("height:"+String(getHeight()));
 resizer->setBounds (getWidth() - 16, getHeight() - 16, 16, 16);
 this->setSize(this->getWidth(), this->getHeight());	
 if(componentPanel)componentPanel->setBounds(0, 0, this->getWidth(), this->getHeight());
@@ -379,11 +379,9 @@ void CabbagePluginAudioProcessorEditor::paint (Graphics& g)
                 g.fillAll();
 
                 g.setColour (CabbageUtils::getTitleFontColour());
-                Image logo = ImageCache::getFromMemory (BinaryData::logo1_png, BinaryData::logo1_pngSize);
-                //g.drawImage (logo, (getWidth()/2) - (logo.getWidth()*.35), getHeight()-25, logo.getWidth()*0.65, logo.getHeight()*0.65, 
-                //      0, 0, logo.getWidth(), logo.getHeight(), true);
-                g.drawImage (logo, (getWidth()) - (logo.getWidth()*.75), getHeight()-25, logo.getWidth()*0.65, logo.getHeight()*0.65, 
-                        0, 0, logo.getWidth(), logo.getHeight(), true);
+                Image logo = ImageCache::getFromMemory (BinaryData::cabbageLogoHBlueText_png, BinaryData::cabbageLogoHBlueText_pngSize);
+             g.drawImage (logo, getWidth() - 100, getHeight()-35, logo.getWidth()*0.55, logo.getHeight()*0.55, 
+                   0, 0, logo.getWidth(), logo.getHeight(), true);
                 g.setColour(fontColour);
                 g.drawFittedText(authorText, 10, getHeight()-30, getWidth()*.65, logo.getHeight(), 1, 1);   
                 //g.drawLine(10, getHeight()-27, getWidth()-10, getHeight()-27, 0.2);
@@ -394,9 +392,11 @@ void CabbagePluginAudioProcessorEditor::paint (Graphics& g)
                 g.setColour(formColour);
                 g.fillAll();
                 g.setColour (CabbageUtils::getTitleFontColour());
-                Image logo = ImageCache::getFromMemory (BinaryData::logo1_png, BinaryData::logo1_pngSize);
-                g.drawImage (logo, (getWidth()) - (logo.getWidth()*.75), getHeight()-25, logo.getWidth()*0.65, logo.getHeight()*0.65, 
-                        0, 0, logo.getWidth(), logo.getHeight(), true);
+                Image logo = ImageCache::getFromMemory (BinaryData::cabbageLogoHBlueText_png, BinaryData::cabbageLogoHBlueText_pngSize);
+//                g.drawImage (logo, (getWidth()) - (logo.getWidth()*.75), getHeight()-25, logo.getWidth()*0.65, logo.getHeight()*0.65, 
+//                        0, 0, logo.getWidth(), logo.getHeight(), true);
+                g.drawImage (logo, 10, getHeight()-100, logo.getWidth(), 
+                        0, 0, logo.getWidt(), logo.getHeight(), true);
                 g.setColour(fontColour);
                 g.drawFittedText(authorText, 10, getHeight()-30, getWidth()*.65, logo.getHeight(), 1, 1);  
 #endif
@@ -1306,7 +1306,7 @@ if(!getFilter()->isGuiEnabled()){
                                 String file = getFilter()->getCsoundInputFile().getParentDirectory().getFullPathName();
                                 file.append("\\", 5);
                                 file.append(button->getProperties().getWithDefault("filename", ""), 1024);
-                                showMessage(file);
+                                //showMessage(file);
                                 infoWindow = new InfoWindow(lookAndFeel, file);
                                 infoWindow->centreWithSize(600, 400);
                                 infoWindow->toFront(true);

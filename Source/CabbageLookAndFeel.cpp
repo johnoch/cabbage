@@ -4,8 +4,8 @@
 CabbageLookAndFeel::CabbageLookAndFeel()
 {
 	setColour(AlertWindow::backgroundColourId, CabbageUtils::getDarkerBackgroundSkin());
-	setColour(AlertWindow::textColourId, Colours::white);
-	setColour(AlertWindow::outlineColourId, Colours::grey);
+	setColour(AlertWindow::textColourId, Colour(200, 200, 200));
+	setColour(AlertWindow::outlineColourId, Colours::white);
 	
 }
 
@@ -1390,7 +1390,7 @@ void CabbageLookAndFeel::drawAlertBox (Graphics& g,
                                 TextLayout& textLayout)
 {
     g.fillAll (alert.findColour (AlertWindow::backgroundColourId));
-	g.fillAll (CabbageUtils::getComponentSkin());
+	g.fillAll (Colours::black);
     int iconSpaceUsed = 0;
 
     const int iconWidth = 80;
@@ -1410,14 +1410,10 @@ void CabbageLookAndFeel::drawAlertBox (Graphics& g,
 
         if (alert.getAlertType() == AlertWindow::WarningIcon)
         {
-            colour = 0x55ff5555;
-            character = '!';
-
-            icon.addTriangle (iconRect.getX() + iconRect.getWidth() * 0.5f, (float) iconRect.getY(),
-                              (float) iconRect.getRight(), (float) iconRect.getBottom(),
-                              (float) iconRect.getX(), (float) iconRect.getBottom());
-
-            icon = icon.createPathWithRoundedCorners (5.0f);
+				Image logo = ImageCache::getFromMemory (BinaryData::logo_cabbage_Black_png, BinaryData::logo_cabbage_Black_pngSize);
+				g.setOpacity(.2f);
+				g.drawImage(logo, -300, -100, 600, 500, 0, 0, logo.getWidth(), logo.getHeight());
+				
         }
         else
         {
@@ -1426,19 +1422,20 @@ void CabbageLookAndFeel::drawAlertBox (Graphics& g,
 
             icon.addEllipse ((float) iconRect.getX(), (float) iconRect.getY(),
                              (float) iconRect.getWidth(), (float) iconRect.getHeight());
+
         }
 
-        GlyphArrangement ga;
-        ga.addFittedText (Font (iconRect.getHeight() * 0.9f, Font::bold),
-                          String::charToString ((juce_wchar) (uint8) character),
-                          (float) iconRect.getX(), (float) iconRect.getY(),
-                          (float) iconRect.getWidth(), (float) iconRect.getHeight(),
-                          Justification::centred, false);
-        ga.createPath (icon);
-
-        icon.setUsingNonZeroWinding (false);
-        g.setColour (Colour (colour));
-        g.fillPath (icon);
+//        GlyphArrangement ga;
+//        ga.addFittedText (Font (iconRect.getHeight() * 0.9f, Font::bold),
+//                          String::charToString ((juce_wchar) (uint8) character),
+//                          (float) iconRect.getX(), (float) iconRect.getY(),
+//                          (float) iconRect.getWidth(), (float) iconRect.getHeight(),
+//                          Justification::centred, false);
+//        ga.createPath (icon);
+//
+//        icon.setUsingNonZeroWinding (false);
+//        g.setColour (Colour (colour));
+//        g.fillPath (icon);
 
         iconSpaceUsed = iconWidth;
     }

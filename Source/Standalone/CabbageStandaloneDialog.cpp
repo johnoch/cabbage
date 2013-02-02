@@ -564,7 +564,6 @@ void StandaloneFilterWindow::buttonClicked (Button*)
 		subMenu.addItem(12, TRANS("Synths"));
 		m.addSubMenu(TRANS("Batch Convert"), subMenu);
 		m.addSeparator();
-		//m.addItem(2000, "Test me");
 
 /*
 	m.addSeparator();
@@ -608,7 +607,7 @@ void StandaloneFilterWindow::buttonClicked (Button*)
 
 		m.addSubMenu("Preferences", subMenu);
 		
-		
+		m.addItem(2000, "About");
 	}
 	
 	
@@ -621,7 +620,17 @@ void StandaloneFilterWindow::buttonClicked (Button*)
 		openFile("");
 	}
 	else if(options==2000){
-		filter->performEntireScore();
+		String credits = "				Rory Walsh, Copyright (2008)\n\n";
+		credits.append("\t\t\t\tDevelopers:\n", 2056);
+		credits.append("\t\t\t\t\tRory Walsh\n", 2056);
+		credits.append("\t\t\t\t\tDamien Rennick\n\n", 2056);
+		credits.append("\t\t\t\tCabbage Farmers:\n", 2056);
+		credits.append("\t\t\t\t\tIain McCurdy\n", 2056);
+		credits.append("\t\t\t\t\tGiorgio Zucco\n", 2056);
+		credits.append("\t\t\t\t\tNil Geisweiller\n", 2056);
+		credits.append("\t\t\t\t\tDave Philips\n", 2056);
+		credits.append("\t\t\t\t\tEamon Brady\n", 2056);
+		showMessage("			About Cabbage", credits, lookAndFeel);
 		
 	}
 	//----- view text editor ------
@@ -797,7 +806,7 @@ void StandaloneFilterWindow::buttonClicked (Button*)
 	else if(options==100){
 		int val = getPreference(appProperties, "DisableGUIEditModeWarning");
 		if(val)
-			showMessage("Warning!! This feature is bleeding edge! (that's programmer speak for totally untested and likely to crash hard!). If you like to live on the edge, disable this warning under the 'Preferences' menu command and try 'Edit Mode' again, otherwise just let it be...", oldLookAndFeel);
+			showMessage("Warning!! This feature is bleeding edge! (that's programmer speak for totally untested and likely to crash hard!). If you like to live on the edge, disable this warning under the 'Preferences' menu command and try 'Edit Mode' again, otherwise just let it be...", lookAndFeel);
 		else{
 	if(isAFileOpen == true)
 		if(filter->isGuiEnabled()){
@@ -913,15 +922,15 @@ if(!csdFile.exists()){
 		else if(type.contains(String("VST")))
 			VST = thisFile.getParentDirectory().getFullPathName() + String("/CabbagePluginEffect.so");
 		else if(type.contains(String("AU"))){
-			showMessage("This feature only works on computers running OSX");
+			showMessage("This feature only works on computers running OSX", lookAndFeel);
 		}
-		showMessage(VST);
+		showMessage(VST, lookAndFeel);
 		File VSTData(VST);
-		if(!VSTData.exists())showMessage("lib cannot be found?");
+		if(!VSTData.exists())showMessage("lib cannot be found?", lookAndFeel);
 		else{
 			File dll(saveFC.getResult().withFileExtension(".so").getFullPathName());
-			showMessage(dll.getFullPathName());
-			if(VSTData.copyFileTo(dll))	showMessage("moved");
+			showMessage(dll.getFullPathName(), lookAndFeel);
+			if(VSTData.copyFileTo(dll))	showMessage("moved", lookAndFeel);
 			File loc_csdFile(saveFC.getResult().withFileExtension(".csd").getFullPathName());
 			loc_csdFile.replaceWithText(csdFile.loadFileAsString());
 		}
@@ -937,7 +946,7 @@ if(!csdFile.exists()){
 		File VSTData(VST);
 
 		if(!VSTData.exists()){
-			showMessage("Cabbage cannot find the plugin libraries. Make sure that Cabbage is situated in the same directory as CabbagePluginSynth.dat and CabbagePluginEffect.dat", lookAndFeel);
+			showMessage("Cabbage cannot find the plugin libraries. Make sure that Cabbage is situated in the same directory as CabbagePluginSynth.dat and CabbagePluginEffect.dat", oldLookAndFeel);
 			return 0;
 		}
 		else{
@@ -1097,7 +1106,7 @@ int StandaloneFilterWindow::setUniquePluginID(File binFile, File csdFile, bool A
 	
 	
 	long loc;
-	showMessage(binFile.getFullPathName());
+	showMessage(binFile.getFullPathName(), lookAndFeel);
 	fstream mFile(binFile.getFullPathName().toUTF8(), ios_base::in | ios_base::out | ios_base::binary);
 	if(mFile.is_open())
 	{
@@ -1132,7 +1141,7 @@ int StandaloneFilterWindow::setUniquePluginID(File binFile, File csdFile, bool A
 		mFile.read((char*)&buffer[0], file_size);
 		loc = cabbageFindPluginID(buffer, file_size, pluginName);
 		if (loc < 0)
-			showMessage(String("Plugin name could not be set?!?"));
+			showMessage(String("Plugin name could not be set?!?"), lookAndFeel);
 		else {
 			//showMessage("plugin name set!");
 			mFile.seekg (loc, ios::beg);	
@@ -1142,7 +1151,7 @@ int StandaloneFilterWindow::setUniquePluginID(File binFile, File csdFile, bool A
 		
 	}
 else
-	showMessage("File could not be opened");
+	showMessage("File could not be opened", lookAndFeel);
 	
 mFile.close();
 return 1;

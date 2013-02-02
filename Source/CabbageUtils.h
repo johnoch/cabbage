@@ -24,6 +24,7 @@
 #include <time.h>
 
 #include "../JuceLibraryCode/JuceHeader.h" 
+#include "BinaryData.h"
 
 using namespace std;
 #pragma warning(disable: 4389)
@@ -84,27 +85,61 @@ float cabbageABS(float in){
 		return in*-1;
 	else return in;
 }
-
+//
 //===========================================================================================
-static void showMessage(String message){
-	AlertWindow alert("Cabbage Message" , message, AlertWindow::NoIcon);
-	alert.showMessageBox(AlertWindow::NoIcon, "Cabbage Message" , message, "Ok");
+//static void showMessage(String message){
+//	AlertWindow alert("Cabbage Message" , message, AlertWindow::WarningIcon);
+//	alert.showMessageBox(AlertWindow::WarningIcon, "Cabbage Message" , message, "Ok");
+//	Logger::writeToLog("mess1");
+//}
+//
+//===========================================================================================
+//static void showMessageWithLocation(String message){
+//File thisFile(File::getSpecialLocation(File::currentApplicationFile));
+//	AlertWindow alert(thisFile.getFullPathName() , message, AlertWindow::WarningIcon);
+//	alert.showMessageBox(AlertWindow::WarningIcon, thisFile.getFullPathName() , message, "Ok");
+//	Logger::writeToLog("mess2");
+//}
+//===========================================================================================
+//static void showMessage(double num){
+//	String str(num);
+//	File thisFile(File::getSpecialLocation(File::currentApplicationFile));
+//	AlertWindow alert(thisFile.getFullPathName(), str, AlertWindow::WarningIcon);
+//	alert.showMessageBox(AlertWindow::WarningIcon, thisFile.getFullPathName(), str, "Ok");
+//	Logger::writeToLog("mess3");
+//}
+//===========================================================================================
+static void showMessage(String message, LookAndFeel* feel)
+{
+	AlertWindow alert("Cabbage Message" , message, AlertWindow::WarningIcon);
+    alert.setLookAndFeel(feel);
+	//alert.showMessageBox(AlertWindow::WarningIcon, "Cabbage Message" , message, "Ok");
+	Logger::writeToLog("mess4");
+    alert.addButton("Ok", 1);
+    alert.runModalLoop();
+}
+
+static void showMessage(String title, String message, LookAndFeel* feel)
+{
+	AlertWindow alert(title, message, AlertWindow::WarningIcon);
+    alert.setLookAndFeel(feel);
+	//alert.showMessageBox(AlertWindow::WarningIcon, "Cabbage Message" , message, "Ok");
+	Logger::writeToLog("mess4");
+    alert.addButton("Ok", 1);
+    alert.runModalLoop();
 }
 
 //===========================================================================================
-static void showMessageWithLocation(String message){
-File thisFile(File::getSpecialLocation(File::currentApplicationFile));
-	AlertWindow alert(thisFile.getFullPathName() , message, AlertWindow::NoIcon);
-	alert.showMessageBox(AlertWindow::NoIcon, thisFile.getFullPathName() , message, "Ok");
+static int showYesNoMessage(String message, LookAndFeel* feel)
+{
+    AlertWindow alert("Cabbage Message", message, AlertWindow::NoIcon, 0);
+    alert.setLookAndFeel(feel);
+	alert.addButton("Yes", 0);
+	alert.addButton("No", 1);
+	int result = alert.runModalLoop();
+	//int result = alert.showYesNoCancelBox(AlertWindow::QuestionIcon, "Warning", message, "Yes", "No", "Cancel");
+	return result;
 }
-//===========================================================================================
-static void showMessage(double num){
-	String str(num);
-	File thisFile(File::getSpecialLocation(File::currentApplicationFile));
-	AlertWindow alert(thisFile.getFullPathName(), str, AlertWindow::NoIcon);
-	alert.showMessageBox(AlertWindow::NoIcon, thisFile.getFullPathName(), str, "Ok");
-}
-
 //===========================================================================================
 StringArray CreateStringArray(std::string str)
 {
@@ -295,27 +330,6 @@ pluginDir.findChildFiles(filesArray, 2, true, ext);
 for (int i = 0; i < filesArray.size(); i++)
 	m.addItem (i + 100, filesArray[i].getFileNameWithoutExtension());
 
-}
-
-//===========================================================================================
-static void showMessage(String message, LookAndFeel* feel)
-{
-    AlertWindow alert("Cabbage Message", message, AlertWindow::NoIcon, 0);
-    alert.setLookAndFeel(feel);
-    alert.addButton("Ok", 1);
-    alert.runModalLoop();
-}
-
-//===========================================================================================
-static int showYesNoMessage(String message, LookAndFeel* feel)
-{
-    AlertWindow alert("Cabbage Message", message, AlertWindow::NoIcon, 0);
-    alert.setLookAndFeel(feel);
-	alert.addButton("Yes", 0);
-	alert.addButton("No", 1);
-	int result = alert.runModalLoop();
-	//int result = alert.showYesNoCancelBox(AlertWindow::QuestionIcon, "Warning", message, "Yes", "No", "Cancel");
-	return result;
 }
 
 //======================================================================================
