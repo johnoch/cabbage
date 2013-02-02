@@ -42,7 +42,8 @@ CabbageGUIClass::CabbageGUIClass(String compStr, int ID):
 								fileType(""),
 								workingDir(""),
 								alpha(1),
-								sliderRange(1)
+								sliderRange(1),
+								numTables(0)
 {
 //Default values are assigned to all attributres 
 //before parsing begins
@@ -823,8 +824,10 @@ int CabbageGUIClass::parse(String str)
 				tableNum = strTokens[0].trim().getFloatValue();  
 				tableNumbers.add(tableNum);
 				if(strTokens.size()>1)
-					for(int i=1;i<strTokens.size();i++)
+					for(int i=1;i<strTokens.size();i++){
 						tableNumbers.add(strTokens[i].trim().getFloatValue());
+						numTables++;						
+					}
 			}
             else if(identArray.getReference(indx).toLowerCase().equalsIgnoreCase("popup(")){
 				plantButton = strTokens[0].trim().getIntValue();  
@@ -1064,7 +1067,7 @@ else
 
 void CabbageGUIClass::addTableChannelValues()
 {
-tableChannelValues.add(0.f);
+tableChannelValues.add(-1.f);
 }
 
 void CabbageGUIClass::setTableChannelValues(int index, float val)

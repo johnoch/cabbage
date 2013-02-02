@@ -175,6 +175,8 @@ subm.addItem(6, "checkbox");
 subm.addItem(7, "groupbox");
 subm.addItem(8, "image");
 subm.addItem(9, "keyboard");
+subm.addItem(10, "xypad");
+subm.addItem(11, "line");
 m.addSubMenu(String("Indigenous"), subm);
 subm.clear();
 
@@ -193,11 +195,11 @@ if (e.mods.isRightButtonDown())
 	 if(choice==1)
 			 insertCabbageText(String("button bounds(")+String(e.getPosition().getX())+(", ")+String(e.getPosition().getY())+String(", 60, 25), channel(\"but1\"), text(\"on\", \"off\")"));
 	 else if(choice==2)
-			 insertCabbageText(String("rslider bounds(")+String(e.getPosition().getX())+(", ")+String(e.getPosition().getY())+String(", 50, 50), channel(\"rslider\"), text(\"\"), range(0, 100, 0)"));
+			 insertCabbageText(String("rslider bounds(")+String(e.getPosition().getX())+(", ")+String(e.getPosition().getY())+String(", 50, 50), channel(\"rslider\"), range(0, 100, 0)"));
 	 else if(choice==3)
-			 insertCabbageText(String("vslider bounds(")+String(e.getPosition().getX())+(", ")+String(e.getPosition().getY())+String(", 30, 200), channel(\"vslider\"), text(\"\"), range(0, 100, 0), colour(\"white\")"));
+			 insertCabbageText(String("vslider bounds(")+String(e.getPosition().getX())+(", ")+String(e.getPosition().getY())+String(", 30, 200), channel(\"vslider\"), range(0, 100, 0), colour(\"white\")"));
  	 else if(choice==4)
-			 insertCabbageText(String("hslider bounds(")+String(e.getPosition().getX())+(", ")+String(e.getPosition().getY())+String(", 200, 30), channel(\"hslider\"), text(\"\"), range(0, 100, 0), colour(\"white\")"));
+			 insertCabbageText(String("hslider bounds(")+String(e.getPosition().getX())+(", ")+String(e.getPosition().getY())+String(", 200, 30), channel(\"hslider\"), range(0, 100, 0), colour(\"white\")"));
  	 else if(choice==5)
  			 insertCabbageText(String("combobox bounds(")+String(e.getPosition().getX())+(", ")+String(e.getPosition().getY())+String(", 100, 30), channel(\"combobox\"), items(\"Item 1\", \"Item 2\", \"Item 3\")"));
 	 else if(choice==6)
@@ -208,6 +210,10 @@ if (e.mods.isRightButtonDown())
 			 insertCabbageText(String("image bounds(")+String(e.getPosition().getX())+(", ")+String(e.getPosition().getY())+String(", 200, 150), colour(\"white\"), line(0)"));
 	 else if(choice==9)
 			 insertCabbageText(String("keyboard bounds(")+String(e.getPosition().getX())+(", ")+String(e.getPosition().getY())+String(", 150, 60)"));
+	 else if(choice==10)
+			 insertCabbageText(String("xypad bounds(")+String(e.getPosition().getX())+(", ")+String(e.getPosition().getY())+String(", 200, 200), channel(\"xchan\", \"ychan\"), rangex(0, 100, 0), rangey(0, 100, 0)"));
+
+
 	 else if(choice>=100){
 		 //showMessage(xml->getAttributeValue(choice-100));
 		 //update X and Y positions from plants
@@ -324,6 +330,8 @@ void CabbagePluginAudioProcessorEditor::insertCabbageText(String text)
 	//Logger::writeToLog(String(lineNumber));
 	getFilter()->updateCsoundFile(csdArray.joinIntoString("\n"));
 	getFilter()->setGuiEnabled(true);
+	getFilter()->removeXYAutomaters();
+	getFilter()->setHaveXYAutoBeenCreated(false);
 	getFilter()->sendActionMessage("GUI Updated, controls added");
 }
 
@@ -1667,8 +1675,6 @@ void CabbagePluginAudioProcessorEditor::InsertPVSViewer(CabbageGUIClass &cAttr)
 //+++++++++++++++++++++++++++++++++++++++++++
 void CabbagePluginAudioProcessorEditor::InsertTable(CabbageGUIClass &cAttr)
 {
-//I need to make this thread safe!! I can't do anything to the tables unless Csound is ready..
-//getFilter()->getCsound()->Stop();
 int tableSize=0;
 int tableNumber = cAttr.getNumProp("tableNum");
 StringArray colours;
@@ -1687,7 +1693,6 @@ Array<int> tableSizes;
 			}
 		}
 		else{
-		//dagerous to call this here, could cause crash....
         tableSize = getFilter()->getCsound()->TableLength(cAttr.getNumProp("tableNum"));
 		tableSizes.add(tableSize);
 		}
@@ -2232,7 +2237,8 @@ for(int i=0;i<getFilter()->getGUILayoutCtrlsSize();i++){
         else if(getFilter()->getGUILayoutCtrls(i).getStringProp("type").containsIgnoreCase("table")){
 				int tableNumber = getFilter()->getGUILayoutCtrls(i).getNumProp("tableNum");
                 int numberOfTables = getFilter()->getGUILayoutCtrls(i).getNumberOfTableChannels();				
-				for(int y=0;y<getFilter()->getGUILayoutCtrls(i).getNumberOfTableChannels();y++){
+				for(int y=0;y<getFilter()->getGUILayoutCtrls(i).getNumberOfTableChannels();y++)
+					{
 				float val = getFilter()->getGUILayoutCtrls(i).getTableChannelValues(y);				
 								
                 if(val<0)
