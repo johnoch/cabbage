@@ -591,7 +591,7 @@ if(index<(int)guiCtrls.size())//make sure index isn't out of range
 	#ifndef Cabbage_Build_Standalone        
     //scaling in here because incoming values in plugin mode range from 0-1
 	range = getGUICtrls(index).getNumProp("sliderRange");
-	Logger::writeToLog("inValue:"+String(newValue));
+	//Logger::writeToLog("inValue:"+String(newValue));
 	min = getGUICtrls(index).getNumProp("min");
 	
 	if(getGUICtrls(index).getStringProp("type")=="xypad")

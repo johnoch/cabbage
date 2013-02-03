@@ -392,12 +392,11 @@ void CabbagePluginAudioProcessorEditor::paint (Graphics& g)
                 g.setColour(formColour);
                 g.fillAll();
                 g.setColour (CabbageUtils::getTitleFontColour());
+               // Image logo = ImageCache::getFromMemory (BinaryData::cabbageLogoHBlueText_png, BinaryData::cabbageLogoHBlueText_pngSize);
                 Image logo = ImageCache::getFromMemory (BinaryData::cabbageLogoHBlueText_png, BinaryData::cabbageLogoHBlueText_pngSize);
-//                g.drawImage (logo, (getWidth()) - (logo.getWidth()*.75), getHeight()-25, logo.getWidth()*0.65, logo.getHeight()*0.65, 
-//                        0, 0, logo.getWidth(), logo.getHeight(), true);
-                g.drawImage (logo, 10, getHeight()-100, logo.getWidth(), 
-                        0, 0, logo.getWidt(), logo.getHeight(), true);
-                g.setColour(fontColour);
+             g.drawImage (logo, getWidth() - 100, getHeight()-35, logo.getWidth()*0.55, logo.getHeight()*0.55, 
+                   0, 0, logo.getWidth(), logo.getHeight(), true);
+				   g.setColour(fontColour);
                 g.drawFittedText(authorText, 10, getHeight()-30, getWidth()*.65, logo.getHeight(), 1, 1);  
 #endif
 }
