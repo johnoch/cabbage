@@ -968,7 +968,7 @@ if(!csdFile.exists()){
 				showMessage("Problem moving plugin lib, make sure it's not currently open in your plugin host!", lookAndFeel);
 			
 			loc_csdFile.replaceWithText(csdFile.loadFileAsString());
-			setUniquePluginID(dll, loc_csdFile);
+			setUniquePluginID(dll, loc_csdFile, false);
 			String info;
 			info = String("Your plugin has been created. It's called:\n\n")+dll.getFullPathName()+String("\n\nIn order to modify this plugin you only have to edit the associated .csd file. You do not need to export every time you make changes.\n\nTo turn off this notice visit 'Preferences' in the main 'options' menu");
 			
