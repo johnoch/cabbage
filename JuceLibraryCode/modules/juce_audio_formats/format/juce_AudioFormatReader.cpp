@@ -141,9 +141,7 @@ void AudioFormatReader::read (AudioSampleBuffer* buffer,
         {
             for (int j = 0; j < 2; ++j)
             {
-                float* const d = reinterpret_cast <float*> (chans[j]);
-
-                if (d != nullptr)
+                if (float* const d = reinterpret_cast <float*> (chans[j]))
                 {
                     const float multiplier = 1.0f / 0x7fffffff;
 
@@ -199,7 +197,7 @@ void AudioFormatReader::readMaxLevels (int64 startSampleInFile, int64 numSamples
     }
 
     const int bufferSize = (int) jmin (numSamples, (int64) 4096);
-    AudioSampleBuffer tempSampleBuffer (numChannels, bufferSize);
+    AudioSampleBuffer tempSampleBuffer ((int) numChannels, bufferSize);
 
     float** const floatBuffer = tempSampleBuffer.getArrayOfChannels();
     int* const* intBuffer = reinterpret_cast<int* const*> (floatBuffer);
@@ -219,7 +217,7 @@ void AudioFormatReader::readMaxLevels (int64 startSampleInFile, int64 numSamples
 
             numSamples -= numToDo;
             startSampleInFile += numToDo;
-            getStereoMinAndMax (floatBuffer, numChannels, numToDo, lmin, lmax, rmin, rmax);
+            getStereoMinAndMax (floatBuffer, (int) numChannels, numToDo, lmin, lmax, rmin, rmax);
         }
 
         lowestLeft   = lmin;
@@ -242,7 +240,7 @@ void AudioFormatReader::readMaxLevels (int64 startSampleInFile, int64 numSamples
 
             numSamples -= numToDo;
             startSampleInFile += numToDo;
-            getStereoMinAndMax (intBuffer, numChannels, numToDo, lmin, lmax, rmin, rmax);
+            getStereoMinAndMax (intBuffer, (int) numChannels, numToDo, lmin, lmax, rmin, rmax);
         }
 
         lowestLeft   = lmin / (float) std::numeric_limits<int>::max();

@@ -216,6 +216,9 @@ namespace
             DSOUND_FUNCTION_LOAD (DirectSoundCaptureEnumerateW)
         }
     }
+
+    // the overall size of buffer used is this value x the block size
+    enum { blocksPerOverallBuffer = 16 };
 }
 
 //==============================================================================
@@ -272,10 +275,10 @@ public:
         if (SUCCEEDED (hr))
         {
             bytesPerBuffer = (bufferSizeSamples * (bitDepth >> 2)) & ~15;
-            totalBytesPerBuffer = (3 * bytesPerBuffer) & ~15;
+            totalBytesPerBuffer = (blocksPerOverallBuffer * bytesPerBuffer) & ~15;
             const int numChannels = 2;
 
-            hr = pDirectSound->SetCooperativeLevel (GetDesktopWindow(), 2 /* DSSCL_PRIORITY  */);
+            hr = pDirectSound->SetCooperativeLevel (GetDesktopWindow(), 2 /* DSSCL_PRIORITY */);
             logError (hr);
 
             if (SUCCEEDED (hr))
@@ -498,7 +501,7 @@ private:
                 | (0xffff & jlimit (-32768, 32767, roundToInt (32767.0f * l)));
     }
 
-    JUCE_DECLARE_NON_COPYABLE (DSoundInternalOutChannel);
+    JUCE_DECLARE_NON_COPYABLE (DSoundInternalOutChannel)
 };
 
 //==============================================================================
@@ -564,7 +567,7 @@ public:
         {
             const int numChannels = 2;
             bytesPerBuffer = (bufferSizeSamples * (bitDepth >> 2)) & ~15;
-            totalBytesPerBuffer = (3 * bytesPerBuffer) & ~15;
+            totalBytesPerBuffer = (blocksPerOverallBuffer * bytesPerBuffer) & ~15;
 
             WAVEFORMATEX wfFormat;
             wfFormat.wFormatTag       = WAVE_FORMAT_PCM;
@@ -704,7 +707,7 @@ private:
     IDirectSoundCapture* pDirectSoundCapture;
     IDirectSoundCaptureBuffer* pInputBuffer;
 
-    JUCE_DECLARE_NON_COPYABLE (DSoundInternalInChannel);
+    JUCE_DECLARE_NON_COPYABLE (DSoundInternalInChannel)
 };
 
 //==============================================================================
@@ -987,15 +990,11 @@ public:
 
             if (isStarted)
             {
-                JUCE_TRY
-                {
-                    callback->audioDeviceIOCallback (const_cast <const float**> (inputBuffers.getArrayOfChannels()),
-                                                     inputBuffers.getNumChannels(),
-                                                     outputBuffers.getArrayOfChannels(),
-                                                     outputBuffers.getNumChannels(),
-                                                     bufferSizeSamples);
-                }
-                JUCE_CATCH_EXCEPTION
+                callback->audioDeviceIOCallback (const_cast <const float**> (inputBuffers.getArrayOfChannels()),
+                                                 inputBuffers.getNumChannels(),
+                                                 outputBuffers.getArrayOfChannels(),
+                                                 outputBuffers.getNumChannels(),
+                                                 bufferSizeSamples);
             }
             else
             {
@@ -1005,7 +1004,7 @@ public:
         }
     }
 
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DSoundAudioIODevice);
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DSoundAudioIODevice)
 };
 
 //==============================================================================
@@ -1278,7 +1277,7 @@ private:
     }
 
     //==============================================================================
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DSoundAudioIODeviceType);
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DSoundAudioIODeviceType)
 };
 
 //==============================================================================

@@ -24,15 +24,6 @@
 */
 
 #undef WINDOWS
-#undef log
-
-// #define ASIO_DEBUGGING 1
-
-#if ASIO_DEBUGGING
- #define log(a) { Logger::writeToLog (a); DBG (a) }
-#else
- #define log(a) {}
-#endif
 
 /* The ASIO SDK *should* declare its callback functions as being __cdecl, but different versions seem
    to be pretty random about whether or not they do this. If you hit an error using these functions
@@ -44,26 +35,41 @@
 //==============================================================================
 namespace ASIODebugging
 {
-  #if ASIO_DEBUGGING
-    static void log (const String& context, long error)
+   #if JUCE_ASIO_DEBUGGING
+    #define JUCE_ASIO_LOG(a)            ASIODebugging::logMessage (a)
+    #define JUCE_ASIO_LOG_ERROR(a, b)   ASIODebugging::logError ((a), (b))
+
+    static void logMessage (String message)
     {
-        const char* err = "unknown error";
-
-        if (error == ASE_NotPresent)            err = "Not Present";
-        else if (error == ASE_HWMalfunction)    err = "Hardware Malfunction";
-        else if (error == ASE_InvalidParameter) err = "Invalid Parameter";
-        else if (error == ASE_InvalidMode)      err = "Invalid Mode";
-        else if (error == ASE_SPNotAdvancing)   err = "Sample position not advancing";
-        else if (error == ASE_NoClock)          err = "No Clock";
-        else if (error == ASE_NoMemory)         err = "Out of memory";
-
-        log ("!!error: " + context + " - " + err);
+        message = "ASIO: " + message;
+        DBG (message);
+        Logger::writeToLog (message);
     }
 
-    #define logError(a, b) ASIODebugging::log ((a), (b))
-  #else
-    #define logError(a, b) {}
-  #endif
+    static void logError (const String& context, long error)
+    {
+        const char* err = "Unknown error";
+
+        switch (error)
+        {
+            case 0:                    return;
+            case ASE_NotPresent:       err = "Not Present"; break;
+            case ASE_HWMalfunction:    err = "Hardware Malfunction"; break;
+            case ASE_InvalidParameter: err = "Invalid Parameter"; break;
+            case ASE_InvalidMode:      err = "Invalid Mode"; break;
+            case ASE_SPNotAdvancing:   err = "Sample position not advancing"; break;
+            case ASE_NoClock:          err = "No Clock"; break;
+            case ASE_NoMemory:         err = "Out of memory"; break;
+            default:                   break;
+        }
+
+        logMessage ("error: " + context + " - " + err);
+    }
+   #else
+    static void dummyLog() {}
+    #define JUCE_ASIO_LOG(a)            ASIODebugging::dummyLog()
+    #define JUCE_ASIO_LOG_ERROR(a, b)   ASIODebugging::dummyLog()
+   #endif
 }
 
 //==============================================================================
@@ -304,12 +310,12 @@ class ASIOAudioIODevice  : public AudioIODevice,
                            private Timer
 {
 public:
-    ASIOAudioIODevice (const String& name_, const CLSID classId_, const int slotNumber,
-                       const String& optionalDllForDirectLoading_)
-       : AudioIODevice (name_, "ASIO"),
+    ASIOAudioIODevice (const String& devName, const CLSID clsID, const int slotNumber,
+                       const String& dllForDirectLoading)
+       : AudioIODevice (devName, "ASIO"),
          asioObject (nullptr),
-         classId (classId_),
-         optionalDllForDirectLoading (optionalDllForDirectLoading_),
+         classId (clsID),
+         optionalDllForDirectLoading (dllForDirectLoading),
          currentBitDepth (16),
          currentSampleRate (0),
          deviceIsOpen (false),
@@ -319,7 +325,9 @@ public:
          insideControlPanelModalLoop (false),
          shouldUsePreferredSize (false)
     {
-        name = name_;
+        name = devName;
+        inBuffers.calloc (4);
+        outBuffers.calloc (4);
 
         jassert (currentASIODev [slotNumber] == nullptr);
         currentASIODev [slotNumber] = this;
@@ -334,30 +342,27 @@ public:
                 currentASIODev[i] = nullptr;
 
         close();
-        log ("ASIO - exiting");
+        JUCE_ASIO_LOG ("closed");
         removeCurrentDriver();
     }
 
     void updateSampleRates()
     {
         // find a list of sample rates..
-        const double possibleSampleRates[] = { 44100.0, 48000.0, 88200.0, 96000.0, 176400.0, 192000.0 };
+        const int possibleSampleRates[] = { 44100, 48000, 88200, 96000, 176400, 192000 };
         sampleRates.clear();
 
         if (asioObject != nullptr)
         {
             for (int index = 0; index < numElementsInArray (possibleSampleRates); ++index)
             {
-                const long err = asioObject->canSampleRate (possibleSampleRates[index]);
+                const long err = asioObject->canSampleRate ((double) possibleSampleRates[index]);
+                JUCE_ASIO_LOG_ERROR ("canSampleRate " + String (possibleSampleRates[index]), err);
 
                 if (err == 0)
                 {
-                    sampleRates.add ((int) possibleSampleRates[index]);
-                    log ("rate: " + String ((int) possibleSampleRates[index]));
-                }
-                else if (err != ASE_NoClock)
-                {
-                    logError ("CanSampleRate", err);
+                    sampleRates.add (possibleSampleRates[index]);
+                    JUCE_ASIO_LOG ("rate: " + String (possibleSampleRates[index]));
                 }
             }
 
@@ -365,7 +370,8 @@ public:
             {
                 double cr = 0;
                 const long err = asioObject->getSampleRate (&cr);
-                log ("No sample rates supported - current rate: " + String ((int) cr));
+                JUCE_ASIO_LOG ("No sample rates supported - current rate: " + String ((int) cr));
+                JUCE_ASIO_LOG_ERROR ("getSampleRate", err);
 
                 if (err == 0)
                     sampleRates.add ((int) cr);
@@ -396,7 +402,7 @@ public:
 
         if (asioObject == nullptr || ! isASIOOpen)
         {
-            log ("Warning: device not open");
+            JUCE_ASIO_LOG ("Warning: device not open");
             const String err (openDevice());
 
             if (asioObject == nullptr || ! isASIOOpen)
@@ -426,7 +432,7 @@ public:
 
         if (shouldUsePreferredSize)
         {
-            log ("Using preferred size for buffer..");
+            JUCE_ASIO_LOG ("Using preferred size for buffer..");
 
             if ((err = asioObject->getBufferSize (&minSize, &maxSize, &preferredSize, &granularity)) == 0)
             {
@@ -435,7 +441,7 @@ public:
             else
             {
                 bufferSizeSamples = 1024;
-                logError ("GetBufferSize1", err);
+                JUCE_ASIO_LOG_ERROR ("getBufferSize1", err);
             }
 
             shouldUsePreferredSize = false;
@@ -446,8 +452,8 @@ public:
         currentBlockSizeSamples = bufferSizeSamples;
         currentChansOut.clear();
         currentChansIn.clear();
-        zeromem (inBuffers, sizeof (inBuffers));
-        zeromem (outBuffers, sizeof (outBuffers));
+        inBuffers.clear (totalNumInputChans + 1);
+        outBuffers.clear (totalNumOutputChans + 1);
 
         updateSampleRates();
 
@@ -464,8 +470,7 @@ public:
         bool isSourceSet = false;
 
         // careful not to remove this loop because it does more than just logging!
-        int i;
-        for (i = 0; i < numSources; ++i)
+        for (int i = 0; i < numSources; ++i)
         {
             String s ("clock: ");
             s += clocks[i].name;
@@ -476,265 +481,204 @@ public:
                 s << " (cur)";
             }
 
-            log (s);
+            JUCE_ASIO_LOG (s);
         }
 
         if (numSources > 1 && ! isSourceSet)
         {
-            log ("setting clock source");
-            asioObject->setClockSource (clocks[0].index);
+            JUCE_ASIO_LOG ("setting clock source");
+            err = asioObject->setClockSource (clocks[0].index);
+            JUCE_ASIO_LOG_ERROR ("setClockSource1", err);
             Thread::sleep (20);
         }
         else
         {
             if (numSources == 0)
-            {
-                log ("ASIO - no clock sources!");
-            }
+                JUCE_ASIO_LOG ("no clock sources!");
         }
 
-        double cr = 0;
-        err = asioObject->getSampleRate (&cr);
-        if (err == 0)
         {
+            double cr = 0;
+            err = asioObject->getSampleRate (&cr);
+            JUCE_ASIO_LOG_ERROR ("getSampleRate", err);
             currentSampleRate = cr;
-        }
-        else
-        {
-            logError ("GetSampleRate", err);
-            currentSampleRate = 0;
         }
 
         error = String::empty;
-        needToReset = false;
-        isReSync = false;
         err = 0;
         buffersCreated = false;
 
         if (currentSampleRate != sampleRate)
         {
-            log ("ASIO samplerate: " + String (currentSampleRate) + " to " + String (sampleRate));
+            JUCE_ASIO_LOG ("rate change: " + String (currentSampleRate) + " to " + String (sampleRate));
             err = asioObject->setSampleRate (sampleRate);
 
             if (err == ASE_NoClock && numSources > 0)
             {
-                log ("trying to set a clock source..");
+                JUCE_ASIO_LOG ("trying to set a clock source..");
                 Thread::sleep (10);
                 err = asioObject->setClockSource (clocks[0].index);
-                if (err != 0)
-                {
-                    logError ("SetClock", err);
-                }
+                JUCE_ASIO_LOG_ERROR ("setClockSource2", err);
 
                 Thread::sleep (10);
                 err = asioObject->setSampleRate (sampleRate);
             }
+
+            if (err == 0)
+                currentSampleRate = sampleRate;
+
+            // on fail, ignore the attempt to change rate, and run with the current one..
         }
 
-        if (err == 0)
+        if (needToReset)
         {
-            currentSampleRate = sampleRate;
+            JUCE_ASIO_LOG (" Resetting");
+            removeCurrentDriver();
 
-            if (needToReset)
-            {
-                if (isReSync)
-                {
-                    log ("Resync request");
-                }
+            loadDriver();
+            const String error (initDriver());
 
-                log ("! Resetting ASIO after sample rate change");
-                removeCurrentDriver();
+            if (error.isNotEmpty())
+                JUCE_ASIO_LOG ("ASIOInit: " + error);
 
-                loadDriver();
-                const String error (initDriver());
+            needToReset = false;
+        }
 
-                if (error.isNotEmpty())
-                {
-                    log ("ASIOInit: " + error);
-                }
+        const int totalBuffers = resetBuffers (inputChannels, outputChannels);
 
-                needToReset = false;
-                isReSync = false;
-            }
+        setCallbackFunctions();
 
-            numActiveInputChans = 0;
-            numActiveOutputChans = 0;
+        JUCE_ASIO_LOG ("disposing buffers");
+        err = asioObject->disposeBuffers();
 
-            ASIOBufferInfo* info = bufferInfos;
-            int i;
-            for (i = 0; i < totalNumInputChans; ++i)
-            {
-                if (inputChannels[i])
-                {
-                    currentChansIn.setBit (i);
-                    info->isInput = 1;
-                    info->channelNum = i;
-                    info->buffers[0] = info->buffers[1] = nullptr;
-                    ++info;
-                    ++numActiveInputChans;
-                }
-            }
+        JUCE_ASIO_LOG ("creating buffers: " + String (totalBuffers) + ", " + String (currentBlockSizeSamples));
+        err = asioObject->createBuffers (bufferInfos,
+                                         totalBuffers,
+                                         currentBlockSizeSamples,
+                                         &callbacks);
 
-            for (i = 0; i < totalNumOutputChans; ++i)
-            {
-                if (outputChannels[i])
-                {
-                    currentChansOut.setBit (i);
-                    info->isInput = 0;
-                    info->channelNum = i;
-                    info->buffers[0] = info->buffers[1] = nullptr;
-                    ++info;
-                    ++numActiveOutputChans;
-                }
-            }
+        if (err != 0)
+        {
+            currentBlockSizeSamples = preferredSize;
+            JUCE_ASIO_LOG_ERROR ("create buffers 2", err);
 
-            const int totalBuffers = numActiveInputChans + numActiveOutputChans;
-
-            setCallbackFunctions();
-
-            log ("disposing buffers");
-            err = asioObject->disposeBuffers();
-
-            log ("creating buffers: " + String (totalBuffers) + ", " + String (currentBlockSizeSamples));
+            asioObject->disposeBuffers();
             err = asioObject->createBuffers (bufferInfos,
                                              totalBuffers,
                                              currentBlockSizeSamples,
                                              &callbacks);
+        }
+
+        if (err == 0)
+        {
+            buffersCreated = true;
+
+            tempBuffer.calloc (totalBuffers * currentBlockSizeSamples + 32);
+
+            int n = 0;
+            Array <int> types;
+            currentBitDepth = 16;
+
+            for (int i = 0; i < (int) totalNumInputChans; ++i)
+            {
+                if (inputChannels[i])
+                {
+                    inBuffers[n] = tempBuffer + (currentBlockSizeSamples * n);
+
+                    ASIOChannelInfo channelInfo = { 0 };
+                    channelInfo.channel = i;
+                    channelInfo.isInput = 1;
+                    asioObject->getChannelInfo (&channelInfo);
+
+                    types.addIfNotAlreadyThere (channelInfo.type);
+                    inputFormat[n] = ASIOSampleFormat (channelInfo.type);
+
+                    currentBitDepth = jmax (currentBitDepth, inputFormat[n].bitDepth);
+                    ++n;
+                }
+            }
+
+            jassert (numActiveInputChans == n);
+            n = 0;
+
+            for (int i = 0; i < (int) totalNumOutputChans; ++i)
+            {
+                if (outputChannels[i])
+                {
+                    outBuffers[n] = tempBuffer + (currentBlockSizeSamples * (numActiveInputChans + n));
+
+                    ASIOChannelInfo channelInfo = { 0 };
+                    channelInfo.channel = i;
+                    channelInfo.isInput = 0;
+                    asioObject->getChannelInfo (&channelInfo);
+
+                    types.addIfNotAlreadyThere (channelInfo.type);
+                    outputFormat[n] = ASIOSampleFormat (channelInfo.type);
+
+                    currentBitDepth = jmax (currentBitDepth, outputFormat[n].bitDepth);
+                    ++n;
+                }
+            }
+
+            jassert (numActiveOutputChans == n);
+
+            for (int i = types.size(); --i >= 0;)
+                JUCE_ASIO_LOG ("channel format: " + String (types[i]));
+
+            jassert (n <= totalBuffers);
+
+            for (int i = 0; i < numActiveOutputChans; ++i)
+            {
+                outputFormat[i].clear (bufferInfos [numActiveInputChans + i].buffers[0], currentBlockSizeSamples);
+                outputFormat[i].clear (bufferInfos [numActiveInputChans + i].buffers[1], currentBlockSizeSamples);
+            }
+
+            inputLatency = outputLatency = 0;
+
+            if (asioObject->getLatencies (&inputLatency, &outputLatency) != 0)
+                JUCE_ASIO_LOG ("no latencies");
+            else
+                JUCE_ASIO_LOG ("latencies: " + String ((int) outputLatency) + ", " + String ((int) inputLatency));
+
+            deviceIsOpen = true;
+
+            JUCE_ASIO_LOG ("starting");
+            calledback = false;
+            err = asioObject->start();
 
             if (err != 0)
             {
-                currentBlockSizeSamples = preferredSize;
-                logError ("create buffers 2", err);
-
-                asioObject->disposeBuffers();
-                err = asioObject->createBuffers (bufferInfos,
-                                                 totalBuffers,
-                                                 currentBlockSizeSamples,
-                                                 &callbacks);
-            }
-
-            if (err == 0)
-            {
-                buffersCreated = true;
-
-                tempBuffer.calloc (totalBuffers * currentBlockSizeSamples + 32);
-
-                int n = 0;
-                Array <int> types;
-                currentBitDepth = 16;
-
-                for (i = 0; i < jmin ((int) totalNumInputChans, (int) maxASIOChannels); ++i)
-                {
-                    if (inputChannels[i])
-                    {
-                        inBuffers[n] = tempBuffer + (currentBlockSizeSamples * n);
-
-                        ASIOChannelInfo channelInfo = { 0 };
-                        channelInfo.channel = i;
-                        channelInfo.isInput = 1;
-                        asioObject->getChannelInfo (&channelInfo);
-
-                        types.addIfNotAlreadyThere (channelInfo.type);
-                        inputFormat[n] = ASIOSampleFormat (channelInfo.type);
-
-                        currentBitDepth = jmax (currentBitDepth, inputFormat[n].bitDepth);
-                        ++n;
-                    }
-                }
-
-                jassert (numActiveInputChans == n);
-                n = 0;
-
-                for (i = 0; i < jmin ((int) totalNumOutputChans, (int) maxASIOChannels); ++i)
-                {
-                    if (outputChannels[i])
-                    {
-                        outBuffers[n] = tempBuffer + (currentBlockSizeSamples * (numActiveInputChans + n));
-
-                        ASIOChannelInfo channelInfo = { 0 };
-                        channelInfo.channel = i;
-                        channelInfo.isInput = 0;
-                        asioObject->getChannelInfo (&channelInfo);
-
-                        types.addIfNotAlreadyThere (channelInfo.type);
-                        outputFormat[n] = ASIOSampleFormat (channelInfo.type);
-
-                        currentBitDepth = jmax (currentBitDepth, outputFormat[n].bitDepth);
-                        ++n;
-                    }
-                }
-
-                jassert (numActiveOutputChans == n);
-
-                for (i = types.size(); --i >= 0;)
-                {
-                    log ("channel format: " + String (types[i]));
-                }
-
-                jassert (n <= totalBuffers);
-
-                for (i = 0; i < numActiveOutputChans; ++i)
-                {
-                    outputFormat[i].clear (bufferInfos [numActiveInputChans + i].buffers[0], currentBlockSizeSamples);
-                    outputFormat[i].clear (bufferInfos [numActiveInputChans + i].buffers[1], currentBlockSizeSamples);
-                }
-
-                inputLatency = outputLatency = 0;
-
-                if (asioObject->getLatencies (&inputLatency, &outputLatency) != 0)
-                {
-                    log ("ASIO - no latencies");
-                }
-                else
-                {
-                    log ("ASIO latencies: " + String ((int) outputLatency) + ", " + String ((int) inputLatency));
-                }
-
-                deviceIsOpen = true;
-
-                log ("starting ASIO");
-                calledback = false;
-                err = asioObject->start();
-
-                if (err != 0)
-                {
-                    deviceIsOpen = false;
-                    log ("ASIO - stop on failure");
-                    Thread::sleep (10);
-                    asioObject->stop();
-                    error = "Can't start device";
-                    Thread::sleep (10);
-                }
-                else
-                {
-                    int count = 300;
-                    while (--count > 0 && ! calledback)
-                        Thread::sleep (10);
-
-                    isStarted = true;
-
-                    if (! calledback)
-                    {
-                        error = "Device didn't start correctly";
-                        log ("ASIO didn't callback - stopping..");
-                        asioObject->stop();
-                    }
-                }
+                deviceIsOpen = false;
+                JUCE_ASIO_LOG ("stop on failure");
+                Thread::sleep (10);
+                asioObject->stop();
+                error = "Can't start device";
+                Thread::sleep (10);
             }
             else
             {
-                error = "Can't create i/o buffers";
+                int count = 300;
+                while (--count > 0 && ! calledback)
+                    Thread::sleep (10);
+
+                isStarted = true;
+
+                if (! calledback)
+                {
+                    error = "Device didn't start correctly";
+                    JUCE_ASIO_LOG ("no callbacks - stopping..");
+                    asioObject->stop();
+                }
             }
         }
         else
         {
-            error = "Can't set sample rate: ";
-            error << sampleRate;
+            error = "Can't create i/o buffers";
         }
 
         if (error.isNotEmpty())
         {
-            logError (error, err);
+            JUCE_ASIO_LOG_ERROR (error, err);
             disposeBuffers();
 
             Thread::sleep (20);
@@ -747,8 +691,6 @@ public:
         }
 
         needToReset = false;
-        isReSync = false;
-
         return error;
     }
 
@@ -765,9 +707,8 @@ public:
             deviceIsOpen = false;
             isStarted = false;
             needToReset = false;
-            isReSync = false;
 
-            log ("ASIO - stopping");
+            JUCE_ASIO_LOG ("stopping");
 
             if (asioObject != nullptr)
             {
@@ -823,7 +764,7 @@ public:
 
     bool showControlPanel()
     {
-        log ("ASIO - showing control panel");
+        JUCE_ASIO_LOG ("showing control panel");
 
         bool done = false;
 
@@ -841,7 +782,7 @@ public:
 
                 const int spent = (int) Time::getMillisecondCounter() - (int) started;
 
-                log ("spent: " + String (spent));
+                JUCE_ASIO_LOG ("spent: " + String (spent));
 
                 if (spent > 300)
                 {
@@ -858,13 +799,7 @@ public:
 
     void resetRequest() noexcept
     {
-        needToReset = true;
-    }
-
-    void resyncRequest() noexcept
-    {
-        needToReset = true;
-        isReSync = true;
+        startTimer (500);
     }
 
     void timerCallback()
@@ -874,13 +809,15 @@ public:
             stopTimer();
 
             // used to cause a reset
-            log ("! ASIO restart request!");
+            JUCE_ASIO_LOG ("restart request!");
 
             if (deviceIsOpen)
             {
                 AudioIODeviceCallback* const oldCallback = currentCallback;
 
                 close();
+
+                needToReset = true;
                 open (BigInteger (currentChansIn), BigInteger (currentChansOut),
                       currentSampleRate, currentBlockSizeSamples);
 
@@ -917,14 +854,9 @@ private:
     AudioIODeviceCallback* volatile currentCallback;
     CriticalSection callbackLock;
 
-    enum { maxASIOChannels = 160 };
-
-    ASIOBufferInfo bufferInfos [maxASIOChannels];
-    float* inBuffers [maxASIOChannels];
-    float* outBuffers [maxASIOChannels];
-
-    ASIOSampleFormat inputFormat [maxASIOChannels];
-    ASIOSampleFormat outputFormat [maxASIOChannels];
+    HeapBlock<ASIOBufferInfo> bufferInfos;
+    HeapBlock<float*> inBuffers, outBuffers;
+    HeapBlock<ASIOSampleFormat> inputFormat, outputFormat;
 
     WaitableEvent event1;
     HeapBlock <float> tempBuffer;
@@ -933,11 +865,57 @@ private:
     bool deviceIsOpen, isStarted, buffersCreated;
     bool volatile isASIOOpen;
     bool volatile calledback;
-    bool volatile littleEndian, postOutput, needToReset, isReSync;
+    bool volatile littleEndian, postOutput, needToReset;
     bool volatile insideControlPanelModalLoop;
     bool volatile shouldUsePreferredSize;
 
     //==============================================================================
+    static String convertASIOString (char* const text, int length)
+    {
+        if (CharPointer_UTF8::isValidString (text, length))
+            return String::fromUTF8 (text, length);
+
+        WCHAR wideVersion [64] = { 0 };
+        MultiByteToWideChar (CP_ACP, 0, text, length, wideVersion, numElementsInArray (wideVersion));
+        return wideVersion;
+    }
+
+    int resetBuffers (const BigInteger& inputChannels,
+                      const BigInteger& outputChannels)
+    {
+        numActiveInputChans = 0;
+        numActiveOutputChans = 0;
+
+        ASIOBufferInfo* info = bufferInfos;
+        for (int i = 0; i < totalNumInputChans; ++i)
+        {
+            if (inputChannels[i])
+            {
+                currentChansIn.setBit (i);
+                info->isInput = 1;
+                info->channelNum = i;
+                info->buffers[0] = info->buffers[1] = nullptr;
+                ++info;
+                ++numActiveInputChans;
+            }
+        }
+
+        for (int i = 0; i < totalNumOutputChans; ++i)
+        {
+            if (outputChannels[i])
+            {
+                currentChansOut.setBit (i);
+                info->isInput = 0;
+                info->channelNum = i;
+                info->buffers[0] = info->buffers[1] = nullptr;
+                ++info;
+                ++numActiveOutputChans;
+            }
+        }
+
+        return numActiveInputChans + numActiveOutputChans;
+    }
+
     void removeCurrentDriver()
     {
         if (asioObject != nullptr)
@@ -992,34 +970,45 @@ private:
         return false;
     }
 
+    String getLastDriverError() const
+    {
+        jassert (asioObject != nullptr);
+        char buffer [512] = { 0 };
+        asioObject->getErrorMessage (buffer);
+        return String (buffer, sizeof (buffer) - 1);
+    }
+
     String initDriver()
     {
-        if (asioObject != nullptr)
+        if (asioObject == nullptr)
+            return "No Driver";
+
+        const bool initOk = !! asioObject->init (juce_messageWindowHandle);
+        String driverError;
+
+        // Get error message if init() failed, or if it's a buggy Denon driver,
+        // which returns true from init() even when it fails.
+        if ((! initOk) || getName().containsIgnoreCase ("denon dj"))
+            driverError = getLastDriverError();
+
+        if ((! initOk) && driverError.isEmpty())
+            driverError = "Driver failed to initialise";
+
+        if (driverError.isEmpty())
         {
-            char buffer [256] = { 0 };
-
-            if (! asioObject->init (juce_messageWindowHandle))
-            {
-                asioObject->getErrorMessage (buffer);
-                return String (buffer, sizeof (buffer) - 1);
-            }
-
-            // just in case any daft drivers expect this to be called..
-            asioObject->getDriverName (buffer);
-
-            return String::empty;
+            char buffer [512];
+            asioObject->getDriverName (buffer); // just in case any flimsy drivers expect this to be called..
         }
 
-        return "No Driver";
+        return driverError;
     }
 
     String openDevice()
     {
         // open the device and get its info..
-        log ("opening ASIO device: " + getName());
+        JUCE_ASIO_LOG ("opening device: " + getName());
 
         needToReset = false;
-        isReSync = false;
         outputChannelNames.clear();
         inputChannelNames.clear();
         bufferSizes.clear();
@@ -1051,18 +1040,25 @@ private:
                 if (asioObject != nullptr
                      && (err = asioObject->getChannels (&totalNumInputChans, &totalNumOutputChans)) == 0)
                 {
-                    log (String ((int) totalNumInputChans) + " in, " + String ((int) totalNumOutputChans) + " out");
+                    JUCE_ASIO_LOG (String ((int) totalNumInputChans) + " in, " + String ((int) totalNumOutputChans) + " out");
+
+                    const int chansToAllocate = totalNumInputChans + totalNumOutputChans + 4;
+                    bufferInfos.calloc (chansToAllocate);
+                    inBuffers.calloc (chansToAllocate);
+                    outBuffers.calloc (chansToAllocate);
+                    inputFormat.calloc (chansToAllocate);
+                    outputFormat.calloc (chansToAllocate);
 
                     if ((err = asioObject->getBufferSize (&minSize, &maxSize, &preferredSize, &granularity)) == 0)
                     {
                         // find a list of buffer sizes..
-                        log (String ((int) minSize) + " " + String ((int) maxSize) + " " + String ((int) preferredSize) + " " + String ((int) granularity));
+                        JUCE_ASIO_LOG (String ((int) minSize) + " " + String ((int) maxSize) + " " + String ((int) preferredSize) + " " + String ((int) granularity));
 
                         if (granularity >= 0)
                         {
-                            granularity = jmax (1, (int) granularity);
+                            granularity = jmax (16, (int) granularity);
 
-                            for (int i = jmax ((int) minSize, (int) granularity); i < jmin (6400, (int) maxSize); i += granularity)
+                            for (int i = jmax ((int) (minSize + 15) & ~15, (int) granularity); i < jmin (6400, (int) maxSize); i += granularity)
                                 bufferSizes.addIfNotAlreadyThere (granularity * (i / granularity));
                         }
                         else if (granularity < 0)
@@ -1084,12 +1080,9 @@ private:
 
                         if (currentRate <= 0.0 || currentRate > 192001.0)
                         {
-                            log ("setting sample rate");
+                            JUCE_ASIO_LOG ("setting sample rate");
                             err = asioObject->setSampleRate (44100.0);
-                            if (err != 0)
-                            {
-                                logError ("setting sample rate", err);
-                            }
+                            JUCE_ASIO_LOG_ERROR ("setting sample rate", err);
 
                             asioObject->getSampleRate (&currentRate);
                         }
@@ -1098,20 +1091,16 @@ private:
 
                         postOutput = (asioObject->outputReady() == 0);
                         if (postOutput)
-                        {
-                            log ("ASIO outputReady = ok");
-                        }
+                            JUCE_ASIO_LOG ("outputReady true");
 
                         updateSampleRates();
 
                         // ..because cubase does it at this point
                         inputLatency = outputLatency = 0;
                         if (asioObject->getLatencies (&inputLatency, &outputLatency) != 0)
-                        {
-                            log ("ASIO - no latencies");
-                        }
+                            JUCE_ASIO_LOG ("no latencies");
 
-                        log ("latencies: " + String ((int) inputLatency) + ", " + String ((int) outputLatency));
+                        JUCE_ASIO_LOG ("latencies: " + String ((int) inputLatency) + ", " + String ((int) outputLatency));
 
                         // create some dummy buffers now.. because cubase does..
                         numActiveInputChans = 0;
@@ -1141,15 +1130,12 @@ private:
 
                         setCallbackFunctions();
 
-                        log ("creating buffers (dummy): " + String (numChans) + ", " + String ((int) preferredSize));
+                        JUCE_ASIO_LOG ("creating buffers (dummy): " + String (numChans) + ", " + String ((int) preferredSize));
 
                         if (preferredSize > 0)
                         {
                             err = asioObject->createBuffers (bufferInfos, numChans, preferredSize, &callbacks);
-                            if (err != 0)
-                            {
-                                logError ("dummy buffers", err);
-                            }
+                            JUCE_ASIO_LOG_ERROR ("dummy buffers", err);
                         }
 
                         long newInps = 0, newOuts = 0;
@@ -1160,7 +1146,7 @@ private:
                             totalNumInputChans = newInps;
                             totalNumOutputChans = newOuts;
 
-                            log (String ((int) totalNumInputChans) + " in; " + String ((int) totalNumOutputChans) + " out");
+                            JUCE_ASIO_LOG (String ((int) totalNumInputChans) + " in; " + String ((int) totalNumOutputChans) + " out");
                         }
 
                         updateSampleRates();
@@ -1172,7 +1158,7 @@ private:
                             channelInfo.isInput = 1;
                             asioObject->getChannelInfo (&channelInfo);
 
-                            inputChannelNames.add (String (CharPointer_UTF8 (channelInfo.name)));
+                            inputChannelNames.add (convertASIOString (channelInfo.name, sizeof (channelInfo.name)));
                         }
 
                         for (i = 0; i < totalNumOutputChans; ++i)
@@ -1182,7 +1168,7 @@ private:
                             channelInfo.isInput = 0;
                             asioObject->getChannelInfo (&channelInfo);
 
-                            outputChannelNames.add (String (CharPointer_UTF8 (channelInfo.name)));
+                            outputChannelNames.add (convertASIOString (channelInfo.name, sizeof (channelInfo.name)));
                             outputFormat[i] = ASIOSampleFormat (channelInfo.type);
 
                             if (i < 2)
@@ -1201,11 +1187,9 @@ private:
                         // start and stop because cubase does it..
                         asioObject->getLatencies (&inputLatency, &outputLatency);
 
-                        if ((err = asioObject->start()) != 0)
-                        {
-                            // ignore an error here, as it might start later after setting other stuff up
-                            logError ("ASIO start", err);
-                        }
+                        err = asioObject->start();
+                        // ignore an error here, as it might start later after setting other stuff up
+                        JUCE_ASIO_LOG_ERROR ("start", err);
 
                         Thread::sleep (100);
                         asioObject->stop();
@@ -1228,7 +1212,7 @@ private:
 
         if (error.isNotEmpty())
         {
-            logError (error, err);
+            JUCE_ASIO_LOG_ERROR (error, err);
             disposeBuffers();
             removeCurrentDriver();
             isASIOOpen = false;
@@ -1236,13 +1220,11 @@ private:
         else
         {
             isASIOOpen = true;
-            log ("ASIO device open");
+            JUCE_ASIO_LOG ("device open");
         }
 
         deviceIsOpen = false;
         needToReset = false;
-        isReSync = false;
-
         return error;
     }
 
@@ -1279,38 +1261,22 @@ private:
 
         const ScopedLock sl (callbackLock);
 
-        if (needToReset)
-        {
-            needToReset = false;
-
-            if (isReSync)
-            {
-                log ("! ASIO resync");
-                isReSync = false;
-            }
-            else
-            {
-                startTimer (20);
-            }
-        }
-
         if (bi >= 0)
         {
             const int samps = currentBlockSizeSamples;
 
             if (currentCallback != nullptr)
             {
-                int i;
-                for (i = 0; i < numActiveInputChans; ++i)
+                for (int i = 0; i < numActiveInputChans; ++i)
                 {
-                    jassert (inBuffers[i]!= nullptr);
+                    jassert (inBuffers[i] != nullptr);
                     inputFormat[i].convertToFloat (infos[i].buffers[bi], inBuffers[i], samps);
                 }
 
-                currentCallback->audioDeviceIOCallback ((const float**) inBuffers, numActiveInputChans,
+                currentCallback->audioDeviceIOCallback (const_cast <const float**> (inBuffers.getData()), numActiveInputChans,
                                                         outBuffers, numActiveOutputChans, samps);
 
-                for (i = 0; i < numActiveOutputChans; ++i)
+                for (int i = 0; i < numActiveOutputChans; ++i)
                 {
                     jassert (outBuffers[i] != nullptr);
                     outputFormat[i].convertFromFloat (outBuffers[i], infos [numActiveInputChans + i].buffers[bi], samps);
@@ -1383,17 +1349,10 @@ private:
             break;
 
         case kAsioBufferSizeChange:
-            break;
-
         case kAsioResetRequest:
-            if (currentASIODev[deviceIndex] != nullptr)
-                currentASIODev[deviceIndex]->resetRequest();
-
-            return 1;
-
         case kAsioResyncRequest:
             if (currentASIODev[deviceIndex] != nullptr)
-                currentASIODev[deviceIndex]->resyncRequest();
+                currentASIODev[deviceIndex]->resetRequest();
 
             return 1;
 
@@ -1415,7 +1374,7 @@ private:
     {
     }
 
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ASIOAudioIODevice);
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ASIOAudioIODevice)
 };
 
 //==============================================================================
@@ -1596,7 +1555,7 @@ private:
                         else
                             deviceName = keyName;
 
-                        log ("found " + deviceName);
+                        JUCE_ASIO_LOG ("found " + deviceName);
                         deviceNames.add (deviceName);
                         classIds.add (new CLSID (classId));
                     }
@@ -1607,7 +1566,7 @@ private:
         }
     }
 
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ASIOAudioIODeviceType);
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ASIOAudioIODeviceType)
 };
 
 AudioIODeviceType* AudioIODeviceType::createAudioIODeviceType_ASIO()
@@ -1615,8 +1574,7 @@ AudioIODeviceType* AudioIODeviceType::createAudioIODeviceType_ASIO()
     return new ASIOAudioIODeviceType();
 }
 
-AudioIODevice* juce_createASIOAudioIODeviceForGUID (const String& name,
-                                                    void* guid,
+AudioIODevice* juce_createASIOAudioIODeviceForGUID (const String& name, void* guid,
                                                     const String& optionalDllForDirectLoading)
 {
     const int freeSlot = ASIOAudioIODeviceType::findFreeSlot();
@@ -1626,6 +1584,3 @@ AudioIODevice* juce_createASIOAudioIODeviceForGUID (const String& name,
 
     return new ASIOAudioIODevice (name, *(CLSID*) guid, freeSlot, optionalDllForDirectLoading);
 }
-
-#undef logError
-#undef log

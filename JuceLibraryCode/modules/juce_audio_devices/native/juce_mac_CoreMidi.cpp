@@ -370,7 +370,7 @@ void MidiOutput::sendMessageNow (const MidiMessage& message)
         const int maxPacketSize = 256;
         int pos = 0, bytesLeft = (int) dataSize;
         const int numPackets = (bytesLeft + maxPacketSize - 1) / maxPacketSize;
-        allocatedPackets.malloc ((size_t) (32 * numPackets + dataSize), 1);
+        allocatedPackets.malloc ((size_t) (32 * (size_t) numPackets + dataSize), 1);
         packetToSend = allocatedPackets;
         packetToSend->numPackets = (UInt32) numPackets;
 
@@ -432,9 +432,7 @@ MidiInput* MidiInput::openDevice (int index, MidiInputCallback* callback)
 
             if (CHECK_ERROR (MIDIObjectGetStringProperty (endPoint, kMIDIPropertyName, &name)))
             {
-                MIDIClientRef client = getGlobalMidiClient();
-
-                if (client != 0)
+                if (MIDIClientRef client = getGlobalMidiClient())
                 {
                     MIDIPortRef port;
                     ScopedPointer <MidiPortAndCallback> mpc (new MidiPortAndCallback (*callback));
@@ -473,9 +471,8 @@ MidiInput* MidiInput::createNewDevice (const String& deviceName, MidiInputCallba
 
     using namespace CoreMidiHelpers;
     MidiInput* mi = nullptr;
-    MIDIClientRef client = getGlobalMidiClient();
 
-    if (client != 0)
+    if (MIDIClientRef client = getGlobalMidiClient())
     {
         ScopedPointer <MidiPortAndCallback> mpc (new MidiPortAndCallback (*callback));
         mpc->active = false;

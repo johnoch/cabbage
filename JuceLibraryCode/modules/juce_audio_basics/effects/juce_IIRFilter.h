@@ -138,11 +138,11 @@ protected:
 
     bool active;
     float coefficients[6];
-    float x1, x2, y1, y2;
+    float v1, v2;
 
     // (use the copyCoefficientsFrom() method instead of this operator)
     IIRFilter& operator= (const IIRFilter&);
-    JUCE_LEAK_DETECTOR (IIRFilter);
+    JUCE_LEAK_DETECTOR (IIRFilter)
 };
 
 

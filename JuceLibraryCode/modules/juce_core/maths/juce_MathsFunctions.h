@@ -331,7 +331,9 @@ inline bool juce_isfinite (FloatingPointType value)
 //==============================================================================
 #if JUCE_MSVC
  #pragma optimize ("t", off)
- #pragma float_control (precise, on, push)
+ #ifndef __INTEL_COMPILER
+  #pragma float_control (precise, on, push)
+ #endif
 #endif
 
 /** Fast floating-point-to-integer conversion.
@@ -347,6 +349,10 @@ inline bool juce_isfinite (FloatingPointType value)
 template <typename FloatType>
 inline int roundToInt (const FloatType value) noexcept
 {
+  #ifdef __INTEL_COMPILER
+   #pragma float_control (precise, on, push)
+  #endif
+
     union { int asInt[2]; double asDouble; } n;
     n.asDouble = ((double) value) + 6755399441055744.0;
 
@@ -358,7 +364,9 @@ inline int roundToInt (const FloatType value) noexcept
 }
 
 #if JUCE_MSVC
- #pragma float_control (pop)
+ #ifndef __INTEL_COMPILER
+  #pragma float_control (pop)
+ #endif
  #pragma optimize ("", on)  // resets optimisations to the project defaults
 #endif
 
@@ -369,6 +377,10 @@ inline int roundToInt (const FloatType value) noexcept
 */
 inline int roundToIntAccurate (const double value) noexcept
 {
+   #ifdef __INTEL_COMPILER
+    #pragma float_control (pop)
+   #endif
+
     return roundToInt (value + 1.5e-8);
 }
 
