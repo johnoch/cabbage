@@ -87,27 +87,27 @@ float cabbageABS(float in){
 }
 //
 //===========================================================================================
-//static void showMessage(String message){
-//	AlertWindow alert("Cabbage Message" , message, AlertWindow::WarningIcon);
-//	alert.showMessageBox(AlertWindow::WarningIcon, "Cabbage Message" , message, "Ok");
-//	Logger::writeToLog("mess1");
-//}
-//
+static void showMessage(String message){
+	AlertWindow alert("Cabbage Message" , message, AlertWindow::WarningIcon);
+	alert.showMessageBox(AlertWindow::WarningIcon, "Cabbage Message" , message, "Ok");
+	Logger::writeToLog("mess1");
+}
+
 //===========================================================================================
-//static void showMessageWithLocation(String message){
-//File thisFile(File::getSpecialLocation(File::currentApplicationFile));
-//	AlertWindow alert(thisFile.getFullPathName() , message, AlertWindow::WarningIcon);
-//	alert.showMessageBox(AlertWindow::WarningIcon, thisFile.getFullPathName() , message, "Ok");
-//	Logger::writeToLog("mess2");
-//}
+static void showMessageWithLocation(String message){
+File thisFile(File::getSpecialLocation(File::currentApplicationFile));
+	AlertWindow alert(thisFile.getFullPathName() , message, AlertWindow::WarningIcon);
+	alert.showMessageBox(AlertWindow::WarningIcon, thisFile.getFullPathName() , message, "Ok");
+	Logger::writeToLog("mess2");
+}
 //===========================================================================================
-//static void showMessage(double num){
-//	String str(num);
-//	File thisFile(File::getSpecialLocation(File::currentApplicationFile));
-//	AlertWindow alert(thisFile.getFullPathName(), str, AlertWindow::WarningIcon);
-//	alert.showMessageBox(AlertWindow::WarningIcon, thisFile.getFullPathName(), str, "Ok");
-//	Logger::writeToLog("mess3");
-//}
+static void showMessage(double num){
+	String str(num);
+	File thisFile(File::getSpecialLocation(File::currentApplicationFile));
+	AlertWindow alert(thisFile.getFullPathName(), str, AlertWindow::WarningIcon);
+	alert.showMessageBox(AlertWindow::WarningIcon, thisFile.getFullPathName(), str, "Ok");
+	Logger::writeToLog("mess3");
+}
 //===========================================================================================
 static void showMessage(String message, LookAndFeel* feel)
 {
