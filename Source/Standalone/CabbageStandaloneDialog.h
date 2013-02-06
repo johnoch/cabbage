@@ -28,6 +28,7 @@
 
 extern ApplicationProperties* appProperties;
 extern PropertySet* defaultPropSet;
+extern String currentApplicationDirectory;
 
 //==============================================================================
 // This is the main host window. It gets instatiated in StandaloneFilterApp.cpp

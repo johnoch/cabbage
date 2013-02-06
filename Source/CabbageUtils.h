@@ -109,6 +109,21 @@ static void showMessage(double num){
 	Logger::writeToLog("mess3");
 }
 //===========================================================================================
+static void showMessage(String message, LookAndFeel* feel, DocumentWindow* mainWindow)
+{
+	mainWindow->setAlwaysOnTop(false);
+	mainWindow->toBack();
+	AlertWindow alert("Cabbage Message" , message, AlertWindow::WarningIcon);
+    alert.setLookAndFeel(feel);
+	//alert.showMessageBox(AlertWindow::WarningIcon, "Cabbage Message" , message, "Ok");
+	Logger::writeToLog("mess4");
+	alert.setAlwaysOnTop(true);
+    alert.addButton("Ok", 1);
+    alert.runModalLoop();
+	mainWindow->setAlwaysOnTop(true);
+}
+
+//===========================================================================================
 static void showMessage(String message, LookAndFeel* feel)
 {
 	AlertWindow alert("Cabbage Message" , message, AlertWindow::WarningIcon);

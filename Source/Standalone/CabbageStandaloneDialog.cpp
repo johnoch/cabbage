@@ -907,7 +907,11 @@ int StandaloneFilterWindow::exportPlugin(String type, bool saveAs)
 {
 File dll;
 File loc_csdFile;
+#ifndef LINUX
 File thisFile(File::getSpecialLocation(File::currentApplicationFile));
+#else
+File thisFile(File::getSpecialLocation(File::currentExecutableFile));
+#endif
 
 if(!csdFile.exists()){
 					showMessage("You need to open a Cabbage instrument before you can export one as a plugin!", lookAndFeel);
@@ -916,21 +920,23 @@ if(!csdFile.exists()){
 #ifdef LINUX
 	FileChooser saveFC(String("Save as..."), File::nonexistent, String(""));
 	String VST;
+	Logger::writeToLog(currentApplicationDirectory);
 	if (saveFC.browseForFileToSave(true)){
 		if(type.contains("VSTi"))
-			VST = thisFile.getParentDirectory().getFullPathName() + String("/CabbagePluginSynth.so");
+			VST = currentApplicationDirectory + String("/CabbagePluginSynth.so");
 		else if(type.contains(String("VST")))
-			VST = thisFile.getParentDirectory().getFullPathName() + String("/CabbagePluginEffect.so");
+			VST = currentApplicationDirectory + String("/CabbagePluginEffect.so");
 		else if(type.contains(String("AU"))){
 			showMessage("This feature only works on computers running OSX", lookAndFeel);
 		}
-		showMessage(VST, lookAndFeel);
-		File VSTData(VST);
+		//Logger::writeToLog(VST);
+		showMessage(VST);
+		File VSTData("VST:"+VST);
 		if(!VSTData.exists())showMessage("lib cannot be found?", lookAndFeel);
 		else{
 			File dll(saveFC.getResult().withFileExtension(".so").getFullPathName());
-			showMessage(dll.getFullPathName(), lookAndFeel);
-			if(VSTData.copyFileTo(dll))	showMessage("moved", lookAndFeel);
+			Logger::writeToLog(dll.getFullPathName());
+			if(!VSTData.copyFileTo(dll))	showMessage("Can not move lib", lookAndFeel);
 			File loc_csdFile(saveFC.getResult().withFileExtension(".csd").getFullPathName());
 			loc_csdFile.replaceWithText(csdFile.loadFileAsString());
 		}
