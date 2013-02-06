@@ -930,9 +930,13 @@ if(!csdFile.exists()){
 			showMessage("This feature only works on computers running OSX", lookAndFeel);
 		}
 		//Logger::writeToLog(VST);
-		showMessage(VST);
-		File VSTData("VST:"+VST);
-		if(!VSTData.exists())showMessage("lib cannot be found?", lookAndFeel);
+		//showMessage(VST);
+		File VSTData(VST);
+		if(!VSTData.exists()){
+		this->setMinimised(true);
+		showMessage(VST+" cannot be found?", lookAndFeel);
+		}
+		
 		else{
 			File dll(saveFC.getResult().withFileExtension(".so").getFullPathName());
 			Logger::writeToLog(dll.getFullPathName());
