@@ -175,6 +175,8 @@ subm.addItem(6, "checkbox");
 subm.addItem(7, "groupbox");
 subm.addItem(8, "image");
 subm.addItem(9, "keyboard");
+subm.addItem(10, "xypad");
+subm.addItem(11, "line");
 m.addSubMenu(String("Indigenous"), subm);
 subm.clear();
 
@@ -193,11 +195,11 @@ if (e.mods.isRightButtonDown())
 	 if(choice==1)
 			 insertCabbageText(String("button bounds(")+String(e.getPosition().getX())+(", ")+String(e.getPosition().getY())+String(", 60, 25), channel(\"but1\"), text(\"on\", \"off\")"));
 	 else if(choice==2)
-			 insertCabbageText(String("rslider bounds(")+String(e.getPosition().getX())+(", ")+String(e.getPosition().getY())+String(", 50, 50), channel(\"rslider\"), text(\"\"), range(0, 100, 0)"));
+			 insertCabbageText(String("rslider bounds(")+String(e.getPosition().getX())+(", ")+String(e.getPosition().getY())+String(", 50, 50), channel(\"rslider\"), range(0, 100, 0)"));
 	 else if(choice==3)
-			 insertCabbageText(String("vslider bounds(")+String(e.getPosition().getX())+(", ")+String(e.getPosition().getY())+String(", 30, 200), channel(\"vslider\"), text(\"\"), range(0, 100, 0), colour(\"white\")"));
+			 insertCabbageText(String("vslider bounds(")+String(e.getPosition().getX())+(", ")+String(e.getPosition().getY())+String(", 30, 200), channel(\"vslider\"), range(0, 100, 0), colour(\"white\")"));
  	 else if(choice==4)
-			 insertCabbageText(String("hslider bounds(")+String(e.getPosition().getX())+(", ")+String(e.getPosition().getY())+String(", 200, 30), channel(\"hslider\"), text(\"\"), range(0, 100, 0), colour(\"white\")"));
+			 insertCabbageText(String("hslider bounds(")+String(e.getPosition().getX())+(", ")+String(e.getPosition().getY())+String(", 200, 30), channel(\"hslider\"), range(0, 100, 0), colour(\"white\")"));
  	 else if(choice==5)
  			 insertCabbageText(String("combobox bounds(")+String(e.getPosition().getX())+(", ")+String(e.getPosition().getY())+String(", 100, 30), channel(\"combobox\"), items(\"Item 1\", \"Item 2\", \"Item 3\")"));
 	 else if(choice==6)
@@ -208,6 +210,10 @@ if (e.mods.isRightButtonDown())
 			 insertCabbageText(String("image bounds(")+String(e.getPosition().getX())+(", ")+String(e.getPosition().getY())+String(", 200, 150), colour(\"white\"), line(0)"));
 	 else if(choice==9)
 			 insertCabbageText(String("keyboard bounds(")+String(e.getPosition().getX())+(", ")+String(e.getPosition().getY())+String(", 150, 60)"));
+	 else if(choice==10)
+			 insertCabbageText(String("xypad bounds(")+String(e.getPosition().getX())+(", ")+String(e.getPosition().getY())+String(", 200, 200), channel(\"xchan\", \"ychan\"), rangex(0, 100, 0), rangey(0, 100, 0)"));
+
+
 	 else if(choice>=100){
 		 //showMessage(xml->getAttributeValue(choice-100));
 		 //update X and Y positions from plants
@@ -319,19 +325,21 @@ void CabbagePluginAudioProcessorEditor::insertCabbageText(String text)
                          getFilter()->setCurrentLine(i);
                          i=csdArray.size();
                  }
-                // Logger::writeToLog(String(getFilter()->getCurrentLine()));
-
-	//Logger::writeToLog(String(lineNumber));
+    
+	Logger::writeToLog(String(getFilter()->getCurrentLine()));
+	Logger::writeToLog(text);
 	getFilter()->updateCsoundFile(csdArray.joinIntoString("\n"));
 	getFilter()->setGuiEnabled(true);
+	getFilter()->removeXYAutomaters();
+	getFilter()->setHaveXYAutoBeenCreated(false);
 	getFilter()->sendActionMessage("GUI Updated, controls added");
 }
 
 //==============================================================================
 void CabbagePluginAudioProcessorEditor::resized()
 {
-Logger::writeToLog("width:"+String(getWidth()));
-Logger::writeToLog("height:"+String(getHeight()));
+//Logger::writeToLog("width:"+String(getWidth()));
+//Logger::writeToLog("height:"+String(getHeight()));
 resizer->setBounds (getWidth() - 16, getHeight() - 16, 16, 16);
 this->setSize(this->getWidth(), this->getHeight());	
 if(componentPanel)componentPanel->setBounds(0, 0, this->getWidth(), this->getHeight());
@@ -371,11 +379,9 @@ void CabbagePluginAudioProcessorEditor::paint (Graphics& g)
                 g.fillAll();
 
                 g.setColour (CabbageUtils::getTitleFontColour());
-                Image logo = ImageCache::getFromMemory (BinaryData::logo1_png, BinaryData::logo1_pngSize);
-                //g.drawImage (logo, (getWidth()/2) - (logo.getWidth()*.35), getHeight()-25, logo.getWidth()*0.65, logo.getHeight()*0.65, 
-                //      0, 0, logo.getWidth(), logo.getHeight(), true);
-                g.drawImage (logo, (getWidth()) - (logo.getWidth()*.75), getHeight()-25, logo.getWidth()*0.65, logo.getHeight()*0.65, 
-                        0, 0, logo.getWidth(), logo.getHeight(), true);
+                Image logo = ImageCache::getFromMemory (BinaryData::cabbageLogoHBlueText_png, BinaryData::cabbageLogoHBlueText_pngSize);
+             g.drawImage (logo, getWidth() - 100, getHeight()-35, logo.getWidth()*0.55, logo.getHeight()*0.55, 
+                   0, 0, logo.getWidth(), logo.getHeight(), true);
                 g.setColour(fontColour);
                 g.drawFittedText(authorText, 10, getHeight()-30, getWidth()*.65, logo.getHeight(), 1, 1);   
                 //g.drawLine(10, getHeight()-27, getWidth()-10, getHeight()-27, 0.2);
@@ -386,10 +392,11 @@ void CabbagePluginAudioProcessorEditor::paint (Graphics& g)
                 g.setColour(formColour);
                 g.fillAll();
                 g.setColour (CabbageUtils::getTitleFontColour());
-                Image logo = ImageCache::getFromMemory (BinaryData::logo1_png, BinaryData::logo1_pngSize);
-                g.drawImage (logo, (getWidth()) - (logo.getWidth()*.75), getHeight()-25, logo.getWidth()*0.65, logo.getHeight()*0.65, 
-                        0, 0, logo.getWidth(), logo.getHeight(), true);
-                g.setColour(fontColour);
+               // Image logo = ImageCache::getFromMemory (BinaryData::cabbageLogoHBlueText_png, BinaryData::cabbageLogoHBlueText_pngSize);
+                Image logo = ImageCache::getFromMemory (BinaryData::cabbageLogoHBlueText_png, BinaryData::cabbageLogoHBlueText_pngSize);
+             g.drawImage (logo, getWidth() - 100, getHeight()-35, logo.getWidth()*0.55, logo.getHeight()*0.55, 
+                   0, 0, logo.getWidth(), logo.getHeight(), true);
+				   g.setColour(fontColour);
                 g.drawFittedText(authorText, 10, getHeight()-30, getWidth()*.65, logo.getHeight(), 1, 1);  
 #endif
 }
@@ -1091,7 +1098,8 @@ void CabbagePluginAudioProcessorEditor::InsertSlider(CabbageGUIClass &cAttr)
                                             cAttr.getColourProp("colour"),
                                             cAttr.getColourProp("fontcolour"),
                                             cAttr.getNumProp("textbox"),
-                                            cAttr.getColourProp("tracker")
+                                            cAttr.getColourProp("tracker"),
+											cAttr.getNumProp("decimalPlaces")
                                             ));   
         int idx = controls.size()-1;
  
@@ -1124,7 +1132,7 @@ void CabbagePluginAudioProcessorEditor::InsertSlider(CabbageGUIClass &cAttr)
 		//((CabbageSlider*)controls[idx])->slider->setLookAndFeel(oldSchoolLook);
 		//Logger::writeToLog("Skew:"+String(cAttr.getNumProp("sliderSkew")));
         ((CabbageSlider*)controls[idx])->slider->setSkewFactor(cAttr.getNumProp("sliderSkew"));
-        ((CabbageSlider*)controls[idx])->slider->setRange(cAttr.getNumProp("min"), cAttr.getNumProp("max"), (double)cAttr.getNumProp("sliderIncr"));
+        ((CabbageSlider*)controls[idx])->slider->setRange(cAttr.getNumProp("min"), cAttr.getNumProp("max"), cAttr.getNumProp("sliderIncr"));
         ((CabbageSlider*)controls[idx])->slider->setValue(cAttr.getNumProp("value"));
 		
 		//add initial values to incomingValues array
@@ -1298,7 +1306,7 @@ if(!getFilter()->isGuiEnabled()){
                                 String file = getFilter()->getCsoundInputFile().getParentDirectory().getFullPathName();
                                 file.append("\\", 5);
                                 file.append(button->getProperties().getWithDefault("filename", ""), 1024);
-                                showMessage(file);
+                                //showMessage(file);
                                 infoWindow = new InfoWindow(lookAndFeel, file);
                                 infoWindow->centreWithSize(600, 400);
                                 infoWindow->toFront(true);
@@ -1522,7 +1530,9 @@ if(getFilter()->haveXYAutosBeenCreated()){
 				xyPadIndex,
 				cAttr.getNumProp("decimalPlaces"),
 				cAttr.getColourProp("colour"),
-				cAttr.getColourProp("fontcolour"))); 
+				cAttr.getColourProp("fontcolour"),
+				cAttr.getNumProp("valueX"),
+				cAttr.getNumProp("valueY"))); 
 				xyPadIndex++;  
 	idx = controls.size()-1;
 }
@@ -1544,7 +1554,9 @@ else{
 				getFilter()->getXYAutomaterSize()-1,
 				cAttr.getNumProp("decimalPlaces"),
 				cAttr.getColourProp("colour"),
-				cAttr.getColourProp("fontcolour")));   
+				cAttr.getColourProp("fontcolour"),
+				cAttr.getNumProp("valueX"),
+				cAttr.getNumProp("valueY")));   
 	idx = controls.size()-1;
 	getFilter()->getXYAutomater(getFilter()->getXYAutomaterSize()-1)->paramIndex = idx;
 }
@@ -1589,16 +1601,21 @@ else{
         min = cAttr.getNumProp("minY");
         float valueY = cabbageABS(min-cAttr.getNumProp("valueY"))/cabbageABS(min-max);
         //Logger::writeToLog(String("Y:")+String(valueY));
-        ((CabbageXYController*)controls[idx])->xypad->setXYValues(valueX, valueY);
-		getFilter()->setParameter(idx, valueX);
-		getFilter()->setParameter(idx+1, valueY);
+        //((CabbageXYController*)controls[idx])->xypad->setXYValues(cAttr.getNumProp("valueX"), 
+		//															cAttr.getNumProp("valueY"));
+		getFilter()->setParameter(idx, cAttr.getNumProp("valueX"));
+		getFilter()->setParameter(idx+1, cAttr.getNumProp("valueY"));
 		
 		//add initial values to incomingValues array
 		if(!cAttr.getStringProp("name").contains("dummy")){
-		incomingValues.add(valueY);
-		incomingValues.add(valueX);
-		
+		incomingValues.add(cAttr.getNumProp("valueX"));
+		incomingValues.add(cAttr.getNumProp("valueY"));		
 		}
+		
+		
+//	getFilter()->getXYAutomater(getFilter()->getXYAutomaterSize()-1)->setXValue(cAttr.getNumProp("valueX"));
+//	getFilter()->getXYAutomater(getFilter()->getXYAutomaterSize()-1)->setYValue(cAttr.getNumProp("valueY"));		
+		
 #ifdef Cabbage_Build_Standalone 
         controls[idx]->setWantsKeyboardFocus(false);
 #endif
@@ -1667,8 +1684,6 @@ void CabbagePluginAudioProcessorEditor::InsertPVSViewer(CabbageGUIClass &cAttr)
 //+++++++++++++++++++++++++++++++++++++++++++
 void CabbagePluginAudioProcessorEditor::InsertTable(CabbageGUIClass &cAttr)
 {
-//I need to make this thread safe!! I can't do anything to the tables unless Csound is ready..
-//getFilter()->getCsound()->Stop();
 int tableSize=0;
 int tableNumber = cAttr.getNumProp("tableNum");
 StringArray colours;
@@ -1687,7 +1702,6 @@ Array<int> tableSizes;
 			}
 		}
 		else{
-		//dagerous to call this here, could cause crash....
         tableSize = getFilter()->getCsound()->TableLength(cAttr.getNumProp("tableNum"));
 		tableSizes.add(tableSize);
 		}
@@ -1769,7 +1783,7 @@ if(message.contains("Message sent from CabbageMainPanel")){
 	StringArray csdArray;
 	csdArray.clear();
 	String temp;
-
+	int endLine=0;
 	//break up lines in csd file into a string array
 	csdArray.addLines(getFilter()->getCsoundInputFileText());
 
@@ -1797,6 +1811,7 @@ if(message.contains("Message sent from CabbageMainPanel")){
 				csdArray.set(lineNumber, replaceIdentifier(csdArray[lineNumber], "bounds", getBoundsString(componentPanel->currentBounds)));
 
 				if(csdArray[lineNumber].contains("plant(\"")){
+					tempPlantText=csdArray[lineNumber]+"\n";
 					for(int y=1, off=0;y<componentPanel->childBounds.size()+1;y++){		
 					//stops things from getting messed up if there are line 
 					if((csdArray[lineNumber+y+off].length()<2) || csdArray[lineNumber+y+off].indexOf(";")==0){
@@ -1805,8 +1820,12 @@ if(message.contains("Message sent from CabbageMainPanel")){
 					}
 					temp =  replaceIdentifier(csdArray[lineNumber+y+off], "bounds", getBoundsString(componentPanel->childBounds[y-1]));
 					csdArray.set(lineNumber+y+off, temp);
+					//add last curly brace
+					endLine = lineNumber+y+off;
+					tempPlantText = tempPlantText+temp+"\n";
 					 //	csdArray.set(lineNumber+y, tempArray[y-1]);//.replace("bounds()", componentPanel->getCurrentChildBounds(y-1), true));
 					}
+					tempPlantText = tempPlantText+csdArray[endLine+1]+"\n";
 				}
 			
 				
@@ -1814,12 +1833,35 @@ if(message.contains("Message sent from CabbageMainPanel")){
 				getFilter()->setCurrentLineText(csdArray[lineNumber]);
 				getFilter()->setGuiEnabled(true);
 				getFilter()->sendActionMessage("GUI Update");
+				
+				
 
 		}//END OF MOUSE UP MESSAGE EVENT
 
+		if(message.contains("Message sent from CabbageMainPanel:delete:")){
+			    Logger::writeToLog(tempPlantText);
+				if(tempPlantText.length()>0){
+				temp = csdArray.joinIntoString("\n");
+				temp = temp.replace(tempPlantText, "");
+				Logger::writeToLog(temp);
+				getFilter()->updateCsoundFile(temp);		
+				tempPlantText="";
+				}
+				else{
+				csdArray.remove(lineNumber);	
+				getFilter()->updateCsoundFile(csdArray.joinIntoString("\n"));
+				}
+				
+				getFilter()->setGuiEnabled(true);
+				getFilter()->setCurrentLineText("");
+				getFilter()->sendActionMessage("GUI Updated, controls added");	
+				//reset temp plant text
+		
+			}
+
 		//doing this here because compoentLayoutManager doesn't know the csd file text...
-		if(message.length()>String("Message sent from CabbageMainPanel").length()){ //ADD TO REPOSITORY
-			String repoEntryName = message.substring(String("Message sent from CabbageMainPanel").length());
+		if(message.length()>String("Message sent from CabbageMainPanel:Panel:").length()){ //ADD TO REPOSITORY
+			String repoEntryName = message.substring(String("Message sent from CabbageMainPanel:Panel:").length());
 			String repoEntry = csdArray[lineNumber];
 			int cnt = 0;
 			//CabbageUtils::showMessage(repoEntryName);
@@ -1844,7 +1886,8 @@ if(message.contains("Message sent from CabbageMainPanel")){
 	#endif
 
 
-}//END OF TEST FOR MESSAGE SENT FROM CABBAGE MAIN PANEL
+}
+//END OF TEST FOR MESSAGE SENT FROM CABBAGE MAIN PANEL
 
 else{
 //this event recieves action messages from custom components. 
@@ -2074,6 +2117,9 @@ if(key.getTextDescription()=="ctrl + U")
 
 if(key.getTextDescription()=="ctrl + M")
 	getFilter()->sendActionMessage("MENU COMMAND: suspend audio");
+	
+if(key.getTextDescription()=="ctrl + E")
+	getFilter()->sendActionMessage("MENU COMMAND: toggle edit");	
 
 #ifndef Cabbage_No_Csound
 if(getFilter()->isGuiEnabled()){
@@ -2232,7 +2278,8 @@ for(int i=0;i<getFilter()->getGUILayoutCtrlsSize();i++){
         else if(getFilter()->getGUILayoutCtrls(i).getStringProp("type").containsIgnoreCase("table")){
 				int tableNumber = getFilter()->getGUILayoutCtrls(i).getNumProp("tableNum");
                 int numberOfTables = getFilter()->getGUILayoutCtrls(i).getNumberOfTableChannels();				
-				for(int y=0;y<getFilter()->getGUILayoutCtrls(i).getNumberOfTableChannels();y++){
+				for(int y=0;y<getFilter()->getGUILayoutCtrls(i).getNumberOfTableChannels();y++)
+					{
 				float val = getFilter()->getGUILayoutCtrls(i).getTableChannelValues(y);				
 								
                 if(val<0)

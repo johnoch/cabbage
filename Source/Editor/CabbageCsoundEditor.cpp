@@ -374,36 +374,49 @@ bool CsoundEditor::perform (const InvocationInfo& info)
 			String urlCabbage;
 			//showMessage(urlCsound.toString(false), lookAndFeel);
 			String OSXPath = File::getSpecialLocation(File::currentApplicationFile).getFullPathName()+"/Contents/Docs/";	
-			String WINPath = File::getSpecialLocation(File::currentApplicationFile).getParentDirectory().getFullPathName()+"/Docs/"; 
+			String normalPath = File::getSpecialLocation(File::currentApplicationFile).getParentDirectory().getFullPathName()+"/Docs/"; 
 	
 			if((opcode.trim()==String("rslider"))
 				||(opcode==String("hslider"))
 				||(opcode==String("vslider")))
 #ifndef MACOSX
-			urlCabbage = String(WINPath+"cabbage.html#_sliders");
+			urlCabbage = String(normalPath+"cabbage.html#x35");
 			else
-			urlCabbage = String(WINPath+"cabbage.html#_")+opcode.trim();				
+			urlCabbage = String(normalPath+"cabbage.html#_")+opcode.trim();				
 #else
-			urlCabbage = String(OSXPath+"cabbage.html#_sliders");
+			urlCabbage = String(OSXPath+"cabbage.html#x35");
 			else
 			urlCabbage = String(OSXPath+"cabbage.html#_")+opcode.trim();				
 #endif
 
-			//showMessage(urlCabbage);
-
+			ChildProcess process;
 			File temp1(urlCsound.toString(false));
 			if(temp1.exists()){
+			#ifdef LINUX	
+					if(!process.start("xdg-open "+urlCsound.toString(false).toUTF8())) CabbageUtils::showMessage("couldn't show file", this->lookAndFeel);
+			#else
 			htmlHelp->goToURL(urlCsound.toString(false));
 			tabComp->setCurrentTabIndex(1);
 			tabComp->setCurrentTabIndex(0);
 			tabComp->setCurrentTabIndex(1);
+			#endif
 			}
 			else{
+			#ifdef LINUX	
+				
+				URL urlLinux(urlCabbage);
+				Logger::writeToLog("xdg-open "+urlLinux.toString(false));
+					if(!process.start("xdg-open "+urlLinux.toString(false).toUTF8())) CabbageUtils::showMessage("couldn't show file", this->lookAndFeel);
+			#else
 				htmlHelp->goToURL(urlCabbage);
 				tabComp->setCurrentTabIndex(1);
 				tabComp->setCurrentTabIndex(0);
 				tabComp->setCurrentTabIndex(1);
+			#endif	
 				}
+		    
+		
+				
 			}
 			break;
 #endif

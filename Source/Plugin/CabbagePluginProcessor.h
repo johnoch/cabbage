@@ -343,6 +343,10 @@ public:
 			return xyAutomation.size();
 		}
 
+		void removeXYAutomaters(){
+			xyAutomation.clear();
+		}
+
 		bool silenceInProducesSilenceOut() const{
 			return true;
 			}

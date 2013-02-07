@@ -3,6 +3,7 @@
 
 ApplicationProperties* appProperties = nullptr;
 PropertySet* defaultPropSet = nullptr;
+String currentApplicationDirectory;
 
 
 class CabbageStandalone : public JUCEApplication
@@ -14,6 +15,9 @@ class CabbageStandalone : public JUCEApplication
 
           void initialise(const String& /*commandLineParameters*/)
           {
+			File thisFile(File::getSpecialLocation(File::currentExecutableFile));
+			currentApplicationDirectory =thisFile.getParentDirectory().getFullPathName();
+			//CabbageUtils::showMessage(currentApplicationDirectory);
 			PropertiesFile::Options options;
 			options.applicationName     = "Cabbage";
 			options.filenameSuffix      = "settings";
@@ -33,6 +37,7 @@ class CabbageStandalone : public JUCEApplication
 			defaultPropSet->setValue("DisablePluginInfo", 0);
 			defaultPropSet->setValue("AutoUpdate", 0);
 			defaultPropSet->setValue("UseCabbageIO", 1);
+			defaultPropSet->setValue("AudioEnabled", 1);
 			defaultPropSet->setValue("DisableGUIEditModeWarning", 0);
 			defaultPropSet->setValue("SetAlwaysOnTop", 1);	
 			defaultPropSet->setValue("PlantRepository", xml);

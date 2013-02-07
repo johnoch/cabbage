@@ -416,10 +416,14 @@ XYPad::XYPad(XYPadAutomation* xyPadAutomation, String title, int minXValue, int 
 																			int maxYValue, 
 																			int numberOfDecimalPlaces,
 																			Colour ballCol, 
-																			Colour fontCol)
+																			Colour fontCol,
+																			float initXVal,
+																			float initYVal)
 																			:
 																			title(title),
-																			decimalPlaces(numberOfDecimalPlaces)
+																			decimalPlaces(numberOfDecimalPlaces),
+																			initX(initXVal),
+																			initY(initYVal)
 																				
 {
 	// checking if xyPadAutomation is a valid object
@@ -453,6 +457,7 @@ XYPad::XYPad(XYPadAutomation* xyPadAutomation, String title, int minXValue, int 
 	// Canvas
 	canvas = new XYCanvas(ballColour, xMin, xMax, yMin, yMax);
 	canvasBackground = new XYCanvasBackground();
+	
 
 	// Value displays
 	for (int i=0; i<2; i++) {
@@ -476,6 +481,10 @@ XYPad::XYPad(XYPadAutomation* xyPadAutomation, String title, int minXValue, int 
 	if (decimalPlaces < 0)
 		decimalPlaces = 0; 
 	format << "%." << decimalPlaces << "f";
+	
+	//create basic look and feel
+	lookAndFeelBasic = new CabbageLookAndFeelBasic();
+	
 }
 
 XYPad::~XYPad()
@@ -530,8 +539,7 @@ void XYPad::resized()
 	speedSlider->addListener(this);
 	speedSlider->addMouseListener(this, false);
 	speedSlider->setAlpha(0.1);
-
-	lookAndFeelBasic = new CabbageLookAndFeelBasic();
+	
 	speedSlider->setLookAndFeel(lookAndFeelBasic); //setting look and feel for slider
 
 	//if the plugin is already automating from a previous instance then we need to reset certain things 
@@ -547,11 +555,11 @@ void XYPad::resized()
 	else if (xyPadAutomation->getCreationCounter() == 1) { //else if this is the first time being initialised
 		xyPadAutomation->setBoundsForAutomation (canvas->getBounds());
 		xyPadAutomation->setMinMaxValues (xMin, xMax, yMin, yMax);
-	}
-
+	}	
+	
 	//setting ball position from x and y output values, this means the pad will open with the current x and y values
-	canvas->setBallPositionFromXYValues (xyPadAutomation->getXValue(), xyPadAutomation->getYValue());
-	displayXYValues(xyPadAutomation->getXValue(), xyPadAutomation->getYValue());
+	canvas->setBallPositionFromXYValues (initX, initY);
+	displayXYValues(initX, initY);		
 	
 }
 

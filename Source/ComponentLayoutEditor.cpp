@@ -187,6 +187,7 @@ void ChildAlias::mouseDown (const MouseEvent& e)
 	if(e.mods.isRightButtonDown()){
 		PopupMenu m;
 		m.setLookAndFeel(&getParentComponent()->getLookAndFeel());
+		m.addItem(2, "Delete");
 		m.addItem(1, "Add to repository");
 		int choice = m.show();
 		if(choice==1){
@@ -220,13 +221,17 @@ void ChildAlias::mouseDown (const MouseEvent& e)
 				if(clashingNames==true){
 					result = CabbageUtils::showYesNoMessage("Do you wish to overwrite the existing plant?", &getLookAndFeel());	
 					if(result == 0)
-					((CabbageMainPanel*)(getTarget()->getParentComponent()))->sendActionMessage("Message sent from CabbageMainPanel"+alert.getTextEditorContents("textEditor"));
+					((CabbageMainPanel*)(getTarget()->getParentComponent()))->sendActionMessage("Message sent from CabbageMainPanel:Plant:"+alert.getTextEditorContents("textEditor"));
 					else
 						showMessage("Nothing written to repository", &getLookAndFeel());
 				}
-				else ((CabbageMainPanel*)(getTarget()->getParentComponent()))->sendActionMessage("Message sent from CabbageMainPanel"+alert.getTextEditorContents("textEditor"));
+				else ((CabbageMainPanel*)(getTarget()->getParentComponent()))->sendActionMessage("Message sent from CabbageMainPanel:Plant:"+alert.getTextEditorContents("textEditor"));
 
 		}
+		else if(choice==2){
+			((CabbageMainPanel*)(getTarget()->getParentComponent()))->sendActionMessage("Message sent from CabbageMainPanel:delete:");
+			}
+		
 		}
 #endif
 

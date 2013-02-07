@@ -77,11 +77,11 @@ public:
                                 int totalNumOutputChannels,
                                 int numSamples);
     /** @internal */
-    void audioDeviceAboutToStart (AudioIODevice* device);
+    void audioDeviceAboutToStart (AudioIODevice*);
     /** @internal */
     void audioDeviceStopped();
     /** @internal */
-    void handleIncomingMidiMessage (MidiInput* source, const MidiMessage& message);
+    void handleIncomingMidiMessage (MidiInput*, const MidiMessage&);
 
 private:
     //==============================================================================
@@ -92,13 +92,13 @@ private:
     bool isPrepared;
 
     int numInputChans, numOutputChans;
-    float* channels [128];
+    HeapBlock<float*> channels;
     AudioSampleBuffer tempBuffer;
 
     MidiBuffer incomingMidi;
     MidiMessageCollector messageCollector;
 
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (AudioProcessorPlayer);
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (AudioProcessorPlayer)
 };
 
 

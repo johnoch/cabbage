@@ -3,9 +3,9 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
 <meta http-equiv="Content-Type" content="application/xhtml+xml; charset=UTF-8" />
-<meta name="generator" content="AsciiDoc 8.6.7" />
+<meta name="generator" content="AsciiDoc 8.6.8" />
 <title><span class="image">
-<img src="hlogo_blue_text.png" alt="Cabbage" />
+<img src="images/hlogo_blue_text.PNG" alt="Cabbage" />
 </span></title>
 <style type="text/css">
 /* Shared CSS for AsciiDoc xhtml11 and html5 backends */
@@ -546,6 +546,8 @@ body.manpage div.sectionbody {
 @media print {
   body.manpage div#toc { display: none; }
 }
+
+
 </style>
 <script type="text/javascript">
 /*<![CDATA[*/
@@ -745,7 +747,7 @@ asciidoc.install(2);
 <body class="book">
 <div id="header">
 <h1><span class="image">
-<img src="hlogo_blue_text.png" alt="Cabbage" />
+<img src="images/hlogo_blue_text.PNG" alt="Cabbage" />
 </span></h1>
 <div id="toc">
   <div id="toctitle">Table of Contents</div>
@@ -754,106 +756,153 @@ asciidoc.install(2);
 </div>
 <div id="content">
 <div class="sect1">
-<h2 id="_introduction">Introduction</h2>
+<h2 id="x1">Introduction</h2>
 <div class="sectionbody">
-<div class="paragraph"><p>Cabbage is a software for prototyping and developing audio plugins with the Csound audio synthesis language. It provides Csound programmers with a simple albeit powerful toolkit for the development of cross-platform audio software. Pre-built binaries for Microsoft Windows and Apple OSX(Built on 10.6) are available from the <a href="http://code.google.com/p/cabbage">Cabbage google code homepage.</a></p></div>
-<div class="paragraph"><p>This document will take you through the basics of using Cabbage. It starts with a look at features provided by the host and then moves on to some simple examples. The text concludes with a reference section for the various GUI controls available in Cabbage. It&#8217;s assumed that the reader has some prior knowledge of Csound.</p></div>
+<div class="paragraph"><p>Cabbage is a software for prototyping and developing audio plugins with the Csound audio synthesis language. It provides Csound programmers with a simple albeit powerful toolkit for the development of cross-platform audio software. This document will take you through the basics of using Cabbage. It starts with a look at features provided by the run-time player, or standalone host, and then moves on to some simple examples. The text concludes with a reference section for the various GUI controls available in Cabbage. It&#8217;s assumed that the reader has some prior knowledge of Csound.</p></div>
 <div class="paragraph"><p>In order to use Cabbage you MUST have Csound installed.</p></div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_the_cabbage_standalone_player">The Cabbage standalone player</h2>
+<h2 id="x2">The Cabbage standalone player</h2>
 <div class="sectionbody">
 <div class="paragraph"><p><span class="image">
-<img src="CabbageStandaloneHost.png" alt="Cabbage" />
+<img src="images/CabbageStandaloneHost.PNG" alt="Cabbage" />
 </span></p></div>
 <div class="paragraph"><p>Most prototyping will be done in the Cabbage standalone host. This host lets you load and perform Cabbage instruments, as seen in the screenshot above. Clicking on the options button will give you access to the following commands:</p></div>
 <div class="sect2">
-<h3 id="_open_cabbage_instrument">Open Cabbage Instrument</h3>
-<div class="paragraph"><p>Use this command to open a cabbage instrument(Unified Csound file with a dedicated &lt;Cabbage&gt;&lt;/Cabbage&gt; section). You may open any .csd file you wish and add a Cabbage section yourself once it&#8217;s open. If opening existing Csound instrument you will need to use the <em>-n</em> command line options to tell Csound not to open any audio devices, as these are handled directly by Cabbage.</p></div>
+<h3 id="x3">Open Cabbage Instrument</h3>
+<div class="paragraph"><p>Use this command to open a cabbage instrument(unified Csound file with a dedicated &lt;Cabbage&gt;&lt;/Cabbage&gt; section). You may open any .csd file you wish and add a Cabbage section yourself once it&#8217;s open. If opening an existing Csound instrument you may need to turn off Cabbage audio IO in the preferences, otherwise you may have a situation where both Csound and Cabbage are trying to access the computers audio drivers.</p></div>
 <div class="admonitionblock">
 <table><tr>
 <td class="icon">
-<img src="smallLogo.png" alt="Note" />
+<img src="images/smallLogo.PNG" alt="Note" />
 </td>
-<td class="content">On OSX users can open .csd files contained within plugins. Just select a .vst file instaed of a .csd file when opening. See the sections on exporting plugins for more information.</td>
+<td class="content">On OSX users can open .csd files contained within plugins. Just select a .vst file instead of a .csd file when opening. See the sections on exporting plugins for more information.</td>
 </tr></table>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_new_cabbage_8230">New Cabbage&#8230;</h3>
+<h3 id="x4">New Cabbage&#8230;</h3>
 <div class="paragraph"><p>This command will help you create a new Cabbage instrument/effect. Cabbage instruments are synthesisers capable of creating sounds from scratch while effects process incoming audio. Effects can access the incoming audio by using the <em>inch</em> or <em>ins</em> opcodes. All effects have stereo inputs and stereo outputs. Instruments can access the incoming MIDI data in a host of different ways but the easiest is to pipe the MIDI data directly to instrument p-fields using the MIDI inter-op command line flags. Examples can be found in the examples folder.</p></div>
-<div class="paragraph"><p>The <em>ctrl7</em> opcode doesn&#8217;t currently work so you should avoid using it in your instruments. <em>ctrl7</em> will be available in future versions</p></div>
+<div class="paragraph"><p>The <em>ctrl7</em> opcode doesn&#8217;t currently work in Cabbage due to some issues with CC messages in the incoming MIDI stream. You can however use ctrl7 in standalone mode if you disable Cabbage IO and use Csound IO instead.</p></div>
 </div>
 <div class="sect2">
-<h3 id="_view_source_editor">View Source Editor</h3>
+<h3 id="x5">View Source Editor</h3>
 <div class="paragraph"><p>This command will launch the integrated text editor. The text editor will always contain the text which corresponds to the instrument that is currently open. Each time a file is saved in the editor(Ctrl+S), Cabbage will automatically recompile the underlying Csound instrument and update any changes that have been made to the instruments GUI. The editor also features a Csound message console that can prove useful when debugging instruments.</p></div>
 </div>
 <div class="sect2">
-<h3 id="_audio_settings">Audio Settings</h3>
-<div class="paragraph"><p>Clicking on the audio settings command will open the audio settings window. Here you can choose your audio/MIDI input/output devices. You can also select the sampling rate and audio buffer sizes. Small buffer sizes will reduce latency but might cause some clicks in the audio. Keep testing buffer sizes until you find a setting that works best for your PC.</p></div>
+<h3 id="x6">Audio Settings</h3>
+<div class="paragraph"><p>Clicking on the audio settings command will open the audio settings window. Here you can choose your audio/MIDI input/output devices. You can also select the sampling rate and audio buffer sizes. Small buffer sizes will reduce latency but might cause some clicks in the audio. A buffer size of 64 seems to work very well on Linux systems, but keep testing sizes until you find a setting that works best for your PC.</p></div>
 <div class="admonitionblock">
 <table><tr>
 <td class="icon">
-<img src="smallLogo.png" alt="Note" />
+<img src="images/smallLogo.PNG" alt="Note" />
 </td>
-<td class="content">Cabbage hosts Csound instruments. It uses its own audio IO callbacks which will override any IO settings specified in the &lt;CsOptions&gt; sections of your Csound file.</td>
+<td class="content">If Cabbage is using its own audio IO, which it does be default, be sure to use -n in the &lt;CsOptions&gt; sections of your Csound file. This tells Csound not to open any audio devices.</td>
 </tr></table>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_export_8230">Export&#8230;</h3>
-<div class="paragraph"><p>This command will export your Cabbage instrument as a plugin. Clicking <em>synth</em> or <em>plugin</em> will cause Cabbage to create a plugin file(with a .dll file extension) into the same directory as the csd file you are using. When <em>exporting as</em> Cabbage will prompt you to save your plugin in a set location, under a specific name. Once Cabbage has created the plugin it will make a copy of the current .csd file and locate it in the same folder as the plugin. This new .csd file will have the same name as the plugin and should ALWAYS be in the same directory as the plugin.</p></div>
+<h3 id="x7">Toggle edit-mode</h3>
+<div class="paragraph"><p>This is a new and somewhat experimental feature that allows you to design GUIs using the mouse. When in edit-mode, right clicking the instrument GUI will display a context menu that will let you select controls to insert into the GUI. When a control is placed into your GUI the corresponding code will be inserted into your csd file. Any changes you make to the control&#8217;s size and position will automatically be updated in your code.</p></div>
+</div>
+<div class="sect2">
+<h3 id="x8">Export/Export as&#8230;</h3>
+<div class="paragraph"><p>This command will export your Cabbage instrument as a plugin. Clicking <em>synth</em> or <em>effect</em> will cause Cabbage to create a plugin file in the same directory as the .csd file you are currently using. When <em>exporting as&#8230;</em> Cabbage will prompt you to save your plugin in a set location, under a specific name. Once Cabbage has created the plugin it will make a copy of the current .csd file and locate it in the same folder as the plugin. This new .csd file will have the same name as the plugin and should ALWAYS be in the same directory as the plugin file.</p></div>
 <div class="admonitionblock">
 <table><tr>
 <td class="icon">
-<img src="smallLogo.png" alt="Note" />
+<img src="images/smallLogo.PNG" alt="Note" />
 </td>
-<td class="content">You do not need to keep exporting instruments as plugins every time you modify them. You need only modify the associated source code. To simplify this task, Cabbage will automatically load the associated .csd file whenever you export as a plugin. On OSX you Cabbage can open a plugin&#8217;s .csd file directly be selecting the pluing when prompted to select a file to open.</td>
+<td class="content">You do not need to keep exporting instruments as plugins every time you modify them. You need only modify the associated .csd file. To simplify this task, Cabbage will automatically load the associated .csd file whenever you export as a plugin. On OSX you Cabbage can open a plugin&#8217;s .csd file directly be selecting the plugin when prompted to select a file to open.</td>
 </tr></table>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_always_on_top">Always on Top</h3>
-<div class="paragraph"><p>This command lets you toggle <em>Always on top</em> mode. By default it is turned on. This means your Cabbage instrument will always appear on top of any other applications that are currently open.</p></div>
+<h3 id="x9">Rebuild Instrument</h3>
+<div class="paragraph"><p>This command will reset and rebuild the instrument. All sounds will be lost as Csound will be told to recompile the .csd file. This is what happens each time you hit Ctrl+s from the code editor.</p></div>
 </div>
 <div class="sect2">
-<h3 id="_update_instrument">Update Instrument</h3>
-<div class="paragraph"><p>This command updates Cabbage. This is most useful if you decide to use another editor rather the one provided. Just remember to save any changes made to your Cabbage instrument before hitting update.</p></div>
+<h3 id="x10">Rebuild GUI</h3>
+<div class="paragraph"><p>This command will update the instrument&#8217;s GUI, but will not recompile Csound. This command is called each time you press Ctrl+u from the code editor.</p></div>
 </div>
 <div class="sect2">
-<h3 id="_batch_convert">Batch Convert</h3>
+<h3 id="x11">Batch Convert</h3>
 <div class="paragraph"><p>This command will let you convert a selection of Cabbage .csd files into plugins so you don&#8217;t have to manually open and export each one.</p></div>
 <div class="admonitionblock">
 <table><tr>
 <td class="icon">
-<img src="smallLogo.png" alt="Note" />
+<img src="images/smallLogo.PNG" alt="Note" />
 </td>
 <td class="content">Currently this feature is only available on Windows.</td>
 </tr></table>
 </div>
 </div>
+<div class="sect2">
+<h3 id="x12">Preferences</h3>
+<div class="paragraph"><p>The following preferences are available:</p></div>
+<div class="sect3">
+<h4 id="x13">Always on Top</h4>
+<div class="paragraph"><p>This command lets you toggle <em>Always on top</em> mode. By default it is turned on. This means your Cabbage instrument will always appear on top of any other applications that are currently open.</p></div>
 </div>
+<div class="sect3">
+<h4 id="x14">Set Cabbage plant directory</h4>
+<div class="paragraph"><p>This will open a directory browser dialog so that you can specify a set directory for saving Cabbage plant text files to. The default location for these files will be the user&#8217;s home folder and should be left as is unless a unique location is absolutely required.</p></div>
 </div>
-<div class="sect1">
-<h2 id="X1">Your first Cabbage instruments</h2>
-<div class="sectionbody">
-<div class="paragraph"><p>The following section illustrates the steps involved in building a simple Cabbage instrument. It&#8217;s assumed that the user has some prior knowledge of Csound. For a list of Csound tutorials and resources please visit the <a href="http://www.csounds.com">Csound Homepage</a>. When creating a Cabbage patch users must provide special xml-style tags at the top of a unified Csound file. The Cabbage specific code should be placed between an opening &lt;Cabbage&gt; and a closing &lt;/Cabbage&gt; tag. You can create a new instrument by using the <em>New Cabbage Instrument</em> menu command. Select either a synth or an effect and Cabbage will automatically generate a basic template for you to work with.</p></div>
-<div class="paragraph"><p>Each line of Cabbage specific code relates to one GUI control only. Lines must start with the type of GUI control you wish to use, i.e, vslider, button, xypad, etc. Users then add identifiers to indicate how the control will look and behave. All parameters passed to identifiers are either strings denoted with double quotes or numerical values. Information on different identifiers and their parameters is given below in the reference section. Long lines can be broken up with a <em>\</em> placed at the end of a line.</p></div>
+<div class="sect3">
+<h4 id="x15">Set Csound manual directory</h4>
+<div class="paragraph"><p>This will open a directory browser dialog so that you can specify the directory that contains Csound&#8217;s index.html file.</p></div>
 <div class="admonitionblock">
 <table><tr>
 <td class="icon">
-<img src="smallLogo.png" alt="Note" />
+<img src="images/smallLogo.PNG" alt="Note" />
+</td>
+<td class="content">In-line help is only available on Windows and OSX.</td>
+</tr></table>
+</div>
+</div>
+<div class="sect3">
+<h4 id="x16">Disable plugin export info</h4>
+<div class="paragraph"><p>Checking this will disable the plugin export information that pops up on screen each time you export a plugin.</p></div>
+</div>
+<div class="sect3">
+<h4 id="x17">Auto update</h4>
+<div class="paragraph"><p>Checking this will cause Cabbage to continuously check whether changes have been made to the file it has open. If you wish to use a different source code editor with Cabbage than the one provided, you can check this option. Whenever you save changes to the .csd file that Cabbage currently has open, Cabbage will automatically update according to the changes made. Although it&#8217;s not as quick as the integrated editor, it does give you scope to use some feature rich source code editors with Cabbage.</p></div>
+</div>
+<div class="sect3">
+<h4 id="x18">Disable GUI edit-mode warning</h4>
+<div class="paragraph"><p>Checking this will disable the GUI edit-mode warning.</p></div>
+</div>
+<div class="sect3">
+<h4 id="x19">Use Cabbage IO</h4>
+<div class="paragraph"><p>This will turn on or off Cabbage audio and MIDI input/output and is only applicable to standalone instruments. When Cabbage IO is turned off Cabbage will let Csound take control of the audio and MIDI IO. This means that users will need to use standard Csound IO flags in the &lt;CsOptions&gt; section of their .csd file.</p></div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="X20">Your first Cabbage instruments</h2>
+<div class="sectionbody">
+<div class="paragraph"><p>The following section illustrates the steps involved in building a simple Cabbage instrument. It&#8217;s assumed that the user has some prior knowledge of Csound. For a list of Csound tutorials and resources please visit the <a href="http://www.csounds.com">Csound Homepage</a>. Each Cabbage instrument is defined in a simple Csound text file. The syntax used to create GUI controls is quite straightforward and should be provided within special xml-style tags &lt;Cabbage&gt; and &lt;/Cabbage&gt; which can appear either above or below Csound&#8217;s own &lt;CsoundSynthesizer&gt; tags. Each line of Cabbage specific code relates to one GUI control only. The attributes of each control are set using different identifiers such as colour(), channel(), size() etc. Where identifiers are not used, Cabbage will use the default values. Long lines can be broken up with a <em>\</em> placed at the end of a line.</p></div>
+<div class="paragraph"><p>Each and every Cabbage widget has 4 common parameters: position on screen(x, y) and size(width, height). Apart from position and size all other parameters are optional and if left out default values will be assigned. To set control parameters you will need to use an appropriate identifier after the control name. In the following example, <em>form</em> is the Cabbage specific control, while size() and caption() are two identifiers used to control it how it appears.</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><code>control size(400, 400), caption(“Hello World”)</code></pre>
+</div></div>
+<div class="admonitionblock">
+<table><tr>
+<td class="icon">
+<img src="images/smallLogo.PNG" alt="Note" />
 </td>
 <td class="content">This section does not go into details about each Cabbage control, nor does it show all available identifiers. Details about the various Cabbage controls can be found in reference section below.</td>
 </tr></table>
 </div>
 <div class="sect2">
-<h3 id="_a_basic_cabbage_synthesiser">A basic Cabbage synthesiser</h3>
-<div class="paragraph"><p>Code to create the most basic of Cabbage synthesisers is presented below. This instrument uses the MIDI interop command line flags to pipe MIDI data directly to p-fields in instrument 1. In this case all MIDI pitch data is sent directly to p4, and all MIDI amplitude data is sent to p5. MIDI data been sent on channel 1 will cause instrument 1 to play. Data being sent on channel 2 will cause instrument 2 to play. It has been reported that the <em>massign</em> opcode does not work as expected with Cabbage. This is currently under investigation.</p></div>
+<h3 id="x21">A basic Cabbage synthesiser</h3>
+<div class="paragraph"><p>Code to create the most basic of Cabbage synthesisers is presented below. This instrument uses the MIDI interop command line flags to pipe MIDI data directly to p-fields in instrument 1. In this case all MIDI pitch data is sent directly to p4, and all MIDI amplitude data is sent to p5. MIDI data being sent on channel 1 will cause instrument 1 to play. Data being sent on channel 2 will cause instrument 2 to play. If you wish to assign an instrument to a unique MIDI channel you can use the <em>massign</em> opcode.</p></div>
 <div class="listingblock">
 <div class="content">
-<pre><tt>&lt;Cabbage&gt;
+<pre><code>&lt;Cabbage&gt;
 form size(400, 120), caption("Simple Synth"), pluginID("plu1")
 keyboard bounds(0, 0, 380, 100)
 &lt;/Cabbage&gt;
@@ -878,29 +927,29 @@ endin
 f1 0 1024 10 1
 f0 3600
 &lt;/CsScore&gt;
-&lt;/CsoundSynthesizer&gt;</tt></pre>
+&lt;/CsoundSynthesizer&gt;</code></pre>
 </div></div>
 <div class="admonitionblock">
 <table><tr>
 <td class="icon">
-<img src="smallLogo.png" alt="Note" />
+<img src="images/smallLogo.PNG" alt="Note" />
 </td>
-<td class="content">You&#8217;ll notice that a <em>-n</em> and <em>-d</em> are passed to Csound in the CsOptions section. -n stops Csound from writing audio to disk. This must be used as Cabbage manages its own audio IO callbacks. The <em>-d</em> prevents any FLTK widgets from displaying. You will also notice that our instrument is stereo. All Cabbage instruments are stereo.</td>
+<td class="content">You&#8217;ll notice that a <em>-n</em> and <em>-d</em> are passed to Csound in the CsOptions section. -n stops Csound from writing audio to disk. This must be used when building plugin as Cabbage manages its own audio IO callbacks in plugin mode. The <em>-d</em> prevents any FLTK widgets from displaying. You will also notice that our instrument is stereo. All Cabbage instruments are stereo.</td>
 </tr></table>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_controlling_your_cabbage_patch">Controlling your Cabbage patch</h3>
+<h3 id="x22">Controlling your Cabbage patch</h3>
 <div class="paragraph"><p>The most obvious limitation to the above instrument is that users cannot interact with the underlying Csound instrument. In order to do this we can use a Csound channel opcode and a Cabbage control such as a slider. Any control wishing to interact with Csound must have a channel identifier.</p></div>
 <div class="paragraph"><p>When one supplies a channel name to the channel() identifier Csound will listen for data being sent on that channel through the use of the named channel opcodes. There are a few ways of retrieving data from the named channel bus in Csound, the most straightforward one being the chnget opcode. It&#8217;s defined in the Csound reference manual as:</p></div>
 <div class="listingblock">
 <div class="content">
-<pre><tt>kval chnget Sname</tt></pre>
+<pre><code>kval chnget Sname</code></pre>
 </div></div>
 <div class="paragraph"><p><em>Sname</em> is the name of the channel. This same name must be passed to the <em>channel()</em> identifier in the corresponding &lt;Cabbage&gt; section. Our previous example can be modified so that a slider now controls the volume of our oscillator.</p></div>
 <div class="listingblock">
 <div class="content">
-<pre><tt>&lt;Cabbage&gt;
+<pre><code>&lt;Cabbage&gt;
 form size(400, 170), caption("Simple Synth"), pluginID("plu1")
 hslider bounds(0, 110, 380, 50), channel("gain"), range(0, 1, .5), textBox(1)
 keyboard bounds(0, 0, 380, 100)
@@ -927,19 +976,19 @@ endin
 f1 0 1024 10 1
 f0 3600
 &lt;/CsScore&gt;
-&lt;/CsoundSynthesizer&gt;</tt></pre>
+&lt;/CsoundSynthesizer&gt;</code></pre>
 </div></div>
-<div class="paragraph"><p>In the example above we use a <em>hslider</em> control which is a horizontal slider. The bounds() identifier sets up the position and size of the widget. The most important identifier is channel("gain"). It is passed a string called <em>gain". This is the same string we pass to 'chnget</em> in our Csound code. When a user moves the slider, the current position of the slider is sent to Csound on a channel named "gain". Without the channel() identifier no communication would take place between the Cabbage control and Csound. The above example also uses a MIDI keyboard that can be used en lieu of a real MIDI keyboard.</p></div>
+<div class="paragraph"><p>In the example above we use a <em>hslider</em> control which is a horizontal slider. The bounds() identifier sets up the position and size of the widget on screen. The most important identifier is channel(). It is passed a string called <em>gain". This is the same string we pass to 'chnget</em> in our Csound code. When a user moves the slider, the current position of the slider is sent to Csound on a channel named "gain". Without the channel() identifier no communication would take place between the Cabbage control and Csound. The above example also uses a MIDI keyboard that can be used en lieu of a real MIDI keyboard.</p></div>
 <div class="paragraph"><p><span class="image">
-<img src="simpleSynth.png" alt="Cabbage" />
+<img src="images/simpleSynth.PNG" alt="Cabbage" />
 </span></p></div>
 </div>
 <div class="sect2">
-<h3 id="_a_basic_cabbage_effect">A basic Cabbage effect</h3>
+<h3 id="x23">A basic Cabbage effect</h3>
 <div class="paragraph"><p>Cabbage effects are used to process incoming audio. To do this we make use of the signal input opcodes. One can use either <em>ins</em> or <em>inch</em>. The following code is for a simple reverb unit. It accepts a stereo input and outputs a stereo signal.</p></div>
 <div class="listingblock">
 <div class="content">
-<pre><tt>&lt;Cabbage&gt;
+<pre><code>&lt;Cabbage&gt;
 form caption("Reverb") size(230, 130)
 groupbox text("Stereo Reverb"), bounds(0, 0, 200, 100)
 rslider channel("size"), bounds(10, 25, 70, 70), text("Size"), range(0, 2, 0.2)
@@ -970,64 +1019,63 @@ endin
 f1 0 4096 10 1
 i1 0 1000
 &lt;/CsScore&gt;
-&lt;/CsoundSynthesizer&gt;</tt></pre>
+&lt;/CsoundSynthesizer&gt;</code></pre>
 </div></div>
-<div class="paragraph"><p>The above instrument uses 3 sliders to control the reverb size, the cut-off frequency for the internal low-pass filters set up on the different delay lines, and overall gain. The range() identifier is used with each slider to specify the min, max and starting value of the sliders.</p></div>
+<div class="paragraph"><p>The above instrument uses 3 sliders to control the reverb size, the cut-off frequency (for the internal low-pass filters set up on the different delay lines), and overall gain. The range() identifier is used with each slider to specify the min, max and starting value of the sliders.</p></div>
 <div class="paragraph"><p><span class="image">
-<img src="simpleReverb.png" alt="reverb" />
+<img src="images/simpleReverb.PNG" alt="reverb" />
 </span></p></div>
 <div class="admonitionblock">
 <table><tr>
 <td class="icon">
-<img src="smallLogo.png" alt="Note" />
+<img src="images/smallLogo.PNG" alt="Note" />
 </td>
 <td class="content">If you compare the two score sections in the above instruments you&#8217;ll notice that the synth instrument doesn&#8217;t use any i-statement. Instead it uses an <em>f0 3600</em>. This tells Csound to wait for 3600 seconds before exiting. Because the instrument is to be controlled via MIDI we don&#8217;t need to use an i-statement in the score. In the other example we use an i-statement with a long duration so that the effect runs without stopping for a long time.</td>
 </tr></table>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_exporting_your_instruments_as_plugins">Exporting your instruments as plugins</h3>
-<div class="paragraph"><p>Once you have created your instruments you will need to export them as plugins if you want them to be seen by other hosts. When you export in Cabbage it will create a plugin file that will have the same name as the csd file you are currently working on. In your plugin host you will need to add the directory that contains your Cabbage plugins and csd files.</p></div>
+<h3 id="x24">Exporting your instruments as plugins</h3>
+<div class="paragraph"><p>Once you have created your instruments you will need to export them as plugins if you want them to be seen by other hosts. When you export an instrument through Cabbage it will create a plugin file that will have the same name as the .csd file you are currently working on. In your plugin host you will need to add the directory that contains your Cabbage plugins and csd files.</p></div>
 <div class="admonitionblock">
 <table><tr>
 <td class="icon">
-<img src="smallLogo.png" alt="Note" />
+<img src="images/smallLogo.PNG" alt="Note" />
 </td>
-<td class="content">In order to make future changes to the instrument you only need to edit the associated .csd file. For instance you have a plugin called "SavageCabbage.dll" and you wish to make some chages you only have to edit the corresponding "SavageCabbage.csd" file. In order to see the changes in your plugin host you will need to delete and reinstate the plugin from the track. Once you remove and add the plugin it will show the new changes.</td>
+<td class="content">In order to make future changes to the instrument you only need to edit the associated .csd file. For instance, on windows you might have a plugin called "SavageCabbage.dll". If you wish to make some chages you only have to edit the corresponding "SavageCabbage.csd" file. In order to see the changes in your plugin host you will need to delete and reinstate the plugin from the track. Once you remove and add the plugin it will show the new changes.</td>
 </tr></table>
 </div>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_cabbage_reference">Cabbage Reference</h2>
+<h2 id="25">Cabbage Reference</h2>
 <div class="sectionbody">
-<div class="paragraph"><p>Each and every Cabbage control has a numbers of possible identifiers that can be used to tell Cabbage how it will look and behave. All parameters except <em>pos()</em> have default values so they are optional and don&#8217;t have to be set. In the reference tables below any identifiers enclosed in square brackets are optional.</p></div>
-<div class="paragraph"><p>As pos() and size() are the next most useful identifiers they can be set in one go using the bounds() identifier:</p></div>
-<div class="paragraph"><p><em>bounds(x, y, width, height)</em>: integer values that set position and size on screen(in pixels). If widget is part of a plant these values should be between 0 and 1. See PLANTS</p></div>
-<div class="paragraph"><p>Below is a list of the different GUI controls currently available in Cabbage. Controls can be split into two groups, interactive controls and non-interactive controls. The non-interactive controls such as group boxes and images don&#8217;t interact in any way with either Csound or plugin hosts. The interactive controls such as sliders and buttons do interact with Csound. Each interactive control that one inserts into a Cabbage instrument will be accessible in a plugin host if the instrument has been exported as a plugin. The name that appears beside each native slider in the plugin host will be the assigned channel name for that control.</p></div>
+<div class="paragraph"><p>Cabbage controls can be split into two groups, interactive controls and non-interactive controls. The non-interactive controls such as group boxes and images don&#8217;t interact in any way with either Csound or plugin hosts. The interactive controls such as sliders and buttons do interact with Csound. Each interactive control that one inserts into a Cabbage instrument will be accessible in a plugin host if the instrument has been exported as a plugin. The name that appears beside each native slider in the plugin host will be the assigned channel name for that control.</p></div>
+<div class="paragraph"><p>As mentioned previously, each Cabbage control has a corresponding set of identifiers that can be set to control it&#8217;s appearance and behaviour. Not all controls support the same identifiers however. For example, a groupbox will never need to have a channel assigned to it because it&#8217;s a static control. Likewise buttons don&#8217;t need to use the range() identifier. Parameters within quotation marks represent string values, while those without represent floating point decimals, or integer values. Below is a detailed overview of each control available in Cabbage, and the corresponding identifiers that can be used with it. Parameters within quotation marks represent string values, while those without represent floating point decimals, or integer values.</p></div>
 <div class="admonitionblock">
 <table><tr>
 <td class="icon">
-<img src="smallLogo.png" alt="Note" />
+<img src="images/smallLogo.PNG" alt="Note" />
 </td>
 <td class="content">In order to save space in the following reference section <em>bounds()</em> will be used instead of <em>pos()</em> and <em>size()</em> wherever applicable.</td>
 </tr></table>
 </div>
 <div class="sect2">
-<h3 id="_form">Form</h3>
+<h3 id="x26">Form</h3>
 <div class="listingblock">
 <div class="content">
-<pre><tt>form caption("title"), size(Width, Height), pluginID("plug")</tt></pre>
+<pre><code>form caption("title"), size(Width, Height), pluginID("plug"), colour("colour")</code></pre>
 </div></div>
 <div class="paragraph"><p>Form creates the main application window. pluginID() is the only required identifier. The default values for size are 600x300.</p></div>
-<div class="paragraph"><p><tt>caption</tt>: The string passed to caption will be the string that appears on the main application window.</p></div>
-<div class="paragraph"><p><tt>size(Width, Height)</tt>: integer values denoted the width and height of the form.</p></div>
-<div class="paragraph"><p><tt>pluginID("plug")</tt>: this unique string must be four characters long. It is the ID given to your plugin when loaded by plugin hosts.</p></div>
+<div class="paragraph"><p><code>caption</code>: The string passed to caption will be the string that appears on the main application window.</p></div>
+<div class="paragraph"><p><code>size(Width, Height)</code>: integer values denoted the width and height of the form.</p></div>
+<div class="paragraph"><p><code>pluginID("plug")</code>: this unique string must be four characters long. It is the ID given to your plugin when loaded by plugin hosts.</p></div>
+<div class="paragraph"><p><em>colour("colour")</em>: This sets the background colour of the instrument. Any CSS or HTML colour string can be passed to this identifier. The colour identifier can also be passed an RBG, or RGBA value. All channel values must be between 0 and 255. For instance colour(0, 0, 255) will create blue, while colour(0, 255, 0, 255) will create a green with an alpha channel set to full.</p></div>
 <div class="admonitionblock">
 <table><tr>
 <td class="icon">
-<img src="smallLogo.png" alt="Note" />
+<img src="images/smallLogo.PNG" alt="Note" />
 </td>
 <td class="content">Every plugin must have a unique pluginID. If two plugins share the same ID there could be problems when trying to load them simultaneously into a plugin host.</td>
 </tr></table>
@@ -1035,15 +1083,14 @@ i1 0 1000
 <div class="paragraph"><p>Example:</p></div>
 <div class="listingblock">
 <div class="content">
-<pre><tt>form  caption("Simple Synth"), pluginID("plu1")</tt></pre>
+<pre><code>form  caption("Simple Synth"), pluginID("plu1")</code></pre>
 </div></div>
 </div>
 <div class="sect2">
-<h3 id="_groupbox">GroupBox</h3>
+<h3 id="x27">GroupBox</h3>
 <div class="listingblock">
 <div class="content">
-<pre><tt>groupbox bounds(x, y, width, height)[, text("Caption"), colour("colour"), \
-fontcolour("colour"), line(value), preset("name"), plant("name"), popup(val)]</tt></pre>
+<pre><code>groupbox bounds(x, y, width, height)[, text("Caption"), colour("colour"), fontcolour("colour"), line(value), preset("name"), plant("name"), popup(val)]</code></pre>
 </div></div>
 <div class="paragraph"><p>Groupbox creates a container for other GUI controls. They do not communicate with Csound but can be useful for organising widgets into panels.</p></div>
 <div class="paragraph"><p><em>bounds(x, y, width, height)</em>: integer values that set position and size on screen(in pixels)</p></div>
@@ -1053,21 +1100,21 @@ fontcolour("colour"), line(value), preset("name"), plant("name"), popup(val)]</t
 <div class="paragraph"><p><em>line(value)</em>: Turns off the line that appears on a groupbox.</p></div>
 <div class="paragraph"><p><em>preset("name")</em>: If using the plant() identifier one can set preset("name"), which will attach all child widgets to a previously defined snapshot widget. See snapshot widget for details.</p></div>
 <div class="paragraph"><p><em>plant("name")</em>: Sets the name of the plant. No two plants can have the same name. See <em>PLANTS</em></p></div>
-<div class="paragraph"><p><em>popup("name")</em>: Sets whether the plant is to behave as a <em>popup</em> plant or not. If  a one is passed to popup, i.e., popup(1) then a button of fixed size 100x30 will on screen in position x,y as set by bounds. When a user clicks the button their controls will appear in a separate window. This can be useful for saving space in the main instrument&#8217;s GUI.</p></div>
+<div class="paragraph"><p><em>popup("name")</em>: Sets whether the plant is to behave as a <em>popup</em> plant or not. If a <em>1</em> is passed to popup, i.e., popup(1) then a button of fixed size 100x30 will appear on screen in position x,y as set by bounds. When a user clicks the button their controls will appear in a separate window. This can be useful for saving space in the main instrument&#8217;s GUI.</p></div>
 <div class="paragraph"><p>Example:</p></div>
 <div class="listingblock">
 <div class="content">
-<pre><tt>groupbox bounds(0, 0, 200, 100), text("Group box")</tt></pre>
+<pre><code>groupbox bounds(0, 0, 200, 100), text("Group box")</code></pre>
 </div></div>
 <div class="paragraph"><p><span class="image">
-<img src="groupbox.png" alt="groupbox" />
+<img src="images/groupbox.PNG" alt="groupbox" />
 </span></p></div>
 </div>
 <div class="sect2">
-<h3 id="_keyboard">Keyboard</h3>
+<h3 id="x28">Keyboard</h3>
 <div class="listingblock">
 <div class="content">
-<pre><tt>keyboard bounds(x, y, width, height), value(note)</tt></pre>
+<pre><code>keyboard bounds(x, y, width, height), value(note)</code></pre>
 </div></div>
 <div class="paragraph"><p>Keyboard create a piano keyboard that will send MIDI information to your Csound instrument. This component can be used together with a hardware controller. Pressing keys on the actual MIDI keyboard will cause the on-screen keys to light up.</p></div>
 <div class="paragraph"><p><em>bounds(x, y, width, height)</em>: integer values that set position and size on screen(in pixels)</p></div>
@@ -1075,46 +1122,46 @@ fontcolour("colour"), line(value), preset("name"), plant("name"), popup(val)]</t
 <div class="admonitionblock">
 <table><tr>
 <td class="icon">
-<img src="smallLogo.png" alt="Note" />
+<img src="images/smallLogo.PNG" alt="Note" />
 </td>
-<td class="content">you can only use one MIDI keyboard component with each Cabbage instrument. Also note that the keyboard can be played at different velocities depending on where you click on the key with your mouse. Clicking at the top of the key will cause a smaller velocity while clicking on the bottom will cause the note to sound with full velocity. Finally, if you insist on playing the keyboard like a nutter in standalone mode you might experience some unexpected results. The keyboard control is only provided as a quick and easy means of testing plugins in Cabbage. Treating it as anything more than that could result in severe disappointment!</td>
+<td class="content">you can only use one MIDI keyboard component with each Cabbage instrument. Also note that the keyboard can be played at different velocities depending on where you click on the key with your mouse. Clicking at the top of the key will cause a smaller velocity while clicking on the bottom will cause the note to sound with full velocity. Finally, if you insist on playing the keyboard like a nutter in standalone mode without passing -m0d to the CsOptions(disable console messages) you might experience some unexpected results. The keyboard control is only provided as a quick and easy means of testing plugins in Cabbage. Treating it as anything more than that could result in severe disappointment!</td>
 </tr></table>
 </div>
 <div class="paragraph"><p>Example:</p></div>
 <div class="listingblock">
 <div class="content">
-<pre><tt>keyboard bounds(0, 0, 200, 100), value(30)</tt></pre>
+<pre><code>keyboard bounds(0, 0, 200, 100), value(30)</code></pre>
 </div></div>
 <div class="paragraph"><p><span class="image">
-<img src="keyboard.png" alt="keyboard" />
+<img src="images/keyboard.PNG" alt="keyboard" />
 </span></p></div>
 </div>
 <div class="sect2">
-<h3 id="_csoundoutput">CsoundOutput</h3>
+<h3 id="x29">CsoundOutput</h3>
 <div class="listingblock">
 <div class="content">
-<pre><tt>csoundoutput bounds(x, y, width, height), text("name")</tt></pre>
+<pre><code>csoundoutput bounds(x, y, width, height), text("name")</code></pre>
 </div></div>
-<div class="paragraph"><p>csoundoutput will let you view the Csound output console within your instrument&#8217;s GUI, useful when deslugging Cabbage instruments.</p></div>
+<div class="paragraph"><p>csoundoutput will let you view the Csound output console within your instrument&#8217;s GUI, useful when <em>de-slugging</em> Cabbage instruments.</p></div>
 <div class="paragraph"><p><em>bounds(x, y, width, height)</em>: integer values that set position and size on screen(in pixels)</p></div>
 <div class="paragraph"><p><em>text("name")</em>: "name" will be the text that appears on the top of the check box.</p></div>
 <div class="paragraph"><p>Example:</p></div>
 <div class="listingblock">
 <div class="content">
-<pre><tt>csoundoutput bounds(210, 00, 340, 145), text("Csound Output")</tt></pre>
+<pre><code>csoundoutput bounds(210, 00, 340, 145), text("Csound Output")</code></pre>
 </div></div>
 <div class="paragraph"><p><span class="image">
-<img src="csoundoutput.png" alt="csound output" />
+<img src="images/csoundoutput.PNG" alt="csound output" />
 </span></p></div>
 </div>
 <div class="sect2">
-<h3 id="_infobutton">InfoButton</h3>
+<h3 id="x30">InfoButton</h3>
 <div class="listingblock">
 <div class="content">
-<pre><tt>infobutton bounds(x, y, width, height), text("name")[, colour("colour"), fontcolour("colour") \
-file("file name")]</tt></pre>
+<pre><code>infobutton bounds(x, y, width, height), text("name")[, colour("colour"), fontcolour("colour") \
+file("file name")]</code></pre>
 </div></div>
-<div class="paragraph"><p>When user click an info button a web-browser will open showing the file passed to the file() identifier. This is useful for providing help files or any other additional information about your instruments. Currently there are no navigation buttons but users can move back and forward using links, or by right-clicking on a page.</p></div>
+<div class="paragraph"><p>When users click an info button a web-browser will open showing the file passed to the file() identifier. This is useful for providing help files or any other additional information about your instruments. Currently there are no navigation buttons but users can move back and forward using links, or by right-clicking on a page.</p></div>
 <div class="paragraph"><p><em>bounds(x, y, width, height)</em>: integer values that set position and size on screen(in pixels)</p></div>
 <div class="paragraph"><p><em>text("name")</em>: "name" will be the text that appears on the top of the info button.</p></div>
 <div class="paragraph"><p><em>colour("colour")</em>: This sets the colour of the image if a file name is not passed to file. Any CSS or HTML colour string can be passed to this identifier. The colour identifier can also be passed an RBG, or RGBA value. All channel values must be between 0 and 255. For instance colour(0, 0, 255) will create a blue, while colour(0, 255, 0, 255) will create a green with an alpha channel set to full.</p></div>
@@ -1123,20 +1170,27 @@ file("file name")]</tt></pre>
 <div class="paragraph"><p>Example:</p></div>
 <div class="listingblock">
 <div class="content">
-<pre><tt>infobutton bounds(210, 00, 340, 145), text("Help"), file("help.html")</tt></pre>
+<pre><code>infobutton bounds(210, 00, 340, 145), text("Help"), file("help.html")</code></pre>
 </div></div>
+<div class="admonitionblock">
+<table><tr>
+<td class="icon">
+<img src="images/smallLogo.PNG" alt="Note" />
+</td>
+<td class="content">This is only supported on OSX and Windows.</td>
+</tr></table>
+</div>
 </div>
 <div class="sect2">
-<h3 id="_image">Image</h3>
+<h3 id="x31">Image</h3>
 <div class="listingblock">
 <div class="content">
-<pre><tt>image bounds(x, y, width, height), colour("colour")[, file("file name"), \
-shape("type"), outline("colour"), line(thickness), 'plant("name"), \
-preset("name"), popup(val)]</tt></pre>
+<pre><code>image bounds(x, y, width, height), colour("colour")[, file("file name"), shape("type"), outline("colour"), line(thickness), 'plant("name"),
+preset("name"), popup(val)]</code></pre>
 </div></div>
 <div class="paragraph"><p>Image creates a static shape or graphic. It can be used to show pictures or it can be used to draw simple shapes. If you wish to display a picture you must pass the file name to the file() identifier. The file must be in the same directory as your Cabbage instrument. If you simply wish to draw a shape you can choose a background colour with colour() and an outline colour with outline(). line() will let you determine the thickness of the outline.</p></div>
 <div class="paragraph"><p><em>bounds(x, y, width, height)</em>: integer values that set position and size on screen(in pixels). If widget is part of a plant these values should be between 0 and 1. See PLANTS</p></div>
-<div class="paragraph"><p><em>file("filename")</em>: "filename" is the name of the image file to be displayed on the control. This file must reside in the same directory as the current .csd file. Do not pass a full path. Cabbage only needs the name and extension, for example file("cabbage.png").</p></div>
+<div class="paragraph"><p><em>file("filename")</em>: "filename" is the name of the image file to be displayed on the control. This file must reside in the same directory as the current .csd file. Do not pass a full path. Cabbage only needs the name and extension, for example file("cabbage.PNG").</p></div>
 <div class="paragraph"><p><em>shape("type");</em>: "shape" must be either round(with rounded corners, default), sharp(with sharp corners), or ellipse(an elliptical shape)</p></div>
 <div class="paragraph"><p><em>colour("colour")</em>: This sets the colour of the image if no file name is given with the file identifier. Any CSS or HTML colour string can be passed to this identifier. The colour identifier can also be passed an RBG, or RGBA value. All channel values must be between 0 and 255. For instance colour(0, 0, 255) will create a blue, while colour(0, 255, 0, 255) will create a green with an alpha channel set to full.</p></div>
 <div class="paragraph"><p><em>outline("colour")</em>: This sets the outline colour of the image/shape. See above for details on "colour".</p></div>
@@ -1147,19 +1201,19 @@ preset("name"), popup(val)]</tt></pre>
 <div class="paragraph"><p>Example:</p></div>
 <div class="listingblock">
 <div class="content">
-<pre><tt>image bounds(0, 10, 260, 190), colour("white")
+<pre><code>image bounds(0, 10, 260, 190), colour("white")
 image bounds(5, 15, 250, 180), colour("brown")
-image bounds(30, 30, 200, 150), file("logo_cabbage_sw_no_text.png")</tt></pre>
+image bounds(30, 30, 200, 150), file("logo_cabbage_sw_no_text.PNG")</code></pre>
 </div></div>
 <div class="paragraph"><p><span class="image">
-<img src="images.png" alt="image" />
+<img src="images/images.PNG" alt="image" />
 </span></p></div>
 </div>
 <div class="sect2">
-<h3 id="_line">Line</h3>
+<h3 id="x32">Line</h3>
 <div class="listingblock">
 <div class="content">
-<pre><tt>line bounds(x, y, width, height)[, colour("colour")]</tt></pre>
+<pre><code>line bounds(x, y, width, height)[, colour("colour")]</code></pre>
 </div></div>
 <div class="paragraph"><p>line is a very simple widget that lets you create a vertical line separator(or box). It is useful for placing on group components and images to help with layout design.</p></div>
 <div class="paragraph"><p><em>bounds(x, y, width, height)</em>: integer values that set position and size on screen(in pixels). If widget is part of a plant these values should be between 0 and 1. See PLANTS</p></div>
@@ -1167,7 +1221,7 @@ image bounds(30, 30, 200, 150), file("logo_cabbage_sw_no_text.png")</tt></pre>
 <div class="paragraph"><p>Example:</p></div>
 <div class="listingblock">
 <div class="content">
-<pre><tt>groupbox bounds(5, 0, 200, 80), line(0), text("Formant Parameters One"), plant("formant1"){
+<pre><code>groupbox bounds(5, 0, 200, 80), line(0), text("Formant Parameters One"), plant("formant1"){
 rslider bounds(.06, .32, .6), text("Amp"), colour("grey"), channel("amp1"), range(0, .5, .5)
 rslider bounds(.29, .33, .6), text("BW"), colour("grey"), channel("bw1"), range(10, 120, 60)
 rslider bounds(.52, .33, .6), text("Rise"), colour("grey"), ,channel("rise1"), range(0.001, 0.01, 0.001)
@@ -1177,17 +1231,17 @@ line bounds(0.1, .25, .8, .03), colour("lime")
 line bounds(.5, .3, .01, .5), colour("lime")
 line bounds(.73, .3, .01, .5), colour("lime")
 line bounds(.27, .3, .01, .5), colour("lime")
-}</tt></pre>
+}</code></pre>
 </div></div>
 <div class="paragraph"><p><span class="image">
-<img src="line.png" alt="csound output" />
+<img src="images/line.PNG" alt="csound output" />
 </span></p></div>
 </div>
 <div class="sect2">
-<h3 id="_label">Label</h3>
+<h3 id="x33">Label</h3>
 <div class="listingblock">
 <div class="content">
-<pre><tt>label bounds(x, y, width, height), text("text")[, fontcolour("colour")]</tt></pre>
+<pre><code>label bounds(x, y, width, height), text("text")[, fontcolour("colour")]</code></pre>
 </div></div>
 <div class="paragraph"><p>Label is useful for placing text on-screen.</p></div>
 <div class="paragraph"><p><em>bounds(x, y, width, height)</em>: integer values that set position and size on screen(in pixels). If widget is part of a plant these values should be between 0 and 1. See PLANTS</p></div>
@@ -1196,14 +1250,14 @@ line bounds(.27, .3, .01, .5), colour("lime")
 <div class="paragraph"><p>Example:</p></div>
 <div class="listingblock">
 <div class="content">
-<pre><tt>label bounds(0, 0, 3, 10), text("Label"), fontcolour("white")</tt></pre>
+<pre><code>label bounds(0, 0, 3, 10), text("Label"), fontcolour("white")</code></pre>
 </div></div>
 </div>
 <div class="sect2">
-<h3 id="_snapshot">Snapshot</h3>
+<h3 id="x34">Snapshot</h3>
 <div class="listingblock">
 <div class="content">
-<pre><tt>snapshot bounds(x, y, width, height), preset("name")[, items("item1", "item2", ...), master(val)]</tt></pre>
+<pre><code>snapshot bounds(x, y, width, height), preset("name")[, items("item1", "item2", ...), master(val)]</code></pre>
 </div></div>
 <div class="paragraph"><p>Snapshot is a widget that lets users save and load pre-sets. Hit the <em>Snapshot</em> button to record a pre-set and use the combo box to recall them. Pre-sets are stored in a text file in the same directory as your .csd file. If a pre-set file doesn&#8217;t already exist Cabbage will create one. preset("name") sets the name that needs to be used for each widgets you want to control. You attach a widget to a pre-set using the preset() identifier. See examples below.</p></div>
 <div class="paragraph"><p><em>bounds(x, y, width, height)</em>: integer values that set position and size on screen(in pixels). If widget is part of a plant these values should be between 0 and 1. See PLANTS</p></div>
@@ -1213,28 +1267,27 @@ line bounds(.27, .3, .01, .5), colour("lime")
 <div class="paragraph"><p>Example:</p></div>
 <div class="listingblock">
 <div class="content">
-<pre><tt>snapshot bounds(0, 0, 3, 10), preset("LFO"), items("Green Cabbage", "Yellow Cabbage")
-rslider bounds(0, 50, 70, 70), channel("slider"), preset("LFO")</tt></pre>
+<pre><code>snapshot bounds(0, 0, 3, 10), preset("LFO"), items("Green Cabbage", "Yellow Cabbage")
+rslider bounds(0, 50, 70, 70), channel("slider"), preset("LFO")</code></pre>
 </div></div>
 <div class="paragraph"><p><span class="image">
-<img src="snapshot.png" alt="csound output" />
+<img src="images/snapshot.PNG" alt="csound output" />
 </span></p></div>
 <div class="admonitionblock">
 <table><tr>
 <td class="icon">
-<img src="smallLogo.png" alt="Note" />
+<img src="images/smallLogo.PNG" alt="Note" />
 </td>
 <td class="content">snapshot widgets must be placed/declared above any other widget they will be controlling.</td>
 </tr></table>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_sliders">Sliders</h3>
+<h3 id="x35">Sliders</h3>
 <div class="listingblock">
 <div class="content">
-<pre><tt>hslider bounds(x, y, width, height), channel("chanName")[, caption("caption") \
-        text("name"), textBox(on/off), range(min, max, value, skew, incr) \
-        midCtrl(Channel, Ctrlnum), colour("colour"), fontcolour("colour"), preset("name")]</tt></pre>
+<pre><code>hslider bounds(x, y, width, height), channel("chanName")[, caption("caption"), text("name"), textBox(on/off), range(min, max, value, skew, incr),
+midCtrl(Channel, Ctrlnum), colour("colour"), fontcolour("colour"), preset("name"), tracker("colour")]</code></pre>
 </div></div>
 <div class="paragraph"><p>Slider can be used to create an on-screen slider. Data can be sent to Csound on the channel specified through the chanName string. Presented above is the syntax for a horizontal slider, i.e., <em>hslider</em>. In order to change it to another slider type simple substitute hslider with the appropriate identifier as outlined below.</p></div>
 <div class="paragraph"><p><em>bounds(x, y, width, height)</em>: integer values that set position and size on screen(in pixels). If widget is part of a plant these values should be between 0 and 1. See PLANTS</p></div>
@@ -1243,7 +1296,7 @@ rslider bounds(0, 50, 70, 70), channel("slider"), preset("LFO")</tt></pre>
 <div class="paragraph"><p><em>range(min, max, value, skew, incr)</em>: the first 2 parameters are required. The rest are optional. The first two parameters let you set the minimum value and the maximum value. The next parameter determines the initial value of the slider. The next allows you to adjust the skew factor. Tweaking the skew factor can cause the slider to output values in a non linear fashion. A skew of 0.5 will cause the slider to output values in an exponential fashion. A skew of 1 is the default value, which causes the slider to behave is a typical linear form.</p></div>
 <div class="paragraph"><p><em>text("name")</em>: The string passed in for "name" will appear on a label beside the slider. This is useful for naming sliders.</p></div>
 <div class="paragraph"><p><em>textBox(on/off)</em>: textbox takes a 0 or a 1. 1 will cause a text box to appear with the sliders values. Leaving this out will result in the numbers appearing automatically when you hover over the sliders with your mouse.</p></div>
-<div class="paragraph"><p><em>midCtrl(channel, Ctrlnum)</em> : channel must be a valid midi channel, while controller num should be the number of the controller you wish to use.</p></div>
+<div class="paragraph"><p><em>midCtrl(channel, Ctrlnum)</em> : channel must be a valid midi channel, while controller num should be the number of the controller you wish to use. This option is only useful in standalone mode. When in plugin mode it&#8217;s best ti simply use the MIDI mapping provided by the host to control the sliders.</p></div>
 <div class="paragraph"><p><em>colour("colour")</em>: This sets the colour of the image if a file name is not passed to file. Any CSS or HTML colour string can be passed to this identifier. The colour identifier can also be passed an RBG, or RGBA value. All channel values must be between 0 and 255. For instance colour(0, 0, 255) will create a blue, while colour(0, 255, 0, 255) will create a green with an alpha channel set to full.</p></div>
 <div class="paragraph"><p><em>fontcolour("colour")</em>: Sets the colour of the text that appears with the slider. See above for details on "colour".</p></div>
 <div class="paragraph"><p><em>tracker("colour")</em>: Sets the colour of the slider&#8217;s tracker. This is the line that follows the slider when you move it. See above for details on "colour". If you pass 0 for the colour you will turn of the tracker.</p></div>
@@ -1255,23 +1308,22 @@ rslider bounds(0, 50, 70, 70), channel("slider"), preset("LFO")</tt></pre>
 <div class="paragraph"><p>Example:</p></div>
 <div class="listingblock">
 <div class="content">
-<pre><tt>rslider bounds(0, 110, 90, 90), caption("Freq1"), channel("freq2"), colour("cornflowerblue")\
+<pre><code>rslider bounds(0, 110, 90, 90), caption("Freq1"), channel("freq2"), colour("cornflowerblue")\
         range(0, 1, .5), midictrl(0, 1)
 rslider bounds(100, 120, 70, 70), text("Freq2"), channel("freq2"), colour("red")\
          range(0, 1, .5), midictrl(0, 1)
 rslider bounds(190, 120, 70, 70), text("Freq3"), channel("freq2"), colour("green")\
-        text("Freq3"), textbox(1)</tt></pre>
+        text("Freq3"), textbox(1)</code></pre>
 </div></div>
 <div class="paragraph"><p><span class="image">
-<img src="sliders.png" alt="Sliders" />
+<img src="images/sliders.PNG" alt="Sliders" />
 </span></p></div>
 </div>
 <div class="sect2">
-<h3 id="_button">Button</h3>
+<h3 id="x36">Button</h3>
 <div class="listingblock">
 <div class="content">
-<pre><tt>button bounds(x, y, width, height), channel("chanName")[, text("offCaption","onCaption")\
-        caption("caption"), value(val), colour("colour"), fontcolour("colour")]</tt></pre>
+<pre><code>button bounds(x, y, width, height), channel("chanName")[, text("offCaption","onCaption"), caption("caption"), value(val), colour("colour"), fontcolour("colour")]</code></pre>
 </div></div>
 <div class="paragraph"><p>Button creates a button on screen that can be used for a whole range of different tasks. The "channel" string identifies the channel on which the host will communicate with an instance of Csound. "OnCaption" and "OffCaption" determine the strings that will appear on the button as users toggle between two states, i.e., 0 or 1. By default these captions are set to "On" and "Off" but the user can specify any strings they wish.</p></div>
 <div class="paragraph"><p><em>bounds(x, y, width, height)</em>: integer values that set position and size on screen(in pixels). If widget is part of a plant these values should be between 0 and 1. See PLANTS</p></div>
@@ -1281,25 +1333,24 @@ rslider bounds(190, 120, 70, 70), text("Freq3"), channel("freq2"), colour("green
 <div class="paragraph"><p><em>value(val)</em>: val sets the initial state of the control</p></div>
 <div class="paragraph"><p><em>colour("colour")</em>: This sets the colour of the image if a file name is not passed to file. Any CSS or HTML colour string can be passed to this identifier. The colour identifier can also be passed an RBG, or RGBA value. All channel values must be between 0 and 255. For instance colour(0, 0, 255) will create a blue, while colour(0, 255, 0, 255) will create a green with an alpha channel set to full.</p></div>
 <div class="paragraph"><p><em>fontcolour("colour")</em>: Sets the colour of the text that appears with the slider. See above for details on "colour".</p></div>
-<div class="paragraph"><p><tt>Example:</tt></p></div>
+<div class="paragraph"><p><code>Example:</code></p></div>
 <div class="listingblock">
 <div class="content">
-<pre><tt>button bounds(0, 110, 120, 70), caption("Freq1"), text("On", "Off"), channel("freq2"), value(1)
-button bounds(150, 110, 120, 70), text("On", "Off"), channel("freq2"), value(0)</tt></pre>
+<pre><code>button bounds(0, 110, 120, 70), caption("Freq1"), text("On", "Off"), channel("freq2"), value(1)
+button bounds(150, 110, 120, 70), text("On", "Off"), channel("freq2"), value(0)</code></pre>
 </div></div>
 <div class="paragraph"><p><span class="image">
-<img src="buttons.png" alt="Buttons" />
+<img src="images/buttons.PNG" alt="Buttons" />
 </span></p></div>
 </div>
 <div class="sect2">
-<h3 id="_checkbox">CheckBox</h3>
+<h3 id="x37">CheckBox</h3>
 <div class="listingblock">
 <div class="content">
-<pre><tt>checkbox bounds(x, y, width, height), channel("chanName")[, text("name"), \
-value(val), caption("Caption")], colour("colour"), shape("shape"), \
-fontcolour("colour"), preset("name")</tt></pre>
+<pre><code>checkbox bounds(x, y, width, height), channel("chanName")[, text("name"), value(val), caption("Caption")], colour("colour"), shape("shape"),
+fontcolour("colour"), preset("name")</code></pre>
 </div></div>
-<div class="paragraph"><p>Checkbox creates a checkbox which functions like a button only the associated caption will not change when the user checks it. As with all controls capable of sending data to an instance of Csound the channel string is the channel on which the control will communicate with Csound.</p></div>
+<div class="paragraph"><p>Checkbox creates a checkbox which functions like a button, only the associated caption will not change when the user checks it. As with all controls capable of sending data to an instance of Csound the channel string is the channel on which the control will communicate with Csound.</p></div>
 <div class="paragraph"><p><em>bounds(x, y, width, height)</em>: integer values that set position and size on screen(in pixels). If widget is part of a plant these values should be between 0 and 1. See PLANTS</p></div>
 <div class="paragraph"><p><em>channel("chanName")</em>: "chanName" is the name of the channel upon which to communicate with Csound(see examples above).</p></div>
 <div class="paragraph"><p><em>caption("caption")</em>: This identifier lets you place your control within a groupbox. "caption" is the text that will appear on groupbox. This identifier is useful for naming and containing controls.</p></div>
@@ -1312,19 +1363,18 @@ fontcolour("colour"), preset("name")</tt></pre>
 <div class="paragraph"><p>Example</p></div>
 <div class="listingblock">
 <div class="content">
-<pre><tt>checkbox bounds(0, 110, 120, 70), caption("Freq1"), text("On"), channel("freq2")
-checkbox bounds(130, 110, 120, 70), text("Mute"), channel("freq2"), value(1)</tt></pre>
+<pre><code>checkbox bounds(0, 110, 120, 70), caption("Freq1"), text("On"), channel("freq2")
+checkbox bounds(130, 110, 120, 70), text("Mute"), channel("freq2"), value(1)</code></pre>
 </div></div>
 <div class="paragraph"><p><span class="image">
-<img src="checkboxes.png" alt="Checkboxes" />
+<img src="images/checkboxes.PNG" alt="Checkboxes" />
 </span></p></div>
 </div>
 <div class="sect2">
-<h3 id="_combobox">ComboBox</h3>
+<h3 id="x38">ComboBox</h3>
 <div class="listingblock">
 <div class="content">
-<pre><tt>combobox bounds(x, y, width, height), channel("chanName")[, value(val), items("item1", "item2", ...)\
-        caption("caption"), colour("colour"), preset("name")]</tt></pre>
+<pre><code>combobox bounds(x, y, width, height), channel("chanName")[, value(val), items("item1", "item2", ...), caption("caption"), colour("colour"),  preset("name")]</code></pre>
 </div></div>
 <div class="paragraph"><p>Combobox creates a drop-down list of items which users can choose from. Once the user selects an item, the index of their selection will be sent to Csound on a channel named by the channel string. The default value is 0.</p></div>
 <div class="paragraph"><p><em>bounds(x, y, width, height)</em>: integer values that set position and size on screen(in pixels). If widget is part of a plant these values should be between 0 and 1. See PLANTS</p></div>
@@ -1337,71 +1387,91 @@ checkbox bounds(130, 110, 120, 70), text("Mute"), channel("freq2"), value(1)</tt
 <div class="paragraph"><p>Example:</p></div>
 <div class="listingblock">
 <div class="content">
-<pre><tt>combobox bounds(0, 110, 120, 70), channel"freq"), caption("Freq"), items("200Hz", "400Hz", "800Hz"), value(2)</tt></pre>
+<pre><code>combobox bounds(0, 110, 120, 70), channel"freq"), caption("Freq"), items("200Hz", "400Hz", "800Hz"), value(2)</code></pre>
 </div></div>
 <div class="paragraph"><p><span class="image">
-<img src="combobox.png" alt="Combo" />
+<img src="images/combobox.PNG" alt="Combo" />
 </span></p></div>
 <div class="admonitionblock">
 <table><tr>
 <td class="icon">
-<img src="smallLogo.png" alt="Note" />
+<img src="images/smallLogo.PNG" alt="Note" />
 </td>
 <td class="content">Combo boxes are proving difficult when it comes to controlling them with Csound. So for now Csound can&#8217;t be used to change the value of a combobox.</td>
 </tr></table>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_xypad">XYPad</h3>
+<h3 id="x39">XYPad</h3>
 <div class="listingblock">
 <div class="content">
-<pre><tt>xypad bounds(x, y, width, height), channel("chanName")[, rangex(min, max, val)\
-        rangey(min, max, val), text("name")]</tt></pre>
+<pre><code>xypad bounds(x, y, width, height), channel("chanName1", "chanName2")[, rangex(min, max, val), rangey(min, max, val), text("name")]</code></pre>
 </div></div>
-<div class="paragraph"><p>xypad is an x/y controller that sends data to Csound on two named channels. The first channel transmits the current position of the ball on the X axis, while the second transmits the position of the ball on the Y axis. If you turn on automation via the checkbox located on the bottom left of the xypad you can throw the ball from edge to edge. Once the ball is in full flight you can control the speed of the ball using the XYpad slider.</p></div>
+<div class="paragraph"><p>xypad is an x/y controller that sends data to Csound on two named channels. The first channel transmits the current position of the ball on the X axis, while the second transmits the position of the ball on the Y axis. The XY pad can operate two modes of automation, free and path based. They can be turned on by clicking on the corresponding icon on the bottom left of the xypad control. With either mode selected you can right-click the xypad and create a trajectory or path for the balls movement. Release the mouse and the ball will start moving. Once the ball is in full flight you can control the speed of the ball using the XYpad slider that will appear once you hover over it with the mouse. To stop the ball simple left click anywhere on the xy pad canvas.</p></div>
 <div class="paragraph"><p><em>bounds(x, y, width, height)</em>: integer values that set position and size on screen(in pixels)</p></div>
-<div class="paragraph"><p><em>channel("chanName")</em>: "chanName" is the name of the channel in which to communicate with Csound(see examples above).</p></div>
+<div class="paragraph"><p><em>channel("chanName1", "chanName2")</em>: "chanName1" is the name of the X-axis channel in which to communicate with Csound, and "chanName2" is the Y-axis channel in which to communicate with Csound.</p></div>
 <div class="paragraph"><p><em>text("name")</em>: "name" will be the text that appears on the top right hand side of the XYpad surface.</p></div>
 <div class="paragraph"><p><em>rangex(min, max, value)</em>: sets the range of the X axis. The first 2 parameters are required. The third is optional. The first two parameters let you set the minimum value and the maximum value. The next parameter determines the initial value.</p></div>
 <div class="paragraph"><p><em>rangey(min, max, value)</em>: sets the range of the Y axis. The first 2 parameters are required. The third is optional. The first two parameters let you set the minimum value and the maximum value. The next parameter determines the initial value.</p></div>
+<div class="paragraph"><p><em>colour("colour")</em>: This sets the colour of the xypad ball. Any CSS or HTML colour string can be passed to this identifier. The colour identifier can also be passed an RBG, or RGBA value. All channel values must be between 0 and 255. For instance colour(0, 0, 255) will create a blue, while colour(0, 255, 0, 255) will create a green with an alpha channel set to full.</p></div>
+<div class="paragraph"><p><em>fontcolour("colour")</em>: This sets the colour of the xypad text and mode selector labels. Any CSS or HTML colour string can be passed to this identifier. The colour identifier can also be passed an RBG, or RGBA value. All channel values must be between 0 and 255. For instance colour(0, 0, 255) will create a blue, while colour(0, 255, 0, 255) will create a green with an alpha channel set to full.</p></div>
 <div class="paragraph"><p>Example:</p></div>
 <div class="listingblock">
 <div class="content">
-<pre><tt>xypad bounds(0, 0, 300, 300), text("X/Y PAD"), rangex(0, 500, 250), rangey(0, 100, 25)</tt></pre>
+<pre><code>xypad bounds(5, 5, 250, 250), channel("xpad", "ypad"), rangex(0, 2, 0), rangey(0, 20, 0), colour("cornflowerblue"), text("XY Bother"), fontcolour("lime")</code></pre>
 </div></div>
 <div class="paragraph"><p><span class="image">
-<img src="xypad.png" alt="xypad" />
+<img src="images/xypad.PNG" alt="xypad" />
+</span></p></div>
+</div>
+<div class="sect2">
+<h3 id="x40">Table</h3>
+<div class="listingblock">
+<div class="content">
+<pre><code>table bounds(x, y, width, height), channel("chan1", "chan2", ...), tableNumbers(1, 2, ...), colour("colour1", "colour2", ...)</code></pre>
+</div></div>
+<div class="paragraph"><p>table is a new and experimental control which creates a function table viewer capable of displaying any number of tables at once. If multiple tables are specified the tables will be superimposed on top of each other. Although it&#8217;s not yet possible to interact with the table directly, it is possible to use sliders or other such widgets to alter the contents of the table in real time. See the sample table instrument in the example folder.</p></div>
+<div class="paragraph"><p><em>bounds(x, y, width, height)</em>: integer values that set position and size on screen(in pixels)</p></div>
+<div class="paragraph"><p><em>channel("chan1",  &#8230;)</em>: specifies the channel with which to communicate with Csound on. As table is not an interactive control it only retrieves data from Csound. A value of -1 will causes Cabbage to update the corresponding table, while a value between 0 and 1 will cause a scrubber to appear on the table, 0 being the start of the table, 1 being the end.</p></div>
+<div class="paragraph"><p><em>tableNumbers(1, 2, ..)</em>: sets the table to be displayed.</p></div>
+<div class="paragraph"><p><em>colour("colour1", "colour2", &#8230;)</em>: sets the colours of the tables.</p></div>
+<div class="paragraph"><p>Example:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><code>table bounds(10, 10, 271, 121), channel("adsrTable1", "adsrTable2", "adsrTable3"), tableNumbers(2, 3, 4), colour("yellow", "red", "blue")</code></pre>
+</div></div>
+<div class="paragraph"><p><span class="image">
+<img src="images/table.PNG" alt="table" />
 </span></p></div>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_plants">Plants</h2>
+<h2 id="x40">Plants</h2>
 <div class="sectionbody">
-<div class="paragraph"><p>Cabbage plants are GUI abstractions that contain one or more widgets. They can be useful for grouping things together. Only images and groupboxes can act as plants. In order to turn a groupbox or image into a plant you will need to add a plant() identifier to your groupbox/image declaration, and you will need to encapsulate all the child widgets within opening and closing curly brackets.</p></div>
-<div class="paragraph"><p>All widgets contained within the curly brackets have top/left/width and height values that are fractions of the plant widgets dimensions, 1 being the max, 0 being the minimum. For example:</p></div>
+<div class="paragraph"><p>Cabbage plants are GUI abstractions that contain one or more controls. These abstractions are used as anchors to the child widgets contained within. All widgets contained within a plant have top and left positions which are relative the the top left position of the parent. While all widgets can be children of a plant, only group boxes and images can be used as plants themselves. Adding a plant identifier to an image or group box definition will cause them to act as containers. The plant() identifier takes a string that denotes the name of the plant. Plant names must be unique within an instrument or plants will end up being placed on top of each other. When using an image or a group box as a plant, you must enclose the code from the controls that follow in curly brackets, to indicate which controls belong to the plant. In the code below a group box control is set up as a plant, and three child sliders are placed within it.</p></div>
 <div class="listingblock">
 <div class="content">
-<pre><tt>groupbox bounds(12, 115, 170, 100), text("Output Filter -k-rate-"),  preset("pre"), plant("filter"){
+<pre><code>groupbox bounds(12, 115, 170, 100), text("Output Filter -k-rate-"),  preset("pre"), plant("filter"){
 rslider bounds(.01, .3, .6, .6), text("Freq"), channel("filtFreq"), range(0, 22050, 10000)
 rslider bounds(.32, .3, .6, .6), text("Res"), channel("filtRes"), range(0, 1, 0)
 rslider bounds(.64, .3, .6, .6), text("Dist"), channel("filtDist"), range(0, 4, 0)
-}</tt></pre>
+}</code></pre>
 </div></div>
 <div class="paragraph"><p><span class="image">
-<img src="plant.png" alt="xypad" />
+<img src="images/plant.PNG" alt="xypad" />
 </span></p></div>
-<div class="paragraph"><p>Each value passed to bounds represents a fraction of the overall size and position. <em>bounds(0, 0, 1, 1)</em> will cause a child widget to be the same size as the plant. <em>bounds(0, .5, .5, 1)</em> will cause a child widget to appear half way across the plant, and half way down.</p></div>
-<div class="paragraph"><p>The big advantage to building abstractions is that you can easily move them around without needing to move all the child components too.</p></div>
+<div class="paragraph"><p>The values passed to bounds() for the child controls can be either fractions proportional to the plants overall size and position, or absolute pixel values. For example, <em>bounds(0, .5, .5, 1)</em> will cause a child widget to appear half way across the plant, and half way down. While <em>bounds(10, 10, 200, 200)</em> will cause the child control to be 10 pixels from the top/left, and have a size of 200x200 pixels.</p></div>
+<div class="paragraph"><p>The major advantage to using plant abstractions is that you can easily move and resize them without needing to modify the dimensions of the child components contained within. You can also save your plants and recall them later from a plant repository. Plants are intended to be reused across instruments so users don&#8217;t have to keep rebuilding GUIs from scratch. They can also be used to give your plugins a unique look and feel.</p></div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_quick_reference">Quick Reference</h2>
+<h2 id="x42">Quick Reference</h2>
 <div class="sectionbody">
 <div class="paragraph"><p>This quick reference table table gives a list of the valid identifiers for each Cabbage widget.</p></div>
 <div class="tableblock">
 <table rules="all"
-width="40%"
+width="70%"
 frame="hsides"
 cellspacing="0" cellpadding="4">
 <col width="6%" />
@@ -1435,7 +1505,7 @@ cellspacing="0" cellpadding="4">
 <th align="left" valign="top">snapshot       </th>
 <th align="left" valign="top">line   </th>
 <th align="left" valign="top">infobutton     </th>
-<th align="left" valign="top"></th>
+<th align="left" valign="top">table</th>
 </tr>
 </thead>
 <tbody>
@@ -1454,7 +1524,7 @@ cellspacing="0" cellpadding="4">
 <td align="left" valign="top"><p class="table">x</p></td>
 <td align="left" valign="top"><p class="table">x</p></td>
 <td align="left" valign="top"><p class="table">x</p></td>
-<td align="left" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table">x</p></td>
 </tr>
 <tr>
 <td align="left" valign="top"><p class="table">caption</p></td>
@@ -1488,7 +1558,7 @@ cellspacing="0" cellpadding="4">
 <td align="left" valign="top"><p class="table"></p></td>
 <td align="left" valign="top"><p class="table"></p></td>
 <td align="left" valign="top"><p class="table">x</p></td>
-<td align="left" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table">x</p></td>
 </tr>
 <tr>
 <td align="left" valign="top"><p class="table">colour</p></td>
@@ -1505,7 +1575,7 @@ cellspacing="0" cellpadding="4">
 <td align="left" valign="top"><p class="table"></p></td>
 <td align="left" valign="top"><p class="table">x</p></td>
 <td align="left" valign="top"><p class="table"></p></td>
-<td align="left" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table">x</p></td>
 </tr>
 <tr>
 <td align="left" valign="top"><p class="table">fontcolour</p></td>
@@ -1779,98 +1849,33 @@ cellspacing="0" cellpadding="4">
 <td align="left" valign="top"><p class="table"></p></td>
 <td align="left" valign="top"><p class="table"></p></td>
 </tr>
+<tr>
+<td align="left" valign="top"><p class="table">tablenumber</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table">x</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table">x</p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table"></p></td>
+<td align="left" valign="top"><p class="table">x</p></td>
+</tr>
 </tbody>
 </table>
 </div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_troubleshooting_faqs_tips_and_tricks">Troubleshooting, FAQs, tips and tricks</h2>
-<div class="sectionbody">
-<div class="ulist"><ul>
-<li>
-<p>
-<em>Why doesn&#8217;t my VST host see my Cabbage plugins?</em>
-The most likely reason is that you have not added the directory containing your plugins to your host&#8217;s preferences. Most hosts will allow you to choose the folders that contain plugins. If you don&#8217;t set the Cabbage plugin directory then the host has no idea where your Cabbage plugins are located.
-</p>
-</li>
-<li>
-<p>
-<em>Why doesn&#8217;t my Cabbage plugin load?</em>
-The most likely reason a plugin will not load is because there are errors in the Csound code. Cabbage plugins will load regardless of errors in the Cabbage code, but errors in the Csound code will stop Csound from compiling successfully and prevent the plugin from loading. Always make sure that the code is error free before exporting.
-</p>
-</li>
-<li>
-<p>
-<em>One mega plugin or several smaller ones?</em>
-It&#8217;s a good idea to split multi-effects instruments into separate plugins. This allows greater modularity within you plugin host and can often lead to less demand on your PC&#8217;s CPU.
-</p>
-</li>
-<li>
-<p>
-<em>Mixing effects and instruments?</em>
-Adding an effect processor to a plugin instrument might seem like a good idea. For instance you might add some reverb to the output of your FM synth to create some nice presence. In general however it is best to keep them separate. Plugin instruments demand a whole lot more CPU than their effects siblings. Performance will be a lot smoother if you split the two processes up and simply send the output of your synthesiser into an instance of a Cabbage reverb effect plugin.
-</p>
-</li>
-<li>
-<p>
-<em>What&#8217;s up? My plugin makes a load of noise?</em>
-If you have nchnls set to 1 thre will be noise sent to the second, or right channel. Make sure taht nchnls is ALWAYS set to 2!
-</p>
-</li>
-<li>
-<p>
-<em>I can&#8217;t tell whether my sliders are controlling anything?!</em>
-There will be times when moving sliders or other interactive controls just doesn&#8217;t do what you might expect. The best way to de-slug Cabbage instruments is to use the <em>printk2</em> opcode in Csound. For instance if a slider is not behaving as expected make sure that Csound is receiving data from the slider on the correct channel. Using the code below should print the values of the slider to the Csound output console each time you move it. If not, then you most likely have the wrong channel name set.
-</p>
-</li>
-</ul></div>
-<div class="listingblock">
-<div class="content">
-<pre><tt>(...)
-k1 chnget "slider1"
-printk2 k1
-(...)</tt></pre>
-</div></div>
-<div class="ulist"><ul>
-<li>
-<p>
-<em>What gives? I&#8217;ve checked my channels and they are consistent, yet moving my sliders does nothing?</em>
-We have come across some cases of this happening. In all cases it was due to the fact that chosen channel name contained a /. Please try to use plain old letters for your channel names. Avoid using any kind of mathematical operators or fancy symbols and everything should be Ok.
-</p>
-</li>
-<li>
-<p>
-<em>Can I use nchnls to determine the number of output channels in my plugin?</em>
-Currently all Cabbage plugins are stereo by default. We are looking into ways of making plugins multichannel but limitations in the VST SDK are proving to be a stumbling block. It is something we are committed to finding a fix for.
-</p>
-</li>
-<li>
-<p>
-<em>Can I use Csound MACROs in the &lt;Cabbage&gt; section of my csd file?</em>
-I&#8217;m afraid not. The Cabbage section of your csd file is parsed by Cabbage&#8217;s own parser therefore it will not understand any Csound syntax whatsoever.
-</p>
-</li>
-<li>
-<p>
-<em>I&#8217;ve built some amazing instruments, how do I share them with the world?!</em>
-Easy. Send me, <a href="mailto:rorywalsh@ear.ie">Rory</a>, your instruments and I will add them to the Cabbage examples so that other Cabbage users can have a go.
-</p>
-</li>
-<li>
-<p>
-<em>Why does my instrument produce clicks?</em>
-There are several reason why one&#8217;s instrument might produce clicks. The first thing to do is insure that <em>-m0d</em> is set in the CsOptions. This will prevent Csound from printing messages to the console. The second thing to do is the change the buffer size in the Cabbage audio settings. Larger buffer sizes will result in less clicks but longer latency. You will need to experiment with the options to see what suits best.
-</p>
-</li>
-</ul></div>
 </div>
 </div>
 </div>
 <div id="footnotes"><hr /></div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2012-06-29 19:47:08 GMT Daylight Time
+Last updated 2013-01-27 15:44:51 GMT
 </div>
 </div>
 </body>

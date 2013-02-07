@@ -27,7 +27,6 @@
 #include "../../JuceLibraryCode/JuceHeader.h" 
 #include "../CabbageUtils.h"
 #include "../CabbageLookAndFeel.h"
-#include "../BinaryData.h"
 #include "CabbageEditorCommandManager.h"
 #include "../CabbageGUIClass.h"
 

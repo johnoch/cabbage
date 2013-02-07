@@ -111,6 +111,9 @@
  #pragma comment(lib, PT_LIB_PATH "DigiExt.lib")
  #pragma comment(lib, PT_LIB_PATH "DSI.lib")
  #pragma comment(lib, PT_LIB_PATH "PluginLib.lib")
+ #pragma comment(lib, PT_LIB_PATH "DSPManager.lib")
+ #pragma comment(lib, PT_LIB_PATH "DSPManagerClientLib.lib")
+ #pragma comment(lib, PT_LIB_PATH "RTASClientLib.lib")
 #endif
 
 #undef Component
@@ -133,14 +136,7 @@ const int midiBufferSize = 1024;
 const OSType juceChunkType = 'juce';
 static const int bypassControlIndex = 1;
 
-//==============================================================================
-/** Somewhere in the codebase of your plugin, you need to implement this function
-    and make it return a new instance of the filter subclass that you're building.
-*/
-extern AudioProcessor* JUCE_CALLTYPE createPluginFilter();
-
 static int numInstances = 0;
-
 
 //==============================================================================
 class JucePlugInProcess  : public CEffectProcessMIDI,
@@ -155,8 +151,7 @@ public:
           sampleRate (44100.0)
     {
         asyncUpdater = new InternalAsyncUpdater (*this);
-        juceFilter = createPluginFilter();
-        jassert (juceFilter != 0);
+        juceFilter = createPluginFilterOfType (AudioProcessor::wrapperType_RTAS);
 
         AddChunk (juceChunkType, "Juce Audio Plugin Data");
 
@@ -276,13 +271,8 @@ public:
            #if JUCE_WINDOWS
             if (wrapper != nullptr)
             {
-                ComponentPeer* const peer = wrapper->getPeer();
-
-                if (peer != nullptr)
-                {
-                    // (seems to be required in PT6.4, but not in 7.x)
-                    peer->repaint (wrapper->getLocalBounds());
-                }
+                if (ComponentPeer* const peer = wrapper->getPeer())
+                    peer->repaint (wrapper->getLocalBounds());  // (seems to be required in PT6.4, but not in 7.x)
             }
            #endif
         }
@@ -298,13 +288,12 @@ public:
 
         void deleteEditorComp()
         {
-            if (editorComp != 0 || wrapper != nullptr)
+            if (editorComp != nullptr || wrapper != nullptr)
             {
                 JUCE_AUTORELEASEPOOL
                 PopupMenu::dismissAllActiveMenus();
 
-                juce::Component* const modalComponent = juce::Component::getCurrentlyModalComponent();
-                if (modalComponent != nullptr)
+                if (juce::Component* const modalComponent = juce::Component::getCurrentlyModalComponent())
                     modalComponent->exitModalState (0);
 
                 filter->editorBeingDeleted (editorComp);
@@ -370,9 +359,7 @@ public:
 
             void resized()
             {
-                juce::Component* const ed = getEditor();
-
-                if (ed != nullptr)
+                if (juce::Component* const ed = getEditor())
                     ed->setBounds (getLocalBounds());
 
                 repaint();
@@ -419,7 +406,7 @@ public:
 
             Component* getEditor() const        { return getChildComponent (0); }
 
-            JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (EditorCompWrapper);
+            JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (EditorCompWrapper)
         };
     };
 
@@ -430,8 +417,8 @@ public:
 
     void GetViewRect (Rect* size)
     {
-        if (getView() != nullptr)
-            getView()->updateSize();
+        if (JuceCustomUIView* const v = getView())
+            v->updateSize();
 
         CEffectProcessRTAS::GetViewRect (size);
     }
@@ -445,8 +432,8 @@ public:
     {
         CEffectProcessRTAS::SetViewPort (port);
 
-        if (getView() != nullptr)
-            getView()->attachToWindow (port);
+        if (JuceCustomUIView* const v = getView())
+            v->attachToWindow (port);
     }
 
     //==============================================================================
@@ -479,9 +466,7 @@ protected:
         if (MIDILogIn() == noErr)
         {
            #if JucePlugin_WantsMidiInput
-            CEffectType* const type = dynamic_cast <CEffectType*> (this->GetProcessType());
-
-            if (type != nullptr)
+            if (CEffectType* const type = dynamic_cast <CEffectType*> (this->GetProcessType()))
             {
                 char nodeName [64];
                 type->GetProcessTypeName (63, nodeName);
@@ -534,25 +519,19 @@ protected:
             return;
         }
 
-        if (mBypassed)
-        {
-            bypassBuffers (inputs, outputs, numSamples);
-            return;
-        }
-
        #if JucePlugin_WantsMidiInput
         midiEvents.clear();
 
         const Cmn_UInt32 bufferSize = mRTGlobals->mHWBufferSizeInSamples;
 
-        if (midiBufferNode != 0)
+        if (midiBufferNode != nullptr)
         {
             if (midiBufferNode->GetAdvanceScheduleTime() != bufferSize)
                 midiBufferNode->SetAdvanceScheduleTime (bufferSize);
 
             if (midiBufferNode->FillMIDIBuffer (mRTGlobals->mRunningTime, numSamples) == noErr)
             {
-                jassert (midiBufferNode->GetBufferPtr() != 0);
+                jassert (midiBufferNode->GetBufferPtr() != nullptr);
                 const int numMidiEvents = midiBufferNode->GetBufferSize();
 
                 for (int i = 0; i < numMidiEvents; ++i)
@@ -603,7 +582,10 @@ protected:
 
                 AudioSampleBuffer chans (channels, totalChans, numSamples);
 
-                juceFilter->processBlock (chans, midiEvents);
+                if (mBypassed)
+                    juceFilter->processBlockBypassed (chans, midiEvents);
+                else
+                    juceFilter->processBlock (chans, midiEvents);
             }
         }
 
@@ -894,7 +876,7 @@ private:
         AudioProcessor* const juceFilter;
         const int index;
 
-        JUCE_DECLARE_NON_COPYABLE (JucePluginControl);
+        JUCE_DECLARE_NON_COPYABLE (JucePluginControl)
     };
 };
 
@@ -941,7 +923,14 @@ public:
             type->DefineStemFormats (getFormatForChans (channelConfigs [i][0] != 0 ? channelConfigs [i][0] : channelConfigs [i][1]),
                                      getFormatForChans (channelConfigs [i][1] != 0 ? channelConfigs [i][1] : channelConfigs [i][0]));
 
+           #if ! JucePlugin_RTASDisableBypass
             type->AddGestalt (pluginGestalt_CanBypass);
+           #endif
+
+           #if JucePlugin_RTASDisableMultiMono
+            type->AddGestalt (pluginGestalt_DoesntSupportMultiMono);
+           #endif
+
             type->AddGestalt (pluginGestalt_SupportsVariableQuanta);
             type->AttachEffectProcessCreator (createNewProcess);
 

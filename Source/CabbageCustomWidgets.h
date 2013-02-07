@@ -117,7 +117,7 @@ public:
 ScopedPointer<GroupComponent> groupbox;
 ScopedPointer<Slider> slider;
 //---- constructor -----
-CabbageSlider(String name, String text, String caption, String kind, String colour, String fontColour, int textBox, String trackerFill)
+CabbageSlider(String name, String text, String caption, String kind, String colour, String fontColour, int textBox, String trackerFill, int decPlaces)
 	: plantX(-99), plantY(-99), sliderType(kind), compName(caption), cl(colour), tracker(trackerFill)
 {
 	setName(name);
@@ -132,6 +132,9 @@ CabbageSlider(String name, String text, String caption, String kind, String colo
 	if(tracker.length()>0)
 	slider->getProperties().set("tracker", tracker);
 
+
+    slider->getProperties().set("decimalPlaces", decPlaces);
+	
 	slider->getProperties().set("fontcolour", fontColour);
 	
 	if(textBox<1) 
@@ -1092,7 +1095,15 @@ ScopedPointer<GroupComponent> groupbox;
 ScopedPointer<XYPad> xypad;
 int XYAutoIndex;
 //---- constructor -----
-CabbageXYController(XYPadAutomation* xyAuto, String name, String text, String caption, int minX, int maxX, int minY, int maxY, int index, int dec, String colour, String fontcolour)
+CabbageXYController(XYPadAutomation* xyAuto, 
+					String name, 	
+					String text, 
+					String caption, 
+					int minX, int maxX, int minY, int maxY, int index, int dec, 
+					String colour, 
+					String fontcolour,
+					float xValue, 
+					float yValue)
 {
 	setName(name);
 	XYAutoIndex = index;
@@ -1100,7 +1111,7 @@ CabbageXYController(XYPadAutomation* xyAuto, String name, String text, String ca
 	caption="";
 	groupbox = new GroupComponent(String("groupbox_")+name);
 	groupbox->setWantsKeyboardFocus(false);
-	xypad = new XYPad(xyAuto, text, minX, maxX, minY, maxY, dec, Colour::fromString(colour), Colour::fromString(fontcolour));
+	xypad = new XYPad(xyAuto, text, minX, maxX, minY, maxY, dec, Colour::fromString(colour), Colour::fromString(fontcolour), xValue, yValue);
 	xypad->setWantsKeyboardFocus(false);
 	addAndMakeVisible(xypad);
 	addAndMakeVisible(groupbox);

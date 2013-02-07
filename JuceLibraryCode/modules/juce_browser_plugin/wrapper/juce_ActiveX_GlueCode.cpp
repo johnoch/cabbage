@@ -153,7 +153,7 @@ private:
         return (DISPID) (pointer_sized_int) s.getAddress();
     }
 
-    JUCE_DECLARE_NON_COPYABLE (IDispatchHelper);
+    JUCE_DECLARE_NON_COPYABLE (IDispatchHelper)
 };
 
 //==============================================================================
@@ -175,8 +175,8 @@ public:
 
     HRESULT __stdcall QueryInterface (REFIID id, void __RPC_FAR* __RPC_FAR* result)
     {
-        if (id == IID_IUnknown)         { AddRef(); *result = (IUnknown*)  this; return S_OK; }
-        else if (id == IID_IDispatch)   { AddRef(); *result = (IDispatch*) this; return S_OK; }
+        if (id == IID_IUnknown)    { AddRef(); *result = (IUnknown*)  this; return S_OK; }
+        if (id == IID_IDispatch)   { AddRef(); *result = (IDispatch*) this; return S_OK; }
 
         *result = 0;
         return E_NOINTERFACE;
@@ -208,7 +208,7 @@ private:
     int refCount;
     IDispatchHelper iDispatchHelper;
 
-    JUCE_DECLARE_NON_COPYABLE (IDispatchWrappingDynamicObject);
+    JUCE_DECLARE_NON_COPYABLE (IDispatchWrappingDynamicObject)
 };
 
 
@@ -349,7 +349,7 @@ public:
 private:
     IDispatch* const source;
 
-    JUCE_DECLARE_NON_COPYABLE (DynamicObjectWrappingIDispatch);
+    JUCE_DECLARE_NON_COPYABLE (DynamicObjectWrappingIDispatch)
 };
 
 
@@ -527,7 +527,7 @@ private:
     HWND parentHWND;
     IWebBrowser2* browser;
 
-    JUCE_DECLARE_NON_COPYABLE (AXBrowserPluginHolderComponent);
+    JUCE_DECLARE_NON_COPYABLE (AXBrowserPluginHolderComponent)
 };
 
 //==============================================================================
@@ -595,12 +595,12 @@ public:
 
     HRESULT __stdcall QueryInterface (REFIID id, void __RPC_FAR* __RPC_FAR* result)
     {
-        if (id == IID_IUnknown)                 { AddRef(); *result = (IUnknown*) this; return S_OK; }
-        else if (id == IID_IDispatch)           { AddRef(); *result = (IDispatch*) this; return S_OK; }
-        else if (id == IID_IObjectWithSite)     { AddRef(); *result = (IObjectWithSite*) this; return S_OK; }
-        else if (id == IID_IObjectSafety)       { AddRef(); *result = (IObjectSafety*) this; return S_OK; }
-        else if (id == IID_IOleInPlaceObject)   { AddRef(); *result = (IOleInPlaceObject*) this; return S_OK; }
-        else if (id == IID_IOleWindow)          { AddRef(); *result = (IOleWindow*) (IOleInPlaceObject*) this; return S_OK; }
+        if (id == IID_IUnknown)            { AddRef(); *result = (IUnknown*) this; return S_OK; }
+        if (id == IID_IDispatch)           { AddRef(); *result = (IDispatch*) this; return S_OK; }
+        if (id == IID_IObjectWithSite)     { AddRef(); *result = (IObjectWithSite*) this; return S_OK; }
+        if (id == IID_IObjectSafety)       { AddRef(); *result = (IObjectSafety*) this; return S_OK; }
+        if (id == IID_IOleInPlaceObject)   { AddRef(); *result = (IOleInPlaceObject*) this; return S_OK; }
+        if (id == IID_IOleWindow)          { AddRef(); *result = (IOleWindow*) (IOleInPlaceObject*) this; return S_OK; }
 
         *result = 0;
         return E_NOINTERFACE;
@@ -742,7 +742,7 @@ private:
     ScopedPointer<AXBrowserPluginHolderComponent> holderComp;
     IDispatchHelper iDispatchHelper;
 
-    JUCE_DECLARE_NON_COPYABLE (JuceActiveXObject);
+    JUCE_DECLARE_NON_COPYABLE (JuceActiveXObject)
 };
 
 //==============================================================================
@@ -754,8 +754,8 @@ public:
 
     HRESULT __stdcall QueryInterface (REFIID id, void __RPC_FAR* __RPC_FAR* result)
     {
-        if (id == IID_IUnknown)             { AddRef(); *result = (IUnknown*) this; return S_OK; }
-        else if (id == IID_IClassFactory)   { AddRef(); *result = (IClassFactory*) this; return S_OK; }
+        if (id == IID_IUnknown)        { AddRef(); *result = (IUnknown*) this; return S_OK; }
+        if (id == IID_IClassFactory)   { AddRef(); *result = (IClassFactory*) this; return S_OK; }
 
         *result = nullptr;
         return E_NOINTERFACE;
@@ -780,7 +780,7 @@ public:
 private:
     int refCount;
 
-    JUCE_DECLARE_NON_COPYABLE (JuceActiveXObjectFactory);
+    JUCE_DECLARE_NON_COPYABLE (JuceActiveXObjectFactory)
 };
 
 //==============================================================================

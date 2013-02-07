@@ -28,6 +28,7 @@
 
 extern ApplicationProperties* appProperties;
 extern PropertySet* defaultPropSet;
+extern String currentApplicationDirectory;
 
 //==============================================================================
 // This is the main host window. It gets instatiated in StandaloneFilterApp.cpp
@@ -158,7 +159,7 @@ private:
 	bool timerRunning;
 	bool AudioEnabled;
 	bool isAFileOpen;
-	int setUniquePluginID(File inFile, File csdFile);
+	int setUniquePluginID(File inFile, File csdFile, bool AU);
 	float yAxis;
 	void timerCallback();
 	ScopedPointer<socketServer> server;

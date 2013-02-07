@@ -15,8 +15,7 @@ CabbageEditorWindow::CabbageEditorWindow(LookAndFeel* look)
 	csoundEditor->setBounds(0, 0, getWidth(), getHeight());
 	setContentOwned(csoundEditor, true);
 
-
-setMenuBar (csoundEditor, 25);
+setMenuBar(csoundEditor, 25);
 
 }
 

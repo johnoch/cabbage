@@ -4,8 +4,8 @@
 CabbageLookAndFeel::CabbageLookAndFeel()
 {
 	setColour(AlertWindow::backgroundColourId, CabbageUtils::getDarkerBackgroundSkin());
-	setColour(AlertWindow::textColourId, Colours::white);
-	setColour(AlertWindow::outlineColourId, Colours::grey);
+	setColour(AlertWindow::textColourId, Colour(200, 200, 200));
+	setColour(AlertWindow::outlineColourId, Colours::white);
 	
 }
 
@@ -410,9 +410,12 @@ void CabbageLookAndFeel::drawRotarySlider(Graphics& g, int /*x*/, int /*y*/, int
 	
 	// Setting up textbox variables
 	Font valueFont(CabbageUtils::getValueFont());
-	String value;
-	value << slider.getMaximum() << slider.getInterval();
-	int len = valueFont.getStringWidth(value);
+	// Setting up the format of the string....
+	int numDec = slider.getProperties().getWithDefault("decimalPlaces", 0);
+	String format;
+	format << "%." << numDec << "f";
+	String sliderValue = CabbageUtils::cabbageString(String::formatted(format, slider.getValue()), valueFont, slider.getWidth());	
+	float strWidth = valueFont.getStringWidth(sliderValue);
 
 	// If no textbox
 	if (slider.getTextBoxPosition() == Slider::NoTextBox) {
@@ -429,7 +432,7 @@ void CabbageLookAndFeel::drawRotarySlider(Graphics& g, int /*x*/, int /*y*/, int
 	}
 	// Else if textbox
 	else {
-		slider.setTextBoxStyle (Slider::TextBoxBelow, true, len, 15);
+		slider.setTextBoxStyle (Slider::TextBoxBelow, true, strWidth, 15);
 		sliderBottom -= slider.getTextBoxHeight();
 		//Name label goes at top...
 		if (slider.getName().length() > 0) {
@@ -470,17 +473,6 @@ void CabbageLookAndFeel::drawRotarySlider(Graphics& g, int /*x*/, int /*y*/, int
 	// If NO textbox and mouse is hovering or dragging, then draw the value across the slider.  This has to be done
 	// after the images as it must go on top of them. 
 	if ((slider.getTextBoxPosition() == Slider::NoTextBox) && (slider.isMouseOverOrDragging() == true)) {
-		String interval;
-		interval << slider.getInterval();
-		int numDec = interval.length()-2; //taking away decimal point and number before
-		if (numDec < 0)
-			numDec = 0;
-
-		// Setting up the format of the string....
-		String format;
-		format << "%." << numDec << "f";
-		String sliderValue = CabbageUtils::cabbageString(String::formatted(format, slider.getValue()), valueFont, slider.getWidth());	
-		float strWidth = valueFont.getStringWidth(sliderValue);
 
 		// Background box
 		g.setColour(sliderColour);
@@ -541,6 +533,15 @@ void CabbageLookAndFeel::drawLinearSliderBackground (Graphics &g, int x, int /*y
 		useTracker = false;
 	}
 
+	// Setting up textbox variables
+	Font valueFont(CabbageUtils::getValueFont());
+	// Setting up the format of the string....
+	int numDec = slider.getProperties().getWithDefault("decimalPlaces", 0);
+	String format;
+	format << "%." << numDec << "f";
+	String sliderValue = CabbageUtils::cabbageString(String::formatted(format, slider.getValue()), valueFont, slider.getWidth());	
+	float strWidth = valueFont.getStringWidth(sliderValue);
+
     //===================== If Horizontal Slider =================================================
     if (style == Slider::LinearHorizontal) {
 		// Making sure that the specified size is ok...
@@ -561,10 +562,6 @@ void CabbageLookAndFeel::drawLinearSliderBackground (Graphics &g, int x, int /*y
 
         nameLabelWidth = slider.getWidth() * 0.2;   //available space for the name label
 
-        // Variables for slider value / textbox
-        String str;
-        str << slider.getMaximum() << slider.getInterval();
-		int widthOfValueText = CabbageUtils::getValueFont().getStringWidth(str);
 
         // Start and end of slider image, height*0.25 is to make room for the edge of the slider thumb when at 
         // a maximum or minimum
@@ -586,8 +583,8 @@ void CabbageLookAndFeel::drawLinearSliderBackground (Graphics &g, int x, int /*y
         if (slider.getTextBoxPosition() == Slider::NoTextBox) 
             slider.setTextBoxStyle (Slider::NoTextBox, true, 0, 0);
         else { 
-            slider.setTextBoxStyle (Slider::TextBoxRight, false, widthOfValueText, 15);
-            sliderEndPosition -= widthOfValueText;
+            slider.setTextBoxStyle (Slider::TextBoxRight, false, strWidth, 15);
+            sliderEndPosition -= strWidth;
         }
 
         destWidth = sliderEndPosition - destX; 
@@ -713,6 +710,7 @@ void CabbageLookAndFeel::drawLinearSliderThumb (Graphics &g, int x, int /*y*/, i
 			numDec = 0;
 
 		// Setting up format string....
+		numDec = slider.getProperties().getWithDefault("decimalPlaces", 0);
 		String format;
 		format << "%." << numDec << "f";
 		sliderValue = String::formatted(format, slider.getValue());
@@ -1390,7 +1388,7 @@ void CabbageLookAndFeel::drawAlertBox (Graphics& g,
                                 TextLayout& textLayout)
 {
     g.fillAll (alert.findColour (AlertWindow::backgroundColourId));
-	g.fillAll (CabbageUtils::getComponentSkin());
+	g.fillAll (Colours::black);
     int iconSpaceUsed = 0;
 
     const int iconWidth = 80;
@@ -1410,14 +1408,10 @@ void CabbageLookAndFeel::drawAlertBox (Graphics& g,
 
         if (alert.getAlertType() == AlertWindow::WarningIcon)
         {
-            colour = 0x55ff5555;
-            character = '!';
-
-            icon.addTriangle (iconRect.getX() + iconRect.getWidth() * 0.5f, (float) iconRect.getY(),
-                              (float) iconRect.getRight(), (float) iconRect.getBottom(),
-                              (float) iconRect.getX(), (float) iconRect.getBottom());
-
-            icon = icon.createPathWithRoundedCorners (5.0f);
+				Image logo = ImageCache::getFromMemory (BinaryData::logo_cabbage_Black_png, BinaryData::logo_cabbage_Black_pngSize);
+				g.setOpacity(.2f);
+				g.drawImage(logo, -300, -100, 600, 500, 0, 0, logo.getWidth(), logo.getHeight());
+				
         }
         else
         {
@@ -1426,19 +1420,20 @@ void CabbageLookAndFeel::drawAlertBox (Graphics& g,
 
             icon.addEllipse ((float) iconRect.getX(), (float) iconRect.getY(),
                              (float) iconRect.getWidth(), (float) iconRect.getHeight());
+
         }
 
-        GlyphArrangement ga;
-        ga.addFittedText (Font (iconRect.getHeight() * 0.9f, Font::bold),
-                          String::charToString ((juce_wchar) (uint8) character),
-                          (float) iconRect.getX(), (float) iconRect.getY(),
-                          (float) iconRect.getWidth(), (float) iconRect.getHeight(),
-                          Justification::centred, false);
-        ga.createPath (icon);
-
-        icon.setUsingNonZeroWinding (false);
-        g.setColour (Colour (colour));
-        g.fillPath (icon);
+//        GlyphArrangement ga;
+//        ga.addFittedText (Font (iconRect.getHeight() * 0.9f, Font::bold),
+//                          String::charToString ((juce_wchar) (uint8) character),
+//                          (float) iconRect.getX(), (float) iconRect.getY(),
+//                          (float) iconRect.getWidth(), (float) iconRect.getHeight(),
+//                          Justification::centred, false);
+//        ga.createPath (icon);
+//
+//        icon.setUsingNonZeroWinding (false);
+//        g.setColour (Colour (colour));
+//        g.fillPath (icon);
 
         iconSpaceUsed = iconWidth;
     }

@@ -44,7 +44,7 @@ class CabbageGUIClass : public CabbageUtils
         shape, beveltype, caption, kind, topitem, yChannel, xChannel, author,
         exit, csstdout, cssetup, file, debugMessage, xyChannel, pluginID, preset;
 		Colour outline, fill, fontcolour, textcolour, colour, trackerFill;
-		int tableNum, textBox, numPresets, masterSnap, plantButton, xyAutoIndex, paramIndex;
+		int tableNum, textBox, numPresets, masterSnap, plantButton, xyAutoIndex, paramIndex, numTables;
 		Array<int> vuConfig;
 		Array<int> tableNumbers;
 		Array<float> tableChannelValues;
@@ -55,8 +55,8 @@ public:
 	CabbageGUIClass(String str, int ID);
     ~CabbageGUIClass();
 	int parse(String str);
-	double getNumProp(String prop);
-	double getNumProp(String prop, int index);
+	float getNumProp(String prop);
+	float getNumProp(String prop, int index);
 	void setNumProp(String prop, float val);
 	void setTableChannelValues(int index, float val);
 	float getTableChannelValues(int index);
@@ -145,6 +145,10 @@ public:
 
 	inline String getkey(int index){
 		return key.getReference(index);
+	}
+
+	inline int getNumberOfTables(){
+		return numTables;
 	}
 
 	int getTableNumbers(int index)

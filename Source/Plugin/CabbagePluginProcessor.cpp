@@ -427,6 +427,7 @@ bool multiLine = false;
                                                                 cAttr.setNumProp("sliderRange",  cAttr.getNumProp("xypadRangeX"));
                                                                 cAttr.setNumProp("min",  cAttr.getNumProp("minX"));
                                                                 cAttr.setNumProp("max",  cAttr.getNumProp("maxX"));
+																cAttr.setNumProp("value", cAttr.getNumProp("valueX"));
                                                                 cAttr.setStringProp(String("channel"), cAttr.getStringProp("xChannel"));
                                                                 guiCtrls.add(cAttr);
 
@@ -434,6 +435,7 @@ bool multiLine = false;
                                                                 cAttr.setNumProp("sliderRange",  cAttr.getNumProp("xypadRangeY"));
                                                                 cAttr.setNumProp("min",  cAttr.getNumProp("minY"));
                                                                 cAttr.setNumProp("max",  cAttr.getNumProp("maxY"));
+																cAttr.setNumProp("value", cAttr.getNumProp("valueY"));
                                                                 cAttr.setStringProp(String("channel"), cAttr.getStringProp("yChannel"));
                                                                 //append 'dummy' to name so the editor know not to display the 
                                                                 //second xypad
@@ -591,7 +593,7 @@ if(index<(int)guiCtrls.size())//make sure index isn't out of range
 	#ifndef Cabbage_Build_Standalone        
     //scaling in here because incoming values in plugin mode range from 0-1
 	range = getGUICtrls(index).getNumProp("sliderRange");
-	Logger::writeToLog("inValue:"+String(newValue));
+	//Logger::writeToLog("inValue:"+String(newValue));
 	min = getGUICtrls(index).getNumProp("min");
 	
 	if(getGUICtrls(index).getStringProp("type")=="xypad")

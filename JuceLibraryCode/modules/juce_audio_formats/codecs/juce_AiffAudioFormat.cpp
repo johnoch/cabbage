@@ -225,7 +225,10 @@ namespace AiffFileHelpers
                     out.writeShortBigEndian ((short) values.getValue (prefix + "Identifier", "0").getIntValue());
 
                     const String comment (values.getValue (prefix + "Text", String::empty));
-                    out.write (comment.toUTF8(), jmin (comment.getNumBytesAsUTF8(), 65534));
+
+                    const int commentLength = jmin (comment.getNumBytesAsUTF8(), 65534);
+                    out.writeShortBigEndian ((short) commentLength + 1);
+                    out.write (comment.toUTF8(), commentLength);
                     out.writeByte (0);
 
                     if ((out.getDataSize() & 1) != 0)
@@ -471,7 +474,7 @@ public:
     bool littleEndian;
 
 private:
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (AiffAudioFormatReader);
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (AiffAudioFormatReader)
 };
 
 //==============================================================================
@@ -655,7 +658,7 @@ private:
         jassert (output->getPosition() == headerLen);
     }
 
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (AiffAudioFormatWriter);
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (AiffAudioFormatWriter)
 };
 
 //==============================================================================

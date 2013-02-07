@@ -133,7 +133,7 @@ public:
         if (start.getAddress() == nullptr || start.isEmpty())
             return getEmpty();
 
-        const size_t numBytes = end.getAddress() - start.getAddress();
+        const size_t numBytes = (size_t) (end.getAddress() - start.getAddress());
         const CharPointerType dest (createUninitialisedBytes (numBytes + 1));
         memcpy (dest.getAddress(), start, numBytes);
         dest.getAddress()[numBytes] = 0;
@@ -428,7 +428,7 @@ namespace NumberToStringConverters
 
     static char* doubleToString (char* buffer, const int numChars, double n, int numDecPlaces, size_t& len) noexcept
     {
-        if (numDecPlaces > 0 && n > -1.0e20 && n < 1.0e20)
+        if (numDecPlaces > 0 && numDecPlaces < 7 && n > -1.0e20 && n < 1.0e20)
         {
             char* const end = buffer + numChars;
             char* t = end;
@@ -452,19 +452,22 @@ namespace NumberToStringConverters
             len = (size_t) (end - t - 1);
             return t;
         }
-        else
-        {
-            // Use a locale-free sprintf where possible (not available on linux AFAICT)
-           #if JUCE_MSVC
-            len = (size_t) _sprintf_l (buffer, "%.9g", _create_locale (LC_NUMERIC, "C"), n);
-           #elif JUCE_MAC || JUCE_IOS
-            len = (size_t)  sprintf_l (buffer, nullptr, "%.9g", n);
-           #else
-            len = (size_t)  sprintf (buffer, "%.9g", n);
-           #endif
 
-            return buffer;
-        }
+       // Use a locale-free sprintf where possible (not available on linux AFAICT)
+       #if JUCE_MSVC
+        static _locale_t cLocale = _create_locale (LC_NUMERIC, "C");
+
+        len = (size_t) (numDecPlaces > 0 ? _sprintf_l (buffer, "%.*f", cLocale, numDecPlaces, n)
+                                         : _sprintf_l (buffer, "%.9g", cLocale, n));
+       #elif JUCE_MAC || JUCE_IOS
+        len = (size_t) (numDecPlaces > 0 ? sprintf_l (buffer, nullptr, "%.*f", numDecPlaces, n)
+                                         : sprintf_l (buffer, nullptr, "%.9g", n));
+       #else
+        len = (size_t) (numDecPlaces > 0 ? sprintf (buffer, "%.*f", numDecPlaces, n)
+                                         : sprintf (buffer, "%.9g", n));
+       #endif
+
+        return buffer;
     }
 
     template <typename IntegerType>
@@ -510,7 +513,7 @@ size_t String::getByteOffsetOfEnd() const noexcept
     return (size_t) (((char*) text.findTerminatingNull().getAddress()) - (char*) text.getAddress());
 }
 
-const juce_wchar String::operator[] (int index) const noexcept
+juce_wchar String::operator[] (int index) const noexcept
 {
     jassert (index == 0 || (index > 0 && index <= (int) text.lengthUpTo ((size_t) index + 1)));
     return text [index];
@@ -669,7 +672,7 @@ String& String::operator+= (const int number)
     {
         const size_t byteOffsetOfNull = getByteOffsetOfEnd();
         const size_t newBytesNeeded = sizeof (CharPointerType::CharType) + byteOffsetOfNull
-                                        + sizeof (CharPointerType::CharType) * numExtraChars;
+                                        + sizeof (CharPointerType::CharType) * (size_t) numExtraChars;
 
         text = StringHolder::makeUniqueWithByteSize (text, newBytesNeeded);
 
@@ -1037,7 +1040,7 @@ String String::repeatedString (const String& stringToRepeat, int numberOfTimesTo
     if (numberOfTimesToRepeat <= 0)
         return empty;
 
-    String result (PreallocationBytes (stringToRepeat.getByteOffsetOfEnd() * numberOfTimesToRepeat));
+    String result (PreallocationBytes (stringToRepeat.getByteOffsetOfEnd() * (size_t) numberOfTimesToRepeat));
     CharPointerType n (result.text);
 
     while (--numberOfTimesToRepeat >= 0)
@@ -1063,7 +1066,7 @@ String String::paddedLeft (const juce_wchar padCharacter, int minimumLength) con
         return *this;
 
     const size_t currentByteSize = (size_t) (((char*) end.getAddress()) - (char*) text.getAddress());
-    String result (PreallocationBytes (currentByteSize + extraChars * CharPointerType::getBytesRequiredFor (padCharacter)));
+    String result (PreallocationBytes (currentByteSize + (size_t) extraChars * CharPointerType::getBytesRequiredFor (padCharacter)));
     CharPointerType n (result.text);
 
     while (--extraChars >= 0)
@@ -1090,7 +1093,7 @@ String String::paddedRight (const juce_wchar padCharacter, int minimumLength) co
         return *this;
 
     const size_t currentByteSize = (size_t) (((char*) end.getAddress()) - (char*) text.getAddress());
-    String result (PreallocationBytes (currentByteSize + extraChars * CharPointerType::getBytesRequiredFor (padCharacter)));
+    String result (PreallocationBytes (currentByteSize + (size_t) extraChars * CharPointerType::getBytesRequiredFor (padCharacter)));
     CharPointerType n (result.text);
 
     n.writeAll (text);
@@ -1553,7 +1556,8 @@ String String::trim() const
 
         if (trimmedEnd <= start)
             return empty;
-        else if (text < start || trimmedEnd < end)
+
+        if (text < start || trimmedEnd < end)
             return String (start, trimmedEnd);
     }
 
@@ -1907,15 +1911,13 @@ String String::createStringFromData (const void* const data_, const int size)
     const uint8* const data = static_cast <const uint8*> (data_);
 
     if (size <= 0 || data == nullptr)
-    {
         return empty;
-    }
-    else if (size == 1)
-    {
+
+    if (size == 1)
         return charToString ((juce_wchar) data[0]);
-    }
-    else if ((data[0] == (uint8) CharPointer_UTF16::byteOrderMarkBE1 && data[1] == (uint8) CharPointer_UTF16::byteOrderMarkBE2)
-          || (data[0] == (uint8) CharPointer_UTF16::byteOrderMarkLE1 && data[1] == (uint8) CharPointer_UTF16::byteOrderMarkLE2))
+
+    if ((data[0] == (uint8) CharPointer_UTF16::byteOrderMarkBE1 && data[1] == (uint8) CharPointer_UTF16::byteOrderMarkBE2)
+         || (data[0] == (uint8) CharPointer_UTF16::byteOrderMarkLE1 && data[1] == (uint8) CharPointer_UTF16::byteOrderMarkLE2))
     {
         const bool bigEndian = (data[0] == (uint8) CharPointer_UTF16::byteOrderMarkBE1);
         const int numChars = size / 2 - 1;
@@ -1938,20 +1940,18 @@ String String::createStringFromData (const void* const data_, const int size)
         builder.write (0);
         return builder.result;
     }
-    else
-    {
-        const uint8* start = data;
-        const uint8* end = data + size;
 
-        if (size >= 3
-              && data[0] == (uint8) CharPointer_UTF8::byteOrderMark1
-              && data[1] == (uint8) CharPointer_UTF8::byteOrderMark2
-              && data[2] == (uint8) CharPointer_UTF8::byteOrderMark3)
-            start += 3;
+    const uint8* start = data;
+    const uint8* end = data + size;
 
-        return String (CharPointer_UTF8 ((const char*) start),
-                       CharPointer_UTF8 ((const char*) end));
-    }
+    if (size >= 3
+          && data[0] == (uint8) CharPointer_UTF8::byteOrderMark1
+          && data[1] == (uint8) CharPointer_UTF8::byteOrderMark2
+          && data[2] == (uint8) CharPointer_UTF8::byteOrderMark3)
+        start += 3;
+
+    return String (CharPointer_UTF8 ((const char*) start),
+                   CharPointer_UTF8 ((const char*) end));
 }
 
 //==============================================================================
@@ -1971,7 +1971,7 @@ struct StringEncodingConverter
 
         CharPointerType_Src text (source.getCharPointer());
         const size_t extraBytesNeeded = CharPointerType_Dest::getBytesRequiredFor (text);
-        const size_t endOffset = (text.sizeInBytes() + 3) & ~3; // the new string must be word-aligned or many Windows
+        const size_t endOffset = (text.sizeInBytes() + 3) & ~3u; // the new string must be word-aligned or many Windows
                                                                 // functions will fail to read it correctly!
         source.preallocateBytes (endOffset + extraBytesNeeded);
         text = source.getCharPointer();
@@ -1980,8 +1980,8 @@ struct StringEncodingConverter
         const CharPointerType_Dest extraSpace (static_cast <DestChar*> (newSpace));
 
        #if JUCE_DEBUG // (This just avoids spurious warnings from valgrind about the uninitialised bytes at the end of the buffer..)
-        const int bytesToClear = jmin ((int) extraBytesNeeded, 4);
-        zeromem (addBytesToPointer (newSpace, (int) (extraBytesNeeded - bytesToClear)), (size_t) bytesToClear);
+        const size_t bytesToClear = (size_t) jmin ((int) extraBytesNeeded, 4);
+        zeromem (addBytesToPointer (newSpace, extraBytesNeeded - bytesToClear), bytesToClear);
        #endif
 
         CharPointerType_Dest (extraSpace).writeAll (text);
@@ -2056,10 +2056,9 @@ String String::fromUTF8 (const char* const buffer, int bufferSizeBytes)
 {
     if (buffer != nullptr)
     {
-        if (bufferSizeBytes < 0)
-            return String (CharPointer_UTF8 (buffer));
-        else if (bufferSizeBytes > 0)
-            return String (CharPointer_UTF8 (buffer), CharPointer_UTF8 (buffer + bufferSizeBytes));
+        if (bufferSizeBytes < 0) return String (CharPointer_UTF8 (buffer));
+        if (bufferSizeBytes > 0) return String (CharPointer_UTF8 (buffer),
+                                                CharPointer_UTF8 (buffer + bufferSizeBytes));
     }
 
     return String::empty;
@@ -2099,7 +2098,7 @@ public:
             CharPointerType (buffer).writeAll (s.toUTF8());
             test.expectEquals (String (CharPointerType (buffer)), s);
 
-            test.expect (CharPointerType::isValidString (buffer, strlen ((const char*) buffer)));
+            test.expect (CharPointerType::isValidString (buffer, (int) strlen ((const char*) buffer)));
         }
     };
 
@@ -2275,7 +2274,7 @@ public:
             expect (s5.containsWholeWordIgnoreCase (L"Word"));
             expect (s5.containsWholeWordIgnoreCase ("Word3"));
             expect (! s5.containsWholeWordIgnoreCase (L"Wordx"));
-            expect (!s5.containsWholeWordIgnoreCase ("xWord2"));
+            expect (! s5.containsWholeWordIgnoreCase ("xWord2"));
             expect (s5.containsNonWhitespaceChars());
             expect (s5.containsOnly ("ordw23 "));
             expect (! String (" \n\r\t").containsNonWhitespaceChars());
