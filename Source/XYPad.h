@@ -282,7 +282,9 @@ public:
 																				int maxYValue, 
 																				int numberOfDecimalPlaces,
 																				Colour ballCol,
-																				Colour fontCol);
+																				Colour fontCol,
+																				float initXVal,
+																				float initYVal);
 	~XYPad();
 
 	void resized();
@@ -313,7 +315,7 @@ private:
 	String title, name;
 	Colour ballColour, fontColour, toggleColour;
 	float yMax, xMax, yMin, xMin;
-	float xOut, yOut, xRange, yRange;
+	float xOut, yOut, xRange, yRange, initX, initY;
 	int decimalPlaces;	
 	OwnedArray<XYValueDisplay> valueDisplays;
 	OwnedArray<XYToggle> xyToggles;

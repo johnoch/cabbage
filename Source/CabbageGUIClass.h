@@ -55,8 +55,8 @@ public:
 	CabbageGUIClass(String str, int ID);
     ~CabbageGUIClass();
 	int parse(String str);
-	double getNumProp(String prop);
-	double getNumProp(String prop, int index);
+	float getNumProp(String prop);
+	float getNumProp(String prop, int index);
 	void setNumProp(String prop, float val);
 	void setTableChannelValues(int index, float val);
 	float getTableChannelValues(int index);

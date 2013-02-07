@@ -106,6 +106,7 @@ private:
         int lineNumber;
         File SnapShotFile;
         String presetFileText;
+		String tempPlantText;
         void actionListenerCallback (const String& message);
         int zero_dbfs;
 		StringArray tempArray;

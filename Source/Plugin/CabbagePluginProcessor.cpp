@@ -427,6 +427,7 @@ bool multiLine = false;
                                                                 cAttr.setNumProp("sliderRange",  cAttr.getNumProp("xypadRangeX"));
                                                                 cAttr.setNumProp("min",  cAttr.getNumProp("minX"));
                                                                 cAttr.setNumProp("max",  cAttr.getNumProp("maxX"));
+																cAttr.setNumProp("value", cAttr.getNumProp("valueX"));
                                                                 cAttr.setStringProp(String("channel"), cAttr.getStringProp("xChannel"));
                                                                 guiCtrls.add(cAttr);
 
@@ -434,6 +435,7 @@ bool multiLine = false;
                                                                 cAttr.setNumProp("sliderRange",  cAttr.getNumProp("xypadRangeY"));
                                                                 cAttr.setNumProp("min",  cAttr.getNumProp("minY"));
                                                                 cAttr.setNumProp("max",  cAttr.getNumProp("maxY"));
+																cAttr.setNumProp("value", cAttr.getNumProp("valueY"));
                                                                 cAttr.setStringProp(String("channel"), cAttr.getStringProp("yChannel"));
                                                                 //append 'dummy' to name so the editor know not to display the 
                                                                 //second xypad

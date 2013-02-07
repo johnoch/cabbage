@@ -37,6 +37,7 @@ class CabbageStandalone : public JUCEApplication
 			defaultPropSet->setValue("DisablePluginInfo", 0);
 			defaultPropSet->setValue("AutoUpdate", 0);
 			defaultPropSet->setValue("UseCabbageIO", 1);
+			defaultPropSet->setValue("AudioEnabled", 1);
 			defaultPropSet->setValue("DisableGUIEditModeWarning", 0);
 			defaultPropSet->setValue("SetAlwaysOnTop", 1);	
 			defaultPropSet->setValue("PlantRepository", xml);

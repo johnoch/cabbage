@@ -282,7 +282,26 @@ void StandaloneFilterWindow::actionListenerCallback (const String& message){
 
 	else if(message.contains("MENU COMMAND: manual update GUI"))
 		filter->createGUI(csdFile.loadFileAsString());
-	
+		
+	else if(message.contains("MENU COMMAND: toggle edit")){
+		int val = getPreference(appProperties, "DisableGUIEditModeWarning");
+		if(val)
+			showMessage("Warning!! This feature is bleeding edge! (that's programmer speak for totally untested and likely to crash hard!). If you like to live on the edge, disable this warning under the 'Preferences' menu command and try 'Edit Mode' again, otherwise just let it be...", lookAndFeel);
+		else{
+			if(isAFileOpen == true)
+			if(filter->isGuiEnabled()){
+			((CabbagePluginAudioProcessorEditor*)filter->getActiveEditor())->setEditMode(false);
+			filter->setGuiEnabled(false);
+			}
+			else{
+			((CabbagePluginAudioProcessorEditor*)filter->getActiveEditor())->setEditMode(true);
+			filter->setGuiEnabled(true);
+			stopTimer();
+			setPreference(appProperties, "AutoUpdate", 0);
+			}
+		}		
+	}
+		
 	else if(message.contains("MENU COMMAND: suspend audio"))
         if(AudioEnabled){
 			filter->suspendProcessing(true);
@@ -528,10 +547,18 @@ void StandaloneFilterWindow::buttonClicked (Button*)
 		m.addItem(2, String("View Source Editor"));
 		m.addSeparator();
 	}
-	if(AudioEnabled)
-	m.addItem(400, "Audio Enabled | Ctrl+m", true, true); 
-	else
-	m.addItem(400, "Audio Enabled | Ctrl+m", true, false); 
+
+		if(!getPreference(appProperties, "AudioEnabled"))
+		m.addItem(400, String("Audio Enabled | Ctrl+m"), true, false);
+		else
+		m.addItem(400, String("Audio Enabled | Ctrl+m"), true, true);
+
+
+//	if(getPreference(appProperties, "CabbageEnabled"))
+//	m.addItem(400, "Audio Enabled | Ctrl+m", true, true); 
+//	else
+//	m.addItem(400, "Audio Enabled | Ctrl+m", true, false); 
+	
     m.addItem(4, TRANS("Audio Settings..."));
     m.addSeparator();
 	if(!standaloneMode){	
@@ -573,34 +600,31 @@ void StandaloneFilterWindow::buttonClicked (Button*)
 	m.addItem(99, String("Cabbage Dance"));
 */
 		subMenu.clear();
-		int alwaysontop = getPreference(appProperties, "SetAlwaysOnTop"); 
-		if(alwaysontop)
+		
+		if(getPreference(appProperties, "SetAlwaysOnTop"))
 		subMenu.addItem(7, String("Always on Top"), true, true);
 		else
 		subMenu.addItem(7, String("Always on Top"), true, false);
 		//preferences....
-		int pluginInfo = getPreference(appProperties, "DisablePluginInfo");
 		subMenu.addItem(203, "Set Cabbage Plant Directory");
 		subMenu.addItem(200, "Set Csound Manual Directory");
-		if(!pluginInfo)
+		if(!getPreference(appProperties, "DisablePluginInfo"))
 		subMenu.addItem(201, String("Disable Export Plugin Info"), true, false);
 		else
 		subMenu.addItem(201, String("Disable Export Plugin Info"), true, true);
 
-		int autoUpdate = getPreference(appProperties, "AutoUpdate");
-		if(!autoUpdate)
+
+		if(!getPreference(appProperties, "AutoUpdate"))
 		subMenu.addItem(299, String("Auto-update"), true, false);
 		else
 		subMenu.addItem(299, String("Auto-update"), true, true);
 
-		int disableGUIEditWarning = getPreference(appProperties, "DisableGUIEditModeWarning");
-		if(!disableGUIEditWarning)
+		if(!getPreference(appProperties, "DisableGUIEditModeWarning"))
 		subMenu.addItem(202, String("Disable GUI Edit Mode warning"), true, true);
 		else
 		subMenu.addItem(202, String("Disable GUI Edit Mode warning"), true, false);
 
-		int csoundIO = getPreference(appProperties, "UseCabbageIO");
-		if(!csoundIO)
+		if(!getPreference(appProperties, "UseCabbageIO"))
 		subMenu.addItem(204, String("Use Cabbage IO"), true, false);
 		else
 		subMenu.addItem(204, String("Use Cabbage IO"), true, true);
@@ -684,13 +708,14 @@ void StandaloneFilterWindow::buttonClicked (Button*)
 
 	//suspend audio
    	else if(options==400){
-        if(AudioEnabled){
+        if(getPreference(appProperties, "AudioEnabled")){
 			filter->suspendProcessing(true);
-			AudioEnabled = false;
+			setPreference(appProperties, "AudioEnabled", 0);
 		}
 		else{
 			AudioEnabled = true;
 			filter->suspendProcessing(false);
+			setPreference(appProperties, "AudioEnabled", 1);
 		}
 	}
 

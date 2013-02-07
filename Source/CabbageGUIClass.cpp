@@ -43,7 +43,9 @@ CabbageGUIClass::CabbageGUIClass(String compStr, int ID):
 								workingDir(""),
 								alpha(1),
 								sliderRange(1),
-								numTables(0)
+								numTables(0),
+								sliderIncr(.01),
+								decimalPlaces(1)
 {
 //Default values are assigned to all attributres 
 //before parsing begins
@@ -52,7 +54,6 @@ CabbageGUIClass::CabbageGUIClass(String compStr, int ID):
 	key.clear();
 	min=0;
 	max=1;
-	sliderIncr = 0.01;
 	sliderSkew = 1;
 	value = 0;
 	StringArray strTokens;
@@ -745,19 +746,33 @@ int CabbageGUIClass::parse(String str)
 				if(strTokens.size()<3){
 					debugMessage ="WARNING: Not enough paramters passed to range(): usage range(minx, max, value, incr\")";
 				}
-				else{
+				else{	
+				String temp;
 				min = strTokens[0].trim().getDoubleValue();// getFloatValue();  
 				max = strTokens[1].trim().getDoubleValue();//.getFloatValue();  
-				if(strTokens.size()>2)
+				if(strTokens.size()>2){
 				value = strTokens[2].trim().getDoubleValue();//.getFloatValue(); 
+				temp = strTokens[2];
+				}
 				else value = 0;
+
+				if(temp.indexOf(".")>0){
+				String subTemp = temp.substring(temp.indexOf("."), 10);
+				decimalPlaces = subTemp.length()-1;
+				}
+				
+				
 
 				if(strTokens.size()>3)
 				sliderSkew = strTokens[3].trim().getDoubleValue();//.getFloatValue(); 
 				if(strTokens.size()>4)
-				sliderIncr = strTokens[4].trim().getDoubleValue();//.getFloatValue(); 
+				sliderIncr = strTokens[4].trim().getFloatValue(); 
 
 				sliderRange = max-min;
+				
+				
+ 
+				
 				}
 			}
 			else if(identArray.getReference(indx).toLowerCase().equalsIgnoreCase("rangex(")){
@@ -876,7 +891,7 @@ catch(...){
 }
 //=========================================================================
 //retrieve numerical attributes
-double CabbageGUIClass::getNumProp(String prop)
+float CabbageGUIClass::getNumProp(String prop)
 {
 		if(prop.equalsIgnoreCase("width"))
 			return width;
@@ -975,7 +990,7 @@ double CabbageGUIClass::getNumProp(String prop)
 		else return -9999;
 }
 
-double CabbageGUIClass::getNumProp(String prop, int index)
+float CabbageGUIClass::getNumProp(String prop, int index)
 {
 		if(prop.equalsIgnoreCase("configArray"))
 			return vuConfig[index];
