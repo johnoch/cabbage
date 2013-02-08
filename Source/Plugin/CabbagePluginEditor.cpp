@@ -1788,7 +1788,7 @@ if(message.contains("Message sent from CabbageMainPanel")){
 	csdArray.addLines(getFilter()->getCsoundInputFileText());
 
 		//this removes the bounds data from the string... 
-		if(componentPanel->getMouseState().equalsIgnoreCase("down")){
+		if(message == "Message sent from CabbageMainPanel:Down"){
 				for(int i=0; i<csdArray.size(); i++){
 				CabbageGUIClass CAttr(csdArray[i], -99);
 				if(csdArray[i].contains("</Cabbage>"))
@@ -1804,7 +1804,7 @@ if(message.contains("Message sent from CabbageMainPanel")){
 				}
 		}//END OF MOUSE DOWN MESSAGE EVENT
 
-		else if(componentPanel->getMouseState().equalsIgnoreCase("up")){
+		else if(message == "Message sent from CabbageMainPanel:Up"){
 		//ONLY SEND UPDATED INFO ON A MOUSE UP
 
 				//replace the bounds() indentifier with the updated one
@@ -1844,7 +1844,8 @@ if(message.contains("Message sent from CabbageMainPanel")){
 				temp = csdArray.joinIntoString("\n");
 				temp = temp.replace(tempPlantText, "");
 				Logger::writeToLog(temp);
-				getFilter()->updateCsoundFile(temp);		
+				getFilter()->updateCsoundFile(temp);	
+				//reset temp plant text
 				tempPlantText="";
 				}
 				else{
@@ -1854,14 +1855,13 @@ if(message.contains("Message sent from CabbageMainPanel")){
 				
 				getFilter()->setGuiEnabled(true);
 				getFilter()->setCurrentLineText("");
-				getFilter()->sendActionMessage("GUI Updated, controls added");	
-				//reset temp plant text
-		
+				getFilter()->sendActionMessage("GUI Updated, controls deleted");	
+
 			}
 
 		//doing this here because compoentLayoutManager doesn't know the csd file text...
-		if(message.length()>String("Message sent from CabbageMainPanel:Panel:").length()){ //ADD TO REPOSITORY
-			String repoEntryName = message.substring(String("Message sent from CabbageMainPanel:Panel:").length());
+		if(message.contains("Message sent from CabbageMainPanel:AddingPlant:")){ //ADD TO REPOSITORY
+			String repoEntryName = message.substring(String("Message sent from CabbageMainPanel:AddingPlant:").length());
 			String repoEntry = csdArray[lineNumber];
 			int cnt = 0;
 			//CabbageUtils::showMessage(repoEntryName);
@@ -2095,7 +2095,7 @@ if(!getFilter()->getCsoundInputFile().loadFileAsString().isEmpty()){
 					if(csdArray[i].contains("form")){
 					String newSize = "size("+String(getWidth())+", "+String(getHeight())+")";
 					Logger::writeToLog(newSize);
-					csdArray.set(i, replaceIdentifier(csdArray[i], "size", newSize));
+					csdArray.set(i, replaceIdentifier(csdArray[i], "size(", newSize));
 					}
 			}
 	getFilter()->updateCsoundFile(csdArray.joinIntoString("\n"));

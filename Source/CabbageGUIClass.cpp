@@ -45,7 +45,7 @@ CabbageGUIClass::CabbageGUIClass(String compStr, int ID):
 								sliderRange(1),
 								numTables(0),
 								sliderIncr(.01),
-								decimalPlaces(1)
+								decimalPlaces(0)
 {
 //Default values are assigned to all attributres 
 //before parsing begins
@@ -747,33 +747,31 @@ int CabbageGUIClass::parse(String str)
 					debugMessage ="WARNING: Not enough paramters passed to range(): usage range(minx, max, value, incr\")";
 				}
 				else{	
-				String temp;
-				min = strTokens[0].trim().getDoubleValue();// getFloatValue();  
+				StringArray tempArray;
+				min = strTokens[0].trim().getDoubleValue();// getFloatValue(); 
 				max = strTokens[1].trim().getDoubleValue();//.getFloatValue();  
+				tempArray.add(strTokens[0].trim());
+				tempArray.add(strTokens[1].trim());
 				if(strTokens.size()>2){
 				value = strTokens[2].trim().getDoubleValue();//.getFloatValue(); 
-				temp = strTokens[2];
+				tempArray.add(strTokens[2].trim());
 				}
-				else value = 0;
+				else value = 0;				
 
-				if(temp.indexOf(".")>0){
-				String subTemp = temp.substring(temp.indexOf("."), 10);
-				decimalPlaces = subTemp.length()-1;
-				}
-				
-				
-
-				if(strTokens.size()>3)
+				if(strTokens.size()>3){
 				sliderSkew = strTokens[3].trim().getDoubleValue();//.getFloatValue(); 
-				if(strTokens.size()>4)
-				sliderIncr = strTokens[4].trim().getFloatValue(); 
-
-				sliderRange = max-min;
-				
-				
- 
-				
+				tempArray.add(strTokens[3].trim());
 				}
+				
+				if(strTokens.size()>4){  
+				sliderIncr = strTokens[4].trim().getFloatValue(); 
+				tempArray.add(strTokens[4].trim());
+				}
+				
+				sliderRange = max-min;				
+				decimalPlaces = getNumberOfDecimalPlaces(tempArray);				
+				}
+
 			}
 			else if(identArray.getReference(indx).toLowerCase().equalsIgnoreCase("rangex(")){
 				if(strTokens.size()<3){

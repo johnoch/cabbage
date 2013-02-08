@@ -236,12 +236,20 @@ void StandaloneFilterWindow::actionListenerCallback (const String& message){
 	}
 
 	else if(message == "GUI Updated, controls added"){
+	//cabbageCsoundEditor->setCsoundFile(csdFile);
 	filter->createGUI(csdFile.loadFileAsString());
 	setGuiEnabled(true);
 	filter->setGuiEnabled(true);
 	setCurrentLine(filter->getCurrentLine()+1);
 	}
-	
+
+	else if(message == "GUI Updated, controls deleted"){
+	filter->createGUI(csdFile.loadFileAsString());
+	setGuiEnabled(true);
+	filter->setGuiEnabled(true);
+	cabbageCsoundEditor->setCsoundFile(csdFile);
+	}
+
 	else if(message.equalsIgnoreCase("fileSaved")){
 	saveFile();
 	}
@@ -1141,7 +1149,7 @@ int StandaloneFilterWindow::setUniquePluginID(File binFile, File csdFile, bool A
 	
 	
 	long loc;
-	showMessage(binFile.getFullPathName(), lookAndFeel);
+	//showMessage(binFile.getFullPathName(), lookAndFeel);
 	fstream mFile(binFile.getFullPathName().toUTF8(), ios_base::in | ios_base::out | ios_base::binary);
 	if(mFile.is_open())
 	{

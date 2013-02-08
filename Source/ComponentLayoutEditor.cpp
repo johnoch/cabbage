@@ -181,7 +181,7 @@ void ChildAlias::mouseDown (const MouseEvent& e)
 																					 getWidth(),
 																					 getHeight());
 
-   ((CabbageMainPanel*)(getTarget()->getParentComponent()))->sendActionMessage("Message sent from CabbageMainPanel");
+   ((CabbageMainPanel*)(getTarget()->getParentComponent()))->sendActionMessage("Message sent from CabbageMainPanel:Down");
 
 #ifdef Cabbage_Build_Standalone
 	if(e.mods.isRightButtonDown()){
@@ -221,11 +221,11 @@ void ChildAlias::mouseDown (const MouseEvent& e)
 				if(clashingNames==true){
 					result = CabbageUtils::showYesNoMessage("Do you wish to overwrite the existing plant?", &getLookAndFeel());	
 					if(result == 0)
-					((CabbageMainPanel*)(getTarget()->getParentComponent()))->sendActionMessage("Message sent from CabbageMainPanel:Plant:"+alert.getTextEditorContents("textEditor"));
+					((CabbageMainPanel*)(getTarget()->getParentComponent()))->sendActionMessage("Message sent from CabbageMainPanel:AddingPlant:"+alert.getTextEditorContents("textEditor"));
 					else
 						showMessage("Nothing written to repository", &getLookAndFeel());
 				}
-				else ((CabbageMainPanel*)(getTarget()->getParentComponent()))->sendActionMessage("Message sent from CabbageMainPanel:Plant:"+alert.getTextEditorContents("textEditor"));
+				else ((CabbageMainPanel*)(getTarget()->getParentComponent()))->sendActionMessage("Message sent from CabbageMainPanel:AddingPlant:"+alert.getTextEditorContents("textEditor"));
 
 		}
 		else if(choice==2){
@@ -261,7 +261,7 @@ void ChildAlias::mouseUp (const MouseEvent& e)
 
    applyToTarget("");
 
-   ((CabbageMainPanel*)(getTarget()->getParentComponent()))->sendActionMessage("Message sent from CabbageMainPanel");
+   ((CabbageMainPanel*)(getTarget()->getParentComponent()))->sendActionMessage("Message sent from CabbageMainPanel:Up");
 
    if(type.containsIgnoreCase("CabbageGroupbox")||
 	   type.containsIgnoreCase("CabbageImage"))

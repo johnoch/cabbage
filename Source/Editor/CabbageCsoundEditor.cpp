@@ -162,14 +162,14 @@ void CsoundEditor::getCommandInfo (const CommandID commandID, ApplicationCommand
 		result.setInfo (String("Save as"), String("Save file as.."), CommandCategories::file, 0);
 		result.addDefaultKeypress ('s', ModifierKeys::shiftModifier | ModifierKeys::commandModifier);
         break;
-    case CommandIDs::fileExportSynth:
-		result.setInfo (String("Export Synth"), String("Export Synth"), CommandCategories::file, 0);
-		result.addDefaultKeypress ('i', ModifierKeys::commandModifier);
-        break;
-    case CommandIDs::fileExportEffect:
-		result.setInfo (String("Export Effect"), String("Export Effect"), CommandCategories::file, 0);
-		result.addDefaultKeypress ('e', ModifierKeys::commandModifier);
-        break;
+  //  case CommandIDs::fileExportSynth:
+		//result.setInfo (String("Export Synth"), String("Export Synth"), CommandCategories::file, 0);
+		//result.addDefaultKeypress ('i', ModifierKeys::commandModifier);
+  //      break;
+  //  case CommandIDs::fileExportEffect:
+		//result.setInfo (String("Export Effect"), String("Export Effect"), CommandCategories::file, 0);
+		//result.addDefaultKeypress ('e', ModifierKeys::commandModifier);
+  //      break;
     case CommandIDs::fileUpdateGUI:
 		result.setInfo (String("Update GUI"), String("Update GUI"), CommandCategories::file, 0);
 		result.addDefaultKeypress ('u', ModifierKeys::commandModifier);
@@ -228,8 +228,8 @@ void CsoundEditor::getAllCommands (Array <CommandID>& commands)
 								CommandIDs::fileOpen,
 								CommandIDs::fileSave,
 								CommandIDs::fileSaveAs,
-								CommandIDs::fileExportSynth,
-								CommandIDs::fileExportEffect,
+								//CommandIDs::fileExportSynth,
+								//CommandIDs::fileExportEffect,
 								CommandIDs::fileUpdateGUI,
 								
 								CommandIDs::editUndo,
