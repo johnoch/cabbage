@@ -17,46 +17,46 @@
 //==============================================================================
 // [BEGIN_USER_CODE_SECTION]
 
-// (You can add your own code in this section, and the Introjucer will not overwrite it)
-// Audio plugin settings..
-#define JucePlugin_Build_VST    1  // (If you change this value, you'll also need to re-export the projects using the Jucer)
-#define JucePlugin_Build_AU     1  // (If you change this value, you'll also need to re-export the projects using the Jucer)
-#define JucePlugin_Build_RTAS   0  // (If you change this value, you'll also need to re-export the projects using the Jucer)
-
-#define JucePlugin_Name                 "CabbageEffectNam"
-#define JucePlugin_Desc                 "CabbagePlugin"
-#define JucePlugin_Manufacturer         "Cabbage"
-#define JucePlugin_ManufacturerCode     'Cabb'
-#define JucePlugin_PluginCode           'RORY'
-#define JucePlugin_MaxNumInputChannels  2
-#define JucePlugin_MaxNumOutputChannels 2
-#define JucePlugin_PreferredChannelConfigurations   {1, 1}, {2, 2}
-//if you define this in the IDE make sure to remove it when building from the command line...
-#ifdef Cabbage_Plugin_Synth
-#define JucePlugin_IsSynth             1
-#else
-#define JucePlugin_IsSynth             0
-#endif
-#define JucePlugin_WantsMidiInput       1
-#define JucePlugin_ProducesMidiOutput   1
-#define JucePlugin_SilenceInProducesSilenceOut  1
-#define JucePlugin_TailLengthSeconds    0
-#define JucePlugin_EditorRequiresKeyboardFocus  1
-#define JucePlugin_VersionCode          0x10000
-#define JucePlugin_VersionString        "0.0.0"
-#define JucePlugin_VSTUniqueID          JucePlugin_PluginCode
-#define JucePlugin_VSTCategory          kPlugCategEffect
-#define JucePlugin_AUMainType           kAudioUnitType_Effect
-#define JucePlugin_AUSubType            JucePlugin_PluginCode
-#define JucePlugin_AUExportPrefix       JuceProjectAU
-#define JucePlugin_AUExportPrefixQuoted "CaabageAU"
-#define JucePlugin_AUManufacturerCode   JucePlugin_ManufacturerCode
-#define JucePlugin_CFBundleIdentifier   com.Cabbage.Test
-#define JucePlugin_AUCocoaViewClassName CabbageProjectAU_V1
-#define JucePlugin_RTASCategory         ePlugInCategory_None
-#define JucePlugin_RTASManufacturerCode JucePlugin_ManufacturerCode
-#define JucePlugin_RTASProductId        JucePlugin_PluginCode
-#define JUCE_USE_VSTSDK_2_4             1
+//// (You can add your own code in this section, and the Introjucer will not overwrite it)
+//// Audio plugin settings..
+//#define JucePlugin_Build_VST    1  // (If you change this value, you'll also need to re-export the projects using the Jucer)
+//#define JucePlugin_Build_AU     1  // (If you change this value, you'll also need to re-export the projects using the Jucer)
+//#define JucePlugin_Build_RTAS   0  // (If you change this value, you'll also need to re-export the projects using the Jucer)
+//
+//#define JucePlugin_Name                 "CabbageEffectNam"
+//#define JucePlugin_Desc                 "CabbagePlugin"
+//#define JucePlugin_Manufacturer         "Cabbage"
+//#define JucePlugin_ManufacturerCode     'Cabb'
+//#define JucePlugin_PluginCode           'RORY'
+//#define JucePlugin_MaxNumInputChannels  2
+//#define JucePlugin_MaxNumOutputChannels 2
+//#define JucePlugin_PreferredChannelConfigurations   {1, 1}, {2, 2}
+////if you define this in the IDE make sure to remove it when building from the command line...
+//#ifdef Cabbage_Plugin_Synth
+//#define JucePlugin_IsSynth             1
+//#else
+//#define JucePlugin_IsSynth             0
+//#endif
+//#define JucePlugin_WantsMidiInput       1
+//#define JucePlugin_ProducesMidiOutput   1
+//#define JucePlugin_SilenceInProducesSilenceOut  1
+//#define JucePlugin_TailLengthSeconds    0
+//#define JucePlugin_EditorRequiresKeyboardFocus  1
+//#define JucePlugin_VersionCode          0x10000
+//#define JucePlugin_VersionString        "0.0.0"
+//#define JucePlugin_VSTUniqueID          JucePlugin_PluginCode
+//#define JucePlugin_VSTCategory          kPlugCategEffect
+//#define JucePlugin_AUMainType           kAudioUnitType_Effect
+//#define JucePlugin_AUSubType            JucePlugin_PluginCode
+//#define JucePlugin_AUExportPrefix       JuceProjectAU
+//#define JucePlugin_AUExportPrefixQuoted "CaabageAU"
+//#define JucePlugin_AUManufacturerCode   JucePlugin_ManufacturerCode
+//#define JucePlugin_CFBundleIdentifier   com.Cabbage.Test
+//#define JucePlugin_AUCocoaViewClassName CabbageProjectAU_V1
+//#define JucePlugin_RTASCategory         ePlugInCategory_None
+//#define JucePlugin_RTASManufacturerCode JucePlugin_ManufacturerCode
+//#define JucePlugin_RTASProductId        JucePlugin_PluginCode
+//#define JUCE_USE_VSTSDK_2_4             1
 
 // [END_USER_CODE_SECTION]
 
@@ -78,10 +78,9 @@
 
 //==============================================================================
 // juce_audio_devices flags:
-#ifdef Cabbage_Build_Standalone
+
 #ifndef    JUCE_ASIO
- #define JUCE_ASIO 1
-#endif
+ //#define JUCE_ASIO
 #endif
 
 #ifndef    JUCE_WASAPI
@@ -93,11 +92,11 @@
 #endif
 
 #ifndef    JUCE_ALSA
- #define JUCE_ALSA 1
+ //#define JUCE_ALSA
 #endif
 
 #ifndef    JUCE_JACK
- #define JUCE_JACK 1
+ //#define JUCE_JACK
 #endif
 
 #ifndef    JUCE_USE_ANDROID_OPENSLES
@@ -195,11 +194,123 @@
 // juce_gui_extra flags:
 
 #ifndef    JUCE_WEB_BROWSER
- #define JUCE_WEB_BROWSER 1
+ //#define JUCE_WEB_BROWSER
 #endif
 
 
 //==============================================================================
+// Audio plugin settings..
 
+#ifndef  JucePlugin_Build_VST
+ #define JucePlugin_Build_VST              1
+#endif
+#ifndef  JucePlugin_Build_AU
+ #define JucePlugin_Build_AU               1
+#endif
+#ifndef  JucePlugin_Build_RTAS
+ #define JucePlugin_Build_RTAS             0
+#endif
+#ifndef  JucePlugin_Build_AAX
+ #define JucePlugin_Build_AAX              0
+#endif
+#ifndef  JucePlugin_Name
+ #define JucePlugin_Name                   "CabbageEffectNam"
+#endif
+#ifndef  JucePlugin_Desc
+ #define JucePlugin_Desc                   "CabbagePlugin"
+#endif
+#ifndef  JucePlugin_Manufacturer
+ #define JucePlugin_Manufacturer           "CabbageFoundation"
+#endif
+#ifndef  JucePlugin_ManufacturerCode
+ #define JucePlugin_ManufacturerCode       'Cabb'
+#endif
+#ifndef  JucePlugin_PluginCode
+ #define JucePlugin_PluginCode             'RORY'
+#endif
+#ifndef  JucePlugin_MaxNumInputChannels
+ #define JucePlugin_MaxNumInputChannels    2
+#endif
+#ifndef  JucePlugin_MaxNumOutputChannels
+ #define JucePlugin_MaxNumOutputChannels   2
+#endif
+#ifndef  JucePlugin_PreferredChannelConfigurations
+ #define JucePlugin_PreferredChannelConfigurations  {1, 1}, {2, 2}
+#endif
+#ifndef  JucePlugin_IsSynth
+ #define JucePlugin_IsSynth                1
+#endif
+#ifndef  JucePlugin_WantsMidiInput
+ #define JucePlugin_WantsMidiInput         1
+#endif
+#ifndef  JucePlugin_ProducesMidiOutput
+ #define JucePlugin_ProducesMidiOutput     1
+#endif
+#ifndef  JucePlugin_SilenceInProducesSilenceOut
+ #define JucePlugin_SilenceInProducesSilenceOut  1
+#endif
+#ifndef  JucePlugin_TailLengthSeconds
+ #define JucePlugin_TailLengthSeconds      0
+#endif
+#ifndef  JucePlugin_EditorRequiresKeyboardFocus
+ #define JucePlugin_EditorRequiresKeyboardFocus  0
+#endif
+#ifndef  JucePlugin_VersionCode
+ #define JucePlugin_VersionCode            0x10000
+#endif
+#ifndef  JucePlugin_VersionString
+ #define JucePlugin_VersionString          "1.0.0"
+#endif
+#ifndef  JucePlugin_VSTUniqueID
+ #define JucePlugin_VSTUniqueID            JucePlugin_PluginCode
+#endif
+#ifndef  JucePlugin_VSTCategory
+ #define JucePlugin_VSTCategory            kPlugCategSynth
+#endif
+#ifndef  JucePlugin_AUMainType
+ #define JucePlugin_AUMainType             kAudioUnitType_MusicDevice
+#endif
+#ifndef  JucePlugin_AUSubType
+ #define JucePlugin_AUSubType              JucePlugin_PluginCode
+#endif
+#ifndef  JucePlugin_AUExportPrefix
+ #define JucePlugin_AUExportPrefix         CabbageAU
+#endif
+#ifndef  JucePlugin_AUExportPrefixQuoted
+ #define JucePlugin_AUExportPrefixQuoted   "CabbageAU"
+#endif
+#ifndef  JucePlugin_AUManufacturerCode
+ #define JucePlugin_AUManufacturerCode     JucePlugin_ManufacturerCode
+#endif
+#ifndef  JucePlugin_CFBundleIdentifier
+ #define JucePlugin_CFBundleIdentifier     com.CabbageFoundation.CabbagePlugin
+#endif
+#ifndef  JucePlugin_AUCocoaViewClassName
+ #define JucePlugin_AUCocoaViewClassName   CabbagePluginAU_V1
+#endif
+#ifndef  JucePlugin_RTASCategory
+ #define JucePlugin_RTASCategory           ePlugInCategory_SWGenerators
+#endif
+#ifndef  JucePlugin_RTASManufacturerCode
+ #define JucePlugin_RTASManufacturerCode   JucePlugin_ManufacturerCode
+#endif
+#ifndef  JucePlugin_RTASProductId
+ #define JucePlugin_RTASProductId          JucePlugin_PluginCode
+#endif
+#ifndef  JucePlugin_AAXIdentifier
+ #define JucePlugin_AAXIdentifier          com.yourcompany.CabbagePlugin
+#endif
+#ifndef  JucePlugin_AAXManufacturerCode
+ #define JucePlugin_AAXManufacturerCode    JucePlugin_ManufacturerCode
+#endif
+#ifndef  JucePlugin_AAXProductId
+ #define JucePlugin_AAXProductId           JucePlugin_PluginCode
+#endif
+#ifndef  JucePlugin_AAXPluginId
+ #define JucePlugin_AAXPluginId            JucePlugin_PluginCode
+#endif
+#ifndef  JucePlugin_AAXCategory
+ #define JucePlugin_AAXCategory            AAX_ePlugInCategory_Dynamics
+#endif
 
 #endif  // __JUCE_APPCONFIG_CXQEYL__
