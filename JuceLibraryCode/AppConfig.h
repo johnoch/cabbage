@@ -78,9 +78,10 @@
 
 //==============================================================================
 // juce_audio_devices flags:
-
+#ifdef Cabbage_Build_Standalone
 #ifndef    JUCE_ASIO
  #define JUCE_ASIO 1
+#endif
 #endif
 
 #ifndef    JUCE_WASAPI

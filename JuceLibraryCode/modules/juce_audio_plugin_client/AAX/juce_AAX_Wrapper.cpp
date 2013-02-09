@@ -183,7 +183,6 @@ struct AAXClasses
         int32_t* bufferSize;
         int32_t* bypass;
         AAX_IMIDINode* midiNodeIn;
-        AAX_IMIDINode* midiNodeOut;
 
         PluginInstanceInfo* pluginInstance;
         int32_t* isPrepared;
@@ -198,7 +197,6 @@ struct AAXClasses
             bufferSize      = AAX_FIELD_INDEX (JUCEAlgorithmContext, bufferSize),
             bypass          = AAX_FIELD_INDEX (JUCEAlgorithmContext, bypass),
             midiNodeIn      = AAX_FIELD_INDEX (JUCEAlgorithmContext, midiNodeIn),
-            midiNodeOut     = AAX_FIELD_INDEX (JUCEAlgorithmContext, midiNodeOut),
             pluginInstance  = AAX_FIELD_INDEX (JUCEAlgorithmContext, pluginInstance),
             preparedFlag    = AAX_FIELD_INDEX (JUCEAlgorithmContext, isPrepared)
         };
@@ -505,7 +503,7 @@ struct AAXClasses
         }
 
         void process (const float* const* inputs, float* const* outputs, const int bufferSize,
-                      const bool bypass, AAX_IMIDINode* midiNodeIn, AAX_IMIDINode* midiNodeOut)
+                      const bool bypass, AAX_IMIDINode* midiNodeIn)
         {
             const int numIns  = pluginInstance->getNumInputChannels();
             const int numOuts = pluginInstance->getNumOutputChannels();
@@ -515,7 +513,7 @@ struct AAXClasses
                 for (int i = 0; i < numIns; ++i)
                     memcpy (outputs[i], inputs[i], bufferSize * sizeof (float));
 
-                process (outputs, numOuts, bufferSize, bypass, midiNodeIn, midiNodeOut);
+                process (outputs, numOuts, bufferSize, bypass, midiNodeIn);
             }
             else
             {
@@ -533,7 +531,7 @@ struct AAXClasses
                 for (int i = numOuts; i < numIns; ++i)
                     channels[i] = const_cast <float*> (inputs[i]);
 
-                process (channels, numIns, bufferSize, bypass, midiNodeIn, midiNodeOut);
+                process (channels, numIns, bufferSize, bypass, midiNodeIn);
             }
         }
 
@@ -568,7 +566,7 @@ struct AAXClasses
         };
 
         void process (float* const* channels, const int numChans, const int bufferSize,
-                      const bool bypass, AAX_IMIDINode* midiNodeIn, AAX_IMIDINode* midiNodeOut)
+                      const bool bypass, AAX_IMIDINode* midiNodeIn)
         {
             AudioSampleBuffer buffer (channels, numChans, bufferSize);
 
@@ -600,31 +598,6 @@ struct AAXClasses
                 else
                     pluginInstance->processBlock (buffer, midiBuffer);
             }
-
-           #if JucePlugin_ProducesMidiOutput
-            {
-                const juce::uint8* midiEventData;
-                int midiEventSize, midiEventPosition;
-                MidiBuffer::Iterator i (midiBuffer);
-
-                AAX_CMidiPacket packet;
-                packet.mIsImmediate = false;
-
-                while (i.getNextEvent (midiEventData, midiEventSize, midiEventPosition))
-                {
-                    jassert (isPositiveAndBelow (midiEventPosition, bufferSize));
-
-                    if (midiEventSize <= 4)
-                    {
-                        packet.mTimestamp   = (uint32_t) midiEventPosition;
-                        packet.mLength      = (uint32_t) midiEventSize;
-                        memcpy (packet.mData, midiEventData, midiEventSize);
-
-                        check (midiNodeOut->PostMIDIPacket (&packet));
-                    }
-                }
-            }
-           #endif
         }
 
         void addBypassParameter()
@@ -716,7 +689,7 @@ struct AAXClasses
 
             i.pluginInstance->parameters.process (i.inputChannels, i.outputChannels,
                                                   *(i.bufferSize), *(i.bypass) != 0,
-                                                  i.midiNodeIn, i.midiNodeOut);
+                                                  i.midiNodeIn);
         }
     }
 
@@ -732,11 +705,6 @@ struct AAXClasses
        #if JucePlugin_WantsMidiInput
         check (desc.AddMIDINode (JUCEAlgorithmIDs::midiNodeIn, AAX_eMIDINodeType_LocalInput,
                                  JucePlugin_Name, 0xffff));
-       #endif
-
-       #if JucePlugin_ProducesMidiOutput
-        check (desc.AddMIDINode (JUCEAlgorithmIDs::midiNodeOut, AAX_eMIDINodeType_LocalOutput,
-                                 JucePlugin_Name " Out", 0xffff));
        #endif
 
         check (desc.AddPrivateData (JUCEAlgorithmIDs::pluginInstance, sizeof (PluginInstanceInfo)));

@@ -323,7 +323,6 @@ public:
         if (context.renderer != nullptr)
             context.renderer->openGLContextClosing();
 
-        cachedImageFrameBuffer.release();
         nativeContext->shutdownOnRenderThread();
 
         associatedObjectNames.clear();

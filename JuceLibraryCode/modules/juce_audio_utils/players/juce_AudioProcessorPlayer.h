@@ -77,11 +77,13 @@ public:
                                 int totalNumOutputChannels,
                                 int numSamples);
     /** @internal */
-    void audioDeviceAboutToStart (AudioIODevice*);
+    void audioDeviceAboutToStart (AudioIODevice* device);
     /** @internal */
     void audioDeviceStopped();
     /** @internal */
-    void handleIncomingMidiMessage (MidiInput*, const MidiMessage&);
+    void handleIncomingMidiMessage (MidiInput* source, const MidiMessage& message);
+    /** @internal */
+    void prepareToPlay (double sampleRate, int blockSize, int numChansIn, int numChansOut);
 
 private:
     //==============================================================================

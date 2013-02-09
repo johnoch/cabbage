@@ -53,8 +53,8 @@
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
-      <AdditionalIncludeDirectories>..\..\JuceLibraryCode;c:\SDKs\vstsdk2.4;C:\Users\Rory\Documents\SourceCode\vstsdk2.4;C:\Users\Rory\Documents\SourceCode\CsoundInstall\Csound\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;_WINDOWS;DEBUG;_DEBUG;USE_DOUBLE;MSVC;JUCER_VS2010_78A501D=1;$(UserConstant);%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\Users\Rory\Documents\SourceCode\CsoundInstall\Csound\include;C:\SDKs\vstsdk2.4;..\..\JuceLibraryCode;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;DEBUG;_DEBUG;MSVC;USE_DOUBLE;JUCER_VS2010_78A501D=1;$(DafaultConstant);%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <PrecompiledHeader />
@@ -76,6 +76,7 @@
       <ProgramDatabaseFile>$(IntDir)\CabbagePlugin.pdb</ProgramDatabaseFile>
       <SubSystem>Windows</SubSystem>
       <TargetMachine>MachineX86</TargetMachine>
+      <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
       <AdditionalOptions>"C:\Users\Rory\Documents\SourceCode\CsoundInstall\Csound\bin\csound64.lib" %(AdditionalOptions)</AdditionalOptions>
     </Link>
     <Bscmake>
@@ -94,7 +95,7 @@
     <ClCompile>
       <Optimization>MinSpace</Optimization>
       <AdditionalIncludeDirectories>..\..\JuceLibraryCode;c:\SDKs\vstsdk2.4;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;MSVC;USE_DOUBLE;JUCER_VS2010_78A501D=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;JUCER_VS2010_78A501D=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <PrecompiledHeader />
@@ -125,18 +126,16 @@
     </Bscmake>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\Source\csPerfThread.cpp" />
+    <ClCompile Include="..\..\Source\Main.cpp" />
+    <ClCompile Include="..\..\Source\Plugin\CabbagePluginEditor.cpp" />
+    <ClCompile Include="..\..\Source\Plugin\CabbagePluginProcessor.cpp" />
     <ClCompile Include="..\..\Source\BinaryData.cpp" />
     <ClCompile Include="..\..\Source\CabbageGUIClass.cpp" />
     <ClCompile Include="..\..\Source\CabbageLookAndFeel.cpp" />
     <ClCompile Include="..\..\Source\CabbageMainPanel.cpp" />
     <ClCompile Include="..\..\Source\CabbageTable.cpp" />
     <ClCompile Include="..\..\Source\ComponentLayoutEditor.cpp" />
-    <ClCompile Include="..\..\Source\csPerfThread.cpp" />
-    <ClCompile Include="..\..\Source\Main.cpp" />
-    <ClCompile Include="..\..\Source\XYPad.cpp" />
-    <ClCompile Include="..\..\Source\XYPadAutomation.cpp" />
-    <ClCompile Include="..\..\Source\Plugin\CabbagePluginEditor.cpp" />
-    <ClCompile Include="..\..\Source\Plugin\CabbagePluginProcessor.cpp" />
     <ClCompile Include="..\..\JuceLibraryCode\modules\juce_audio_basics\buffers\juce_AudioDataConverters.cpp">
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClCompile>
@@ -402,6 +401,9 @@
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\JuceLibraryCode\modules\juce_core\threads\juce_ChildProcess.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\JuceLibraryCode\modules\juce_core\threads\juce_HighResolutionTimer.cpp">
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\JuceLibraryCode\modules\juce_core\threads\juce_ReadWriteLock.cpp">
@@ -1180,6 +1182,7 @@
     <ClCompile Include="..\..\JuceLibraryCode\modules\juce_gui_basics\juce_gui_basics.cpp" />
     <ClCompile Include="..\..\JuceLibraryCode\modules\juce_gui_extra\juce_gui_extra.cpp" />
     <ClCompile Include="..\..\JuceLibraryCode\modules\juce_opengl\juce_opengl.cpp" />
+    <ClCompile Include="..\..\JuceLibraryCode\modules\juce_audio_plugin_client\utility\juce_PluginUtilities.cpp" />
     <ClCompile Include="..\..\JuceLibraryCode\modules\juce_audio_plugin_client\RTAS\juce_RTAS_DigiCode1.cpp">
       <CallingConvention>StdCall</CallingConvention>
     </ClCompile>
@@ -1196,23 +1199,23 @@
       <CallingConvention>StdCall</CallingConvention>
     </ClCompile>
     <ClCompile Include="..\..\JuceLibraryCode\modules\juce_audio_plugin_client\VST\juce_VST_Wrapper.cpp" />
+    <ClCompile Include="..\..\Source\XYPad.cpp" />
+    <ClCompile Include="..\..\Source\XYPadAutomation.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\Source\CabbageMessageSystem.h" />
+    <ClInclude Include="..\..\Source\csPerfThread.hpp" />
+    <ClInclude Include="..\..\Source\Plugin\CabbagePluginEditor.h" />
+    <ClInclude Include="..\..\Source\Plugin\CabbagePluginProcessor.h" />
     <ClInclude Include="..\..\Source\BinaryData.h" />
     <ClInclude Include="..\..\Source\CabbageCustomWidgets.h" />
     <ClInclude Include="..\..\Source\CabbageGUIClass.h" />
     <ClInclude Include="..\..\Source\CabbageLookAndFeel.h" />
     <ClInclude Include="..\..\Source\CabbageMainPanel.h" />
-    <ClInclude Include="..\..\Source\CabbageMessageSystem.h" />
     <ClInclude Include="..\..\Source\CabbageTable.h" />
     <ClInclude Include="..\..\Source\CabbageUtils.h" />
     <ClInclude Include="..\..\Source\ComponentLayoutEditor.h" />
-    <ClInclude Include="..\..\Source\csPerfThread.hpp" />
     <ClInclude Include="..\..\Source\JucePluginCharacteristics.h" />
-    <ClInclude Include="..\..\Source\XYPad.h" />
-    <ClInclude Include="..\..\Source\XYPadAutomation.h" />
-    <ClInclude Include="..\..\Source\Plugin\CabbagePluginEditor.h" />
-    <ClInclude Include="..\..\Source\Plugin\CabbagePluginProcessor.h" />
     <ClInclude Include="..\..\JuceLibraryCode\modules\juce_audio_basics\buffers\juce_AudioDataConverters.h" />
     <ClInclude Include="..\..\JuceLibraryCode\modules\juce_audio_basics\buffers\juce_AudioSampleBuffer.h" />
     <ClInclude Include="..\..\JuceLibraryCode\modules\juce_audio_basics\midi\juce_MidiBuffer.h" />
@@ -1343,6 +1346,7 @@
     <ClInclude Include="..\..\JuceLibraryCode\modules\juce_core\threads\juce_ChildProcess.h" />
     <ClInclude Include="..\..\JuceLibraryCode\modules\juce_core\threads\juce_CriticalSection.h" />
     <ClInclude Include="..\..\JuceLibraryCode\modules\juce_core\threads\juce_DynamicLibrary.h" />
+    <ClInclude Include="..\..\JuceLibraryCode\modules\juce_core\threads\juce_HighResolutionTimer.h" />
     <ClInclude Include="..\..\JuceLibraryCode\modules\juce_core\threads\juce_InterProcessLock.h" />
     <ClInclude Include="..\..\JuceLibraryCode\modules\juce_core\threads\juce_Process.h" />
     <ClInclude Include="..\..\JuceLibraryCode\modules\juce_core\threads\juce_ReadWriteLock.h" />
@@ -1640,6 +1644,8 @@
     <ClInclude Include="..\..\JuceLibraryCode\modules\juce_opengl\juce_opengl.h" />
     <ClInclude Include="..\..\JuceLibraryCode\AppConfig.h" />
     <ClInclude Include="..\..\JuceLibraryCode\JuceHeader.h" />
+    <ClInclude Include="..\..\Source\XYPad.h" />
+    <ClInclude Include="..\..\Source\XYPadAutomation.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\JuceLibraryCode\modules\juce_audio_basics\juce_module_info" />
