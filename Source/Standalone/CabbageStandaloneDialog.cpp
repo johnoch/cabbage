@@ -1056,7 +1056,7 @@ if(!csdFile.exists()){
 		}
 		
 		
-		String plugType = ".component";
+		String plugType = ".vst";
 //		if(type.contains(String("AU")))
 //			plugType = String(".component");
 //		else plugType = String(".vst");
@@ -1074,7 +1074,7 @@ if(!csdFile.exists()){
 		newPList = newPList.replace("CabbagePlugin", saveFC.getResult().getFileNameWithoutExtension());
 		newPList = newPList.replace("NewProject", saveFC.getResult().getFileNameWithoutExtension());
 		//write plist file
-		//pl.replaceWithText(newPList);
+		pl.replaceWithText(newPList);
 
 		
 		
