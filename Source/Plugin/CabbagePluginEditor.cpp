@@ -1654,7 +1654,6 @@ void CabbagePluginAudioProcessorEditor::InsertPVSViewer(CabbageGUIClass &cAttr)
         float width = cAttr.getNumProp("width");
         float height = cAttr.getNumProp("height");
 
-
         int relY=0,relX=0;
         if(layoutComps.size()>0){
         for(int y=0;y<layoutComps.size();y++){
@@ -1694,8 +1693,8 @@ Array<int> tableSizes;
 		   getFilter()->getCsound()){
 #ifndef Cabbage_No_Csound
 		//this can only be done when it's safe to do so!!
-		if(cAttr.getNumberOfTableChannels()>1)
-		for(int i=0;i<cAttr.getNumberOfTableChannels();i++){
+		if(cAttr.getNumberOfTables()>1)
+		for(int i=0;i<cAttr.getNumberOfTables();i++){
 			tableSizes.add(getFilter()->getCsound()->TableLength(cAttr.getTableNumbers(i)));
 			if(tableSize<getFilter()->getCsound()->TableLength(cAttr.getTableNumbers(i))){
 			 tableSize = getFilter()->getCsound()->TableLength(cAttr.getTableNumbers(i));	 
@@ -1725,7 +1724,7 @@ Array<int> tableSizes;
 		for(int i=0;i<cAttr.getNumberOfColours();i++)
 			colours.add(cAttr.getColours(i));
 		else
-			colours.add(cAttr.getStringProp("colour"));
+			colours.add(Colours::lime.toString());
 		
         layoutComps.add(new CabbageTable(cAttr.getStringProp("name"),
                 cAttr.getStringProp("caption"),
@@ -1761,13 +1760,14 @@ Array<int> tableSizes;
                 componentPanel->addAndMakeVisible(layoutComps[idx]);            
         }
 		
+		//Logger::writeToLog(String(cAttr.getNumberOfTables()));
+		
+		if(cAttr.getNumberOfTableChannels()==0)
+			for(int i=0;i<cAttr.getNumberOfTables();i++)
+			cAttr.addDummyChannel("dummy"+String(i));
 		 
 		for(int i=0;i<cAttr.getNumberOfTableChannels();i++)
         cAttr.addTableChannelValues();
-		//((CabbageTable*)layoutComps[idx])->fillTable(0, tableValues);
-//      ((CabbageTable*)controls[idx])->table->addActionListener(this);
-
-        //Logger::writeToLog(cAttr.getPropsString());
 
 }
 
@@ -2276,9 +2276,10 @@ for(int i=0;i<getFilter()->getGUILayoutCtrlsSize();i++){
                 //}
         }
         else if(getFilter()->getGUILayoutCtrls(i).getStringProp("type").containsIgnoreCase("table")){
-				int tableNumber = getFilter()->getGUILayoutCtrls(i).getNumProp("tableNum");
+				//int tableNumber = getFilter()->getGUILayoutCtrls(i).getNumProp("tableNum");
                 int numberOfTables = getFilter()->getGUILayoutCtrls(i).getNumberOfTableChannels();				
-				for(int y=0;y<getFilter()->getGUILayoutCtrls(i).getNumberOfTableChannels();y++)
+				//for(int y=0;y<getFilter()->getGUILayoutCtrls(i).getNumberOfTableChannels();y++)
+				for(int y=0;y<numberOfTables;y++)
 					{
 				float val = getFilter()->getGUILayoutCtrls(i).getTableChannelValues(y);				
 								
