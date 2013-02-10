@@ -229,13 +229,13 @@
 #define JucePlugin_PluginCode             'RORY'
 #endif
 #ifndef  JucePlugin_MaxNumInputChannels
-#define JucePlugin_MaxNumInputChannels    6
+#define JucePlugin_MaxNumInputChannels    2
 #endif
 #ifndef  JucePlugin_MaxNumOutputChannels
-#define JucePlugin_MaxNumOutputChannels   6
+#define JucePlugin_MaxNumOutputChannels   2
 #endif
 #ifndef  JucePlugin_PreferredChannelConfigurations
-#define JucePlugin_PreferredChannelConfigurations  {1, 1}, {2, 2}, {6,6} 
+#define JucePlugin_PreferredChannelConfigurations  {1, 1}, {2, 2}
 #endif
 
 #ifdef Cabbage_Plugin_Synth
