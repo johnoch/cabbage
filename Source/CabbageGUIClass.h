@@ -131,6 +131,10 @@ public:
 		return channels[index];
 	}
 
+	inline void addDummyChannel(String dummyChan){
+		return channels.add(dummyChan);
+	}
+
 	inline String getTableChannel(int index){
 		return channels[index];
 	}
