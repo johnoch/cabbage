@@ -478,6 +478,13 @@ void CabbageTableManager::setOriginalWidth(float width)
 	originalWidth = width;
 }
 
+Table* CabbageTableManager::getTable(int index)
+{
+	if(index > 0 && index < tables.size());
+	return tables[index];
+}
+
+
 void CabbageTableManager::paint(Graphics& g)
 {
 	g.setColour(CabbageUtils::getDarkerBackgroundSkin());
@@ -649,8 +656,8 @@ void CabbageTableViewer::fillTable (int tableIndex, Array<float> csndInputData)
 
 void CabbageTableViewer::setScrubberPosition(int tableIndex, float position)
 {
-	//tables[tableIndex]->scrubberPosition = position;
-	//tables[tableIndex]->repaint();
+	tableManager->getTable(tableIndex)->scrubberPosition = position;
+	tableManager->getTable(tableIndex)->repaint();
 }
 
 

@@ -137,6 +137,7 @@ public:
 	void fillTable (int tableID, Array<float> csndInputData);
 	void tableToTop (int tableOnTop);
 	void mouseDown (const MouseEvent& e);
+	Table* getTable(int index);
 
 private:
 	OwnedArray<Table> tables;

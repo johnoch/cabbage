@@ -64,9 +64,16 @@ setPlayConfigDetails(2, 2, 44100, 512);
 
 
 #ifndef Cabbage_No_Csound
+String localCsoundDirectory = File(inputfile).getParentDirectory().getFullPathName()+"/csound";
+//if(File(localCsoundDirectory).exists())
+//	if(csoundSetGlobalEnv(String("OPCODEDIR64").toUTF8(), localCsoundDirectory.toUTF8()))
+//		Logger::writeToLog("couldn't write environment variables");
+
+
 //don't start of run Csound in edit mode
 csound = new Csound();
 
+//Logger::writeToLog(csound->GetEnv("OPCODEDIR64"));
 csound->PreCompile();
 csound->SetHostData(this);
 
@@ -90,6 +97,7 @@ dataout = new PVSDATEXT;
 
 if(!inputfile.isEmpty()){
 csCompileResult = csound->Compile(const_cast<char*>(inputfile.toUTF8().getAddress()));
+
 if(csCompileResult==0){
 
         //simple hack to allow tables to be set up correctly. 

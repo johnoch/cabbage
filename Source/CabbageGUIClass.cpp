@@ -836,6 +836,7 @@ int CabbageGUIClass::parse(String str)
 			identArray.getReference(indx).toLowerCase().equalsIgnoreCase("tablenumbs(")){
 				tableNum = strTokens[0].trim().getFloatValue();  
 				tableNumbers.add(tableNum);
+				numTables++;
 				if(strTokens.size()>1)
 					for(int i=1;i<strTokens.size();i++){
 						tableNumbers.add(strTokens[i].trim().getFloatValue());

@@ -176,7 +176,7 @@ subm.addItem(7, "groupbox");
 subm.addItem(8, "image");
 subm.addItem(9, "keyboard");
 subm.addItem(10, "xypad");
-subm.addItem(11, "line");
+//subm.addItem(11, "line");
 m.addSubMenu(String("Indigenous"), subm);
 subm.clear();
 
@@ -2293,7 +2293,7 @@ for(int i=0;i<getFilter()->getGUILayoutCtrlsSize();i++){
 					}
 				else
 					{
-					((CabbageTable*)layoutComps[i])->setScrubberPosition(0, val);	
+					((CabbageTable*)layoutComps[i])->setScrubberPosition(y, val);	
 					}
 					
 				}
