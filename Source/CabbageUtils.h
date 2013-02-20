@@ -109,8 +109,9 @@ static void showMessage(double num){
 	Logger::writeToLog("mess3");
 }
 //===========================================================================================
-static void showMessage(String message, LookAndFeel* feel, DocumentWindow* mainWindow)
+static void showMessage(String title, String message, LookAndFeel* feel, Component* mainWindow)
 {
+	if(title.length()<1)title="Cabbage Message";
 	mainWindow->setAlwaysOnTop(false);
 	mainWindow->toBack();
 	AlertWindow alert("Cabbage Message" , message, AlertWindow::WarningIcon);

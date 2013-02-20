@@ -54,7 +54,7 @@ componentPanel = new Component();
 addAndMakeVisible(componentPanel);
 #endif
 
-resizeLimits.setSizeLimits (150, 150, 800, 800);
+resizeLimits.setSizeLimits (150, 150, 3800, 3800);
 resizer = new CabbageCornerResizer(this, this, &resizeLimits);
 
  
@@ -167,6 +167,7 @@ m.setLookAndFeel(lookAndFeel);
 if(getFilter()->isGuiEnabled()){
 PopupMenu subm;
 subm.setLookAndFeel(&this->getLookAndFeel());
+subm.addItem(1, "button");
 subm.addItem(2, "rslider");
 subm.addItem(3, "vslider");
 subm.addItem(4, "hslider");
@@ -326,8 +327,8 @@ void CabbagePluginAudioProcessorEditor::insertCabbageText(String text)
                          i=csdArray.size();
                  }
     
-	Logger::writeToLog(String(getFilter()->getCurrentLine()));
-	Logger::writeToLog(text);
+//	Logger::writeToLog(String(getFilter()->getCurrentLine()));
+//	Logger::writeToLog(text);
 	getFilter()->updateCsoundFile(csdArray.joinIntoString("\n"));
 	getFilter()->setGuiEnabled(true);
 	getFilter()->removeXYAutomaters();
@@ -444,6 +445,9 @@ for(int i=0;i<getFilter()->getGUILayoutCtrlsSize();i++){
         else if(getFilter()->getGUILayoutCtrls(i).getStringProp("type")==String("infobutton")){
                 InsertInfoButton(getFilter()->getGUILayoutCtrls(i));   
                 }
+        else if(getFilter()->getGUILayoutCtrls(i).getStringProp("type")==String("soundfiler")){
+                InsertSoundfiler(getFilter()->getGUILayoutCtrls(i));   
+                }
         else if(getFilter()->getGUILayoutCtrls(i).getStringProp("type")==String("line")){
                 InsertLineSeparator(getFilter()->getGUILayoutCtrls(i));   
                 }
@@ -456,13 +460,14 @@ for(int i=0;i<getFilter()->getGUILayoutCtrlsSize();i++){
 }
 //add interactive controls
 for(int i=0;i<getFilter()->getGUICtrlsSize();i++){
+	//Logger::writeToLog("Type of control: "+getFilter()->getGUICtrls(i).getStringProp("type"));
         if(getFilter()->getGUICtrls(i).getStringProp("type")==String("hslider")
                 ||getFilter()->getGUICtrls(i).getStringProp("type")==String("vslider")
                 ||getFilter()->getGUICtrls(i).getStringProp("type")==String("rslider")){                                
                 InsertSlider(getFilter()->getGUICtrls(i));       //insert slider                        
                 }
         else if(getFilter()->getGUICtrls(i).getStringProp("type")==String("button")){                           
-                InsertButton(getFilter()->getGUICtrls(i));       //insert button        
+                InsertButton(getFilter()->getGUICtrls(i));       //insert button           
                 }
         else if(getFilter()->getGUICtrls(i).getStringProp("type")==String("checkbox")){                         
                 InsertCheckBox(getFilter()->getGUICtrls(i));       //insert checkbox
@@ -601,15 +606,33 @@ void CabbagePluginAudioProcessorEditor::InsertImage(CabbageGUIClass &cAttr)
                         }
                 }
         }
-                else{
-            layoutComps[idx]->setBounds(left+relX, top+relY, width, height);
-                componentPanel->addAndMakeVisible(layoutComps[idx]);            
-                }
+		else{
+       if(cAttr.getNumProp("button")==0){
+			layoutComps[idx]->setBounds(left+relX, top+relY, width, height);
+            componentPanel->addAndMakeVisible(layoutComps[idx]);       
         }
         else{
-            layoutComps[idx]->setBounds(left+relX, top+relY, width, height);
-                componentPanel->addAndMakeVisible(layoutComps[idx]);            
-        }
+                plantButton.add(new CabbageButton(cAttr.getStringProp("plant"), "", cAttr.getStringProp("plant"), CabbageUtils::getComponentSkin().toString(), ""));
+				plantButton[plantButton.size()-1]->setBounds(left+relX, top+relY, 100, 30);
+				layoutComps[idx]->setBounds(left+relX, top+relY, width, height);
+                plantButton[plantButton.size()-1]->button->addListener(this);
+                componentPanel->addAndMakeVisible(plantButton[plantButton.size()-1]);
+                plantButton[plantButton.size()-1]->button->getProperties().set(String("index"), plantButton.size()-1); 
+
+                layoutComps[idx]->setLookAndFeel(lookAndFeel);
+                subPatch.add(new CabbagePlantWindow(getFilter()->getGUILayoutCtrls(idx).getStringProp("plant"), Colours::black));
+                subPatch[subPatch.size()-1]->setAlwaysOnTop(true);
+
+                subPatch[subPatch.size()-1]->centreWithSize(layoutComps[idx]->getWidth(), layoutComps[idx]->getHeight()+18);
+                subPatch[subPatch.size()-1]->setContentNonOwned(layoutComps[idx], true);
+                subPatch[subPatch.size()-1]->setTitleBarHeight(18);
+				}			          
+			
+			}
+		
+		}
+        
+		
 
 #ifdef LINUX
         pic.append(String("/")+String(cAttr.getStringProp("file")), 1024);
@@ -890,13 +913,53 @@ void CabbagePluginAudioProcessorEditor::InsertInfoButton(CabbageGUIClass &cAttr)
         componentPanel->addAndMakeVisible(layoutComps[idx]);
         }
         }
-        ((CabbageButton*)layoutComps[idx])->button->setName("infobutton");
-        ((CabbageButton*)layoutComps[idx])->button->getProperties().set(String("filename"), cAttr.getStringProp("file"));
+        //((CabbageButton*)layoutComps[idx])->button->setName("infobutton");
+        //((CabbageButton*)layoutComps[idx])->button->getProperties().set(String("filename"), cAttr.getStringProp("file"));
         layoutComps[idx]->getProperties().set(String("plant"), var(cAttr.getStringProp("plant")));
         ((CabbageButton*)layoutComps[idx])->button->addListener(this);
         ((CabbageButton*)layoutComps[idx])->button->setButtonText(cAttr.getItems(0));
 }
 
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//     Soundfiler 
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+void CabbagePluginAudioProcessorEditor::InsertSoundfiler(CabbageGUIClass &cAttr)
+{
+        layoutComps.add(new CabbageSoundfiler(cAttr.getStringProp("name"),
+				cAttr.getStringProp("channel"),
+				cAttr.getStringProp("file"),
+                cAttr.getColourProp("colour"),
+                cAttr.getColourProp("fontcolour")));
+    
+        int idx = layoutComps.size()-1;
+		
+		//add soundfiler object to main processor..
+		//getFilter()->soundFilers.add(((Soundfiler*)layoutComps[idx])->transportSource);
+
+        float left = cAttr.getNumProp("left");
+        float top = cAttr.getNumProp("top");
+        float width = cAttr.getNumProp("width");
+        float height = cAttr.getNumProp("height");
+
+        //check to see if widgets is anchored
+        //if it is offset it's position accordingly. 
+        int relY=0,relX=0;
+        for(int y=0;y<layoutComps.size();y++){
+        if(cAttr.getStringProp("reltoplant").length()>0){
+        if(layoutComps[y]->getProperties().getWithDefault(String("plant"), -99).toString().equalsIgnoreCase(cAttr.getStringProp("reltoplant")))
+        {
+				positionComponentWithinPlant("", idx, left, top, width, height, layoutComps[y], controls[idx]);
+        }
+        }
+        else{
+        ((CabbageSoundfiler*)layoutComps[idx])->setBounds(left+relX, top+relY, width, height);
+        componentPanel->addAndMakeVisible(layoutComps[idx]);
+        }
+        }
+        
+        layoutComps[idx]->getProperties().set(String("plant"), var(cAttr.getStringProp("plant")));
+
+}
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //      VU widget. 
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -1219,7 +1282,6 @@ void CabbagePluginAudioProcessorEditor::InsertButton(CabbageGUIClass &cAttr)
 #ifdef Cabbage_Build_Standalone
         ((CabbageButton*)controls[idx])->button->setWantsKeyboardFocus(true);
 #endif
-
 		//add initial values to incomingValues array
 		incomingValues.add(cAttr.getNumProp("value"));
 		//showMessage(controls[idx]->getParentComponent()->getName());
@@ -1316,15 +1378,42 @@ if(!getFilter()->isGuiEnabled()){
                                         infoWindow->setVisible(true);
                         }
 
+		
+				//check layoutControls for fileButtons, these are once off buttons....
+				for(int i=0;i<(int)getFilter()->getGUILayoutCtrlsSize();i++){//find correct control from vector  
+				//Logger::writeToLog(button->getName());
+                         if(getFilter()->getGUILayoutCtrls(i).getStringProp("name")==button->getName())
+							 {
+							 if(getFilter()->getGUILayoutCtrls(i).getStringProp("type")==String("filebutton"))
+								{  
+								WildcardFileFilter wildcardFilter ("*.*", String::empty, "Foo files");
+								FileBrowserComponent browser (FileBrowserComponent::canSelectFiles|FileBrowserComponent::saveMode,  File::nonexistent, &wildcardFilter, nullptr);
+								FileChooserDialogBox dialogBox ("Open some kind of file", "Please choose...", browser, false, Colours::white);
+								//dialogBox.setLookAndFeel(lookAndFeel);
+								dialogBox.setAlwaysOnTop(true);
+								dialogBox.toFront(true);
+								dialogBox.setColour(0x1000850, Colours::lime);
+								 if (dialogBox.show())
+										{
+										File selectedFile = browser.getSelectedFile (0);
+										//showMessage("", selectedFile.getFullPathName(), lookAndFeel, this);
+										getFilter()->getCsound()->SetChannel(getFilter()->getGUILayoutCtrls(i).getStringProp("channel").toUTF8(),
+																				selectedFile.getFullPathName().toUTF8());
+										}
+								}
+							 }
+				}
 
-                for(int i=0;i<(int)getFilter()->getGUICtrlsSize();i++){//find correct control from vector
-                        
-                        if(getFilter()->getGUICtrls(i).getStringProp("type")==String("button"))
-                        {                               
+
+			    for(int i=0;i<(int)getFilter()->getGUICtrlsSize();i++){//find correct control from vector                        
+                      
                         //+++++++++++++button+++++++++++++
                                 //Logger::writeToLog(getFilter()->getGUICtrls(i).getStringProp("name"));
                                 //Logger::writeToLog(button->getName());
-                                if(getFilter()->getGUICtrls(i).getStringProp("name")==button->getName()){
+                         if(getFilter()->getGUICtrls(i).getStringProp("name")==button->getName())
+							 {
+								if(getFilter()->getGUICtrls(i).getStringProp("type")==String("button"))
+								{   
                                 //toggle button values
                                 if(getFilter()->getGUICtrls(i).getNumProp("value")==0){
                                 getFilter()->setParameterNotifyingHost(i, 1.f);
@@ -1341,9 +1430,10 @@ if(!getFilter()->isGuiEnabled()){
                                         button->setButtonText(getFilter()->getGUICtrls(i).getItems(0));
                                 else if(getFilter()->getGUICtrls(i).getItems(0)==button->getButtonText())
                                         button->setButtonText(getFilter()->getGUICtrls(i).getItems(1));
+								}
+								
+							}
 
-                        }
-                        }
                         //show plants as popup window
                         else{
                                 for(int p=0;p<getFilter()->getGUILayoutCtrlsSize();p++){
@@ -1353,10 +1443,9 @@ if(!getFilter()->isGuiEnabled()){
                                 i=getFilter()->getGUICtrlsSize();
                                 break;
                                 }
-
+							}
                         }
-                        }
-                }
+					}
         }
         
         else if(dynamic_cast<ToggleButton*>(button)){
@@ -1442,7 +1531,7 @@ void CabbagePluginAudioProcessorEditor::InsertComboBox(CabbageGUIClass &cAttr)
 			//appProperties->getUserSettings()->getValue("CsoundPluginDirectory");
 			File pluginDir;
 			String currentFileLocation = getFilter()->getCsoundInputFile().getParentDirectory().getFullPathName();
-			Logger::writeToLog(currentFileLocation);
+			//Logger::writeToLog(currentFileLocation);
 			if(cAttr.getStringProp("workingDir").length()<1){
 			pluginDir = File(currentFileLocation);
 			
@@ -1451,7 +1540,7 @@ void CabbagePluginAudioProcessorEditor::InsertComboBox(CabbageGUIClass &cAttr)
 			pluginDir = File(cAttr.getStringProp("workingDir"));	
 			
 			const String filetype = cAttr.getStringProp("fileType");
-			Logger::writeToLog(cAttr.getStringProp("fileType"));
+			//Logger::writeToLog(cAttr.getStringProp("fileType"));
 			pluginDir.findChildFiles(dirFiles, 2, false, filetype);
 
 			for (int i = 0; i < dirFiles.size(); ++i){
@@ -1839,11 +1928,11 @@ if(message.contains("Message sent from CabbageMainPanel")){
 		}//END OF MOUSE UP MESSAGE EVENT
 
 		if(message.contains("Message sent from CabbageMainPanel:delete:")){
-			    Logger::writeToLog(tempPlantText);
+			    //Logger::writeToLog(tempPlantText);
 				if(tempPlantText.length()>0){
 				temp = csdArray.joinIntoString("\n");
 				temp = temp.replace(tempPlantText, "");
-				Logger::writeToLog(temp);
+				//Logger::writeToLog(temp);
 				getFilter()->updateCsoundFile(temp);	
 				//reset temp plant text
 				tempPlantText="";
@@ -1879,7 +1968,7 @@ if(message.contains("Message sent from CabbageMainPanel")){
 			if(plantDir.length()<2)
 			plantDir = getFilter()->getCsoundInputFile().getCurrentWorkingDirectory().getFullPathName();
 			String plantFile = plantDir + "/" + repoEntryName.trim() + String(".plant");
-			Logger::writeToLog(plantFile);
+			//Logger::writeToLog(plantFile);
 			File plant(plantFile);
 			plant.replaceWithText(repoEntry);
 	}
@@ -2094,7 +2183,7 @@ if(!getFilter()->getCsoundInputFile().loadFileAsString().isEmpty()){
 
 					if(csdArray[i].contains("form")){
 					String newSize = "size("+String(getWidth())+", "+String(getHeight())+")";
-					Logger::writeToLog(newSize);
+					//Logger::writeToLog(newSize);
 					csdArray.set(i, replaceIdentifier(csdArray[i], "size(", newSize));
 					}
 			}

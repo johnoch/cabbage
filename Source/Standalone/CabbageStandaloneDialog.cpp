@@ -294,7 +294,7 @@ void StandaloneFilterWindow::actionListenerCallback (const String& message){
 	else if(message.contains("MENU COMMAND: toggle edit")){
 		int val = getPreference(appProperties, "DisableGUIEditModeWarning");
 		if(val)
-			showMessage("Warning!! This feature is bleeding edge! (that's programmer speak for totally untested and likely to crash hard!). If you like to live on the edge, disable this warning under the 'Preferences' menu command and try 'Edit Mode' again, otherwise just let it be...", lookAndFeel);
+			showMessage("", "Warning!! This feature is bleeding edge! (that's programmer speak for totally untested and likely to crash hard!). If you like to live on the edge, disable this warning under the 'Preferences' menu command and try 'Edit Mode' again, otherwise just let it be...", lookAndFeel, this);
 		else{
 			if(isAFileOpen == true)
 			if(filter->isGuiEnabled()){
@@ -662,7 +662,7 @@ void StandaloneFilterWindow::buttonClicked (Button*)
 		credits.append("\t\t\t\t\tNil Geisweiller\n", 2056);
 		credits.append("\t\t\t\t\tDave Philips\n", 2056);
 		credits.append("\t\t\t\t\tEamon Brady\n", 2056);
-		showMessage("			About Cabbage", credits, lookAndFeel);
+		showMessage("			About Cabbage", credits, lookAndFeel, this);
 		
 	}
 	//----- view text editor ------
@@ -839,7 +839,7 @@ void StandaloneFilterWindow::buttonClicked (Button*)
 	else if(options==100){
 		int val = getPreference(appProperties, "DisableGUIEditModeWarning");
 		if(val)
-			showMessage("Warning!! This feature is bleeding edge! (that's programmer speak for totally untested and likely to crash hard!). If you like to live on the edge, disable this warning under the 'Preferences' menu command and try 'Edit Mode' again, otherwise just let it be...", lookAndFeel);
+			showMessage("", "Warning!! This feature is bleeding edge! (that's programmer speak for totally untested and likely to crash hard!). If you like to live on the edge, disable this warning under the 'Preferences' menu command and try 'Edit Mode' again, otherwise just let it be...", lookAndFeel);
 		else{
 	if(isAFileOpen == true)
 		if(filter->isGuiEnabled()){
@@ -852,7 +852,7 @@ void StandaloneFilterWindow::buttonClicked (Button*)
 		stopTimer();
 		setPreference(appProperties, "AutoUpdate", 0);
 		}
-	else showMessage("Open or create a file first", &getLookAndFeel());
+	else showMessage("", "Open or create a file first", &getLookAndFeel(), this);
 		}
 	}
 	repaint();
@@ -947,7 +947,7 @@ File thisFile(File::getSpecialLocation(File::currentExecutableFile));
 #endif
 
 if(!csdFile.exists()){
-					showMessage("You need to open a Cabbage instrument before you can export one as a plugin!", lookAndFeel);
+					showMessage("", "You need to open a Cabbage instrument before you can export one as a plugin!", lookAndFeel, this);
 					return 0;
 				}
 #ifdef LINUX
@@ -960,20 +960,20 @@ if(!csdFile.exists()){
 		else if(type.contains(String("VST")))
 			VST = currentApplicationDirectory + String("/CabbagePluginEffect.so");
 		else if(type.contains(String("AU"))){
-			showMessage("This feature only works on computers running OSX", lookAndFeel);
+			showMessage("", "This feature only works on computers running OSX", lookAndFeel, this);
 		}
 		//Logger::writeToLog(VST);
 		//showMessage(VST);
 		File VSTData(VST);
 		if(!VSTData.exists()){
 		this->setMinimised(true);
-		showMessage(VST+" cannot be found?", lookAndFeel);
+		showMessage("", VST+" cannot be found?", lookAndFeel, this);
 		}
 		
 		else{
 			File dll(saveFC.getResult().withFileExtension(".so").getFullPathName());
 			Logger::writeToLog(dll.getFullPathName());
-			if(!VSTData.copyFileTo(dll))	showMessage("Can not move lib", lookAndFeel);
+			if(!VSTData.copyFileTo(dll))	showMessage("", "Can not move lib", lookAndFeel, this);
 			File loc_csdFile(saveFC.getResult().withFileExtension(".csd").getFullPathName());
 			loc_csdFile.replaceWithText(csdFile.loadFileAsString());
 		}
@@ -989,7 +989,7 @@ if(!csdFile.exists()){
 		File VSTData(VST);
 
 		if(!VSTData.exists()){
-			showMessage("Cabbage cannot find the plugin libraries. Make sure that Cabbage is situated in the same directory as CabbagePluginSynth.dat and CabbagePluginEffect.dat", oldLookAndFeel);
+			showMessage("", "Cabbage cannot find the plugin libraries. Make sure that Cabbage is situated in the same directory as CabbagePluginSynth.dat and CabbagePluginEffect.dat", oldLookAndFeel, this);
 			return 0;
 		}
 		else{
@@ -1008,7 +1008,7 @@ if(!csdFile.exists()){
 			}
 			//showMessage(dll.getFullPathName());
 			if(!VSTData.copyFileTo(dll))	
-				showMessage("Problem moving plugin lib, make sure it's not currently open in your plugin host!", lookAndFeel);
+				showMessage("", "Problem moving plugin lib, make sure it's not currently open in your plugin host!", lookAndFeel, this);
 			
 			loc_csdFile.replaceWithText(csdFile.loadFileAsString());
 			setUniquePluginID(dll, loc_csdFile, false);

@@ -26,6 +26,7 @@
 #include "../Editor/CabbageEditorWindow.h"
 #include "../XYPadAutomation.h"
 #include "../CabbageMessageSystem.h"
+#include "../Soundfiler.h"
 
 
 
@@ -66,6 +67,10 @@ class CabbagePluginAudioProcessor  : public AudioProcessor,
 		bool xyAutosCreated;
 		bool updateTable;
 		Array<int> tableNumbers;
+		AudioSourceChannelInfo soundfilerChannelData;
+		int soundFileIndex;
+		ScopedPointer<FileLogger> fileLogger;
+		File logFile;
 		
 		
 
@@ -78,6 +83,8 @@ class CabbagePluginAudioProcessor  : public AudioProcessor,
         ScopedPointer<Csound> csound;                           //Csound instance
         MYFLT *CSspin, *CSspout;        //Csound audio IO pointers
         int csndIndex;                          //Csound sample counter
+		int csdKsmps;
+		MYFLT *soundFilerVector;
         int CSCompResult;                       //result of Csound performKsmps
         CsoundChannelListEntry* csoundChanList;         // list of all available channels...
         int numCsoundChannels;          //number of Csound channels
@@ -182,6 +189,8 @@ public:
 	bool yieldCallbackBool;
 	int yieldCounter;
 	CabbageMessageQueue messageQueue;
+	Array<AudioTransportSource> soundFilers;
+	void getSamplesFromSoundFilers();
 			
 	//==============================================================================
         File getCsoundInputFile(){

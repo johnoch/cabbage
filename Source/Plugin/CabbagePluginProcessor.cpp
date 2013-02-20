@@ -54,15 +54,19 @@ xyAutosCreated(false),
 updateTable(false),
 yieldCallbackBool(false),
 yieldCounter(10),
-isNativeThreadRunning(false)
+isNativeThreadRunning(false),
+soundFileIndex(0),
+logFile((appProperties->getCommonSettings(true)->getFile().getParentDirectory().getFullPathName()+"/CabbageLog.txt"))
 {
+//set logger
+fileLogger = new FileLogger(logFile, String("Cabbage Log.."));
+Logger::setCurrentLogger(fileLogger);
+
 //reset patMatrix. If this has more than one we know that
 //pattern matrix object is being used
 patStepMatrix.clear();
 patPfieldMatrix.clear();
 setPlayConfigDetails(2, 2, 44100, 512); 
-
-
 #ifndef Cabbage_No_Csound
 String localCsoundDirectory = File(inputfile).getParentDirectory().getFullPathName()+"/csound";
 //if(File(localCsoundDirectory).exists())
@@ -104,7 +108,7 @@ if(csCompileResult==0){
         csound->PerformKsmps();
         csound->SetScoreOffsetSeconds(0);
         csound->RewindScore();
-        
+        Logger::writeToLog("Csound compiled your file");
         
 		//csound->SetYieldCallback(CabbagePluginAudioProcessor::yieldCallback);
         if(csound->GetSpout()==nullptr);
@@ -112,6 +116,8 @@ if(csCompileResult==0){
         CSspin  = csound->GetSpin();
         numCsoundChannels = csoundListChannels(csound->GetCsound(), &csoundChanList);
         csndIndex = csound->GetKsmps();
+		csdKsmps = csound->GetKsmps();
+		soundFilerVector = new MYFLT[csdKsmps];
         cs_scale = csound->Get0dBFS();
         csoundStatus = true;
         debugMessageArray.add(CABBAGE_VERSION);
@@ -156,8 +162,14 @@ masterCounter(0),
 xyAutosCreated(false),
 updateTable(false),
 yieldCallbackBool(false),
-yieldCounter(10)
+yieldCounter(10),
+soundFileIndex(0)
+logFile((appProperties->getCommonSettings(true)->getFile().getParentDirectory().getFullPathName()+"/CabbageLog.txt"))
 {
+//set logger
+fileLogger = new FileLogger(logFile, String("Cabbage Log.."));
+Logger::setCurrentLogger(fileLogger);
+
 //Cabbage plugins always try to load a csd file with the same name as the plugin library.
 //Therefore we need to find the name of the library and append a '.csd' to it. 
         
@@ -222,6 +234,8 @@ if(csCompileResult==0){
         cs_scale = csound->Get0dBFS();
         numCsoundChannels = csoundListChannels(csound->GetCsound(), &csoundChanList);
         csndIndex = csound->GetKsmps();
+		csdKsmps = csound->GetKsmps();
+		soundFilerVector = new MYFLT[csdKsmps];
         csoundStatus = true;
         debugMessageArray.add(VERSION);
         debugMessageArray.add(String("\n"));
@@ -240,6 +254,7 @@ createGUI(csdFile.loadFileAsString());
 //===========================================================
 CabbagePluginAudioProcessor::~CabbagePluginAudioProcessor()
 {
+Logger::setCurrentLogger (nullptr);
 #ifndef Cabbage_No_Csound
 patStepMatrix.clear();
 patternNames.clear();
@@ -257,7 +272,10 @@ patPfieldMatrix.clear();
                 csound->Reset();
                 csound = nullptr;
                 Logger::writeToLog("Csound cleaned up");
+				if(soundFilers.size()>0)
+					soundFilers.clear();
         }
+		soundFilerVector = nullptr;
 
 #endif
 }
@@ -367,6 +385,8 @@ bool multiLine = false;
                                                                 ||tokes.getReference(0).equalsIgnoreCase(String("patmatrix"))
                                                                 ||tokes.getReference(0).equalsIgnoreCase(String("source"))
                                                                 ||tokes.getReference(0).equalsIgnoreCase(String("infobutton"))
+																||tokes.getReference(0).equalsIgnoreCase(String("filebutton"))
+																||tokes.getReference(0).equalsIgnoreCase(String("soundfiler"))
                                                                 ||tokes.getReference(0).equalsIgnoreCase(String("snapshot"))
                                                                 ||tokes.getReference(0).equalsIgnoreCase(String("table"))
                                                                 ||tokes.getReference(0).equalsIgnoreCase(String("pvsview"))
@@ -416,7 +436,7 @@ bool multiLine = false;
                                                                 ||tokes.getReference(0).equalsIgnoreCase(String("button"))){
                                                         CabbageGUIClass cAttr(csdLine.trimEnd(), guiID);
                                                         csdLine = "";
-														Logger::writeToLog(tokes.getReference(0));
+														//Logger::writeToLog(tokes.getReference(0));
                                                         //attach widget to plant if need be
                                                         if(cAttr.getStringProp(String("relToPlant")).equalsIgnoreCase(String(""))){
                                                                 //showMessage(cAttr.getStringProp(String("relToPlant")));
@@ -472,7 +492,7 @@ bool multiLine = false;
 		{
 		csound->SetChannel( guiCtrls.getReference(i).getStringProp("channel").toUTF8(), 
 												guiCtrls.getReference(i).getNumProp("value"));
-		Logger::writeToLog(guiCtrls.getReference(i).getStringProp("channel")+": "+String(guiCtrls.getReference(i).getNumProp("value")));
+		//Logger::writeToLog(guiCtrls.getReference(i).getStringProp("channel")+": "+String(guiCtrls.getReference(i).getNumProp("value")));
 		}
 
 		#ifdef Cabbage_Build_Standalone
@@ -515,6 +535,7 @@ void CabbagePluginAudioProcessor::messageCallback(CSOUND* csound, int /*attr*/, 
   ud->debugMessage += String(msg); //We have to append the incoming msg
   ud->csoundOutput += ud->debugMessage;
   ud->debugMessageArray.add(ud->debugMessage);
+  Logger::writeToLog(String(msg).trim());
   ud->sendChangeMessage();
 // MOD - End
 //#endif
@@ -668,19 +689,36 @@ for(int i=0;i<messageQueue.getNumberOfOutgoingChannelMessagesInQueue();i++)
 						   messageQueue.getOutgoingChannelMessageFromQueue(i).value);
 		}
 	messageQueue.flushOutgoingChannelMessages();
-
-//for(int index=0;index<getGUILayoutCtrlsSize();index++)
-//	{	
-//	if(getGUILayoutCtrls(index).getStringProp("type")=="table")
-//		{
-//		for(int y=0;y<getGUILayoutCtrls(index).getNumberOfTableChannels();y++){
-//			csound->SetChannel(getGUILayoutCtrls(i).getTableChannelValues(y);
-//			}
-//		}	
-//	}	
-	
 }
 
+//==============================================================================
+//gets sample data from any soundfiler controls and passes it to Csound
+void CabbagePluginAudioProcessor::getSamplesFromSoundFilers()
+{
+//float* audioBuffer;
+//soundfilerChannelData;
+
+//	for(int i=0;i<soundFilers.size(); i++)
+//		soundFilers[i]->transportSource.getNextAudioBlock(soundfilerChannelData);
+		
+//		for(int channel = 0; channel < getNumInputChannels(); channel++ )
+//			{
+//			audioBuffer = soundfilerChannelData.buffer->getSampleData(channel);
+//			Logger::writeToLog(String(*audioBuffer));
+//			for(int y=0;y<soundfilerChannelData.buffer->getNumSamples();y++, soundFileIndex++)
+//				soundFilerVector[soundFileIndex] = audioBuffer[y];
+//				if(soundFileIndex==csdKsmps)
+//					soundFileIndex=0;
+//			}
+//			
+//	}
+//
+//	if(csoundGetChannelPtr(csound->GetCsound(), &soundFilerVector, "output",                     
+//					CSOUND_INPUT_CHANNEL | CSOUND_AUDIO_CHANNEL) != 0)
+//	       			Logger::writeToLog("error sending audio to Csound");
+
+					
+}
 //========================================================================
 // Standard plugin methods, getName, getNumParameters, setParamterName, get ProgramName, etc.... 
 //==============================================================================
@@ -859,6 +897,10 @@ if(!isSuspended()){
 				sendOutgoingMessagesToCsound();
 				updateCabbageControls();
 				}
+				
+				//if(soundFilers.size()>0)
+				//getSamplesFromSoundFilers();		
+					
 				getCallbackLock().exit();
 				csndIndex = 0;
 			}

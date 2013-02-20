@@ -25,6 +25,7 @@
 #include "CabbageUtils.h"
 #include "CabbageTable.h"
 #include "XYPad.h"
+#include "Soundfiler.h"
 
 class InfoWindow   : public DocumentWindow
 {
@@ -1202,16 +1203,16 @@ CabbageMessageConsole(String name, String caption, String text):
 void paint(Graphics &g){
 	//----- For drawing the border 
 	g.setColour(CabbageUtils::getComponentSkin());
-	g.fillRoundedRectangle (0, 0, getWidth(), getHeight(), (getWidth()/25));
+	g.fillRoundedRectangle (0, -3, getWidth(), getHeight(), 8.f);
 	g.setColour(Colours::black);
-	g.fillRoundedRectangle (3, getHeight()-47, getWidth()-6, 40, (getWidth()/25));
+	g.fillRoundedRectangle (5, getHeight()-35, getWidth()-10, 20, 8.f);
 
 	//----- For drawing the title
 	g.setColour (Colours::whitesmoke);
 	g.setOpacity (0.8);
 	g.setFont (15);
 	Justification just(1);
-	g.drawText (text, 20, 0, getWidth()-20, 30, just, false); 
+	g.drawText(text, 10, -5, getWidth()-20, 35, just, false); 
 
 }
 
@@ -1219,7 +1220,7 @@ void paint(Graphics &g){
 void resized()
 {
 groupbox->setBounds(0, 0, getWidth(), getHeight()); 
-editor->setBounds(offX+5, offY+25, (getWidth()+offWidth)-10, (getHeight()+offHeight)-45); 
+editor->setBounds(offX+5, offY+20, (getWidth()+offWidth)-10, (getHeight()+offHeight)-45); 
 this->setWantsKeyboardFocus(false);
 }
 
@@ -2427,6 +2428,45 @@ this->setWantsKeyboardFocus(false);
 
 JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CabbagePatternMatrix);
 };
+
+//==============================================================================
+// custom soundfiler
+//==============================================================================
+class CabbageSoundfiler	:	public Component
+{
+ScopedPointer<Soundfiler> soundFiler;
+
+//---- constructor -----
+public:
+	CabbageSoundfiler (String name, String colour, String file, String str1, String str2)
+	{
+	setName(name);
+	
+	soundFiler = new Soundfiler();
+	soundFiler->showFile(File(file));
+	addAndMakeVisible(soundFiler);
+	}
+
+	~CabbageSoundfiler()
+	{
+	}
+
+	void resized()
+	{
+	soundFiler->setBounds(0, 0, getWidth(), getHeight());
+	}
+
+	void paint(Graphics& g)
+	{
+
+	}
+
+
+private:
+	String text, colour;
+	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CabbageSoundfiler);
+};
+
 
 //==============================================================================
 // custom CabbageLabel

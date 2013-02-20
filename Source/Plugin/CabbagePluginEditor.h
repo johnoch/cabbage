@@ -79,11 +79,13 @@ private:
         void InsertGroupBox(CabbageGUIClass &cAttr);
         void comboBoxChanged (ComboBox* combo);
         void InsertComboBox(CabbageGUIClass &cAttr);
+		void InsertSoundfiler(CabbageGUIClass &cAttr);
         void SetupWindow(CabbageGUIClass &cAttr);
         void InsertSlider(CabbageGUIClass &cAttr);
 		void sliderValueChanged (Slider*);
         void InsertButton(CabbageGUIClass &cAttr);
         void InsertSourceButton(CabbageGUIClass &cAttr);
+		void InsertFileButton(CabbageGUIClass &cAttr);
         void InsertVUMeter(CabbageGUIClass &cAttr);
         void InsertCheckBox(CabbageGUIClass &cAttr);
         void InsertCsoundOutput(CabbageGUIClass &cAttr);
