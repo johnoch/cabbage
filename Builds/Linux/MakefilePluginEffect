@@ -12,7 +12,7 @@ VERBOSE ?= no
 CSOUND_INCLUDE ?= "/usr/include/csound"
 
 # Default vst include path
-VST_INCLUDE ?= "~/SDKs/vstsdk2.4"
+VST_INCLUDE ?= "/home/rory/SDKs/vstsdk2.4"
 
 ifeq ($(TARGET_ARCH),)
   TARGET_ARCH := -march=native
@@ -52,17 +52,21 @@ ifeq ($(CONFIG),Release)
 endif
 
 OBJECTS := \
-  $(OBJDIR)/csPerfThread_f9d0b9cc.o \
-  $(OBJDIR)/XYPad_6eaa3453.o \
-  $(OBJDIR)/XYPadAutomation_2865c48a.o \
-  $(OBJDIR)/CabbagePluginEditor_5a11f64e.o \
-  $(OBJDIR)/CabbagePluginProcessor_73d6661b.o \
   $(OBJDIR)/BinaryData_5ba7f54.o \
   $(OBJDIR)/CabbageGUIClass_79b9049f.o \
   $(OBJDIR)/CabbageLookAndFeel_220a01a6.o \
   $(OBJDIR)/CabbageMainPanel_12c1333.o \
   $(OBJDIR)/CabbageTable_d003e736.o \
   $(OBJDIR)/ComponentLayoutEditor_aa38c835.o \
+  $(OBJDIR)/csPerfThread_f9d0b9cc.o \
+  $(OBJDIR)/CabbageCsoundEditor_d96a9ea1.o \
+  $(OBJDIR)/CabbageEditorCommandManager_7b31d637.o \
+  $(OBJDIR)/CabbageEditorWindow_16f98d45.o \
+  $(OBJDIR)/CabbagePluginEditor_5a11f64e.o \
+  $(OBJDIR)/CabbagePluginProcessor_73d6661b.o \
+  $(OBJDIR)/Soundfiler_35ae1cd0.o \
+  $(OBJDIR)/XYPad_6eaa3453.o \
+  $(OBJDIR)/XYPadAutomation_2865c48a.o \
   $(OBJDIR)/juce_audio_basics_2442e4ea.o \
   $(OBJDIR)/juce_audio_devices_a4c8a728.o \
   $(OBJDIR)/juce_audio_formats_d349f0c8.o \
@@ -76,234 +80,177 @@ OBJECTS := \
   $(OBJDIR)/juce_gui_basics_a630dd20.o \
   $(OBJDIR)/juce_gui_extra_7767d6a8.o \
   $(OBJDIR)/juce_opengl_c7e3506c.o \
-  $(OBJDIR)/juce_PluginUtilities_e2e19a34.o \
   $(OBJDIR)/juce_VST_Wrapper_bb62e93d.o \
-
+  $(OBJDIR)/juce_PluginUtilities_e2e19a34.o \
+  
 .PHONY: clean
 
 $(OUTDIR)/$(TARGET): $(OBJECTS) $(LDDEPS) $(RESOURCES)
-	@echo Linking CabbagePluginEffect
+	@echo Linking Cabbage
 	-@mkdir -p $(BINDIR)
 	-@mkdir -p $(LIBDIR)
 	-@mkdir -p $(OUTDIR)
-ifeq ($(VERBOSE),yes)
-	@echo $(BLDCMD)
-endif
 	@$(BLDCMD)
 
 clean:
-	@echo Cleaning CabbagePluginEffect
+	@echo Cleaning Cabbage
 	-@rm -f $(OUTDIR)/$(TARGET)
 	-@rm -rf $(OBJDIR)/*
 	-@rm -rf $(OBJDIR)
 
 strip:
-	@echo Stripping CabbagePluginEffect
+	@echo Stripping Cabbage
 	-@strip --strip-unneeded $(OUTDIR)/$(TARGET)
+
+$(OBJDIR)/BinaryData_5ba7f54.o: ../../Source/BinaryData.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling BinaryData.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
+$(OBJDIR)/CabbageGUIClass_79b9049f.o: ../../Source/CabbageGUIClass.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling CabbageGUIClass.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
+$(OBJDIR)/CabbageLookAndFeel_220a01a6.o: ../../Source/CabbageLookAndFeel.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling CabbageLookAndFeel.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
+$(OBJDIR)/CabbageMainPanel_12c1333.o: ../../Source/CabbageMainPanel.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling CabbageMainPanel.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
+$(OBJDIR)/CabbageTable_d003e736.o: ../../Source/CabbageTable.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling CabbageTable.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
+$(OBJDIR)/ComponentLayoutEditor_aa38c835.o: ../../Source/ComponentLayoutEditor.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling ComponentLayoutEditor.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/csPerfThread_f9d0b9cc.o: ../../Source/csPerfThread.cpp
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling csPerfThread.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
-$(OBJDIR)/XYPad_6eaa3453.o: ../../Source/XYPad.cpp
+$(OBJDIR)/CabbageCsoundEditor_d96a9ea1.o: ../../Source/Editor/CabbageCsoundEditor.cpp
 	-@mkdir -p $(OBJDIR)
-	@echo "Compiling XYPad.cpp"
-ifeq ($(VERBOSE),yes)
-	@echo $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-endif
+	@echo "Compiling CabbageCsoundEditor.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
-$(OBJDIR)/XYPadAutomation_2865c48a.o: ../../Source/XYPadAutomation.cpp
+$(OBJDIR)/CabbageEditorCommandManager_7b31d637.o: ../../Source/Editor/CabbageEditorCommandManager.cpp
 	-@mkdir -p $(OBJDIR)
-	@echo "Compiling XYPadAutomation.cpp"
-ifeq ($(VERBOSE),yes)
-	@echo $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-endif
+	@echo "Compiling CabbageEditorCommandManager.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+
+$(OBJDIR)/CabbageEditorWindow_16f98d45.o: ../../Source/Editor/CabbageEditorWindow.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling CabbageEditorWindow.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/CabbagePluginEditor_5a11f64e.o: ../../Source/Plugin/CabbagePluginEditor.cpp
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling CabbagePluginEditor.cpp"
-ifeq ($(VERBOSE),yes)
-	@echo $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-endif
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/CabbagePluginProcessor_73d6661b.o: ../../Source/Plugin/CabbagePluginProcessor.cpp
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling CabbagePluginProcessor.cpp"
-ifeq ($(VERBOSE),yes)
-	@echo $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-endif
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
-$(OBJDIR)/BinaryData_5ba7f54.o: ../../Source/BinaryData.cpp
+$(OBJDIR)/Soundfiler_35ae1cd0.o: ../../Source/Soundfiler.cpp
 	-@mkdir -p $(OBJDIR)
-	@echo "Compiling BinaryData.cpp"
-ifeq ($(VERBOSE),yes)
-	@echo $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-endif
+	@echo "Compiling Soundfiler.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
-$(OBJDIR)/CabbageGUIClass_79b9049f.o: ../../Source/CabbageGUIClass.cpp
+$(OBJDIR)/XYPad_6eaa3453.o: ../../Source/XYPad.cpp
 	-@mkdir -p $(OBJDIR)
-	@echo "Compiling CabbageGUIClass.cpp"
-ifeq ($(VERBOSE),yes)
-	@echo $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-endif
+	@echo "Compiling XYPad.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
-$(OBJDIR)/CabbageLookAndFeel_220a01a6.o: ../../Source/CabbageLookAndFeel.cpp
+$(OBJDIR)/XYPadAutomation_2865c48a.o: ../../Source/XYPadAutomation.cpp
 	-@mkdir -p $(OBJDIR)
-	@echo "Compiling CabbageLookAndFeel.cpp"
-ifeq ($(VERBOSE),yes)
-	@echo $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-endif
-	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-
-$(OBJDIR)/CabbageMainPanel_12c1333.o: ../../Source/CabbageMainPanel.cpp
-	-@mkdir -p $(OBJDIR)
-	@echo "Compiling CabbageMainPanel.cpp"
-ifeq ($(VERBOSE),yes)
-	@echo $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-endif
-	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-
-$(OBJDIR)/CabbageTable_d003e736.o: ../../Source/CabbageTable.cpp
-	-@mkdir -p $(OBJDIR)
-	@echo "Compiling CabbageTable.cpp"
-ifeq ($(VERBOSE),yes)
-	@echo $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-endif
-	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-
-$(OBJDIR)/ComponentLayoutEditor_aa38c835.o: ../../Source/ComponentLayoutEditor.cpp
-	-@mkdir -p $(OBJDIR)
-	@echo "Compiling ComponentLayoutEditor.cpp"
-ifeq ($(VERBOSE),yes)
-	@echo $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-endif
+	@echo "Compiling XYPadAutomation.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/juce_audio_basics_2442e4ea.o: ../../JuceLibraryCode/modules/juce_audio_basics/juce_audio_basics.cpp
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling juce_audio_basics.cpp"
-ifeq ($(VERBOSE),yes)
-	@echo $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-endif
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/juce_audio_devices_a4c8a728.o: ../../JuceLibraryCode/modules/juce_audio_devices/juce_audio_devices.cpp
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling juce_audio_devices.cpp"
-ifeq ($(VERBOSE),yes)
-	@echo $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-endif
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/juce_audio_formats_d349f0c8.o: ../../JuceLibraryCode/modules/juce_audio_formats/juce_audio_formats.cpp
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling juce_audio_formats.cpp"
-ifeq ($(VERBOSE),yes)
-	@echo $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-endif
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/juce_audio_processors_44a134a2.o: ../../JuceLibraryCode/modules/juce_audio_processors/juce_audio_processors.cpp
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling juce_audio_processors.cpp"
-ifeq ($(VERBOSE),yes)
-	@echo $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-endif
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/juce_audio_utils_f63b12e8.o: ../../JuceLibraryCode/modules/juce_audio_utils/juce_audio_utils.cpp
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling juce_audio_utils.cpp"
-ifeq ($(VERBOSE),yes)
-	@echo $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-endif
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/juce_core_aff681cc.o: ../../JuceLibraryCode/modules/juce_core/juce_core.cpp
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling juce_core.cpp"
-ifeq ($(VERBOSE),yes)
-	@echo $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-endif
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/juce_cryptography_25c7e826.o: ../../JuceLibraryCode/modules/juce_cryptography/juce_cryptography.cpp
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling juce_cryptography.cpp"
-ifeq ($(VERBOSE),yes)
-	@echo $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-endif
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/juce_data_structures_bdd6d488.o: ../../JuceLibraryCode/modules/juce_data_structures/juce_data_structures.cpp
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling juce_data_structures.cpp"
-ifeq ($(VERBOSE),yes)
-	@echo $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-endif
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/juce_events_79b2840.o: ../../JuceLibraryCode/modules/juce_events/juce_events.cpp
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling juce_events.cpp"
-ifeq ($(VERBOSE),yes)
-	@echo $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-endif
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/juce_graphics_c8f1e7a4.o: ../../JuceLibraryCode/modules/juce_graphics/juce_graphics.cpp
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling juce_graphics.cpp"
-ifeq ($(VERBOSE),yes)
-	@echo $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-endif
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/juce_gui_basics_a630dd20.o: ../../JuceLibraryCode/modules/juce_gui_basics/juce_gui_basics.cpp
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling juce_gui_basics.cpp"
-ifeq ($(VERBOSE),yes)
-	@echo $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-endif
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/juce_gui_extra_7767d6a8.o: ../../JuceLibraryCode/modules/juce_gui_extra/juce_gui_extra.cpp
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling juce_gui_extra.cpp"
-ifeq ($(VERBOSE),yes)
-	@echo $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-endif
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/juce_opengl_c7e3506c.o: ../../JuceLibraryCode/modules/juce_opengl/juce_opengl.cpp
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling juce_opengl.cpp"
-ifeq ($(VERBOSE),yes)
-	@echo $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-endif
-	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-
-$(OBJDIR)/juce_PluginUtilities_e2e19a34.o: ../../JuceLibraryCode/modules/juce_audio_plugin_client/utility/juce_PluginUtilities.cpp
-	-@mkdir -p $(OBJDIR)
-	@echo "Compiling juce_PluginUtilities.cpp"
-ifeq ($(VERBOSE),yes)
-	@echo $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-endif
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/juce_VST_Wrapper_bb62e93d.o: ../../JuceLibraryCode/modules/juce_audio_plugin_client/VST/juce_VST_Wrapper.cpp
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling juce_VST_Wrapper.cpp"
-ifeq ($(VERBOSE),yes)
-	@echo $(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-endif
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-
+	
+$(OBJDIR)/juce_PluginUtilities_e2e19a34.o: ../../JuceLibraryCode/modules/juce_audio_plugin_client/utility/juce_PluginUtilities.cpp
+	-@mkdir -p $(OBJDIR)
+	@echo "Compiling juce_PluginUtilities.cpp"
+	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+	
 -include $(OBJECTS:%.o=%.d)
+
