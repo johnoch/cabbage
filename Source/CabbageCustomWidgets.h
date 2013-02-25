@@ -483,13 +483,6 @@ CabbageGroupbox(String name, String caption, String text, String colour, String 
 
 }
 
-void addComponent(Component* comp)
-{
-        comps.add(comp);
-        int size = comps.size();
-        addAndMakeVisible(comps[size-1]);
-}
-
 //---------------------------------------------
 void resized()
 {

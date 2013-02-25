@@ -26,6 +26,12 @@ public:
 																								bool useTrackerFill,
 																								bool isVertical,
 																								const Colour trackerCol);
+																								 
+	void drawTableHeaderColumn (Graphics& g, const String& columnName, int /*columnId*/,
+                                         int width, int height,
+                                         bool isMouseOver, bool isMouseDown,
+                                         int columnFlags);
+	void drawTableHeaderBackground (Graphics& g, TableHeaderComponent& header);
 	Image drawLinearThumbImage (float width, float height, const Colour thumbFill, bool isVertical);
 	static Image drawToggleImage (float width, float height, bool isToggleOn, Colour colour, bool isRect);
 	Image drawTextButtonImage (float width, float height, bool isButtonDown);
@@ -46,6 +52,7 @@ public:
 																						Slider &slider);
 	virtual void drawButtonBackground (Graphics&, Button&, const Colour&, bool, bool);
 	virtual void drawButtonText (Graphics &g, TextButton &button, bool isMouseOverButton, bool isButtonDown);
+									  
 	virtual void drawLabel (Graphics &g, Label &label);
 	virtual void drawComboBox (Graphics&, int, int, bool, int, int, int, int, ComboBox&);
 	virtual void drawToggleButton (Graphics &g, ToggleButton &button, bool isMouseOverButton, bool isButtonDown);
@@ -109,6 +116,16 @@ public:
     void createTabButtonShape (TabBarButton&, Path& path,  bool isMouseOver, bool isMouseDown);
     void fillTabButtonShape (TabBarButton&, Graphics& g, const Path& path, bool isMouseOver, bool isMouseDown);
 
+    void drawFileBrowserRow (Graphics& g, int width, int height,
+                                     const String& filename, Image* icon,
+                                     const String& fileSizeDescription,
+                                     const String& fileTimeDescription,
+                                     bool isDirectory,
+                                     bool isItemSelected,
+                                     int itemIndex,
+                                     DirectoryContentsDisplayComponent& component);
+
+	void drawTreeviewPlusMinusBox (Graphics& g, int x, int y, int w, int h, bool isPlus, bool /*isMouseOver*/);
     Button* createTabBarExtrasButton();
 	
 	juce_UseDebuggingNewOperator
@@ -145,6 +162,9 @@ public:
 																						float maxSliderPos, 
 																						const Slider::SliderStyle style, 
 																						Slider &slider);
+    void drawButtonBackground (Graphics& g, Button& button, const Colour& backgroundColour, bool isMouseOverButton, bool isButtonDown);
+
+
 	
 	juce_UseDebuggingNewOperator
 

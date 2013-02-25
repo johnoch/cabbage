@@ -23,6 +23,8 @@
 #define CABBAGE_VERSION "Cabbage v0.04.00 BETA"
 #define MAX_BUFFER_SIZE 1024
 
+//#define LOGGER 0
+
 //these two lines need to be copied to top part of csound.h
 //#define int32 int
 //#define uint32 unsigned int
@@ -55,20 +57,21 @@ updateTable(false),
 yieldCallbackBool(false),
 yieldCounter(10),
 isNativeThreadRunning(false),
-soundFileIndex(0),
-logFile((appProperties->getCommonSettings(true)->getFile().getParentDirectory().getFullPathName()+"/CabbageLog.txt"))
+soundFileIndex(0)
 {
 //set logger
+#ifdef Cabbage_Logger
+logFile = File((appProperties->getCommonSettings(true)->getFile().getParentDirectory().getFullPathName()+"/CabbageLog.txt"));
 fileLogger = new FileLogger(logFile, String("Cabbage Log.."));
 Logger::setCurrentLogger(fileLogger);
-
+#endif
 //reset patMatrix. If this has more than one we know that
 //pattern matrix object is being used
 patStepMatrix.clear();
 patPfieldMatrix.clear();
 setPlayConfigDetails(2, 2, 44100, 512); 
 #ifndef Cabbage_No_Csound
-String localCsoundDirectory = File(inputfile).getParentDirectory().getFullPathName()+"/csound";
+//String localCsoundDirectory = File(inputfile).getParentDirectory().getFullPathName()+"/csound";
 //if(File(localCsoundDirectory).exists())
 //	if(csoundSetGlobalEnv(String("OPCODEDIR64").toUTF8(), localCsoundDirectory.toUTF8()))
 //		Logger::writeToLog("couldn't write environment variables");
@@ -100,6 +103,7 @@ csndIndex = 32;
 dataout = new PVSDATEXT;
 
 if(!inputfile.isEmpty()){
+File(inputfile).setAsCurrentWorkingDirectory();
 csCompileResult = csound->Compile(const_cast<char*>(inputfile.toUTF8().getAddress()));
 
 if(csCompileResult==0){
@@ -164,15 +168,9 @@ updateTable(false),
 yieldCallbackBool(false),
 yieldCounter(10),
 soundFileIndex(0)
-logFile((appProperties->getCommonSettings(true)->getFile().getParentDirectory().getFullPathName()+"/CabbageLog.txt"))
 {
-//set logger
-fileLogger = new FileLogger(logFile, String("Cabbage Log.."));
-Logger::setCurrentLogger(fileLogger);
-
 //Cabbage plugins always try to load a csd file with the same name as the plugin library.
 //Therefore we need to find the name of the library and append a '.csd' to it. 
-        
 #ifdef MACOSX
 String osxCSD = File::getSpecialLocation(File::currentApplicationFile).getFullPathName()+String("/Contents/")+File::getSpecialLocation(File::currentApplicationFile).getFileName();
 File thisFile(osxCSD); 
@@ -190,11 +188,14 @@ else
 Logger::writeToLog("File doesn't exist"+String(csdFile.getFullPathName()));
 
 
-Logger::writeToLog(csdFile.getFullPathName());
-
 File(csdFile.getFullPathName()).setAsCurrentWorkingDirectory();
 
-
+//set logger
+#ifdef Cabbage_Logger
+logFile = File(File(csdFile.getFullPathName()).getParentDirectory()+"/CabbageLog.txt"));
+fileLogger = new FileLogger(logFile, String("Cabbage Log.."));
+Logger::setCurrentLogger(fileLogger);
+#endif
 
 #ifndef Cabbage_No_Csound
 csound = new Csound();
@@ -219,7 +220,7 @@ csndIndex = 32;
 startTimer(15);
 
 csCompileResult = csound->Compile(const_cast<char*>(csdFile.getFullPathName().toUTF8().getAddress()));
-
+csdFile.setAsCurrentWorkingDirectory();
 if(csCompileResult==0){
 	Logger::writeToLog("compiled Ok");
         //simple hack to allow tables to be set up correctly. 

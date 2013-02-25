@@ -336,7 +336,7 @@ for(int i=0;i<filter->getDebugMessageArray().size();i++)
       {
           if(filter->getDebugMessageArray().getReference(i).length()>0)
           {
-              text += String(filter->getDebugMessageArray().getReference(i).toUTF8());
+              text += String(filter->getDebugMessageArray().getReference(i));
 			 
           }
 		   

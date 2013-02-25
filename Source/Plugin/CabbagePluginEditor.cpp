@@ -36,8 +36,9 @@ CabbagePluginAudioProcessorEditor::CabbagePluginAudioProcessorEditor (CabbagePlu
 {
 //set custom skin yo use
 lookAndFeel = new CabbageLookAndFeel(); 
+basicLookAndFeel = new CabbageLookAndFeelBasic();
 Component::setLookAndFeel(lookAndFeel);
-oldSchoolLook = new OldSchoolLookAndFeel();
+//oldSchoolLook = new OldSchoolLookAndFeel();
 #ifdef Cabbage_GUI_Editor
 //determine whether instrument should be opened in GUI mode or not
 componentPanel = new CabbageMainPanel();
@@ -289,6 +290,8 @@ void CabbagePluginAudioProcessorEditor::positionComponentWithinPlant(String type
 {			
 //if dimensions are < 1 then the user is using the decimal proportional of positioning
 if(width>1 && height>1){
+Logger::writeToLog(layout->getName());
+Logger::writeToLog(control->getName());
 width = width*layout->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
 height = height*layout->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
 top = top*layout->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
@@ -308,7 +311,7 @@ if(layout->getName().containsIgnoreCase("groupbox")||
         layout->getName().containsIgnoreCase("image"))
         {                       
         control->setBounds(left, top, width, height);
-        layout->addAndMakeVisible(controls[idx]);
+        layout->addAndMakeVisible(control);
         }
 }
 
@@ -384,7 +387,7 @@ void CabbagePluginAudioProcessorEditor::paint (Graphics& g)
              g.drawImage (logo, getWidth() - 100, getHeight()-35, logo.getWidth()*0.55, logo.getHeight()*0.55, 
                    0, 0, logo.getWidth(), logo.getHeight(), true);
                 g.setColour(fontColour);
-                g.drawFittedText(authorText, 10, getHeight()-30, getWidth()*.65, logo.getHeight(), 1, 1);   
+                g.drawFittedText(authorText, 10, getHeight()-35, getWidth()*.65, logo.getHeight(), 1, 1);   
                 //g.drawLine(10, getHeight()-27, getWidth()-10, getHeight()-27, 0.2);
         }
 //componentPanel->toFront(true);
@@ -398,7 +401,7 @@ void CabbagePluginAudioProcessorEditor::paint (Graphics& g)
              g.drawImage (logo, getWidth() - 100, getHeight()-35, logo.getWidth()*0.55, logo.getHeight()*0.55, 
                    0, 0, logo.getWidth(), logo.getHeight(), true);
 				   g.setColour(fontColour);
-                g.drawFittedText(authorText, 10, getHeight()-30, getWidth()*.65, logo.getHeight(), 1, 1);  
+                g.drawFittedText(authorText, 10, getHeight()-35, getWidth()*.65, logo.getHeight(), 1, 1);  
 #endif
 }
 
@@ -504,37 +507,35 @@ void CabbagePluginAudioProcessorEditor::InsertGroupBox(CabbageGUIClass &cAttr)
                                                                                  cAttr.getColourProp("fontcolour"),
                                                                                  cAttr.getNumProp("line")));
         int idx = layoutComps.size()-1;
-
         float left = cAttr.getNumProp("left");
         float top = cAttr.getNumProp("top");
         float width = cAttr.getNumProp("width");
         float height = cAttr.getNumProp("height");
-
-        //if(cAttr.getStringProp("plant").length()>1){
-        //      width = width*cAttr.getNumProp("scaleX");
-        //      height = height*cAttr.getNumProp("scaleY");
-        //}
-
         int relY=0,relX=0;
-        for(int y=0;y<layoutComps.size();y++){
-        if(cAttr.getStringProp("reltoplant").length()>0)
+        if(layoutComps.size()>0){
+        for(int y=0;y<layoutComps.size();y++)
+        if(cAttr.getStringProp("reltoplant").length()>0){
         if(layoutComps[y]->getProperties().getWithDefault(String("plant"), -99).toString().equalsIgnoreCase(cAttr.getStringProp("reltoplant")))
         {
-                relX = layoutComps[y]->getPosition().getX();
-                relY = layoutComps[y]->getPosition().getY();
+				positionComponentWithinPlant("", idx, left, top, width, height, layoutComps[y], layoutComps[idx]);
         }
         }
-
-        ((GroupComponent*)layoutComps[idx])->setBounds (left+relX, top+relY, width, height);
-        layoutComps[idx]->toBack();
-
-        if(cAttr.getNumProp("button")==0){
-        componentPanel->addAndMakeVisible(layoutComps[idx]);
+		else{
+       if(cAttr.getNumProp("button")==0){
+		   Logger::writeToLog(layoutComps[idx]->getName());
+			layoutComps[idx]->setBounds(left+relX, top+relY, width, height);
+            componentPanel->addAndMakeVisible(layoutComps[idx]);       
         }
         else{
                 plantButton.add(new CabbageButton(cAttr.getStringProp("plant"), "", cAttr.getStringProp("plant"), CabbageUtils::getComponentSkin().toString(), ""));
-                plantButton[plantButton.size()-1]->setBounds(cAttr.getNumProp("left"), cAttr.getNumProp("top"), 100, 30);
+				plantButton[plantButton.size()-1]->setBounds(left+relX, top+relY, 100, 30);
+				layoutComps[idx]->setBounds(left+relX, top+relY, width, height);
                 plantButton[plantButton.size()-1]->button->addListener(this);
+				plantButton[plantButton.size()-1]->button->setLookAndFeel(basicLookAndFeel);
+				plantButton[plantButton.size()-1]->button->setColour(TextButton::buttonColourId, Colour::fromString(cAttr.getColourProp("fill")));
+				plantButton[plantButton.size()-1]->button->setColour(TextButton::textColourOffId, Colour::fromString(cAttr.getColourProp("fontcolour")));
+				plantButton[plantButton.size()-1]->button->setColour(TextButton::textColourOnId, Colour::fromString(cAttr.getColourProp("fontcolour")));
+				
                 componentPanel->addAndMakeVisible(plantButton[plantButton.size()-1]);
                 plantButton[plantButton.size()-1]->button->getProperties().set(String("index"), plantButton.size()-1); 
 
@@ -545,7 +546,11 @@ void CabbagePluginAudioProcessorEditor::InsertGroupBox(CabbageGUIClass &cAttr)
                 subPatch[subPatch.size()-1]->centreWithSize(layoutComps[idx]->getWidth(), layoutComps[idx]->getHeight()+18);
                 subPatch[subPatch.size()-1]->setContentNonOwned(layoutComps[idx], true);
                 subPatch[subPatch.size()-1]->setTitleBarHeight(18);
-        }
+				}			          
+			
+			}
+		
+		}
         layoutComps[idx]->getProperties().set(String("plant"), var(cAttr.getStringProp("plant")));
         layoutComps[idx]->getProperties().set(String("groupLine"), cAttr.getNumProp("line"));
 }
@@ -563,13 +568,6 @@ void CabbagePluginAudioProcessorEditor::InsertImage(CabbageGUIClass &cAttr)
         File thisFile(File::getSpecialLocation(File::currentApplicationFile)); 
         pic = thisFile.getParentDirectory().getFullPathName();
 #endif
-
-        
-        float left = cAttr.getNumProp("left");
-        float top = cAttr.getNumProp("top");
-        float width = cAttr.getNumProp("width");
-        float height = cAttr.getNumProp("height");
-
         if(cAttr.getStringProp("file").length()<2)
                 pic="";
         else
@@ -583,39 +581,35 @@ void CabbagePluginAudioProcessorEditor::InsertImage(CabbageGUIClass &cAttr)
         cAttr.getStringProp("shape"), cAttr.getNumProp("line")));
 
         int idx = layoutComps.size()-1;
-
+        float left = cAttr.getNumProp("left");
+        float top = cAttr.getNumProp("top");
+        float width = cAttr.getNumProp("width");
+        float height = cAttr.getNumProp("height");
         int relY=0,relX=0;
         if(layoutComps.size()>0){
         for(int y=0;y<layoutComps.size();y++)
         if(cAttr.getStringProp("reltoplant").length()>0){
-        String plant = layoutComps[y]->getProperties().getWithDefault(String("plant"), -99);
-        String relTo = cAttr.getStringProp("reltoplant");
-
         if(layoutComps[y]->getProperties().getWithDefault(String("plant"), -99).toString().equalsIgnoreCase(cAttr.getStringProp("reltoplant")))
-                {
-                width = width*layoutComps[y]->getWidth();
-                height = height*layoutComps[y]->getHeight();
-                top = (top*layoutComps[y]->getHeight());
-                left = (left*layoutComps[y]->getWidth());
-
-                if(layoutComps[y]->getName().containsIgnoreCase("groupbox")||
-                        layoutComps[y]->getName().containsIgnoreCase("image"))
-                        {                       
-                        layoutComps[idx]->setBounds(left, top, width, height);
-                        layoutComps[y]->addAndMakeVisible(layoutComps[idx]);
-                        }
-                }
+        {
+				positionComponentWithinPlant("", idx, left, top, width, height, layoutComps[y], layoutComps[idx]);
+        }
         }
 		else{
        if(cAttr.getNumProp("button")==0){
+		   Logger::writeToLog(layoutComps[idx]->getName());
 			layoutComps[idx]->setBounds(left+relX, top+relY, width, height);
             componentPanel->addAndMakeVisible(layoutComps[idx]);       
         }
         else{
                 plantButton.add(new CabbageButton(cAttr.getStringProp("plant"), "", cAttr.getStringProp("plant"), CabbageUtils::getComponentSkin().toString(), ""));
-				plantButton[plantButton.size()-1]->setBounds(left+relX, top+relY, 100, 30);
+				plantButton[plantButton.size()-1]->setBounds(left+relX, top+relY, 100, 25);
 				layoutComps[idx]->setBounds(left+relX, top+relY, width, height);
                 plantButton[plantButton.size()-1]->button->addListener(this);
+				plantButton[plantButton.size()-1]->button->setLookAndFeel(basicLookAndFeel);
+				plantButton[plantButton.size()-1]->button->setColour(TextButton::buttonColourId, Colour::fromString(cAttr.getColourProp("fill")));
+				plantButton[plantButton.size()-1]->button->setColour(TextButton::textColourOffId, Colour::fromString(cAttr.getColourProp("fontcolour")));
+				plantButton[plantButton.size()-1]->button->setColour(TextButton::textColourOnId, Colour::fromString(cAttr.getColourProp("fontcolour")));
+				
                 componentPanel->addAndMakeVisible(plantButton[plantButton.size()-1]);
                 plantButton[plantButton.size()-1]->button->getProperties().set(String("index"), plantButton.size()-1); 
 
@@ -628,8 +622,7 @@ void CabbagePluginAudioProcessorEditor::InsertImage(CabbageGUIClass &cAttr)
                 subPatch[subPatch.size()-1]->setTitleBarHeight(18);
 				}			          
 			
-			}
-		
+			}		
 		}
         
 		
@@ -1440,6 +1433,8 @@ if(!getFilter()->isGuiEnabled()){
                                 if(getFilter()->getGUILayoutCtrls(p).getStringProp("plant") ==button->getName()){
                                 int index = button->getProperties().getWithDefault(String("index"), 0);
                                 subPatch[index]->setVisible(true);
+								subPatch[index]->setAlwaysOnTop(true);
+								subPatch[index]->toFront(true);
                                 i=getFilter()->getGUICtrlsSize();
                                 break;
                                 }
@@ -2358,10 +2353,10 @@ for(int i=0;i<getFilter()->getGUILayoutCtrlsSize();i++){
         }
         else if(getFilter()->getGUILayoutCtrls(i).getStringProp("type").containsIgnoreCase("vumeter")){
                 //Logger::writeToLog(layoutComps[i]->getName());
-                //for(int y=0;y<((CabbageVUMeter*)layoutComps[i])->getNoMeters();y++){
+                for(int y=0;y<((CabbageVUMeter*)layoutComps[i])->getNoMeters();y++)
                 //String chann = getFilter()->getGUILayoutCtrls(i).getStringProp("channel", y);
                 //float val = getFilter()->getCsound()->GetChannel(getFilter()->getGUILayoutCtrls(i).getStringProp("channel", y).toUTF8());
-                //((CabbageVUMeter*)layoutComps[i])->vuMeter->setVULevel(y, val);
+                ((CabbageVUMeter*)layoutComps[i])->vuMeter->setVULevel(y, 10);
                 //}
         }
         else if(getFilter()->getGUILayoutCtrls(i).getStringProp("type").containsIgnoreCase("table")){

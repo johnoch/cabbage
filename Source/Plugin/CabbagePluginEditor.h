@@ -42,6 +42,7 @@ public:
 
         void closeButtonPressed(){
         setVisible(false);
+		setAlwaysOnTop(false);
         };
 
         JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CabbagePlantWindow);
@@ -142,7 +143,7 @@ private:
 #endif
         ScopedPointer<MidiKeyboardComponent> midiKeyboard;
         ScopedPointer<LookAndFeel> feely;
-        ScopedPointer<OldSchoolLookAndFeel> oldSchoolLook;
+        //ScopedPointer<OldSchoolLookAndFeel> oldSchoolLook;
 		Array<float> incomingValues;
 		ScopedPointer<CabbageCornerResizer> resizer;
 		ComponentBoundsConstrainer resizeLimits;
@@ -155,6 +156,7 @@ private:
         float inValue;
 		int xyPadIndex;
         ScopedPointer<CabbageLookAndFeel> lookAndFeel;
+		ScopedPointer<CabbageLookAndFeelBasic> basicLookAndFeel;
         ScopedPointer<Label> debugLabel;
         JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CabbagePluginAudioProcessorEditor);
 

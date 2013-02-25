@@ -6,6 +6,7 @@ CabbageLookAndFeel::CabbageLookAndFeel()
 	setColour(AlertWindow::backgroundColourId, CabbageUtils::getDarkerBackgroundSkin());
 	setColour(AlertWindow::textColourId, Colour(200, 200, 200));
 	setColour(AlertWindow::outlineColourId, Colours::white);
+	setColour(DirectoryContentsDisplayComponent::textColourId, Colours::whitesmoke);
 	
 }
 
@@ -13,6 +14,111 @@ CabbageLookAndFeel::~CabbageLookAndFeel()
 {
 }
 
+//==============================================================================
+void CabbageLookAndFeel::drawTreeviewPlusMinusBox (Graphics& g, int x, int y, int w, int h, bool isPlus, bool /*isMouseOver*/)
+{
+    const int boxSize = ((jmin (16, w, h) << 1) / 3) | 1;
+
+    x += (w - boxSize) >> 1;
+    y += (h - boxSize) >> 1;
+    w = boxSize;
+    h = boxSize;
+
+    //g.setColour (Colour (0xe5ffffff));
+    g.setColour(Colours::black);//background
+    g.fillRect (x, y, w, h);
+
+    //g.setColour (Colour (0x80000000));
+    g.setColour(Colours::cornflowerblue);//outline
+    g.drawRect (x, y, w, h);
+
+	//g.setColour(Colours::lime);
+	
+    const float size = boxSize / 2 + 1.0f;
+    const float centre = (float) (boxSize / 2);
+    //plus sign
+    g.setColour(Colours::green);
+
+    g.fillRect (x + (w - size) * 0.5f, y + centre, size, 1.0f);
+    
+    if (isPlus){
+        g.fillRect (x + centre, y + (h - size) * 0.5f, 1.0f, size);
+	
+	}
+}
+
+//draw file borwser rows
+void CabbageLookAndFeel::drawFileBrowserRow (Graphics& g, int width, int height,
+                                      const String& filename, Image* icon,
+                                      const String& fileSizeDescription,
+                                      const String& fileTimeDescription,
+                                      const bool isDirectory,
+                                      const bool isItemSelected,
+                                      const int /*itemIndex*/,
+                                      DirectoryContentsDisplayComponent&)
+{
+    if (isItemSelected)
+        g.fillAll (findColour (DirectoryContentsDisplayComponent::highlightColourId));
+
+    const int x = 32;
+    g.setColour (Colours::black);
+
+    if (icon != nullptr && icon->isValid())
+    {
+        g.drawImageWithin (*icon, 2, 2, x - 4, height - 4,
+                           RectanglePlacement::centred | RectanglePlacement::onlyReduceInSize,
+                           false);
+    }
+    else
+    {
+		g.fillAll(Colours::black);
+		Path path;
+		//draw custom folder icon, netter yet, just import a binary..
+		path.addLineSegment(Line<float> (3, 3, 13, 3), 2);
+		path.addLineSegment(Line<float> (13, 3, 15, 10), 2);
+		path.addLineSegment(Line<float> (15, 10, 26, 10), 2);
+		path.addLineSegment(Line<float> (26, 10, 26, 20), 2);
+		path.addLineSegment(Line<float> (26, 20, 3, 20), 2);
+		path.addLineSegment(Line<float> (3, 20, 3, 3), 2);
+		g.setColour(Colours::cornflowerblue.withAlpha(.4f));
+		PathStrokeType stroke(.01f);
+		g.fillPath(path);
+  }
+
+    g.setColour (findColour (DirectoryContentsDisplayComponent::textColourId));
+    g.setFont (height * 0.7f);
+
+    if (width > 450 && ! isDirectory)
+    {
+        const int sizeX = roundToInt (width * 0.7f);
+        const int dateX = roundToInt (width * 0.8f);
+
+        g.drawFittedText (filename,
+                          x, 0, sizeX - x, height,
+                          Justification::centredLeft, 1);
+
+        g.setFont (height * 0.5f);
+        g.setColour (Colours::darkgrey);
+
+        if (! isDirectory)
+        {
+            g.drawFittedText (fileSizeDescription,
+                              sizeX, 0, dateX - sizeX - 8, height,
+                              Justification::centredRight, 1);
+
+            g.drawFittedText (fileTimeDescription,
+                              dateX, 0, width - 8 - dateX, height,
+                              Justification::centredRight, 1);
+        }
+    }
+    else
+    {
+        g.drawFittedText (filename,
+                          x, 0, width - x, height,
+                          Justification::centredLeft, 1);
+
+    }
+}
 //========= Rotary slider image ==============================================================================
 Image CabbageLookAndFeel::drawRotaryImage(int diameter, const Colour sliderColour, const Colour trackerCol, float sliderPosProportional, 
 																							float zeroPosProportional, 
@@ -1589,13 +1695,13 @@ void CabbageLookAndFeel::createTabButtonShape (TabBarButton& button, Path& p, bo
 
 void CabbageLookAndFeel::fillTabButtonShape (TabBarButton& button, Graphics& g, const Path& path,  bool /*isMouseOver*/, bool /*isMouseDown*/)
 {
-    //const Colour tabBackground (button.getTabBackgroundColour());
-	const Colour tabBackground (CabbageUtils::getBackgroundSkin());
+    const Colour tabBackground (button.getTabBackgroundColour());
+	//const Colour tabBackground (CabbageUtils::getBackgroundSkin());
     const bool isFrontTab = button.isFrontTab();
 
-    //g.setColour (isFrontTab ? tabBackground
-    //                        : tabBackground.withMultipliedAlpha (0.9f));
-	g.setColour(CabbageUtils::getBackgroundSkin());
+    g.setColour (isFrontTab ? tabBackground
+                            : tabBackground.withMultipliedAlpha (0.9f));
+	//g.setColour(CabbageUtils::getBackgroundSkin());
     g.fillPath (path);
 
     g.setColour (button.findColour (isFrontTab ? TabbedButtonBar::frontOutlineColourId
@@ -1646,7 +1752,8 @@ void CabbageLookAndFeel::drawTabButtonText (TabBarButton& button, Graphics& g, b
     else
         col = button.getTabBackgroundColour().contrasting();
 
-	col = Colours::whitesmoke;
+	//hardcode text for tab bubtton
+	//col = Colours::cornflowerblue;
     const float alpha = button.isEnabled() ? ((isMouseOver || isMouseDown) ? 1.0f : 0.8f) : 0.3f;
 
     g.setColour (col.withMultipliedAlpha (alpha));
@@ -1670,7 +1777,7 @@ void CabbageLookAndFeel::drawTabButton (TabBarButton& button, Graphics& g, bool 
 
 void CabbageLookAndFeel::drawTabAreaBehindFrontButton (TabbedButtonBar& bar, Graphics& g, const int w, const int h)
 {
-    const float shadowSize = 0.2f;
+	const float shadowSize = 0.2f;
 
     Rectangle<int> shadowRect, line;
     ColourGradient gradient (Colours::black.withAlpha (bar.isEnabled() ? 0.3f : 0.15f), 0, 0,
@@ -1752,7 +1859,60 @@ Button* CabbageLookAndFeel::createTabBarExtrasButton()
     return db;
 }
 
+//table header 
+void CabbageLookAndFeel::drawTableHeaderBackground (Graphics& g, TableHeaderComponent& header)
+{
+    g.fillAll (Colours::black);
 
+    const int w = header.getWidth();
+    const int h = header.getHeight();
+
+    g.setGradientFill (ColourGradient (CabbageUtils::getBackgroundSkin(), 0.0f, h * 0.5f,
+                                       Colours::black, 0.0f, h - 1.0f,
+                                       false));
+    g.fillRect (0, h / 2, w, h);
+
+    g.setColour (Colour (0x33000000));
+    g.fillRect (0, h - 1, w, 1);
+
+    for (int i = header.getNumColumns (true); --i >= 0;)
+        g.fillRect (header.getColumnPosition (i).getRight() - 1, 0, 1, h - 1);
+}
+
+void CabbageLookAndFeel::drawTableHeaderColumn (Graphics& g, const String& columnName, int /*columnId*/,
+                                         int width, int height,
+                                         bool isMouseOver, bool isMouseDown,
+                                         int columnFlags)
+{
+    if (isMouseDown)
+        g.fillAll (Colour (0x8899aadd));
+    else if (isMouseOver)
+        g.fillAll (Colour (0x5599aadd));
+
+    int rightOfText = width - 4;
+
+    if ((columnFlags & (TableHeaderComponent::sortedForwards | TableHeaderComponent::sortedBackwards)) != 0)
+    {
+        const float top = height * ((columnFlags & TableHeaderComponent::sortedForwards) != 0 ? 0.35f : (1.0f - 0.35f));
+        const float bottom = height - top;
+
+        const float w = height * 0.5f;
+        const float x = rightOfText - (w * 1.25f);
+        rightOfText = (int) x;
+
+        Path sortArrow;
+        sortArrow.addTriangle (x, bottom, x + w * 0.5f, top, x + w, bottom);
+
+        g.setColour (Colour (0x99000000));
+        g.fillPath (sortArrow);
+    }
+
+	//overriding colour
+    g.setColour (Colours::cornflowerblue);
+    g.setFont (Font (height * 0.5f, Font::bold));
+    const int textX = 4;
+    g.drawFittedText (columnName, textX, 0, rightOfText - textX, height, Justification::centredLeft, 1);
+}
 
 /*
   =========================================================================================================
@@ -1789,6 +1949,47 @@ void CabbageLookAndFeelBasic::drawLinearSliderBackground (Graphics &g, int /*x*/
 	g.setColour(Colours::cornflowerblue);
 	g.setOpacity(0.3);
 	g.fillRoundedRectangle (0, slider.getHeight()*0.3, sliderPos, slider.getHeight()*0.4, (float)slider.getHeight()/4);
+}
+
+void CabbageLookAndFeelBasic::drawButtonBackground (Graphics& g, Button& button, const Colour& backgroundColour, bool isMouseOverButton, bool isButtonDown)
+{
+    const int width = button.getWidth();
+    const int height = button.getHeight();
+
+    const float indent = 2.0f;
+    const int cornerSize = jmin (roundToInt (width * 0.4f),
+                                 roundToInt (height * 0.4f));
+
+	Colour bc (backgroundColour);
+
+    Path p;
+    p.addRoundedRectangle (indent, indent,
+                           width - indent * 3.0f,
+                           height - indent * 3.0f,
+                           (float) cornerSize);
+    g.setColour (bc.withSaturation(0.f));
+    g.strokePath (p, PathStrokeType (2.0f));
+
+
+    
+
+    if (isMouseOverButton)
+    {
+        if (isButtonDown)
+            bc = bc.brighter();
+        else if (bc.getBrightness() > 0.5f)
+            bc = bc.darker (0.3f);
+        else
+            bc = bc.brighter (0.3f);
+    }
+	//Logger::writeToLog(backgroundColour.toDisplayString(false));
+    g.setColour (bc);
+    g.fillPath (p);
+
+
+
+    g.setColour (bc.withSaturation ((isMouseOverButton) ? 0.1f : 0.0f));
+    g.strokePath (p, PathStrokeType ((isMouseOverButton) ? 2.0f : 2.0f));
 }
 
 //=========== Linear Thumb =================================================================================

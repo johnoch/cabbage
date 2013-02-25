@@ -38,6 +38,7 @@ CabbageGUIClass::CabbageGUIClass(String compStr, int ID):
 								height(0),
 								left(0),
 								top(0), 
+								fill(Colours::cornflowerblue),
 								xyAutoIndex(0),
 								fileType(""),
 								workingDir(""),
