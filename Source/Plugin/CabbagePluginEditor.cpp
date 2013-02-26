@@ -112,7 +112,7 @@ for(int index=0;index<getFilter()->getGUILayoutCtrlsSize();index++)
 	if(getFilter()->getGUILayoutCtrls(index).getStringProp("type")=="table")
 		{
 		for(int y=0;y<getFilter()->getGUILayoutCtrls(index).getNumberOfTableChannels();y++)
-			getFilter()->messageQueue.addOutgoingChannelMessageToQueue(getFilter()->getGUILayoutCtrls(index).getTableChannel(y).toUTF8(),  -1.f);
+			getFilter()->messageQueue.addOutgoingChannelMessageToQueue(getFilter()->getGUILayoutCtrls(index).getTableChannel(y).toUTF8(),  -1.f, getFilter()->getGUILayoutCtrls(index).getStringProp("type"));
 		}	
 	}
 
@@ -450,6 +450,9 @@ for(int i=0;i<getFilter()->getGUILayoutCtrlsSize();i++){
                 }
         else if(getFilter()->getGUILayoutCtrls(i).getStringProp("type")==String("soundfiler")){
                 InsertSoundfiler(getFilter()->getGUILayoutCtrls(i));   
+                }
+        else if(getFilter()->getGUILayoutCtrls(i).getStringProp("type")==String("directorylist")){
+                InsertDirectoryList(getFilter()->getGUILayoutCtrls(i));   
                 }
         else if(getFilter()->getGUILayoutCtrls(i).getStringProp("type")==String("line")){
                 InsertLineSeparator(getFilter()->getGUILayoutCtrls(i));   
@@ -950,6 +953,47 @@ void CabbagePluginAudioProcessorEditor::InsertSoundfiler(CabbageGUIClass &cAttr)
         }
         }
         
+        layoutComps[idx]->getProperties().set(String("plant"), var(cAttr.getStringProp("plant")));
+
+}
+
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//     DirectoryList  
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+void CabbagePluginAudioProcessorEditor::InsertDirectoryList(CabbageGUIClass &cAttr)
+{
+        layoutComps.add(new CabbageDirectoryList(cAttr.getStringProp("name"),
+				cAttr.getStringProp("channel"),
+				cAttr.getStringProp("workingDir"),
+                cAttr.getStringProp("fileType")));
+    
+        int idx = layoutComps.size()-1;
+		
+		//add soundfiler object to main processor..
+		//getFilter()->soundFilers.add(((Soundfiler*)layoutComps[idx])->transportSource);
+
+        float left = cAttr.getNumProp("left");
+        float top = cAttr.getNumProp("top");
+        float width = cAttr.getNumProp("width");
+        float height = cAttr.getNumProp("height");
+
+        //check to see if widgets is anchored
+        //if it is offset it's position accordingly. 
+        int relY=0,relX=0;
+        for(int y=0;y<layoutComps.size();y++){
+        if(cAttr.getStringProp("reltoplant").length()>0){
+        if(layoutComps[y]->getProperties().getWithDefault(String("plant"), -99).toString().equalsIgnoreCase(cAttr.getStringProp("reltoplant")))
+        {
+				positionComponentWithinPlant("", idx, left, top, width, height, layoutComps[y], controls[idx]);
+        }
+        }
+        else{
+        ((CabbageSoundfiler*)layoutComps[idx])->setBounds(left+relX, top+relY, width, height);
+        componentPanel->addAndMakeVisible(layoutComps[idx]);
+        }
+        }
+        
+		((CabbageDirectoryList*)layoutComps[idx])->directoryList->addActionListener(this);
         layoutComps[idx]->getProperties().set(String("plant"), var(cAttr.getStringProp("plant")));
 
 }
@@ -1975,15 +2019,31 @@ if(message.contains("Message sent from CabbageMainPanel")){
 
 else{
 //this event recieves action messages from custom components. 
+
+
+
+
 String name = message.substring(0, message.indexOf(String("|"))); 
 String type = message.substring(message.indexOf(String("|"))+1, message.indexOf(String(":")));
 String action = message.substring(message.indexOf(String(":"))+1, message.indexOf(String(";")));
 String preset = message.substring(message.indexOf(String(";"))+1, message.indexOf(String("?"))); 
 int masterSnap = message.substring(message.indexOf(String("?"))+1, 100).getIntValue(); 
 
+//notify processer to update tables with score events. 
+if(message.equalsIgnoreCase(String("updatingTables"))){
+for(int i=0;i<(int)getFilter()->getGUILayoutCtrlsSize();i++)//find correct control from vector
+		//if message came from a directorylist
+		if(getFilter()->getGUILayoutCtrls(i).getStringProp("type").containsIgnoreCase("directorylist"))	
+		{
+			Logger::writeToLog("update tables now please...");
+			getFilter()->scoreEvents = ((CabbageDirectoryList*)layoutComps[i])->getListContents();
+			getFilter()->messageQueue.addOutgoingChannelMessageToQueue("", 0, "directoryList");
+		}
+	}
+
 for(int i=0;i<(int)getFilter()->getGUICtrlsSize();i++)//find correct control from vector
         //if message has come from the snapshot control 
-        //============================================================================================
+        //============================================================================================		
 		if(type.equalsIgnoreCase(String("snapshot"))){
                 String str, presetData = "";
                 //save presets to .snaps file
@@ -2373,7 +2433,8 @@ for(int i=0;i<getFilter()->getGUILayoutCtrlsSize();i++){
 						int tableNumber = getFilter()->getGUILayoutCtrls(i).getTableNumbers(y);
 						Array <float> tableValues = getFilter()->getTable(tableNumber);
 						((CabbageTable*)layoutComps[i])->fillTable(y, tableValues);
-						getFilter()->messageQueue.addOutgoingChannelMessageToQueue(getFilter()->getGUILayoutCtrls(i).getChannel(y).toUTF8(), 0);
+						getFilter()->messageQueue.addOutgoingChannelMessageToQueue(getFilter()->getGUILayoutCtrls(i).getChannel(y).toUTF8(), 0,
+																				getFilter()->getGUILayoutCtrls(i).getStringProp("type"));
 					}
 				else
 					{

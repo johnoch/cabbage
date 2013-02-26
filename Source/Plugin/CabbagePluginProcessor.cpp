@@ -57,7 +57,8 @@ updateTable(false),
 yieldCallbackBool(false),
 yieldCounter(10),
 isNativeThreadRunning(false),
-soundFileIndex(0)
+soundFileIndex(0),
+scoreEvents()
 {
 //set logger
 #ifdef Cabbage_Logger
@@ -392,6 +393,7 @@ bool multiLine = false;
                                                                 ||tokes.getReference(0).equalsIgnoreCase(String("table"))
                                                                 ||tokes.getReference(0).equalsIgnoreCase(String("pvsview"))
                                                                 ||tokes.getReference(0).equalsIgnoreCase(String("hostrecording"))
+																||tokes.getReference(0).equalsIgnoreCase(String("directorylist"))
                                                                 ||tokes.getReference(0).equalsIgnoreCase(String("groupbox")))
                                                 {
                                                         CabbageGUIClass cAttr(csdLine.trimEnd(), guiID);
@@ -639,7 +641,8 @@ if(index<(int)guiCtrls.size())//make sure index isn't out of range
 	#else 
 	//no need to scale here when in standalone mode
     guiCtrls.getReference(index).setNumProp("value", newValue);
-	messageQueue.addOutgoingChannelMessageToQueue(guiCtrls.getReference(index).getStringProp("channel").toUTF8(), newValue);
+	messageQueue.addOutgoingChannelMessageToQueue(guiCtrls.getReference(index).getStringProp("channel").toUTF8(), newValue, 
+																			guiCtrls.getReference(index).getStringProp("type"));
 	#endif
    }
 #endif
@@ -686,6 +689,11 @@ void CabbagePluginAudioProcessor::sendOutgoingMessagesToCsound()
 {
 for(int i=0;i<messageQueue.getNumberOfOutgoingChannelMessagesInQueue();i++)
 		{
+		if(messageQueue.getOutgoingChannelMessageFromQueue(i).type=="directoryList"){
+		for(int y=0;y<scoreEvents.size();y++)
+			csound->InputMessage(scoreEvents[y].toUTF8());
+		}
+		else
 		csound->SetChannel(messageQueue.getOutgoingChannelMessageFromQueue(i).channelName.toUTF8(), 
 						   messageQueue.getOutgoingChannelMessageFromQueue(i).value);
 		}

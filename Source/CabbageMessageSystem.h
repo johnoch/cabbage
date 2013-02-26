@@ -33,8 +33,9 @@ class CabbageChannelMessage : public CabbageUtils
 public:
 	String channelName;
 	MYFLT value;
+	String type;
 
-	CabbageChannelMessage(String chan, double val):channelName(chan), value(val){}
+	CabbageChannelMessage(String chan, double val, String _type):channelName(chan), value(val), type(_type){}
 	~CabbageChannelMessage(){}
 	
 };
@@ -48,8 +49,8 @@ public:
 	CabbageMessageQueue(){}
 	~CabbageMessageQueue(){}
 	
-	void addOutgoingChannelMessageToQueue(String _chan, double _val){
-	outgoingChannelMessages.add(CabbageChannelMessage(_chan, _val));
+	void addOutgoingChannelMessageToQueue(String _chan, double _val, String _type){
+	outgoingChannelMessages.add(CabbageChannelMessage(_chan, _val, _type));
 	}
 	
 	CabbageChannelMessage getOutgoingChannelMessageFromQueue(int index){

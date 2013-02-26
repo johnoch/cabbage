@@ -136,6 +136,18 @@ CabbageGUIClass::CabbageGUIClass(String compStr, int ID):
           //name.append(String(ID), 1024);
 	}
 
+    else if(strTokens[0].trim() == "directorylist"){
+          top = 10;
+          left = 10;
+          width = 600;
+          height = 440;
+          channel = "";
+          name = "directorylist";
+		  caption = "";
+		  type = name;
+          //name.append(String(ID), 1024);
+	}
+
     else if(strTokens[0].trim() == "patmatrix"){
           top = 10;
           left = 10;

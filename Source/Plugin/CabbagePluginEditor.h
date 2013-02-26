@@ -81,6 +81,7 @@ private:
         void comboBoxChanged (ComboBox* combo);
         void InsertComboBox(CabbageGUIClass &cAttr);
 		void InsertSoundfiler(CabbageGUIClass &cAttr);
+		void InsertDirectoryList(CabbageGUIClass &cAttr);
         void SetupWindow(CabbageGUIClass &cAttr);
         void InsertSlider(CabbageGUIClass &cAttr);
 		void sliderValueChanged (Slider*);

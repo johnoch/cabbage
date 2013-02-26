@@ -7,6 +7,7 @@ CabbageLookAndFeel::CabbageLookAndFeel()
 	setColour(AlertWindow::textColourId, Colour(200, 200, 200));
 	setColour(AlertWindow::outlineColourId, Colours::white);
 	setColour(DirectoryContentsDisplayComponent::textColourId, Colours::whitesmoke);
+	setColour(DirectoryContentsDisplayComponent::highlightColourId, Colours::red);
 	
 }
 
@@ -58,7 +59,8 @@ void CabbageLookAndFeel::drawFileBrowserRow (Graphics& g, int width, int height,
                                       DirectoryContentsDisplayComponent&)
 {
     if (isItemSelected)
-        g.fillAll (findColour (DirectoryContentsDisplayComponent::highlightColourId));
+        //g.fillAll (findColour (DirectoryContentsDisplayComponent::highlightColourId));
+		g.fillAll(Colours::cornflowerblue.withAlpha(.2f));
 
     const int x = 32;
     g.setColour (Colours::black);
@@ -71,7 +73,7 @@ void CabbageLookAndFeel::drawFileBrowserRow (Graphics& g, int width, int height,
     }
     else
     {
-		g.fillAll(Colours::black);
+		//g.fillAll(Colours::black);
 		Path path;
 		//draw custom folder icon, netter yet, just import a binary..
 		path.addLineSegment(Line<float> (3, 3, 13, 3), 2);

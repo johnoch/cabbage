@@ -191,6 +191,7 @@ public:
 	CabbageMessageQueue messageQueue;
 	Array<AudioTransportSource> soundFilers;
 	void getSamplesFromSoundFilers();
+	StringArray scoreEvents;
 			
 	//==============================================================================
         File getCsoundInputFile(){
