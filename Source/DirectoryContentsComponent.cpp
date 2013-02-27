@@ -40,7 +40,6 @@ directoryList(&filter, thread)
 	tables.add(new TableListBox("list", tablesList[0])); 
 	tables[0]->setLookAndFeel(lookAndFeel);
 	tables[0]->setMultipleSelectionEnabled(true);
-	tables[0]->setColour(TableListBox::textColourId, Colours::white);
 	tables[0]->setColour(TableListBox::backgroundColourId, Colours::black);
 	tables[0]->setColour(TableListBox::outlineColourId, Colours::black);
 	
@@ -49,9 +48,10 @@ directoryList(&filter, thread)
 	functionRowData.add(new StringArray());
 	
 	tabComp = new TabbedComponent(TabbedButtonBar::TabsAtTop);
-	tabComp->setLookAndFeel(lookAndFeel);
+	tabComp->setLookAndFeel(basicLookAndFeel);
 	tabComp->setTabBarDepth(25);
-	tabComp->setColour(TabbedButtonBar::tabTextColourId, Colours::white);
+	//tabComp->setColour(TabbedButtonBar::tabTextColourId, Colours::white);
+	tabComp->setColour(TabbedButtonBar::tabOutlineColourId, Colours::black);
 	tabComp->addTab("Bank 1", Colours::white, tables[0], false);
 
 	tabComp->repaint();
@@ -102,15 +102,17 @@ DirectoryContentsComponent::~DirectoryContentsComponent()
 
 void DirectoryContentsComponent::paint (Graphics& g)
 {
-    g.fillAll (Colours::black);
+	g.setColour(CabbageUtils::getBackgroundSkin());
+	g.fillRoundedRectangle(0, 0, getWidth(), getHeight(), 7);
+
 }
 
 void DirectoryContentsComponent::resized()
 {
 	//resize evcerything
-	tabComp->setBounds (getWidth()/2, 0, getWidth()/2, getHeight()-45);
-	fileTreeComp->setBounds (0, 0, getWidth()/2, getHeight()-45);
-	addBankButton->setBounds(10, getHeight()-35, 90, 25);
+	fileTreeComp->setBounds (5, 5, (getWidth()/2)-5, getHeight()-45);
+	tabComp->setBounds (getWidth()/2+5, 5, (getWidth()/2)-10, getHeight()-45);
+	addBankButton->setBounds(5, getHeight()-35, 90, 25);
 	updateTablesButton->setBounds(100, getHeight()-35, 110, 25);
 }
 
@@ -132,7 +134,14 @@ void DirectoryContentsComponent::fileClicked (const File& file, const MouseEvent
 	functionRowData[tabComp->getCurrentTabIndex()]->add(file.getFullPathName());	
 	tablesList[tabComp->getCurrentTabIndex()]->addOrModifyRows(tabComp->getCurrentTabIndex(), *functionRowData[tabComp->getCurrentTabIndex()]);
 	tables[tabComp->getCurrentTabIndex()]->updateContent();
-	}	
+	}
+
+
+	//auto update is set to ON.....
+	for(int i=0;i<functionRowData.size();i++)
+		for(int y=0;y<functionRowData[i]->size();y++)
+			Logger::writeToLog(String((i+1)*50+y)+" "+functionRowData[i]->getReference(y));
+			sendActionMessage("updatingTables");
 	
 }
 
@@ -149,7 +158,6 @@ void DirectoryContentsComponent::actionListenerCallback(const juce::String& stri
 		tables[tabComp->getCurrentTabIndex()]->updateContent();
 		tables[tabComp->getCurrentTabIndex()]->repaint();
 		}
-	
 	}
 	else if(string=="deselect")
 		tables[tabComp->getCurrentTabIndex()]->deselectAllRows();

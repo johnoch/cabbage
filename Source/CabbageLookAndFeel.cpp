@@ -8,7 +8,8 @@ CabbageLookAndFeel::CabbageLookAndFeel()
 	setColour(AlertWindow::outlineColourId, Colours::white);
 	setColour(DirectoryContentsDisplayComponent::textColourId, Colours::whitesmoke);
 	setColour(DirectoryContentsDisplayComponent::highlightColourId, Colours::red);
-	
+//	setColour(ListBox::outlineColourId, Colours::white);
+//	setColour(TableListBox::outlineColourId, Colours::white);
 }
 
 CabbageLookAndFeel::~CabbageLookAndFeel()
