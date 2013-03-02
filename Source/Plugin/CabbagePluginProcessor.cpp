@@ -323,7 +323,7 @@ bool multiLine = false;
         {
                 if(csdText[i].indexOfWholeWordIgnoreCase(String("</Cabbage>"))==-1)
             {
-                                if(csdText[i].indexOfWholeWord(String("groupbox "))==-1)
+//                                if(csdText[i].indexOfWholeWord(String("groupbox "))==-1)
                                         if(csdText[i].trim().isNotEmpty()){
                                                 
                                                 if(csdText[i].contains("), \\")||
@@ -386,6 +386,7 @@ bool multiLine = false;
                                                                 ||tokes.getReference(0).equalsIgnoreCase(String("vumeter"))
                                                                 ||tokes.getReference(0).equalsIgnoreCase(String("patmatrix"))
                                                                 ||tokes.getReference(0).equalsIgnoreCase(String("source"))
+																||tokes.getReference(0).equalsIgnoreCase(String("multitab"))
                                                                 ||tokes.getReference(0).equalsIgnoreCase(String("infobutton"))
 																||tokes.getReference(0).equalsIgnoreCase(String("filebutton"))
 																||tokes.getReference(0).equalsIgnoreCase(String("soundfiler"))

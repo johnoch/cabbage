@@ -454,6 +454,9 @@ for(int i=0;i<getFilter()->getGUILayoutCtrlsSize();i++){
         else if(getFilter()->getGUILayoutCtrls(i).getStringProp("type")==String("directorylist")){
                 InsertDirectoryList(getFilter()->getGUILayoutCtrls(i));   
                 }
+        else if(getFilter()->getGUILayoutCtrls(i).getStringProp("type")==String("multitab")){
+                InsertMultiTab(getFilter()->getGUILayoutCtrls(i));   
+                }
         else if(getFilter()->getGUILayoutCtrls(i).getStringProp("type")==String("line")){
                 InsertLineSeparator(getFilter()->getGUILayoutCtrls(i));   
                 }
@@ -556,6 +559,7 @@ void CabbagePluginAudioProcessorEditor::InsertGroupBox(CabbageGUIClass &cAttr)
 		}
         layoutComps[idx]->getProperties().set(String("plant"), var(cAttr.getStringProp("plant")));
         layoutComps[idx]->getProperties().set(String("groupLine"), cAttr.getNumProp("line"));
+		//if()
 }
 
 //+++++++++++++++++++++++++++++++++++++++++++
@@ -601,7 +605,8 @@ void CabbagePluginAudioProcessorEditor::InsertImage(CabbageGUIClass &cAttr)
        if(cAttr.getNumProp("button")==0){
 		   Logger::writeToLog(layoutComps[idx]->getName());
 			layoutComps[idx]->setBounds(left+relX, top+relY, width, height);
-            componentPanel->addAndMakeVisible(layoutComps[idx]);       
+			if(cAttr.getNumProp("tabbed")<1)
+			componentPanel->addAndMakeVisible(layoutComps[idx]);       
         }
         else{
                 plantButton.add(new CabbageButton(cAttr.getStringProp("plant"), "", cAttr.getStringProp("plant"), CabbageUtils::getComponentSkin().toString(), ""));
@@ -995,6 +1000,56 @@ void CabbagePluginAudioProcessorEditor::InsertDirectoryList(CabbageGUIClass &cAt
         layoutComps[idx]->getProperties().set(String("plant"), var(cAttr.getStringProp("plant")));
 
 }
+
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//     DirectoryList  
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+void CabbagePluginAudioProcessorEditor::InsertMultiTab(CabbageGUIClass &cAttr)
+{
+        layoutComps.add(new CabbageMultiTab(cAttr.getStringProp("name"),
+				cAttr.getStringProp("fontcolour"),
+				cAttr.getStringProp("colour")));
+	
+		int idx = layoutComps.size()-1;
+			
+		for(int i=0;i<getFilter()->getGUILayoutCtrlsSize();i++){
+			String plant = getFilter()->getGUILayoutCtrls(i).getStringProp("plant");
+			int tabbed = getFilter()->getGUILayoutCtrls(i).getNumProp("tabbed");
+			if(tabbed==true && plant.length()>0)
+			((CabbageMultiTab*)layoutComps[idx])->tabComp->addTab(plant, 
+																  Colour::fromString(cAttr.getColourProp("colour")), 
+																  layoutComps[i], 
+																  false);					
+		}	
+
+		//add soundfiler object to main processor..
+		//getFilter()->soundFilers.add(((Soundfiler*)layoutComps[idx])->transportSource);
+        //check to see if widgets is anchored
+        //if it is offset it's position accordingly. 
+        float left = cAttr.getNumProp("left");
+        float top = cAttr.getNumProp("top");
+        float width = cAttr.getNumProp("width");
+        float height = cAttr.getNumProp("height");
+        int relY=0,relX=0;
+        if(layoutComps.size()>0){
+        for(int y=0;y<layoutComps.size();y++)
+        if(cAttr.getStringProp("reltoplant").length()>0){
+        if(layoutComps[y]->getProperties().getWithDefault(String("plant"), -99).toString().equalsIgnoreCase(cAttr.getStringProp("reltoplant")))
+        {
+				positionComponentWithinPlant("", idx, left, top, width, height, layoutComps[y], layoutComps[idx]);
+        }
+        }
+        else{
+        ((CabbageMultiTab*)layoutComps[idx])->setBounds(left+relX, top+relY, width, height);
+        componentPanel->addAndMakeVisible(layoutComps[idx]);
+        }
+        }
+		
+		//((CabbageMultiTab*)layoutComps[idx])->tabComp->addActionListener(this);
+        layoutComps[idx]->getProperties().set(String("plant"), var(cAttr.getStringProp("plant")));
+
+}
+
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //      VU widget. 
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++

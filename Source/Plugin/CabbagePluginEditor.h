@@ -96,6 +96,7 @@ private:
         void InsertImage(CabbageGUIClass &cAttr);
         void InsertLabel(CabbageGUIClass &cAttr);
         void InsertTable(CabbageGUIClass &cAttr);
+		void InsertMultiTab(CabbageGUIClass &cAttr);
         void InsertInfoButton(CabbageGUIClass &cAttr);
         void InsertLineSeparator(CabbageGUIClass &cAttr);
         void InsertPatternMatrix(CabbageGUIClass &cAttr);

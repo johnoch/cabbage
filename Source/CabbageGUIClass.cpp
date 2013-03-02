@@ -46,7 +46,8 @@ CabbageGUIClass::CabbageGUIClass(String compStr, int ID):
 								sliderRange(1),
 								numTables(0),
 								sliderIncr(.01),
-								decimalPlaces(0)
+								decimalPlaces(0),
+								tabbed(0)
 {
 //Default values are assigned to all attributres 
 //before parsing begins
@@ -249,6 +250,20 @@ CabbageGUIClass::CabbageGUIClass(String compStr, int ID):
           name.append(String(ID), 1024);
 	}
 	
+    else if(strTokens[0].trim() == "multitab"){
+          top = 10;
+          left = 10;
+          width = 100;
+          height = 16;
+          channel = "multitab";
+		  colour = CabbageUtils::getComponentFontColour();
+          fontcolour = CabbageUtils::getComponentFontColour();
+          items.add("Tab 1");
+          name = "multitab";
+		  type = name;
+          name.append(String(ID), 1024);
+	}	
+	
     else if(strTokens[0].trim() == "soundfiler"){
           top = 10;
           left = 10;
@@ -443,7 +458,7 @@ CabbageGUIClass::CabbageGUIClass(String compStr, int ID):
 		  type = "hosttime";
 	}
 
-	tabpage = 0;
+	tabpage = String("");
 	
 //parse the text now that all default values ahve been assigned
 parse(compStr);
@@ -507,6 +522,7 @@ int CabbageGUIClass::parse(String str)
 	identArray.add("text(");
     identArray.add("runcsound(");
 	identArray.add("tabs(");
+	identArray.add("tab(");
 	identArray.add("tablenumber(");
 	identArray.add("tablenum(");
 	identArray.add("tablenumbers(");
@@ -531,6 +547,7 @@ int CabbageGUIClass::parse(String str)
 	identArray.add("framesize(");
 	identArray.add("pvschan(");
 	identArray.add("author(");
+	identArray.add("tabpage(");
 	//add a few dummy identifiers so we can catch bogus one in the Cabbage code
 	identArray.add("");
 	identArray.add("");
@@ -729,8 +746,24 @@ int CabbageGUIClass::parse(String str)
 
 			else if(identArray.getReference(indx).toLowerCase().equalsIgnoreCase("author(")){
 				author = strTokens[0].trim();
-				//CabbageUtils::showMessage(author);
 			}
+
+
+			else if(identArray.getReference(indx).toLowerCase().equalsIgnoreCase("author(")){
+				tabpage = strTokens[0].trim();
+			}
+			
+			else if(identArray.getReference(indx).toLowerCase().equalsIgnoreCase("tabs(")){
+				items.clear();
+				for(int i= 0;i<(int)strTokens.size();i++){
+				items.add(strTokens[i]);	
+				}
+			}
+
+			else if(identArray.getReference(indx).toLowerCase().equalsIgnoreCase("tabpage(")){
+				tabpage = strTokens[0].trim();  				
+			} 
+
 			//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 			//numeric paramters
 			//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -868,6 +901,9 @@ int CabbageGUIClass::parse(String str)
             else if(identArray.getReference(indx).toLowerCase().equalsIgnoreCase("master(")){
 				masterSnap = strTokens[0].trim().getFloatValue();  
 			}
+            else if(identArray.getReference(indx).toLowerCase().equalsIgnoreCase("tab(")){
+				tabbed = strTokens[0].trim().getFloatValue();  
+			}
             else if(identArray.getReference(indx).toLowerCase().equalsIgnoreCase("textbox(")){
 				textBox = strTokens[0].trim().getFloatValue();  
 			}
@@ -904,12 +940,10 @@ int CabbageGUIClass::parse(String str)
             else if(identArray.getReference(indx).toLowerCase().equalsIgnoreCase("pvschan(")){
 				pvsChannel = strTokens[0].trim().getIntValue();  
 			}
-			
 
 			else if(identArray.getReference(indx).toLowerCase().equalsIgnoreCase(",line(")||
 					identArray.getReference(indx).toLowerCase().equalsIgnoreCase(" line(")) line = strTokens[0].trim().getFloatValue();  
             else if(identArray.getReference(indx).toLowerCase().equalsIgnoreCase("value(")) value = strTokens[0].trim().getFloatValue();  
-			else if(identArray.getReference(indx).toLowerCase().equalsIgnoreCase("tabpage(")) tabpage = strTokens[0].trim().getFloatValue();  
 			else if(identArray.getReference(indx).toLowerCase().equalsIgnoreCase("rctrls(")){
 				if(strTokens[0].trim().getFloatValue()>5)
 				rCtrls = 5;
@@ -942,6 +976,8 @@ float CabbageGUIClass::getNumProp(String prop)
 			return width;
 		if(prop.equalsIgnoreCase("alpha"))
 			return alpha;
+		if(prop.equalsIgnoreCase("tabbed"))
+			return tabbed;
 		else if(prop.equalsIgnoreCase("height"))
 			return height;
 		else if(prop.equalsIgnoreCase("textbox"))
@@ -980,8 +1016,6 @@ float CabbageGUIClass::getNumProp(String prop)
 			return valueX;
 		else if(prop.equalsIgnoreCase("valueY"))
 			return valueY;
-		else if(prop.equalsIgnoreCase("tabpage"))
-			return tabpage;
 		else if(prop.equalsIgnoreCase("noOfMenus"))
 			return noOfMenus;
 		else if(prop.equalsIgnoreCase("onoff"))
@@ -1064,8 +1098,6 @@ void CabbageGUIClass::setNumProp(String prop, float val)
 			 max = val;
 		else if(prop.equalsIgnoreCase("paramIndex"))
 			 paramIndex = val;
-		else if(prop.equalsIgnoreCase("tabpage"))
-			 tabpage = val;
 		else if(prop.equalsIgnoreCase("noOfMenus"))
 			 noOfMenus = val;
 		else if(prop.equalsIgnoreCase("onoff"))
@@ -1168,6 +1200,8 @@ String CabbageGUIClass::getStringProp(String prop)
 			return channel.trim();
 		else if(prop.equalsIgnoreCase("xyChannel"))
 			return xyChannel.trim();
+		else if(prop.equalsIgnoreCase("tabpage"))
+			return tabpage.trim();
 		else if(prop.equalsIgnoreCase("xChannel"))
 			return xChannel.trim();
 		else if(prop.equalsIgnoreCase("yChannel"))

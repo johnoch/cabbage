@@ -500,8 +500,6 @@ class CabbageDirectoryList	:	public Component
 {
 public:
 ScopedPointer<DirectoryContentsComponent> directoryList;
-
-
 String name, channel, workingDir, fileType;
 //---- constructor -----
 public:
@@ -512,32 +510,59 @@ public:
 																			fileType(_fileType)
 	{
 	setName(name);
-	
 	directoryList = new DirectoryContentsComponent(workingDir, fileType);
-
 	addAndMakeVisible(directoryList);
 	}
 
-	~CabbageDirectoryList()
-	{
-	}
+	~CabbageDirectoryList(){}
 
 	void resized()
 	{
 	directoryList->setBounds(0, 0, getWidth(), getHeight());
 	}
 
-	void paint(Graphics& g)
-	{
-
-	}
-
+	void paint(Graphics& g){}
 	const StringArray getListContents(){
 		return directoryList->getFunctionTables();
 	}
 
 private:
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CabbageDirectoryList);
+};
+
+//==============================================================================
+// custom multitab
+//==============================================================================
+class CabbageMultiTab	:	public Component
+{
+public:
+ScopedPointer<TabbedComponent> tabComp;
+String name, fontcolour, bgcolour;
+//---- constructor -----
+public:
+	CabbageMultiTab (String _name,  String _fontcolour, String _bgcolour):
+										name(_name),
+										fontcolour(_fontcolour),
+										bgcolour(_bgcolour)
+	{
+	setName(name);
+	tabComp = new TabbedComponent(TabbedButtonBar::TabsAtTop);
+	tabComp->setOutline(0);	
+	addAndMakeVisible(tabComp);
+	}
+
+	~CabbageMultiTab(){}
+
+	void resized()
+	{
+	tabComp->setBounds(0, 0, getWidth(), getHeight());
+	}
+
+	void paint(Graphics& g){}
+
+
+private:
+	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CabbageMultiTab);
 };
 
 //==============================================================================

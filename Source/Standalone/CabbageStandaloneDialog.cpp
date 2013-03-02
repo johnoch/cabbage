@@ -339,25 +339,6 @@ else{}
 //==============================================================================
 void StandaloneFilterWindow::changeListenerCallback(juce::ChangeBroadcaster* /*source*/)
 {
-/*	
-String text = "";
-
-for(int i=0;i<filter->getDebugMessageArray().size();i++)
-      {
-          if(filter->getDebugMessageArray().getReference(i).length()>0)
-          {
-              text += String(filter->getDebugMessageArray().getReference(i));
-			 
-          }
-		   
-      }
-consoleMessages = consoleMessages+text+"\n";
-filter->clearDebugMessageArray();
-if(cabbageCsoundEditor){
-cabbageCsoundEditor->setCsoundOutputText(consoleMessages+"\n");
-consoleMessages="";
-}
- * */
 updateEditorOutputConsole=true;
 }
 //==============================================================================
