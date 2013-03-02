@@ -8,8 +8,7 @@ CabbageLookAndFeel::CabbageLookAndFeel()
 	setColour(AlertWindow::outlineColourId, Colours::white);
 	setColour(DirectoryContentsDisplayComponent::textColourId, Colours::whitesmoke);
 	setColour(DirectoryContentsDisplayComponent::highlightColourId, Colours::red);
-//	setColour(ListBox::outlineColourId, Colours::white);
-//	setColour(TableListBox::outlineColourId, Colours::white);
+	
 }
 
 CabbageLookAndFeel::~CabbageLookAndFeel()
@@ -1960,15 +1959,15 @@ void CabbageLookAndFeelBasic::drawButtonBackground (Graphics& g, Button& button,
     const int height = button.getHeight();
 
     const float indent = 2.0f;
-    const int cornerSize = jmin (roundToInt (width * 0.4f),
-                                 roundToInt (height * 0.4f));
+    const int cornerSize = jmin (roundToInt (width * 0.1f),
+                                 roundToInt (height * 0.3f));
 
 	Colour bc (backgroundColour);
 
     Path p;
     p.addRoundedRectangle (indent, indent,
-                           width - indent * 3.0f,
-                           height - indent * 3.0f,
+                           width - indent * 2.0f,
+                           height - indent * 2.0f,
                            (float) cornerSize);
     g.setColour (bc.withSaturation(0.f));
     g.strokePath (p, PathStrokeType (2.0f));

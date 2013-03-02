@@ -153,6 +153,7 @@ public:
 	}
 
 private:
+	bool updateEditorOutputConsole;
 	Time lastSaveTime;
 	bool standaloneMode;
 	bool cabbageDance;

@@ -169,6 +169,7 @@ private:
     your controls and content. This is the main parent for all objects...
 */
 //==============================================================================
+
 class DirectoryContentsComponent   : public Component,
 								public FileBrowserListener,
 								public ButtonListener,
@@ -195,6 +196,7 @@ class DirectoryContentsComponent   : public Component,
 	//Array of stireng arrays....
 	OwnedArray<StringArray> functionRowData;
 	String fileTypes, rootDir;
+	StringArray scoreEvents;
 	
 public:
     //==============================================================================
@@ -211,9 +213,6 @@ public:
 	{
 		return true;
 	}
-
-    //file tree
-    void selectionChanged(){}
 			
     void fileDoubleClicked (const File& file){
 		Logger::writeToLog("file double clicked");
@@ -223,12 +222,14 @@ public:
 		Logger::writeToLog("root changed");
 		}
 		
+	void updateSelection(const File& file);
     void showFile (const File& file){}       
     void paint (Graphics&);
     void resized();  
 	void buttonClicked(Button* button);
 	void fileClicked(const File& file, const MouseEvent& e);  
 	void actionListenerCallback(const juce::String& string);
+	void selectionChanged();
 	const StringArray getFunctionTables();
 
     //==============================================================================

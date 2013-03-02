@@ -23,7 +23,7 @@
 #define CABBAGE_VERSION "Cabbage v0.04.00 BETA"
 #define MAX_BUFFER_SIZE 1024
 
-//#define LOGGER 0
+#define LOGGER 1
 
 //these two lines need to be copied to top part of csound.h
 //#define int32 int
@@ -528,6 +528,7 @@ bool multiLine = false;
 //===========================================================
 // CALLBACKS FOR STANDALONE
 //===========================================================
+//I don't think this is thread safe! 
 #ifndef Cabbage_No_Csound
 void CabbagePluginAudioProcessor::messageCallback(CSOUND* csound, int /*attr*/,  const char* fmt, va_list args)
 {
@@ -538,10 +539,11 @@ void CabbagePluginAudioProcessor::messageCallback(CSOUND* csound, int /*attr*/, 
   ud->debugMessage += String(msg); //We have to append the incoming msg
   ud->csoundOutput += ud->debugMessage;
   ud->debugMessageArray.add(ud->debugMessage);
-  Logger::writeToLog(String(msg).trim());
+  //Logger::writeToLog(String(msg).trim());
   ud->sendChangeMessage();
 // MOD - End
 //#endif
+  //ud->clearDebugMessageArray();
   ud->debugMessage = "";
   ud = nullptr;
 }
@@ -692,6 +694,7 @@ for(int i=0;i<messageQueue.getNumberOfOutgoingChannelMessagesInQueue();i++)
 		if(messageQueue.getOutgoingChannelMessageFromQueue(i).type=="directoryList"){
 		for(int y=0;y<scoreEvents.size();y++)
 			csound->InputMessage(scoreEvents[y].toUTF8());
+		//scoreEvents.clear();
 		}
 		else
 		csound->SetChannel(messageQueue.getOutgoingChannelMessageFromQueue(i).channelName.toUTF8(), 
@@ -898,7 +901,7 @@ if(!isSuspended()){
 			audioBuffer = buffer.getSampleData(channel,0);
 			if(csndIndex == csound->GetKsmps())
 			{
-				CSCompResult = csound->PerformKsmps();
+				
 				getCallbackLock().enter();
 				//slow down calls to these functions, no need for them to be firing at k-rate
 				yieldCounter = (yieldCounter>10) ? 0 : yieldCounter+1;
@@ -906,7 +909,7 @@ if(!isSuspended()){
 				sendOutgoingMessagesToCsound();
 				updateCabbageControls();
 				}
-				
+				CSCompResult = csound->PerformKsmps();
 				//if(soundFilers.size()>0)
 				//getSamplesFromSoundFilers();		
 					

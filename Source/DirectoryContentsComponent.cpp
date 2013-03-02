@@ -29,7 +29,8 @@ directoryList(&filter, thread)
 	basicLookAndFeel = new CabbageLookAndFeelBasic();
 	setLookAndFeel(lookAndFeel);
 	//directory list
-	fileTreeComp = new FileTreeComponent (directoryList);
+	fileTreeComp = new FileTreeComponent(directoryList);
+	fileTreeComp->addListener(this);
 	//if file dir is valid set it, otherwise root is base 
 
 
@@ -53,6 +54,7 @@ directoryList(&filter, thread)
 	//tabComp->setColour(TabbedButtonBar::tabTextColourId, Colours::white);
 	tabComp->setColour(TabbedButtonBar::tabOutlineColourId, Colours::black);
 	tabComp->addTab("Bank 1", Colours::white, tables[0], false);
+	tabComp->setOutline(0);
 
 	tabComp->repaint();
 	addAndMakeVisible(tabComp);
@@ -95,11 +97,13 @@ directoryList(&filter, thread)
 	setSize (600, 500);
 }
 
+//====================================================================================
 DirectoryContentsComponent::~DirectoryContentsComponent()
 {
 	thread.stopThread(10);
 }
 
+//====================================================================================
 void DirectoryContentsComponent::paint (Graphics& g)
 {
 	g.setColour(CabbageUtils::getBackgroundSkin());
@@ -107,6 +111,7 @@ void DirectoryContentsComponent::paint (Graphics& g)
 
 }
 
+//====================================================================================
 void DirectoryContentsComponent::resized()
 {
 	//resize evcerything
@@ -116,35 +121,14 @@ void DirectoryContentsComponent::resized()
 	updateTablesButton->setBounds(100, getHeight()-35, 110, 25);
 }
 
+//====================================================================================
 //populate table rows with new strings and add new items to listable
 void DirectoryContentsComponent::fileClicked (const File& file, const MouseEvent& e)
 {
-	//update the number of rows in our listbox passing
-	if(tables[tabComp->getCurrentTabIndex()]->getNumSelectedRows()>0){
-		SparseSet<int> sparseSet = tables[tabComp->getCurrentTabIndex()]->getSelectedRows();
-		for(int i=0;i<sparseSet.size();i++){
-			functionRowData[tabComp->getCurrentTabIndex()]->getReference(sparseSet[i])= file.getFullPathName();
-			tablesList[tabComp->getCurrentTabIndex()]->addOrModifyRows(tabComp->getCurrentTabIndex(), *functionRowData[tabComp->getCurrentTabIndex()]);
-			tables[tabComp->getCurrentTabIndex()]->repaintRow(sparseSet[i]);
-			tables[tabComp->getCurrentTabIndex()]->updateContent();
-			tables[tabComp->getCurrentTabIndex()]->repaint();
-		}
-	}
-	else{
-	functionRowData[tabComp->getCurrentTabIndex()]->add(file.getFullPathName());	
-	tablesList[tabComp->getCurrentTabIndex()]->addOrModifyRows(tabComp->getCurrentTabIndex(), *functionRowData[tabComp->getCurrentTabIndex()]);
-	tables[tabComp->getCurrentTabIndex()]->updateContent();
-	}
-
-
-	//auto update is set to ON.....
-	for(int i=0;i<functionRowData.size();i++)
-		for(int y=0;y<functionRowData[i]->size();y++)
-			Logger::writeToLog(String((i+1)*50+y)+" "+functionRowData[i]->getReference(y));
-			sendActionMessage("updatingTables");
 	
 }
 
+//====================================================================================
 //this will listen for messages from our FunctionTableList object, and behave accordingly. 
 void DirectoryContentsComponent::actionListenerCallback(const juce::String& string){
 	if(string=="delete selected"){
@@ -163,6 +147,7 @@ void DirectoryContentsComponent::actionListenerCallback(const juce::String& stri
 		tables[tabComp->getCurrentTabIndex()]->deselectAllRows();
 }
 
+//====================================================================================
 //button clicks
 void DirectoryContentsComponent::buttonClicked(Button* button)
 {
@@ -183,20 +168,51 @@ void DirectoryContentsComponent::buttonClicked(Button* button)
 	}
 	
 	if(button->getName()=="Update Tables"){
-	for(int i=0;i<functionRowData.size();i++)
-		for(int y=0;y<functionRowData[i]->size();y++)
-			Logger::writeToLog(String((i+1)*50+y)+" "+functionRowData[i]->getReference(y));
-			sendActionMessage("updatingTables");
+	sendActionMessage("updatingTables");
 	}
 }
 
+//====================================================================================
+void DirectoryContentsComponent::selectionChanged(){
+		if(fileTreeComp->getSelectedFile().existsAsFile())
+		updateSelection(fileTreeComp->getSelectedFile());
+		sendActionMessage("updatingTables");
+		Logger::writeToLog("updating...");
+		}
+
+//====================================================================================
 const StringArray DirectoryContentsComponent::getFunctionTables()
 {
 StringArray tables;
-	for(int i=0;i<functionRowData.size();i++)
+	for(int i=0;i<functionRowData.size();i++){
 		for(int y=0;y<functionRowData[i]->size();y++){
 			tables.add("f "+String((i+1)*50+y)+" 0 0 1 \""+functionRowData[i]->getReference(y)+"\" 0 4 1");
-		//Logger::writeToLog(String((i+1)*50+y)+" "+functionRowData[i]->getReference(y));	
+			Logger::writeToLog(tables[tables.size()-1]);	
 		}
-return tables;			
+		//functionRowData[i]->clear();
+	}
+	return tables;			
 }
+
+//====================================================================================
+void DirectoryContentsComponent::updateSelection(const File& file){
+		//update the number of rows in our listbox passing
+		if(tables[tabComp->getCurrentTabIndex()]->getNumSelectedRows()>0){
+			SparseSet<int> sparseSet = tables[tabComp->getCurrentTabIndex()]->getSelectedRows();
+			for(int i=0;i<sparseSet.size();i++){
+				functionRowData[tabComp->getCurrentTabIndex()]->getReference(sparseSet[i])= file.getFullPathName();
+				tablesList[tabComp->getCurrentTabIndex()]->addOrModifyRows(tabComp->getCurrentTabIndex(), *functionRowData[tabComp->getCurrentTabIndex()]);
+				tables[tabComp->getCurrentTabIndex()]->repaintRow(sparseSet[i]);
+				tables[tabComp->getCurrentTabIndex()]->updateContent();
+				tables[tabComp->getCurrentTabIndex()]->repaint();
+			}
+		}
+		else{
+		functionRowData[tabComp->getCurrentTabIndex()]->add(file.getFullPathName());	
+		
+		tablesList[tabComp->getCurrentTabIndex()]->addOrModifyRows(tabComp->getCurrentTabIndex(), *functionRowData[tabComp->getCurrentTabIndex()]);
+		tables[tabComp->getCurrentTabIndex()]->updateContent();
+		}	
+}
+	
+//====================================================================================

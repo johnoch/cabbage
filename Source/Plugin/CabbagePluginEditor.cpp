@@ -944,7 +944,7 @@ void CabbagePluginAudioProcessorEditor::InsertSoundfiler(CabbageGUIClass &cAttr)
         if(cAttr.getStringProp("reltoplant").length()>0){
         if(layoutComps[y]->getProperties().getWithDefault(String("plant"), -99).toString().equalsIgnoreCase(cAttr.getStringProp("reltoplant")))
         {
-				positionComponentWithinPlant("", idx, left, top, width, height, layoutComps[y], controls[idx]);
+				positionComponentWithinPlant("", idx, left, top, width, height, layoutComps[y], layoutComps[idx]);
         }
         }
         else{
@@ -966,25 +966,23 @@ void CabbagePluginAudioProcessorEditor::InsertDirectoryList(CabbageGUIClass &cAt
 				cAttr.getStringProp("channel"),
 				cAttr.getStringProp("workingDir"),
                 cAttr.getStringProp("fileType")));
-    
-        int idx = layoutComps.size()-1;
-		
+	
 		//add soundfiler object to main processor..
 		//getFilter()->soundFilers.add(((Soundfiler*)layoutComps[idx])->transportSource);
-
+        //check to see if widgets is anchored
+        //if it is offset it's position accordingly. 
+        int idx = layoutComps.size()-1;
         float left = cAttr.getNumProp("left");
         float top = cAttr.getNumProp("top");
         float width = cAttr.getNumProp("width");
         float height = cAttr.getNumProp("height");
-
-        //check to see if widgets is anchored
-        //if it is offset it's position accordingly. 
         int relY=0,relX=0;
-        for(int y=0;y<layoutComps.size();y++){
+        if(layoutComps.size()>0){
+        for(int y=0;y<layoutComps.size();y++)
         if(cAttr.getStringProp("reltoplant").length()>0){
         if(layoutComps[y]->getProperties().getWithDefault(String("plant"), -99).toString().equalsIgnoreCase(cAttr.getStringProp("reltoplant")))
         {
-				positionComponentWithinPlant("", idx, left, top, width, height, layoutComps[y], controls[idx]);
+				positionComponentWithinPlant("", idx, left, top, width, height, layoutComps[y], layoutComps[idx]);
         }
         }
         else{

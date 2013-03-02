@@ -39,7 +39,8 @@ StandaloneFilterWindow::StandaloneFilterWindow (const String& title,
 	  pipeOpenedOk(false), 
 	  AudioEnabled(true), 
 	  isAFileOpen(false),
-	  standaloneMode(false)
+	  standaloneMode(false),
+	  updateEditorOutputConsole(false)
 {
 	
 	String defaultCSDFile = File(File::getSpecialLocation(File::currentExecutableFile)).withFileExtension(".csd").getFullPathName();
@@ -54,7 +55,7 @@ StandaloneFilterWindow::StandaloneFilterWindow (const String& title,
 	bool alwaysontop = getPreference(appProperties, "SetAlwaysOnTop");
 	setAlwaysOnTop(alwaysontop);
 	this->setResizable(false, false);
-
+	this->startTimer(true);
 	lookAndFeel = new CabbageLookAndFeel();
 	this->setLookAndFeel(lookAndFeel);
 
@@ -221,6 +222,14 @@ void StandaloneFilterWindow::timerCallback()
 	yAxis+=1;
 	this->setTopLeftPosition(this->getScreenX()+(moveX*5), this->getScreenY()+(moveY*10));
 	}
+	
+if(updateEditorOutputConsole==true)
+if(cabbageCsoundEditor){
+cabbageCsoundEditor->setCsoundOutputText(filter->getCsoundOutput());
+//cabbageCsoundEditor->setCaretPosition(getFilter()->getCsoundOutput().length());
+consoleMessages="";	
+updateEditorOutputConsole=false;
+}
 }
 
 //==============================================================================
@@ -330,6 +339,7 @@ else{}
 //==============================================================================
 void StandaloneFilterWindow::changeListenerCallback(juce::ChangeBroadcaster* /*source*/)
 {
+/*	
 String text = "";
 
 for(int i=0;i<filter->getDebugMessageArray().size();i++)
@@ -346,10 +356,9 @@ filter->clearDebugMessageArray();
 if(cabbageCsoundEditor){
 cabbageCsoundEditor->setCsoundOutputText(consoleMessages+"\n");
 consoleMessages="";
-
 }
-
-
+ * */
+updateEditorOutputConsole=true;
 }
 //==============================================================================
 // Delete filter
