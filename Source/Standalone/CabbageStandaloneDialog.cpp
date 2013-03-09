@@ -184,27 +184,6 @@ StandaloneFilterWindow::~StandaloneFilterWindow()
 }
 
 //==============================================================================
-// sends messages to WinXound
-//==============================================================================
-void StandaloneFilterWindow::sendMessageToWinXound(String messageType, String message)
-{
-if(pipeOpenedOk){
-String text = messageType+String("|")+message;
-MemoryBlock messageData (text.toUTF8(), text.getNumBytesAsUTF8());
-pipeOpenedOk = ipConnection->sendMessage(messageData);
-}
-}
-
-void StandaloneFilterWindow::sendMessageToWinXound(String messageType, int value)
-{
-if(pipeOpenedOk){
-String text = messageType+String("|")+String(value);
-MemoryBlock messageData (text.toUTF8(), text.getNumBytesAsUTF8());
-pipeOpenedOk = ipConnection->sendMessage(messageData);
-}
-}
-
-//==============================================================================
 // insane Cabbage dancing....
 //==============================================================================
 void StandaloneFilterWindow::timerCallback()
@@ -221,15 +200,18 @@ void StandaloneFilterWindow::timerCallback()
 	float moveX = sin(yAxis*2*3.14*10/100); 
 	yAxis+=1;
 	this->setTopLeftPosition(this->getScreenX()+(moveX*5), this->getScreenY()+(moveY*10));
+	
 	}
 	
-if(updateEditorOutputConsole==true)
-if(cabbageCsoundEditor){
-cabbageCsoundEditor->setCsoundOutputText(filter->getCsoundOutput());
-//cabbageCsoundEditor->setCaretPosition(getFilter()->getCsoundOutput().length());
-consoleMessages="";	
-updateEditorOutputConsole=false;
-}
+if(updateEditorOutputConsole==true){
+	if(cabbageCsoundEditor)
+		cabbageCsoundEditor->setCsoundOutputText(filter->getCsoundOutput());
+	
+	if(outputConsole)
+		outputConsole->setText(filter->getCsoundOutput());	
+		
+	updateEditorOutputConsole=false;
+	}
 }
 
 //==============================================================================
@@ -339,6 +321,21 @@ else{}
 //==============================================================================
 void StandaloneFilterWindow::changeListenerCallback(juce::ChangeBroadcaster* /*source*/)
 {
+/*	
+String text;
+if(!cabbageCsoundEditor || !outputConsole){
+	for(int i=0;i<filter->getDebugMessageArray().size();i++)
+		  {
+			  if(filter->getDebugMessageArray().getReference(i).length()>0)
+			  {
+				  text += String(filter->getDebugMessageArray().getReference(i).toUTF8());
+
+			  }
+
+		  }
+	consoleMessages = consoleMessages+text+"\n";
+	}
+*/
 updateEditorOutputConsole=true;
 }
 //==============================================================================
@@ -504,14 +501,6 @@ const int numOuts = filter->getNumOutputChannels() <= 0 ? JucePlugin_MaxNumOutpu
 //==============================================================================
 void StandaloneFilterWindow::closeButtonPressed()
 {
-	/*
-if(cabbageCsoundEditor){
-	cabbageCsoundEditor->removeAllActionListeners(); 
-	cabbageCsoundEditor->removeFromDesktop();
-	cabbageCsoundEditor->closeButtonPressed();
-}
-Time::waitForMillisecondCounter(1000);
-*/
 JUCEApplication::quit();
 }
 
@@ -543,6 +532,7 @@ void StandaloneFilterWindow::buttonClicked (Button*)
 		m.addSubMenu(String("New Cabbage..."), subMenu);
 
 		m.addItem(2, String("View Source Editor"));
+		m.addItem(3, String("View Csound output"));
 		m.addSeparator();
 	}
 
@@ -587,7 +577,7 @@ void StandaloneFilterWindow::buttonClicked (Button*)
 		subMenu.clear();
 		subMenu.addItem(11, TRANS("Effects"));
 		subMenu.addItem(12, TRANS("Synths"));
-		m.addSubMenu(TRANS("Batch Convert"), subMenu);
+		//m.addSubMenu(TRANS("Batch Convert"), subMenu);
 		m.addSeparator();
 
 /*
@@ -668,11 +658,28 @@ void StandaloneFilterWindow::buttonClicked (Button*)
 	cabbageCsoundEditor->setVisible(true);
 	cabbageCsoundEditor->setFullScreen(true);
 	cabbageCsoundEditor->toFront(true);
-	cabbageCsoundEditor->setCsoundOutputText(consoleMessages);
+	cabbageCsoundEditor->setCsoundOutputText(filter->getCsoundOutput());
 	//Logger::writeToLog(consoleMessages);
 	cabbageCsoundEditor->csoundEditor->textEditor->setWantsKeyboardFocus(true);
 	cabbageCsoundEditor->csoundEditor->textEditor->grabKeyboardFocus();
 	}
+	//-------Csound output console-----
+	else if(options==3){
+	if(!outputConsole){
+	outputConsole = new CsoundMessageConsole("Csound Output Message", 
+												Colours::black, 
+												getPosition().getY()+getHeight(),
+												getPosition().getX());												
+	outputConsole->setLookAndFeel(lookAndFeel);
+	outputConsole->setText(filter->getCsoundOutput());
+	outputConsole->setAlwaysOnTop(true);
+	outputConsole->toFront(true);
+	outputConsole->setVisible(true);
+	}
+	else
+		outputConsole->setVisible(true);
+	}
+	
 	//----- new effect ------
 	else if(options==30){
 	if(!cabbageCsoundEditor){
@@ -683,6 +690,7 @@ void StandaloneFilterWindow::buttonClicked (Button*)
 		cabbageCsoundEditor->csoundEditor->newFile("effect");
 		saveFileAs();
 		cabbageCsoundEditor->csoundEditor->textEditor->grabKeyboardFocus();
+		isAFileOpen = true;
 	}
 	//----- new instrument ------
 	else if(options==31){

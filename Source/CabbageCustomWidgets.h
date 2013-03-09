@@ -523,6 +523,9 @@ public:
 
 	void paint(Graphics& g){}
 	const StringArray getListContents(){
+		StringArray test = directoryList->getFunctionTables();
+		//Logger::writeToLog(test.joinIntoString("\n"));
+		
 		return directoryList->getFunctionTables();
 	}
 

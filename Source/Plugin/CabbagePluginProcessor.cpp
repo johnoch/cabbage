@@ -322,8 +322,8 @@ bool multiLine = false;
     for(int i=0;i<csdText.size();i++)
         {
                 if(csdText[i].indexOfWholeWordIgnoreCase(String("</Cabbage>"))==-1)
-            {
-//                                if(csdText[i].indexOfWholeWord(String("groupbox "))==-1)
+						{
+                                if(!csdText[i].contains("multitab "))//we don't enter for multitab, plants need to be created first
                                         if(csdText[i].trim().isNotEmpty()){
                                                 
                                                 if(csdText[i].contains("), \\")||
@@ -490,6 +490,31 @@ bool multiLine = false;
                 else break;
         }
 
+		//create multitabs now that plants have been inserted to control vector..
+		for(int i=0;i<csdText.size();i++)
+			{
+			if(csdText[i].contains("multitab ") && !csdText[i].contains(";"))
+			{
+				csdLine = csdText[i];                                             
+				csdLine = csdLine.trimStart();
+				StringArray tokes;
+				tokes.addTokens(csdLine.trimEnd(), ", ", "\"");
+				if(tokes.getReference(0).equalsIgnoreCase(String("multitab"))){
+					CabbageGUIClass cAttr(csdLine.trimEnd(), guiID);
+					//showMessage(cAttr.getStringProp("type"));
+					csdLine = "";
+					//set up plant flag if needed for other widgets
+					if(cAttr.getStringProp(String("plant")).isNotEmpty()){
+					plantFlag = cAttr.getStringProp(String("plant"));
+					presetFlag = cAttr.getStringProp(String("preset"));
+					}
+					else if(cAttr.getStringProp(String("relToPlant")).equalsIgnoreCase(String("")))
+					cAttr.setStringProp(String("relToPlant"), plantFlag);
+					guiLayoutCtrls.add(cAttr);
+					guiID++;
+				}
+			}
+		}
 
 		//init all channels with their init val
 		for(int i=0;i<guiCtrls.size();i++)
@@ -639,7 +664,8 @@ if(index<(int)guiCtrls.size())//make sure index isn't out of range
 		newValue = (newValue*range)+min;
 		
 	guiCtrls.getReference(index).setNumProp("value", newValue);
-	messageQueue.addOutgoingChannelMessageToQueue(guiCtrls.getReference(index).getStringProp("channel").toUTF8(),  newValue);
+	messageQueue.addOutgoingChannelMessageToQueue(guiCtrls.getReference(index).getStringProp("channel").toUTF8(),  newValue, 
+	guiCtrls.getReference(index).getStringProp("type"));
 	//Logger::writeToLog(String("parameterSet:"+String(newValue)));
 	#else 
 	//no need to scale here when in standalone mode

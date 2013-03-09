@@ -148,7 +148,6 @@ if(presetFileText.length()>1)
 void CabbagePluginAudioProcessorEditor::changeListenerCallback(ChangeBroadcaster *source)
 {
 //see actionListener...
-
 }
 //==============================================================================
 // this function will display a context menu on right mouse click. The menu 
@@ -491,10 +490,6 @@ for(int i=0;i<getFilter()->getGUICtrlsSize();i++){
                 InsertTable(getFilter()->getGUICtrls(i));       //insert xypad  
                 }
         }
-
-
-
-
 }
 
 
@@ -559,7 +554,7 @@ void CabbagePluginAudioProcessorEditor::InsertGroupBox(CabbageGUIClass &cAttr)
 		}
         layoutComps[idx]->getProperties().set(String("plant"), var(cAttr.getStringProp("plant")));
         layoutComps[idx]->getProperties().set(String("groupLine"), cAttr.getNumProp("line"));
-		//if()
+
 }
 
 //+++++++++++++++++++++++++++++++++++++++++++
@@ -791,11 +786,9 @@ void CabbagePluginAudioProcessorEditor::SetupWindow(CabbageGUIClass &cAttr)
                 formPic = "";
 
         this->resized();
-
         //add a dummy control to our layoutComps vector so that our filters layout vector 
         //is the same size as our editors one. 
         layoutComps.add(new Component());
-
 }
 
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -815,7 +808,7 @@ void CabbagePluginAudioProcessorEditor::InsertCsoundOutput(CabbageGUIClass &cAtt
         float height = cAttr.getNumProp("height");
 
         //check to see if widgets is anchored
-        //if it is offset it's position accordingly. 
+        //if it is offset its position accordingly. 
         int relY=0,relX=0;
         for(int y=0;y<layoutComps.size();y++){
         if(cAttr.getStringProp("reltoplant").length()>0){
@@ -862,7 +855,7 @@ void CabbagePluginAudioProcessorEditor::InsertSourceButton(CabbageGUIClass &cAtt
         float height = cAttr.getNumProp("height");
 
         //check to see if widgets is anchored
-        //if it is offset it's position accordingly. 
+        //if it is offset its position accordingly. 
         int relY=0,relX=0;
         for(int y=0;y<layoutComps.size();y++){
         if(cAttr.getStringProp("reltoplant").length()>0){
@@ -900,7 +893,7 @@ void CabbagePluginAudioProcessorEditor::InsertInfoButton(CabbageGUIClass &cAttr)
         float height = cAttr.getNumProp("height");
 
         //check to see if widgets is anchored
-        //if it is offset it's position accordingly. 
+        //if it is offset its position accordingly. 
         int relY=0,relX=0;
         for(int y=0;y<layoutComps.size();y++){
         if(cAttr.getStringProp("reltoplant").length()>0){
@@ -910,10 +903,11 @@ void CabbagePluginAudioProcessorEditor::InsertInfoButton(CabbageGUIClass &cAttr)
         }
         }
         else{
-        ((CabbageButton*)layoutComps[idx])->setBounds(left+relX, top+relY, width, height);
-        componentPanel->addAndMakeVisible(layoutComps[idx]);
+			((CabbageButton*)layoutComps[idx])->setBounds(left+relX, top+relY, width, height);
+			componentPanel->addAndMakeVisible(layoutComps[idx]);
+			}
         }
-        }
+		
         //((CabbageButton*)layoutComps[idx])->button->setName("infobutton");
         //((CabbageButton*)layoutComps[idx])->button->getProperties().set(String("filename"), cAttr.getStringProp("file"));
         layoutComps[idx]->getProperties().set(String("plant"), var(cAttr.getStringProp("plant")));
@@ -943,7 +937,7 @@ void CabbagePluginAudioProcessorEditor::InsertSoundfiler(CabbageGUIClass &cAttr)
         float height = cAttr.getNumProp("height");
 
         //check to see if widgets is anchored
-        //if it is offset it's position accordingly. 
+        //if it is offset its position accordingly. 
         int relY=0,relX=0;
         for(int y=0;y<layoutComps.size();y++){
         if(cAttr.getStringProp("reltoplant").length()>0){
@@ -975,7 +969,7 @@ void CabbagePluginAudioProcessorEditor::InsertDirectoryList(CabbageGUIClass &cAt
 		//add soundfiler object to main processor..
 		//getFilter()->soundFilers.add(((Soundfiler*)layoutComps[idx])->transportSource);
         //check to see if widgets is anchored
-        //if it is offset it's position accordingly. 
+        //if it is offset its position accordingly. 
         int idx = layoutComps.size()-1;
         float left = cAttr.getNumProp("left");
         float top = cAttr.getNumProp("top");
@@ -1002,7 +996,7 @@ void CabbagePluginAudioProcessorEditor::InsertDirectoryList(CabbageGUIClass &cAt
 }
 
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-//     DirectoryList  
+//     Multitab
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 void CabbagePluginAudioProcessorEditor::InsertMultiTab(CabbageGUIClass &cAttr)
 {
@@ -1016,16 +1010,16 @@ void CabbagePluginAudioProcessorEditor::InsertMultiTab(CabbageGUIClass &cAttr)
 			String plant = getFilter()->getGUILayoutCtrls(i).getStringProp("plant");
 			int tabbed = getFilter()->getGUILayoutCtrls(i).getNumProp("tabbed");
 			if(tabbed==true && plant.length()>0)
-			((CabbageMultiTab*)layoutComps[idx])->tabComp->addTab(plant, 
-																  Colour::fromString(cAttr.getColourProp("colour")), 
-																  layoutComps[i], 
-																  false);					
+				for(int y=0;y<cAttr.getItemsSize();y++)
+					if(cAttr.getItems(y).trim()==plant)
+							((CabbageMultiTab*)layoutComps[idx])->tabComp->addTab(plant, 
+																				Colour::fromString(cAttr.getColourProp("colour")), 
+																				layoutComps[i], 
+																				false);					
 		}	
 
-		//add soundfiler object to main processor..
-		//getFilter()->soundFilers.add(((Soundfiler*)layoutComps[idx])->transportSource);
         //check to see if widgets is anchored
-        //if it is offset it's position accordingly. 
+        //if it is offset its position accordingly. 
         float left = cAttr.getNumProp("left");
         float top = cAttr.getNumProp("top");
         float width = cAttr.getNumProp("width");
@@ -1035,19 +1029,18 @@ void CabbagePluginAudioProcessorEditor::InsertMultiTab(CabbageGUIClass &cAttr)
         for(int y=0;y<layoutComps.size();y++)
         if(cAttr.getStringProp("reltoplant").length()>0){
         if(layoutComps[y]->getProperties().getWithDefault(String("plant"), -99).toString().equalsIgnoreCase(cAttr.getStringProp("reltoplant")))
-        {
-				positionComponentWithinPlant("", idx, left, top, width, height, layoutComps[y], layoutComps[idx]);
-        }
+			{
+			positionComponentWithinPlant("", idx, left, top, width, height, layoutComps[y], layoutComps[idx]);
+			}
         }
         else{
-        ((CabbageMultiTab*)layoutComps[idx])->setBounds(left+relX, top+relY, width, height);
-        componentPanel->addAndMakeVisible(layoutComps[idx]);
+			((CabbageMultiTab*)layoutComps[idx])->setBounds(left+relX, top+relY, width, height);
+			componentPanel->addAndMakeVisible(layoutComps[idx]);
         }
         }
 		
 		//((CabbageMultiTab*)layoutComps[idx])->tabComp->addActionListener(this);
         layoutComps[idx]->getProperties().set(String("plant"), var(cAttr.getStringProp("plant")));
-
 }
 
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -1088,7 +1081,7 @@ void CabbagePluginAudioProcessorEditor::InsertVUMeter(CabbageGUIClass &cAttr)
         int idx = layoutComps.size()-1;
 
         //check to see if widgets is anchored
-        //if it is offset it's position accordingly. 
+        //if it is offset its position accordingly. 
         int relY=0,relX=0;
         for(int y=0;y<layoutComps.size();y++){
         if(cAttr.getStringProp("reltoplant").length()>0){
@@ -1206,7 +1199,7 @@ void CabbagePluginAudioProcessorEditor::InsertMIDIKeyboard(CabbageGUIClass &cAtt
         float height = cAttr.getNumProp("height");
 
         //check to see if widgets is anchored
-        //if it is offset it's position accordingly. 
+        //if it is offset its position accordingly. 
         int relY=0,relX=0;
         for(int y=0;y<layoutComps.size();y++){
         if(cAttr.getStringProp("reltoplant").length()>0){
@@ -1346,7 +1339,7 @@ void CabbagePluginAudioProcessorEditor::InsertButton(CabbageGUIClass &cAttr)
         float height = cAttr.getNumProp("height");
 
         //check to see if widgets is anchored
-        //if it is offset it's position accordingly. 
+        //if it is offset its position accordingly. 
         int relY=0,relX=0;
         if(layoutComps.size()>0){
         for(int y=0;y<layoutComps.size();y++)
@@ -1750,7 +1743,7 @@ else{
 
 
         //check to see if widgets is anchored
-        //if it is offset it's position accordingly. 
+        //if it is offset its position accordingly. 
         int relY=0,relX=0;
         if(layoutComps.size()>0){
 			if(controls[idx])
@@ -2073,9 +2066,6 @@ if(message.contains("Message sent from CabbageMainPanel")){
 else{
 //this event recieves action messages from custom components. 
 
-
-
-
 String name = message.substring(0, message.indexOf(String("|"))); 
 String type = message.substring(message.indexOf(String("|"))+1, message.indexOf(String(":")));
 String action = message.substring(message.indexOf(String(":"))+1, message.indexOf(String(";")));
@@ -2089,7 +2079,14 @@ for(int i=0;i<(int)getFilter()->getGUILayoutCtrlsSize();i++)//find correct contr
 		if(getFilter()->getGUILayoutCtrls(i).getStringProp("type").containsIgnoreCase("directorylist"))	
 		{
 			Logger::writeToLog("update tables now please...");
-			getFilter()->scoreEvents = ((CabbageDirectoryList*)layoutComps[i])->getListContents();
+			StringArray events = ((CabbageDirectoryList*)layoutComps[i])->getListContents();
+			for(int p=0;p<events.size();p++)
+				for(int u=0;u<pastEvents.size();u++)
+					if(events[p]==pastEvents[u])
+						events.remove(p);
+			//Logger::writeToLog(events.joinIntoString("\n"));
+			pastEvents.addArray(events);
+			getFilter()->scoreEvents = events;
 			getFilter()->messageQueue.addOutgoingChannelMessageToQueue("", 0, "directoryList");
 		}
 	}

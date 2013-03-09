@@ -1,9 +1,20 @@
 /*
-  ==============================================================================
+  Copyright (C) 2009 Rory Walsh
 
-    This file was auto-generated!
+  Cabbage is free software; you can redistribute it
+  and/or modify it under the terms of the GNU Lesser General Public
+  License as published by the Free Software Foundation; either
+  version 2.1 of the License, or (at your option) any later version.   
 
-  ==============================================================================
+  Cabbage is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU Lesser General Public License for more details.
+
+  You should have received a copy of the GNU Lesser General Public
+  License along with Csound; if not, write to the Free Software
+  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
+  02111-1307 USA
 */
 
 #ifndef __MAINCOMPONENT_H_1F3294A__
@@ -11,6 +22,7 @@
 
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "CabbageLookAndFeel.h"
+#include "CabbageUtils.h"
 
 //==============================================================================
 /* one of these is fitted inside each cell of the table. It contains a text editor
@@ -196,7 +208,7 @@ class DirectoryContentsComponent   : public Component,
 	//Array of stireng arrays....
 	OwnedArray<StringArray> functionRowData;
 	String fileTypes, rootDir;
-	StringArray scoreEvents;
+	StringArray previousScoreEvents;
 	
 public:
     //==============================================================================

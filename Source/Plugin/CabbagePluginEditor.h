@@ -115,6 +115,7 @@ private:
         void actionListenerCallback (const String& message);
         int zero_dbfs;
 		StringArray tempArray;
+		StringArray pastEvents;
 
 
         //CabbagePluginAudioProcessor* filter;
@@ -145,7 +146,6 @@ private:
 #endif
         ScopedPointer<MidiKeyboardComponent> midiKeyboard;
         ScopedPointer<LookAndFeel> feely;
-        //ScopedPointer<OldSchoolLookAndFeel> oldSchoolLook;
 		Array<float> incomingValues;
 		ScopedPointer<CabbageCornerResizer> resizer;
 		ComponentBoundsConstrainer resizeLimits;
@@ -160,6 +160,8 @@ private:
         ScopedPointer<CabbageLookAndFeel> lookAndFeel;
 		ScopedPointer<CabbageLookAndFeelBasic> basicLookAndFeel;
         ScopedPointer<Label> debugLabel;
+		StringArray scoreEvents;
+		
         JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CabbagePluginAudioProcessorEditor);
 
 };

@@ -1,9 +1,20 @@
 /*
-  ==============================================================================
+  Copyright (C) 2009 Rory Walsh
 
-    This file was auto-generated!
+  Cabbage is free software; you can redistribute it
+  and/or modify it under the terms of the GNU Lesser General Public
+  License as published by the Free Software Foundation; either
+  version 2.1 of the License, or (at your option) any later version.   
 
-  ==============================================================================
+  Cabbage is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU Lesser General Public License for more details.
+
+  You should have received a copy of the GNU Lesser General Public
+  License along with Csound; if not, write to the Free Software
+  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
+  02111-1307 USA
 */
 
 #include "DirectoryContentsComponent.h"
@@ -24,7 +35,6 @@ directoryList(&filter, thread)
     ;
 	//directoryList.addChangeListener()
 	//create and set Cabbage look and feel
-
     lookAndFeel=new CabbageLookAndFeel();
 	basicLookAndFeel = new CabbageLookAndFeelBasic();
 	setLookAndFeel(lookAndFeel);
@@ -32,7 +42,6 @@ directoryList(&filter, thread)
 	fileTreeComp = new FileTreeComponent(directoryList);
 	fileTreeComp->addListener(this);
 	//if file dir is valid set it, otherwise root is base 
-
 
 	//custom FunctionTable class
 	tablesList.add(new FunctionTableList());
@@ -174,24 +183,23 @@ void DirectoryContentsComponent::buttonClicked(Button* button)
 
 //====================================================================================
 void DirectoryContentsComponent::selectionChanged(){
-		if(fileTreeComp->getSelectedFile().existsAsFile())
+		if(fileTreeComp->getSelectedFile().existsAsFile()){
 		updateSelection(fileTreeComp->getSelectedFile());
 		sendActionMessage("updatingTables");
 		Logger::writeToLog("updating...");
 		}
+}
 
 //====================================================================================
 const StringArray DirectoryContentsComponent::getFunctionTables()
 {
 StringArray tables;
-	for(int i=0;i<functionRowData.size();i++){
-		for(int y=0;y<functionRowData[i]->size();y++){
-			tables.add("f "+String((i+1)*50+y)+" 0 0 1 \""+functionRowData[i]->getReference(y)+"\" 0 4 1");
-			Logger::writeToLog(tables[tables.size()-1]);	
-		}
-		//functionRowData[i]->clear();
-	}
-	return tables;			
+for(int i=0;i<functionRowData.size();i++){
+for(int y=0;y<functionRowData[i]->size();y++){
+tables.add("f "+String((i+1)*50+y)+" 0 0 1 \""+functionRowData[i]->getReference(y)+"\" 0 4 1");
+}
+}
+return tables;		
 }
 
 //====================================================================================

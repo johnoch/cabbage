@@ -56,6 +56,20 @@ public:
 	}
 };
 
+
+class Gen1ScoreEvent 
+{
+public:
+int ftableNumber;
+String filename; 
+	Gen1ScoreEvent(int _ftableNumber, String _filename): ftableNumber(_ftableNumber), filename(_filename){}
+	
+	String getGen1ScoreEvent(){
+		String temp = "f "+String(ftableNumber)+" 0 0 1 \""+filename+"\" 0 4 1"; 
+		return temp;
+	}
+};
+
 //===========================================================================================
 //some utility functions used across classes...
 //===========================================================================================
