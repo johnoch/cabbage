@@ -66,8 +66,6 @@ OBJECTS := \
   $(OBJDIR)/CabbagePluginEditor_5a11f64e.o \
   $(OBJDIR)/CabbagePluginProcessor_73d6661b.o \
   $(OBJDIR)/Soundfiler_35ae1cd0.o \
-  $(OBJDIR)/CabbageStandaloneDialog_72d272cd.o \
-  $(OBJDIR)/StandaloneFilterApp_d9ee3663.o \
   $(OBJDIR)/XYPad_6eaa3453.o \
   $(OBJDIR)/XYPadAutomation_2865c48a.o \
   $(OBJDIR)/juce_audio_basics_2442e4ea.o \
@@ -173,16 +171,6 @@ $(OBJDIR)/CabbagePluginProcessor_73d6661b.o: ../../Source/Plugin/CabbagePluginPr
 $(OBJDIR)/Soundfiler_35ae1cd0.o: ../../Source/Soundfiler.cpp
 	-@mkdir -p $(OBJDIR)
 	@echo "Compiling Soundfiler.cpp"
-	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-
-$(OBJDIR)/CabbageStandaloneDialog_72d272cd.o: ../../Source/Standalone/CabbageStandaloneDialog.cpp
-	-@mkdir -p $(OBJDIR)
-	@echo "Compiling CabbageStandaloneDialog.cpp"
-	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
-
-$(OBJDIR)/StandaloneFilterApp_d9ee3663.o: ../../Source/Standalone/StandaloneFilterApp.cpp
-	-@mkdir -p $(OBJDIR)
-	@echo "Compiling StandaloneFilterApp.cpp"
 	@$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
 
 $(OBJDIR)/XYPad_6eaa3453.o: ../../Source/XYPad.cpp
