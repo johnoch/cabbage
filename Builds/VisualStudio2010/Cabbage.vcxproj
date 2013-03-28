@@ -131,7 +131,6 @@
     <ClCompile Include="..\..\Source\Editor\CabbageCsoundEditor.cpp" />
     <ClCompile Include="..\..\Source\Editor\CabbageEditorCommandManager.cpp" />
     <ClCompile Include="..\..\Source\Editor\CabbageEditorWindow.cpp" />
-    <ClCompile Include="..\..\Source\Main.cpp" />
     <ClCompile Include="..\..\Source\Plugin\CabbagePluginEditor.cpp" />
     <ClCompile Include="..\..\Source\Plugin\CabbagePluginProcessor.cpp" />
     <ClCompile Include="..\..\Source\Soundfiler.cpp" />
