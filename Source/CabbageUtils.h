@@ -33,6 +33,61 @@ using namespace std;
 #pragma warning(disable: 4100)
 #pragma warning(disable: 4305)
 
+//class for our audio source, used by soundfilers
+class CabbageAudioSource
+{
+TimeSliceThread thread;
+public:
+	CabbageAudioSource(String audioFile, int channel=2)
+	:thread("audio source"), isSourcePlaying(false)
+	{
+		AudioFormatManager formatManager;
+		formatManager.registerBasicFormats(); 
+		AudioFormatReader* reader; 
+		if(File(audioFile).existsAsFile()) 
+		reader = formatManager.createReaderFor (File(audioFile));  
+			if(reader!=0){
+			audioSource = new AudioFormatReaderSource (reader, true);
+			audioSourceBuffer = new BufferingAudioSource(audioSource, thread, true, 32768, 2);		
+			sampleRate = reader->sampleRate;
+			thread.startThread();	
+			}
+	}
+	
+	~CabbageAudioSource()
+	{
+		thread.stopThread(10);
+		delete audioSourceBuffer;
+		audioSource= nullptr;
+	}	
+	
+	bool setFile(String audioFile)
+	{
+		AudioFormatManager formatManager;
+		formatManager.registerBasicFormats(); 
+		AudioFormatReader* reader; 
+		if(File(audioFile).existsAsFile()) 
+		reader = formatManager.createReaderFor (File(audioFile));  
+			if(reader!=0){
+			audioSource = new AudioFormatReaderSource (reader, true);		
+			return true;
+			}
+			else{
+			return false;	
+			}
+	}
+	
+	
+	BufferingAudioSource* audioSourceBuffer;
+	PositionableAudioSource* audioSource;
+	int sampleRate;	
+	bool isSourcePlaying;
+	AudioSourceChannelInfo sourceChannelInfo;
+
+private:
+	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CabbageAudioSource);	
+
+};
 //===========================================================================================
 //some utility functions used across classes...
 //===========================================================================================

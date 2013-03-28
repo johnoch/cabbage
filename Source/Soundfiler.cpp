@@ -19,65 +19,67 @@
 
 #include "Soundfiler.h"
 
-Soundfiler::Soundfiler() : 
-zoomSlider(0),
-thread ("audio file preview"),
-soundfileWaveform(0)
-{
-formatManager.registerBasicFormats();
-thread.startThread (3);
-zoomSlider = new Slider (String::empty);
-soundfileWaveform = new SoundfileWaveform (formatManager, transportSource, *zoomSlider);
-addAndMakeVisible(soundfileWaveform);
 
-audioSourcePlayer.setSource (&transportSource);
-transportSource.start();
+//==============================================================================
+Soundfiler::Soundfiler(CabbageAudioSource& _audioSource, String fileName, int sr)
+:cabbageAudioSource(&_audioSource)
+{
+    AudioFormatManager formatManager;
+    formatManager.registerBasicFormats();  
+	viewport = new Viewport();
+	waveformDisplay = new WaveformDisplay(formatManager, *cabbageAudioSource->audioSourceBuffer, sr);
+	
+	startStop = new TextButton("PlayButton");
+	startStop->setButtonText("Play");
+	loadFile = new TextButton("Open File");
+	startStop->addListener(this);
+	loadFile->addListener(this);
+
+	addAndMakeVisible(startStop);
+	addAndMakeVisible(loadFile);
+
+
+	addAndMakeVisible(viewport);
+    setSize (400, 300);
+
+	waveformDisplay->setFile(File(fileName));
+
+	viewport->setViewedComponent(waveformDisplay, false);
+	viewport->setScrollBarsShown(true, true);
 }
 
-Soundfiler::~Soundfiler()
+void Soundfiler::buttonClicked(Button *button)
 {
-    transportSource.setSource (nullptr);
-    audioSourcePlayer.setSource (nullptr);	
+	if(button->getName()=="PlayButton"){
+		if(!cabbageAudioSource->isSourcePlaying){
+			waveformDisplay->startTimer(200);
+			startStop->setButtonText("Stop..");
+		}
+		else{
+			waveformDisplay->stopTimer();
+			startStop->setButtonText("Play");
+		}
+		cabbageAudioSource->isSourcePlaying=!cabbageAudioSource->isSourcePlaying;
+	}
+	else{
+		FileChooser openFC(String("Open a Cabbage .csd file..."), File::nonexistent, String("*.csd;*.vst"));
+		if(openFC.browseForFileToOpen())
+			if(cabbageAudioSource->setFile(openFC.getResult().getFullPathName()))
+					waveformDisplay->setFile(openFC.getResult());
+		
+	}
 }
-
-
-void Soundfiler::paint (Graphics& g)
-{
-    g.fillAll (Colours::white);
-}
-
+//==============================================================================
 void Soundfiler::resized()
 {
-    soundfileWaveform->setBounds (0 , 0, getWidth(), getHeight());
+waveformDisplay->setSize(800, getHeight()-40);
+viewport->setBounds(0, 0, getWidth(), getHeight()-20);
+startStop->setBounds(0, getHeight()-20, 70, 20);
+loadFile->setBounds(70, getHeight()-20, 70, 20);
 }
-
-void Soundfiler::loadFileIntoTransport (const File& audioFile)
+//==============================================================================
+void Soundfiler::paint (Graphics& g)
 {
-    // unload the previous file source and delete it..
-    transportSource.stop();
-    transportSource.setSource (nullptr);
-    currentAudioFileSource = nullptr;
-
-    AudioFormatReader* reader = formatManager.createReaderFor (audioFile);
-
-    if (reader != nullptr)
-    {
-        currentAudioFileSource = new AudioFormatReaderSource (reader, true);
-
-        // ..and plug it into our transport source
-        transportSource.setSource (currentAudioFileSource,
-                                   32768, // tells it to buffer this many samples ahead
-                                   &thread, // this is the background thread to use for reading-ahead
-                                   reader->sampleRate);
-    }
+g.fillAll(Colours::black);
 }
 
-void Soundfiler::showFile (const File& file)
-{
-	jassert(File(file).exists());
-    loadFileIntoTransport (file);
-
-    zoomSlider->setValue (0, dontSendNotification);
-    soundfileWaveform->setFile (file);
-	
-}

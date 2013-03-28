@@ -122,7 +122,7 @@ if(csCompileResult==0){
         numCsoundChannels = csoundListChannels(csound->GetCsound(), &csoundChanList);
         csndIndex = csound->GetKsmps();
 		csdKsmps = csound->GetKsmps();
-		soundFilerVector = new MYFLT[csdKsmps];
+		soundFilerTempVector = new MYFLT[csdKsmps];
         cs_scale = csound->Get0dBFS();
         csoundStatus = true;
         debugMessageArray.add(CABBAGE_VERSION);
@@ -237,7 +237,7 @@ if(csCompileResult==0){
         numCsoundChannels = csoundListChannels(csound->GetCsound(), &csoundChanList);
         csndIndex = csound->GetKsmps();
 		csdKsmps = csound->GetKsmps();
-		soundFilerVector = new MYFLT[csdKsmps];
+		//soundFilerVector = new MYFLT[csdKsmps];
         csoundStatus = true;
         debugMessageArray.add(VERSION);
         debugMessageArray.add(String("\n"));
@@ -274,10 +274,10 @@ patPfieldMatrix.clear();
                 csound->Reset();
                 csound = nullptr;
                 Logger::writeToLog("Csound cleaned up");
-				if(soundFilers.size()>0)
-					soundFilers.clear();
+				if(audioSourcesArray.size()>0)
+					audioSourcesArray.clear();
         }
-		soundFilerVector = nullptr;
+		soundFilerTempVector = nullptr;
 
 #endif
 }
@@ -400,6 +400,15 @@ bool multiLine = false;
                                                         CabbageGUIClass cAttr(csdLine.trimEnd(), guiID);
                                                         //showMessage(cAttr.getStringProp("type"));
                                                         csdLine = "";
+														
+														//add soundfiler buffering sources
+														if(tokes.getReference(0).equalsIgnoreCase(String("soundfiler"))){
+															addSoundfilerSource(cAttr.getStringProp(("file")));
+															Logger::writeToLog(String(audioSourcesArray.size()-1));
+															cAttr.setNumProp("soundfilerIndex", audioSourcesArray.size()-1);
+														}
+														
+														
                                                         //set up plant flag if needed for other widgets
                                                         if(cAttr.getStringProp(String("plant")).isNotEmpty()){
                                                                 plantFlag = cAttr.getStringProp(String("plant"));
@@ -409,6 +418,9 @@ bool multiLine = false;
                                                                 cAttr.setStringProp(String("relToPlant"), plantFlag);
                                                         guiLayoutCtrls.add(cAttr);
                                                         
+
+														
+														
                                                         guiID++;
 
                                                         if(cAttr.getStringProp("type").containsIgnoreCase("form"))
@@ -731,9 +743,50 @@ for(int i=0;i<messageQueue.getNumberOfOutgoingChannelMessagesInQueue();i++)
 }
 
 //==============================================================================
-//gets sample data from any soundfiler controls and passes it to Csound
-void CabbagePluginAudioProcessor::getSamplesFromSoundFilers()
+//set up buffered audio source for each sound file object. The method below this one
+//fills Csound channels with sampler from our soundfiler controls..
+void CabbagePluginAudioProcessor::addSoundfilerSource(String _filename)
 {
+
+	if(File(_filename).exists())Logger::writeToLog("File exists");
+	else{
+		Logger::writeToLog("Sound filer can't find file");
+	}
+	
+   audioSourcesArray.add(new CabbageAudioSource(_filename));
+
+}
+
+
+//gets sample data from any soundfiler controls and passes it to Csound
+void CabbagePluginAudioProcessor::sendAudioToCsoundFromSoundFilers(int numSamples)
+{
+for(int i=0;i<audioSourcesArray.size();i++){
+
+	AudioSampleBuffer output (2, numSamples);
+	audioSourcesArray[i]->sourceChannelInfo.buffer = &output;
+	audioSourcesArray[i]->sourceChannelInfo.startSample = 0;
+	audioSourcesArray[i]->sourceChannelInfo.numSamples = output.getNumSamples();
+
+	if(audioSourcesArray[i]->isSourcePlaying)
+	audioSourcesArray[i]->audioSourceBuffer->getNextAudioBlock(audioSourcesArray[i]->sourceChannelInfo); 
+	else
+		output.clear();
+
+	for(int chn=0;chn<output.getNumChannels();chn++){
+	float* sample = output.getSampleData(chn);
+	for(int y=0;y<numSamples;y++)
+		soundFilerTempVector[y] = sample[y];
+
+	if(csoundGetChannelPtr(csound->GetCsound(), &soundFilerTempVector, "sound",                     
+					CSOUND_INPUT_CHANNEL | CSOUND_AUDIO_CHANNEL) != 0)
+	       			Logger::writeToLog("error sending audio to Csound");
+	}
+
+	}
+	
+}	
+	
 //float* audioBuffer;
 //soundfilerChannelData;
 
@@ -756,8 +809,6 @@ void CabbagePluginAudioProcessor::getSamplesFromSoundFilers()
 //					CSOUND_INPUT_CHANNEL | CSOUND_AUDIO_CHANNEL) != 0)
 //	       			Logger::writeToLog("error sending audio to Csound");
 
-					
-}
 //========================================================================
 // Standard plugin methods, getName, getNumParameters, setParamterName, get ProgramName, etc.... 
 //==============================================================================
@@ -851,11 +902,13 @@ void CabbagePluginAudioProcessor::changeProgramName (int /*index*/, const String
 }
 
 //==============================================================================
-void CabbagePluginAudioProcessor::prepareToPlay (double /*sampleRate*/, int /*samplesPerBlock*/)
+void CabbagePluginAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
     // Use this method as the place to do any pre-playback
     // initialisation that you need..
-        keyboardState.reset();
+    keyboardState.reset();
+	for(int i=0;i<audioSourcesArray.size();i++)
+		audioSourcesArray[i]->audioSourceBuffer->prepareToPlay(samplesPerBlock, sampleRate);
 }
 //==============================================================================
 void CabbagePluginAudioProcessor::releaseResources()
@@ -917,6 +970,7 @@ if(!isSuspended()){
 	midiBuffer = midiMessages;
 	ccBuffer = midiMessages;
 	
+
 	if(!midiOutputBuffer.isEmpty())
 		midiMessages.swapWith(midiOutputBuffer);
 
@@ -936,10 +990,9 @@ if(!isSuspended()){
 				sendOutgoingMessagesToCsound();
 				updateCabbageControls();
 				}
-				CSCompResult = csound->PerformKsmps();
-				//if(soundFilers.size()>0)
-				//getSamplesFromSoundFilers();		
-					
+				if(audioSourcesArray.size()>0)
+				//sendAudioToCsoundFromSoundFilers(csound->GetKsmps());		
+				CSCompResult = csound->PerformKsmps();					
 				getCallbackLock().exit();
 				csndIndex = 0;
 			}
@@ -961,8 +1014,8 @@ if(!isSuspended()){
 							{
 							audioBuffer = buffer.getSampleData(channel,0);
 							audioBuffer[i]=0;
+							}
 					}
-			}
 	}
 		// in case we have more outputs than inputs, we'll clear any output
 		// channels that didn't contain input data, (because these aren't

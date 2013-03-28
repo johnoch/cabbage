@@ -198,6 +198,7 @@ class DirectoryContentsComponent   : public Component,
 	ScopedPointer<TabbedComponent> tabComp;
 	ScopedPointer<TextEditor> editor;
 	ScopedPointer<TextButton> updateTablesButton;
+	ScopedPointer<ToggleButton> autoUpdate;
 	ScopedPointer<TextButton> addBankButton;
 	StringArray functionTableStrings;
 	DirectoryContentsList directoryList;

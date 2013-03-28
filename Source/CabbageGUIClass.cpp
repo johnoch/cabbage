@@ -47,7 +47,8 @@ CabbageGUIClass::CabbageGUIClass(String compStr, int ID):
 								numTables(0),
 								sliderIncr(.01),
 								decimalPlaces(0),
-								tabbed(0)
+								tabbed(0),
+								soundfilerIndex(0)
 {
 //Default values are assigned to all attributres 
 //before parsing begins
@@ -1066,6 +1067,8 @@ float CabbageGUIClass::getNumProp(String prop)
 			return xyAutoIndex;
 		else if(prop.equalsIgnoreCase("pvsChannel"))
 			return pvsChannel; 
+		else if(prop.equalsIgnoreCase("soundfilerIndex"))
+			return soundfilerIndex; 
 		else return -9999;
 }
 
@@ -1144,6 +1147,8 @@ void CabbageGUIClass::setNumProp(String prop, float val)
 			 pvsChannel = val;
 		else if(prop.equalsIgnoreCase("xyAutoIndex"))
 			 xyAutoIndex = val;
+		else if(prop.equalsIgnoreCase("soundfilerIndex"))
+			 soundfilerIndex = val;
 
 
 }

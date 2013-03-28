@@ -1922,12 +1922,11 @@ ScopedPointer<Soundfiler> soundFiler;
 
 //---- constructor -----
 public:
-	CabbageSoundfiler (String name, String colour, String file, String str1, String str2)
+	CabbageSoundfiler (String name, String colour, String file, CabbageAudioSource &audioSource, int sr)
 	{
 	setName(name);
 	
-	soundFiler = new Soundfiler();
-	soundFiler->showFile(File(file));
+	soundFiler = new Soundfiler(audioSource, file, sr);
 	addAndMakeVisible(soundFiler);
 	}
 

@@ -562,21 +562,30 @@ void CabbagePluginAudioProcessorEditor::InsertGroupBox(CabbageGUIClass &cAttr)
 //+++++++++++++++++++++++++++++++++++++++++++
 void CabbagePluginAudioProcessorEditor::InsertImage(CabbageGUIClass &cAttr)
 {
-        String pic;
+
+	
+String pic;
 
 #ifdef Cabbage_Build_Standalone
         pic = getFilter()->getCsoundInputFile().getParentDirectory().getFullPathName();
+		Logger::writeToLog(pic);
 #else
+	#ifdef MACOSX
+	String osxLocation = File::getSpecialLocation(File::currentApplicationFile).getFullPathName()+String("/Contents/");
+	File thisFile(osxLocation); 
+	#else
         File thisFile(File::getSpecialLocation(File::currentApplicationFile)); 
+	#endif	
         pic = thisFile.getParentDirectory().getFullPathName();
+		Logger::writeToLog(pic);
+
 #endif
         if(cAttr.getStringProp("file").length()<2)
                 pic="";
         else
 #ifdef LINUX
         pic.append(String("/")+String(cAttr.getStringProp("file")), 1024);
-#else 
-        pic.append(String("\\")+String(cAttr.getStringProp("file")), 1024);  
+		Logger::writeToLog(pic);
 #endif
 
         layoutComps.add(new CabbageImage(cAttr.getStringProp("name"), pic, cAttr.getColourProp("outline"), cAttr.getColourProp("colour"), 
@@ -628,13 +637,6 @@ void CabbagePluginAudioProcessorEditor::InsertImage(CabbageGUIClass &cAttr)
 			}		
 		}
         
-		
-
-#ifdef LINUX
-        pic.append(String("/")+String(cAttr.getStringProp("file")), 1024);
-#else 
-        pic.append(String("\\")+String(cAttr.getStringProp("file")), 1024);     
-#endif
 
         layoutComps[idx]->getProperties().set(String("scaleY"), cAttr.getNumProp("scaleY"));
         layoutComps[idx]->getProperties().set(String("scaleX"), cAttr.getNumProp("scaleX"));
@@ -920,21 +922,22 @@ void CabbagePluginAudioProcessorEditor::InsertInfoButton(CabbageGUIClass &cAttr)
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 void CabbagePluginAudioProcessorEditor::InsertSoundfiler(CabbageGUIClass &cAttr)
 {
-        layoutComps.add(new CabbageSoundfiler(cAttr.getStringProp("name"),
-				cAttr.getStringProp("channel"),
-				cAttr.getStringProp("file"),
-                cAttr.getColourProp("colour"),
-                cAttr.getColourProp("fontcolour")));
-    
-        int idx = layoutComps.size()-1;
-		
-		//add soundfiler object to main processor..
-		//getFilter()->soundFilers.add(((Soundfiler*)layoutComps[idx])->transportSource);
-
+	if(getFilter()->audioSourcesArray[cAttr.getNumProp("soundfilerIndex")]){
+	
         float left = cAttr.getNumProp("left");
         float top = cAttr.getNumProp("top");
         float width = cAttr.getNumProp("width");
         float height = cAttr.getNumProp("height");
+		
+        layoutComps.add(new CabbageSoundfiler(cAttr.getStringProp("name"),
+				cAttr.getStringProp("channel"),
+				cAttr.getStringProp("file"),
+                *getFilter()->audioSourcesArray[cAttr.getNumProp("soundfilerIndex")],
+                getFilter()->audioSourcesArray[cAttr.getNumProp("soundfilerIndex")]->sampleRate));
+    
+        int idx = layoutComps.size()-1;
+		//add soundfiler object to main processor..
+		//getFilter()->soundFilers.add(((Soundfiler*)layoutComps[idx])->transportSource);
 
         //check to see if widgets is anchored
         //if it is offset its position accordingly. 
@@ -953,6 +956,8 @@ void CabbagePluginAudioProcessorEditor::InsertSoundfiler(CabbageGUIClass &cAttr)
         }
         
         layoutComps[idx]->getProperties().set(String("plant"), var(cAttr.getStringProp("plant")));
+	}
+
 
 }
 
@@ -2059,7 +2064,6 @@ if(message.contains("Message sent from CabbageMainPanel")){
 	}
 	#endif
 
-
 }
 //END OF TEST FOR MESSAGE SENT FROM CABBAGE MAIN PANEL
 
@@ -2084,7 +2088,7 @@ for(int i=0;i<(int)getFilter()->getGUILayoutCtrlsSize();i++)//find correct contr
 				for(int u=0;u<pastEvents.size();u++)
 					if(events[p]==pastEvents[u])
 						events.remove(p);
-			//Logger::writeToLog(events.joinIntoString("\n"));
+			Logger::writeToLog(events.joinIntoString("\n"));
 			pastEvents.addArray(events);
 			getFilter()->scoreEvents = events;
 			getFilter()->messageQueue.addOutgoingChannelMessageToQueue("", 0, "directoryList");

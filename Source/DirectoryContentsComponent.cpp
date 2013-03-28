@@ -97,7 +97,14 @@ directoryList(&filter, thread)
 	updateTablesButton->setColour(TextButton::textColourOffId, Colours::white);
 	updateTablesButton->setColour(TextButton::textColourOnId, Colours::white);		
 	
+	autoUpdate = new ToggleButton("Auto-update");
+	autoUpdate->getProperties().set("isRect", true);
+	autoUpdate->getProperties().set("colour", Colours::lime.toString());
+	autoUpdate->getProperties().set("fontcolour", Colours::white.toString());
+	
+	
  	//add everything to screen
+	addAndMakeVisible(autoUpdate);
     addAndMakeVisible (fileTreeComp);	
 	addAndMakeVisible(updateTablesButton);
 	addAndMakeVisible(addBankButton);
@@ -128,6 +135,7 @@ void DirectoryContentsComponent::resized()
 	tabComp->setBounds (getWidth()/2+5, 5, (getWidth()/2)-10, getHeight()-45);
 	addBankButton->setBounds(5, getHeight()-35, 90, 25);
 	updateTablesButton->setBounds(100, getHeight()-35, 110, 25);
+	autoUpdate->setBounds(220, getHeight()-35, 150, 25);
 }
 
 //====================================================================================
@@ -182,11 +190,12 @@ void DirectoryContentsComponent::buttonClicked(Button* button)
 }
 
 //====================================================================================
-void DirectoryContentsComponent::selectionChanged(){
+void DirectoryContentsComponent::selectionChanged()
+{	
 		if(fileTreeComp->getSelectedFile().existsAsFile()){
 		updateSelection(fileTreeComp->getSelectedFile());
+		if(autoUpdate->getToggleState())
 		sendActionMessage("updatingTables");
-		Logger::writeToLog("updating...");
 		}
 }
 
@@ -194,11 +203,11 @@ void DirectoryContentsComponent::selectionChanged(){
 const StringArray DirectoryContentsComponent::getFunctionTables()
 {
 StringArray tables;
-for(int i=0;i<functionRowData.size();i++){
-for(int y=0;y<functionRowData[i]->size();y++){
-tables.add("f "+String((i+1)*50+y)+" 0 0 1 \""+functionRowData[i]->getReference(y)+"\" 0 4 1");
+//only retrieve the current selected bank
+for(int y=0;y<functionRowData[tabComp->getCurrentTabIndex()]->size();y++){
+	tables.add("f "+String((tabComp->getCurrentTabIndex()+1)*50+y)+" 0 0 1 \""+functionRowData[tabComp->getCurrentTabIndex()]->getReference(y)+"\" 0 4 1");
 }
-}
+
 return tables;		
 }
 

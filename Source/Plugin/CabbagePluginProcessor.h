@@ -40,7 +40,6 @@
 //#include "../Editor/CabbageEditorWindow.h"
 //#endif
 
-
 //==============================================================================
 // CabbagePluginAudioProcessor definition
 //==============================================================================
@@ -84,7 +83,7 @@ class CabbagePluginAudioProcessor  : public AudioProcessor,
         MYFLT *CSspin, *CSspout;        //Csound audio IO pointers
         int csndIndex;                          //Csound sample counter
 		int csdKsmps;
-		MYFLT *soundFilerVector;
+		MYFLT *soundFilerTempVector;
         int CSCompResult;                       //result of Csound performKsmps
         CsoundChannelListEntry* csoundChanList;         // list of all available channels...
         int numCsoundChannels;          //number of Csound channels
@@ -100,6 +99,7 @@ class CabbagePluginAudioProcessor  : public AudioProcessor,
 		
 		void updateCabbageControls();
 		void sendOutgoingMessagesToCsound();
+		void sendAudioToCsoundFromSoundFilers(int numSamples);
 		
 #endif
         StringArray debugInfo;
@@ -189,9 +189,10 @@ public:
 	bool yieldCallbackBool;
 	int yieldCounter;
 	CabbageMessageQueue messageQueue;
-	Array<AudioTransportSource> soundFilers;
-	void getSamplesFromSoundFilers();
+	OwnedArray<CabbageAudioSource> audioSourcesArray;
+	void addSoundfilerSource(String filename);
 	StringArray scoreEvents;
+	
 			
 	//==============================================================================
         File getCsoundInputFile(){

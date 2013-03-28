@@ -164,7 +164,13 @@ public:
 																						Slider &slider);
     void drawButtonBackground (Graphics& g, Button& button, const Colour& backgroundColour, bool isMouseOverButton, bool isButtonDown);
 
-
+	virtual void drawScrollbar (Graphics &g, ScrollBar &scrollbar, int x, int y, int width, int height, 
+																							bool isScrollbarVertical, 
+																							int thumbStartPosition, 
+																							int thumbSize, 
+																							bool isMouseOver, 
+																							bool isMouseDown);
+	void drawLabel (Graphics &g, Label &label);
 	
 	juce_UseDebuggingNewOperator
 
