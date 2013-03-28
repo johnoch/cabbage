@@ -127,11 +127,14 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Source\csPerfThread.cpp" />
+    <ClCompile Include="..\..\Source\DirectoryContentsComponent.cpp" />
     <ClCompile Include="..\..\Source\Editor\CabbageCsoundEditor.cpp" />
     <ClCompile Include="..\..\Source\Editor\CabbageEditorCommandManager.cpp" />
     <ClCompile Include="..\..\Source\Editor\CabbageEditorWindow.cpp" />
+    <ClCompile Include="..\..\Source\Main.cpp" />
     <ClCompile Include="..\..\Source\Plugin\CabbagePluginEditor.cpp" />
     <ClCompile Include="..\..\Source\Plugin\CabbagePluginProcessor.cpp" />
+    <ClCompile Include="..\..\Source\Soundfiler.cpp" />
     <ClCompile Include="..\..\Source\Standalone\CabbageStandaloneDialog.cpp" />
     <ClCompile Include="..\..\Source\Standalone\StandaloneFilterApp.cpp" />
     <ClCompile Include="..\..\Source\BinaryData.cpp" />
@@ -1181,13 +1184,16 @@
     <ClCompile Include="..\..\Source\XYPadAutomation.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\Source\CabbageMessageSystem.h" />
     <ClInclude Include="..\..\Source\csPerfThread.hpp" />
+    <ClInclude Include="..\..\Source\DirectoryContentsComponent.h" />
     <ClInclude Include="..\..\Source\Editor\CabbageCsoundEditor.h" />
     <ClInclude Include="..\..\Source\Editor\CabbageEditorCommandManager.h" />
     <ClInclude Include="..\..\Source\Editor\CabbageEditorWindow.h" />
     <ClInclude Include="..\..\Source\JucePluginCharacteristics.h" />
     <ClInclude Include="..\..\Source\Plugin\CabbagePluginEditor.h" />
     <ClInclude Include="..\..\Source\Plugin\CabbagePluginProcessor.h" />
+    <ClInclude Include="..\..\Source\Soundfiler.h" />
     <ClInclude Include="..\..\Source\Standalone\CabbageStandaloneDialog.h" />
     <ClInclude Include="..\..\Source\BinaryData.h" />
     <ClInclude Include="..\..\Source\CabbageCustomWidgets.h" />
