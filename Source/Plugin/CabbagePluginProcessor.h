@@ -190,7 +190,7 @@ public:
 	int yieldCounter;
 	CabbageMessageQueue messageQueue;
 	OwnedArray<CabbageAudioSource> audioSourcesArray;
-	void addSoundfilerSource(String filename);
+	void addSoundfilerSource(String filename, StringArray channels);
 	StringArray scoreEvents;
 	
 			

@@ -69,6 +69,10 @@ public:
 	String getColourProp(String prop);
 	
 	Rectangle<int> getComponentBounds();
+	
+	StringArray getChannels(){
+		return channels;
+	}
 
 	inline int getNumPresets(){
 		return snapshotData.size();

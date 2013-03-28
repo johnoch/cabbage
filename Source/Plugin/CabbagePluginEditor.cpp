@@ -562,164 +562,112 @@ void CabbagePluginAudioProcessorEditor::InsertGroupBox(CabbageGUIClass &cAttr)
 //+++++++++++++++++++++++++++++++++++++++++++
 void CabbagePluginAudioProcessorEditor::InsertImage(CabbageGUIClass &cAttr)
 {
-<<<<<<< HEAD
-
-	
-String pic;
-
-#ifdef Cabbage_Build_Standalone
-        pic = getFilter()->getCsoundInputFile().getParentDirectory().getFullPathName();
-		Logger::writeToLog(pic);
-#else
-	#ifdef MACOSX
-	String osxLocation = File::getSpecialLocation(File::currentApplicationFile).getFullPathName()+String("/Contents/");
-	File thisFile(osxLocation); 
-	#else
-        File thisFile(File::getSpecialLocation(File::currentApplicationFile)); 
-	#endif	
-        pic = thisFile.getParentDirectory().getFullPathName();
-		Logger::writeToLog(pic);
-
-#endif
-        if(cAttr.getStringProp("file").length()<2)
-                pic="";
-        else
-#ifdef LINUX
-        pic.append(String("/")+String(cAttr.getStringProp("file")), 1024);
-		Logger::writeToLog(pic);
-=======
 	String pic;
-		
+
 #ifdef Cabbage_Build_Standalone
-	pic = getFilter()->getCsoundInputFile().getParentDirectory().getFullPathName();
-	Logger::writeToLog(pic);
+pic = getFilter()->getCsoundInputFile().getParentDirectory().getFullPathName();
+Logger::writeToLog(pic);
 #else
 #ifdef MACOSX
-	String osxLocation =
-	File::getSpecialLocation(File::currentApplicationFile).getFullPathName()+String("/Contents/");
-	File thisFile(osxLocation);
+String osxLocation =
+File::getSpecialLocation(File::currentApplicationFile).getFullPathName()+String("/Contents/");
+File thisFile(osxLocation);
 #else
-	File thisFile(File::getSpecialLocation(File::currentApplicationFile));
+File thisFile(File::getSpecialLocation(File::currentApplicationFile));
 #endif
-	pic = thisFile.getParentDirectory().getFullPathName();
-	Logger::writeToLog(pic);
-	
->>>>>>> 8f640da33246ec967369fcda32c8913779236a1c
+pic = thisFile.getParentDirectory().getFullPathName();
+Logger::writeToLog(pic);
+
 #endif
-	if(cAttr.getStringProp("file").length()<2)
-		pic="";
-	else
-	#ifdef MACOSX
+if(cAttr.getStringProp("file").length()<2)
+pic="";
+else
+#ifdef MACOSX
     pic.append(String("/Contents/")+String(cAttr.getStringProp("file")), 1024);
-	#else
-	pic.append(String("/")+String(cAttr.getStringProp("file")), 1024);
-	#endif
-	
-	Logger::writeToLog(pic);
+#else
+pic.append(String("/")+String(cAttr.getStringProp("file")), 1024);
+#endif
+
+Logger::writeToLog(pic);
 
 
 
-	Logger::writeToLog(pic);
-	
-	
-	layoutComps.add(new CabbageImage(cAttr.getStringProp("name"),
-									 pic, cAttr.getColourProp("outline"), cAttr.getColourProp("colour"),
-									 cAttr.getStringProp("shape"), cAttr.getNumProp("line")));
-	
-	int idx = layoutComps.size()-1;
-	float left = cAttr.getNumProp("left");
-	float top = cAttr.getNumProp("top");
-	float width = cAttr.getNumProp("width");
-	float height = cAttr.getNumProp("height");
-	int relY=0,relX=0;
-	if(layoutComps.size()>0){
+Logger::writeToLog(pic);
+
+
+layoutComps.add(new CabbageImage(cAttr.getStringProp("name"),
+pic, cAttr.getColourProp("outline"), cAttr.getColourProp("colour"),
+cAttr.getStringProp("shape"), cAttr.getNumProp("line")));
+
+int idx = layoutComps.size()-1;
+float left = cAttr.getNumProp("left");
+float top = cAttr.getNumProp("top");
+float width = cAttr.getNumProp("width");
+float height = cAttr.getNumProp("height");
+int relY=0,relX=0;
+if(layoutComps.size()>0){
         for(int y=0;y<layoutComps.size();y++)
-			if(cAttr.getStringProp("reltoplant").length()>0){
-				if(layoutComps[y]->getProperties().getWithDefault(String("plant"),
-																  -99).toString().equalsIgnoreCase(cAttr.getStringProp("reltoplant")))
-				{
-					positionComponentWithinPlant("", idx, left, top, width, height,
-												 layoutComps[y], layoutComps[idx]);
-				}
-			}
-			else{
-				if(cAttr.getNumProp("button")==0){
-					Logger::writeToLog(layoutComps[idx]->getName());
-					layoutComps[idx]->setBounds(left+relX, top+relY, width, height);
-					if(cAttr.getNumProp("tabbed")<1)
+if(cAttr.getStringProp("reltoplant").length()>0){
+if(layoutComps[y]->getProperties().getWithDefault(String("plant"),
+-99).toString().equalsIgnoreCase(cAttr.getStringProp("reltoplant")))
+{
+positionComponentWithinPlant("", idx, left, top, width, height,
+layoutComps[y], layoutComps[idx]);
+}
+}
+else{
+if(cAttr.getNumProp("button")==0){
+Logger::writeToLog(layoutComps[idx]->getName());
+layoutComps[idx]->setBounds(left+relX, top+relY, width, height);
+if(cAttr.getNumProp("tabbed")<1)
                         componentPanel->addAndMakeVisible(layoutComps[idx]);
-				}
-				else{
-					plantButton.add(new
-									CabbageButton(cAttr.getStringProp("plant"), "",
-												  cAttr.getStringProp("plant"),
-												  CabbageUtils::getComponentSkin().toString(), ""));
-					plantButton[plantButton.size()-1]->setBounds(left+relX, top+relY, 100, 25);
-					layoutComps[idx]->setBounds(left+relX, top+relY, width, height);
-					plantButton[plantButton.size()-1]->button->addListener(this);
-					plantButton[plantButton.size()-1]->button->setLookAndFeel(basicLookAndFeel);
-					plantButton[plantButton.size()-1]->button->setColour(TextButton::buttonColourId,
-																		 Colour::fromString(cAttr.getColourProp("fill")));
-					plantButton[plantButton.size()-1]->button->setColour(TextButton::textColourOffId,
-																		 Colour::fromString(cAttr.getColourProp("fontcolour")));
-					plantButton[plantButton.size()-1]->button->setColour(TextButton::textColourOnId,
-																		 Colour::fromString(cAttr.getColourProp("fontcolour")));
-					
-					
-					componentPanel->addAndMakeVisible(plantButton[plantButton.size()-1]);
-					
-					plantButton[plantButton.size()-1]->button->getProperties().set(String("index"),
-																				   plantButton.size()-1);
-					
-					layoutComps[idx]->setLookAndFeel(lookAndFeel);
-					subPatch.add(new
-								 CabbagePlantWindow(getFilter()->getGUILayoutCtrls(idx).getStringProp("plant"),
-													Colours::black));
-					subPatch[subPatch.size()-1]->setAlwaysOnTop(true);
-					
-					
-					subPatch[subPatch.size()-1]->centreWithSize(layoutComps[idx]->getWidth(),
-																layoutComps[idx]->getHeight()+18);
-					
-					subPatch[subPatch.size()-1]->setContentNonOwned(layoutComps[idx],
-																	true);
-					subPatch[subPatch.size()-1]->setTitleBarHeight(18);
-				}
-				
-<<<<<<< HEAD
-                componentPanel->addAndMakeVisible(plantButton[plantButton.size()-1]);
-                plantButton[plantButton.size()-1]->button->getProperties().set(String("index"), plantButton.size()-1); 
+}
+else{
+plantButton.add(new
+CabbageButton(cAttr.getStringProp("plant"), "",
+cAttr.getStringProp("plant"),
+CabbageUtils::getComponentSkin().toString(), ""));
+plantButton[plantButton.size()-1]->setBounds(left+relX, top+relY, 100, 25);
+layoutComps[idx]->setBounds(left+relX, top+relY, width, height);
+plantButton[plantButton.size()-1]->button->addListener(this);
+plantButton[plantButton.size()-1]->button->setLookAndFeel(basicLookAndFeel);
+plantButton[plantButton.size()-1]->button->setColour(TextButton::buttonColourId,
+Colour::fromString(cAttr.getColourProp("fill")));
+plantButton[plantButton.size()-1]->button->setColour(TextButton::textColourOffId,
+Colour::fromString(cAttr.getColourProp("fontcolour")));
+plantButton[plantButton.size()-1]->button->setColour(TextButton::textColourOnId,
+Colour::fromString(cAttr.getColourProp("fontcolour")));
 
-                layoutComps[idx]->setLookAndFeel(lookAndFeel);
-                subPatch.add(new CabbagePlantWindow(getFilter()->getGUILayoutCtrls(idx).getStringProp("plant"), Colours::black));
-                subPatch[subPatch.size()-1]->setAlwaysOnTop(true);
 
-                subPatch[subPatch.size()-1]->centreWithSize(layoutComps[idx]->getWidth(), layoutComps[idx]->getHeight()+18);
-                subPatch[subPatch.size()-1]->setContentNonOwned(layoutComps[idx], true);
-                subPatch[subPatch.size()-1]->setTitleBarHeight(18);
-				}			          
-			
-			}		
-		}
-        
+componentPanel->addAndMakeVisible(plantButton[plantButton.size()-1]);
 
-        layoutComps[idx]->getProperties().set(String("scaleY"), cAttr.getNumProp("scaleY"));
-        layoutComps[idx]->getProperties().set(String("scaleX"), cAttr.getNumProp("scaleX"));
-        layoutComps[idx]->getProperties().set(String("plant"), var(cAttr.getStringProp("plant")));
-        layoutComps[idx]->toBack();
-        //((CabbageImage*)layoutComps[idx])->setBounds (left+relX, top+relY, width, height);
-        cAttr.setStringProp("type", "image");
-=======
-			}
-	}
-	
-	
-	layoutComps[idx]->getProperties().set(String("scaleY"), cAttr.getNumProp("scaleY"));
-	layoutComps[idx]->getProperties().set(String("scaleX"), cAttr.getNumProp("scaleX"));
-	layoutComps[idx]->getProperties().set(String("plant"), var(cAttr.getStringProp("plant")));
-	layoutComps[idx]->toBack();
+plantButton[plantButton.size()-1]->button->getProperties().set(String("index"),
+plantButton.size()-1);
+
+layoutComps[idx]->setLookAndFeel(lookAndFeel);
+subPatch.add(new
+CabbagePlantWindow(getFilter()->getGUILayoutCtrls(idx).getStringProp("plant"),
+Colours::black));
+subPatch[subPatch.size()-1]->setAlwaysOnTop(true);
+
+
+subPatch[subPatch.size()-1]->centreWithSize(layoutComps[idx]->getWidth(),
+layoutComps[idx]->getHeight()+18);
+
+subPatch[subPatch.size()-1]->setContentNonOwned(layoutComps[idx],
+true);
+subPatch[subPatch.size()-1]->setTitleBarHeight(18);
+}
+
+}
+}
+
+
+layoutComps[idx]->getProperties().set(String("scaleY"), cAttr.getNumProp("scaleY"));
+layoutComps[idx]->getProperties().set(String("scaleX"), cAttr.getNumProp("scaleX"));
+layoutComps[idx]->getProperties().set(String("plant"), var(cAttr.getStringProp("plant")));
+layoutComps[idx]->toBack();
     cAttr.setStringProp("type", "image");
->>>>>>> 8f640da33246ec967369fcda32c8913779236a1c
 }
 
 //+++++++++++++++++++++++++++++++++++++++++++

@@ -39,7 +39,7 @@ class CabbageAudioSource
 TimeSliceThread thread;
 public:
 	CabbageAudioSource(String audioFile, int channel=2)
-	:thread("audio source"), isSourcePlaying(false)
+	:thread("audio source"), isSourcePlaying(false), index(0)
 	{
 		AudioFormatManager formatManager;
 		formatManager.registerBasicFormats(); 
@@ -80,9 +80,11 @@ public:
 	
 	BufferingAudioSource* audioSourceBuffer;
 	PositionableAudioSource* audioSource;
-	int sampleRate;	
+	int sampleRate, index;	
 	bool isSourcePlaying;
 	AudioSourceChannelInfo sourceChannelInfo;
+	StringArray channels;
+	
 
 private:
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CabbageAudioSource);	

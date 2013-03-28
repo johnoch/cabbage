@@ -93,6 +93,7 @@ csound->SetExternalMidiReadCallback(ReadMidiData);
 //csound->SetExternalMidiOutOpenCallback(OpenMidiOutputDevice);
 //csound->SetExternalMidiWriteCallback(WriteMidiData);
 
+
 csoundPerfThread = new CsoundPerformanceThread(csound);
 csoundPerfThread->SetProcessCallback(CabbagePluginAudioProcessor::YieldCallback, (void*)this);
 
@@ -277,6 +278,7 @@ patPfieldMatrix.clear();
 				if(audioSourcesArray.size()>0)
 					audioSourcesArray.clear();
         }
+		
 		soundFilerTempVector = nullptr;
 
 #endif
@@ -403,7 +405,7 @@ bool multiLine = false;
 														
 														//add soundfiler buffering sources
 														if(tokes.getReference(0).equalsIgnoreCase(String("soundfiler"))){
-															addSoundfilerSource(cAttr.getStringProp(("file")));
+															addSoundfilerSource(cAttr.getStringProp(("file")), cAttr.getChannels());
 															Logger::writeToLog(String(audioSourcesArray.size()-1));
 															cAttr.setNumProp("soundfilerIndex", audioSourcesArray.size()-1);
 														}
@@ -745,7 +747,7 @@ for(int i=0;i<messageQueue.getNumberOfOutgoingChannelMessagesInQueue();i++)
 //==============================================================================
 //set up buffered audio source for each sound file object. The method below this one
 //fills Csound channels with sampler from our soundfiler controls..
-void CabbagePluginAudioProcessor::addSoundfilerSource(String _filename)
+void CabbagePluginAudioProcessor::addSoundfilerSource(String _filename, StringArray channels)
 {
 
 	if(File(_filename).exists())Logger::writeToLog("File exists");
@@ -754,6 +756,7 @@ void CabbagePluginAudioProcessor::addSoundfilerSource(String _filename)
 	}
 	
    audioSourcesArray.add(new CabbageAudioSource(_filename));
+   audioSourcesArray[audioSourcesArray.size()-1]->channels = channels;
 
 }
 
@@ -762,7 +765,6 @@ void CabbagePluginAudioProcessor::addSoundfilerSource(String _filename)
 void CabbagePluginAudioProcessor::sendAudioToCsoundFromSoundFilers(int numSamples)
 {
 for(int i=0;i<audioSourcesArray.size();i++){
-
 	AudioSampleBuffer output (2, numSamples);
 	audioSourcesArray[i]->sourceChannelInfo.buffer = &output;
 	audioSourcesArray[i]->sourceChannelInfo.startSample = 0;
@@ -773,17 +775,19 @@ for(int i=0;i<audioSourcesArray.size();i++){
 	else
 		output.clear();
 
-	for(int chn=0;chn<output.getNumChannels();chn++){
-	float* sample = output.getSampleData(chn);
+	for(int index=0;index<audioSourcesArray[i]->channels.size();index++){
+	float* samples = output.getSampleData(index);	
+	
 	for(int y=0;y<numSamples;y++)
-		soundFilerTempVector[y] = sample[y];
-
-	if(csoundGetChannelPtr(csound->GetCsound(), &soundFilerTempVector, "sound",                     
-					CSOUND_INPUT_CHANNEL | CSOUND_AUDIO_CHANNEL) != 0)
-	       			Logger::writeToLog("error sending audio to Csound");
+		soundFilerTempVector[y] = samples[y];
+		
+		if(csoundGetChannelPtr(csound->GetCsound(), &soundFilerTempVector, audioSourcesArray[i]->channels[index].toUTF8(),                     
+						CSOUND_INPUT_CHANNEL | CSOUND_AUDIO_CHANNEL) != 0)
+						Logger::writeToLog("error sending audio to Csound");
+						
+		}
 	}
 
-	}
 	
 }	
 	
@@ -991,7 +995,7 @@ if(!isSuspended()){
 				updateCabbageControls();
 				}
 				if(audioSourcesArray.size()>0)
-				//sendAudioToCsoundFromSoundFilers(csound->GetKsmps());		
+				sendAudioToCsoundFromSoundFilers(csound->GetKsmps());		
 				CSCompResult = csound->PerformKsmps();					
 				getCallbackLock().exit();
 				csndIndex = 0;
