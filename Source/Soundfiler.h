@@ -55,9 +55,8 @@ public:
 	
     void setFile (const File& file)
     {
-        if(file.existsAsFile()){
-			FileInputSource* infile = new FileInputSource(file);
-			thumbnail.setSource (infile);
+		if(file.existsAsFile()){
+			thumbnail.setSource (new FileInputSource(file));
 		}
 		startTime = 0;
         endTime = thumbnail.getTotalLength();

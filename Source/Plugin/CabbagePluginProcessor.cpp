@@ -752,7 +752,6 @@ for(int i=0;i<messageQueue.getNumberOfOutgoingChannelMessagesInQueue();i++)
 //fills Csound channels with sampler from our soundfiler controls..
 void CabbagePluginAudioProcessor::addSoundfilerSource(String _filename, StringArray channels)
 {
-
 	if(File(_filename).exists())Logger::writeToLog("File exists");
 	else{
 		Logger::writeToLog("Sound filer can't find file");
@@ -786,35 +785,12 @@ for(int i=0;i<audioSourcesArray.size();i++){
 		
 		if(csoundGetChannelPtr(csound->GetCsound(), &soundFilerTempVector, audioSourcesArray[i]->channels[index].toUTF8(),                     
 						CSOUND_INPUT_CHANNEL | CSOUND_AUDIO_CHANNEL) != 0)
-						Logger::writeToLog("error sending audio to Csound");
-						
+						Logger::writeToLog("error sending audio to Csound");						
 		}
 	}
 
 	
 }	
-	
-//float* audioBuffer;
-//soundfilerChannelData;
-
-//	for(int i=0;i<soundFilers.size(); i++)
-//		soundFilers[i]->transportSource.getNextAudioBlock(soundfilerChannelData);
-		
-//		for(int channel = 0; channel < getNumInputChannels(); channel++ )
-//			{
-//			audioBuffer = soundfilerChannelData.buffer->getSampleData(channel);
-//			Logger::writeToLog(String(*audioBuffer));
-//			for(int y=0;y<soundfilerChannelData.buffer->getNumSamples();y++, soundFileIndex++)
-//				soundFilerVector[soundFileIndex] = audioBuffer[y];
-//				if(soundFileIndex==csdKsmps)
-//					soundFileIndex=0;
-//			}
-//			
-//	}
-//
-//	if(csoundGetChannelPtr(csound->GetCsound(), &soundFilerVector, "output",                     
-//					CSOUND_INPUT_CHANNEL | CSOUND_AUDIO_CHANNEL) != 0)
-//	       			Logger::writeToLog("error sending audio to Csound");
 
 //========================================================================
 // Standard plugin methods, getName, getNumParameters, setParamterName, get ProgramName, etc.... 
