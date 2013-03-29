@@ -34,7 +34,7 @@ using namespace std;
 #pragma warning(disable: 4305)
 
 //class for our audio source, used by soundfilers
-class CabbageAudioSource
+class CabbageAudioSource : public ChangeBroadcaster
 {
 TimeSliceThread thread;
 public:
@@ -65,12 +65,13 @@ public:
 			audioSource = new AudioFormatReaderSource (reader, true);
 			audioSourceBuffer = new BufferingAudioSource(audioSource, thread, true, 32768, channels);		
 			sampleRate = reader->sampleRate;
-			audioSourceBuffer->setNextReadPosition(0);
 			thread.startThread();
 			audioSourceBuffer->prepareToPlay(sampleRate, numSamples);
+			sendChangeMessage();
 			return true;
 			}
 			else return false;
+			
 	}
 	
 	

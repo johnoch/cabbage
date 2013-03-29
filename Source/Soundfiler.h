@@ -32,15 +32,16 @@ class WaveformDisplay : public Component,
 						public Timer
 {
 public:
-	WaveformDisplay(AudioFormatManager& formatManager, BufferingAudioSource &source, int sr):
+	WaveformDisplay(BufferingAudioSource &source, int sr):
 	thumbnailCache (5), 
-	thumbnail (512, formatManager, thumbnailCache), 
-	source(source), 
+	source(&source), 
 	sampleRate(sr),
 	currentPlayPosition(0),
 	mouseDownX(0),
 	mouseUpX(0)
 	{	
+    formatManager.registerBasicFormats();  
+	thumbnail = new AudioThumbnail(512, formatManager, thumbnailCache); 
 	setSize(100, 100);
 	}
 	
@@ -53,21 +54,30 @@ public:
 	repaint();	
 	}
 	
-    void setFile (const File& file)
+    void setFile (const File& file, bool firstTime)
     {
-		if(file.existsAsFile()){
-			thumbnail.setSource (new FileInputSource(file));
-		}
+		if(file.existsAsFile())
+			if(firstTime){
+			thumbnail->setSource (new FileInputSource(file));
+			}
+			else{
+			//FileInputStream* inFileStream = new FileInputStream(file); // jatFile is the saved thumbnail file
+			thumbnail = nullptr;
+			thumbnail = new AudioThumbnail(512, formatManager, thumbnailCache); 
+			thumbnail->setSource (new FileInputSource(file));
+			//delete inFileStream;
+			}
+
 		startTime = 0;
-        endTime = thumbnail.getTotalLength();
+        endTime = thumbnail->getTotalLength();
 		repaint();
     }
 
     void setZoomFactor (double amount)
     {
-        if (thumbnail.getTotalLength() > 0)
+        if (thumbnail->getTotalLength() > 0)
         {
-            const double newScale = jmax (0.001, thumbnail.getTotalLength() * (1.0 - jlimit (0.0, 0.99, amount)));
+            const double newScale = jmax (0.001, thumbnail->getTotalLength() * (1.0 - jlimit (0.0, 0.99, amount)));
             const double timeAtCentre = xToTime (getWidth() / 2.0f);
             //startTime = timeAtCentre - newScale * 0.5;
             //endTime = timeAtCentre + newScale * 0.5;
@@ -79,9 +89,9 @@ public:
     {
         g.fillAll (Colours::black);
         g.setColour (Colours::lime);
-        if (thumbnail.getTotalLength() > 0)
+        if (thumbnail->getTotalLength() > 0)
         {
-            thumbnail.drawChannels (g, getLocalBounds(),
+            thumbnail->drawChannels (g, getLocalBounds(),
                                     startTime, endTime, 2.0f);
         }
         else
@@ -97,9 +107,9 @@ public:
     void timerCallback()
     {
 		Viewport* const viewport = findParentComponentOfClass <Viewport> (); //Get the parent viewport
+		currentPlayPosition = source->getNextReadPosition()/sampleRate;	
 		if(viewport != nullptr) //Check for nullness
 		viewport->setViewPosition(jmax(0.f, timeToX(currentPlayPosition)-100), 0);
-		currentPlayPosition = source.getNextReadPosition()/sampleRate;		
 		repaint();
     }
 
@@ -113,7 +123,7 @@ public:
 			Logger::writeToLog("command down");
 		}
 			
-		source.setNextReadPosition (jmax (0.0, xToTime ((float) e.x)*sampleRate));
+		source->setNextReadPosition (jmax (0.0, xToTime ((float) e.x)*sampleRate));
 		currentPlayPosition = jmax (0.0, xToTime ((float) e.x));
 		mouseDownX = e.x;
 		repaint();
@@ -126,10 +136,12 @@ public:
     }
 	
     AudioThumbnailCache thumbnailCache;
-    AudioThumbnail thumbnail;
-	
+    ScopedPointer<AudioThumbnail> thumbnail;
+    BufferingAudioSource* source;
+
 private:
-    BufferingAudioSource& source;
+	AudioFormatManager formatManager;
+
 	int mouseDownX, mouseUpX;
     double startTime, endTime;
 	Rectangle<int> localBounds;
@@ -151,7 +163,8 @@ private:
 
 
 class Soundfiler : public Component,
-					public Button::Listener
+					public Button::Listener,
+					public ChangeListener
 {
 public:
 	Soundfiler(CabbageAudioSource& audioSource, String fileName, int sr);
@@ -161,6 +174,7 @@ public:
 	
     // This is just a standard Juce paint method...
     void paint (Graphics& g);
+	void changeListenerCallback(ChangeBroadcaster *source);
 	void resized();
 	void buttonClicked(Button *button);
 	ScopedPointer<WaveformDisplay> waveformDisplay;
