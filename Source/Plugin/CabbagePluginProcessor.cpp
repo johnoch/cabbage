@@ -758,7 +758,7 @@ void CabbagePluginAudioProcessor::addSoundfilerSource(String _filename, StringAr
 		Logger::writeToLog("Sound filer can't find file");
 	}
 	
-   audioSourcesArray.add(new CabbageAudioSource(_filename));
+   audioSourcesArray.add(new CabbageAudioSource(_filename, csound->GetKsmps()));
    audioSourcesArray[audioSourcesArray.size()-1]->channels = channels;
 
 }

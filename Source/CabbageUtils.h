@@ -38,8 +38,8 @@ class CabbageAudioSource
 {
 TimeSliceThread thread;
 public:
-	CabbageAudioSource(String audioFile, int channels=2)
-	:thread("audio source"), isSourcePlaying(false), index(0)
+	CabbageAudioSource(String audioFile, int _numSamples, int channels=2)
+	:thread("audio source"), isSourcePlaying(false), index(0), numSamples(_numSamples)
 	{
 	setFile(audioFile, channels);
 	}
@@ -67,6 +67,7 @@ public:
 			sampleRate = reader->sampleRate;
 			audioSourceBuffer->setNextReadPosition(0);
 			thread.startThread();
+			audioSourceBuffer->prepareToPlay(sampleRate, numSamples);
 			return true;
 			}
 			else return false;
@@ -75,7 +76,7 @@ public:
 	
 	BufferingAudioSource* audioSourceBuffer;
 	PositionableAudioSource* audioSource;
-	int sampleRate, index;	
+	int sampleRate, index, numSamples;	
 	bool isSourcePlaying;
 	AudioSourceChannelInfo sourceChannelInfo;
 	StringArray channels;
