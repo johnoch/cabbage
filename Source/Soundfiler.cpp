@@ -62,10 +62,10 @@ void Soundfiler::buttonClicked(Button *button)
 		cabbageAudioSource->isSourcePlaying=!cabbageAudioSource->isSourcePlaying;
 	}
 	else{
-		FileChooser openFC(String("Open a Cabbage .csd file..."), File::nonexistent, String("*.csd;*.vst"));
+		FileChooser openFC(String("Open a Cabbage .csd file..."), File::nonexistent, String("*.wav;*.mp3"));
 		if(openFC.browseForFileToOpen())
-			if(cabbageAudioSource->setFile(openFC.getResult().getFullPathName()))
-					waveformDisplay->setFile(openFC.getResult());
+			cabbageAudioSource->setFile(openFC.getResult().getFullPathName(), 2);
+			//		waveformDisplay->setFile(openFC.getResult());
 		
 	}
 }

@@ -38,20 +38,10 @@ class CabbageAudioSource
 {
 TimeSliceThread thread;
 public:
-	CabbageAudioSource(String audioFile, int channel=2)
+	CabbageAudioSource(String audioFile, int channels=2)
 	:thread("audio source"), isSourcePlaying(false), index(0)
 	{
-		AudioFormatManager formatManager;
-		formatManager.registerBasicFormats(); 
-		AudioFormatReader* reader; 
-		if(File(audioFile).existsAsFile()) 
-		reader = formatManager.createReaderFor (File(audioFile));  
-			if(reader!=0){
-			audioSource = new AudioFormatReaderSource (reader, true);
-			audioSourceBuffer = new BufferingAudioSource(audioSource, thread, true, 32768, 2);		
-			sampleRate = reader->sampleRate;
-			thread.startThread();	
-			}
+	setFile(audioFile, channels);
 	}
 	
 	~CabbageAudioSource()
@@ -61,20 +51,25 @@ public:
 		audioSource= nullptr;
 	}	
 	
-	bool setFile(String audioFile)
+	bool setFile(String audioFile , int channels)
 	{
+		isSourcePlaying = false;
 		AudioFormatManager formatManager;
 		formatManager.registerBasicFormats(); 
-		AudioFormatReader* reader; 
+		AudioFormatReader* reader;
+		audioSource = nullptr;
+		audioSourceBuffer = nullptr;
 		if(File(audioFile).existsAsFile()) 
 		reader = formatManager.createReaderFor (File(audioFile));  
 			if(reader!=0){
-			audioSource = new AudioFormatReaderSource (reader, true);		
+			audioSource = new AudioFormatReaderSource (reader, true);
+			audioSourceBuffer = new BufferingAudioSource(audioSource, thread, true, 32768, channels);		
+			sampleRate = reader->sampleRate;
+			audioSourceBuffer->setNextReadPosition(0);
+			thread.startThread();
 			return true;
 			}
-			else{
-			return false;	
-			}
+			else return false;
 	}
 	
 	

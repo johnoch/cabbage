@@ -275,9 +275,10 @@ patPfieldMatrix.clear();
                 csound->Reset();
                 csound = nullptr;
                 Logger::writeToLog("Csound cleaned up");
-				for(int i=0;i<audioSourcesArray.size();i++)
+				for(int i=0;i<audioSourcesArray.size();i++){
 					audioSourcesArray[i]->sourceChannelInfo.buffer = nullptr;
-
+					audioSourcesArray[i]->audioSourceBuffer = nullptr;
+				}
 				audioSourcesArray.clear();
         }
 		
