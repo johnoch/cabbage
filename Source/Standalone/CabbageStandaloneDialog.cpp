@@ -360,10 +360,7 @@ void StandaloneFilterWindow::deleteFilter()
 void StandaloneFilterWindow::resetFilter()
 {
 //first we check that the audio device is up and running ok
-
-
-
-
+	stopTimer();
 	deleteFilter();
 	deviceManager->closeAudioDevice();
 	filter = createCabbagePluginFilter(csdFile.getFullPathName(), false);
@@ -409,7 +406,7 @@ void StandaloneFilterWindow::resetFilter()
 	if(cabbageCsoundEditor->isVisible())
 		cabbageCsoundEditor->csoundEditor->textEditor->grabKeyboardFocus();
 	}
-
+	startTimer(200);
 }
 
 //==============================================================================

@@ -275,8 +275,10 @@ patPfieldMatrix.clear();
                 csound->Reset();
                 csound = nullptr;
                 Logger::writeToLog("Csound cleaned up");
-				if(audioSourcesArray.size()>0)
-					audioSourcesArray.clear();
+				for(int i=0;i<audioSourcesArray.size();i++)
+					audioSourcesArray[i]->sourceChannelInfo.buffer = nullptr;
+
+				audioSourcesArray.clear();
         }
 		
 		soundFilerTempVector = nullptr;
@@ -996,6 +998,7 @@ if(!isSuspended()){
 				}
 				if(audioSourcesArray.size()>0)
 				sendAudioToCsoundFromSoundFilers(csound->GetKsmps());		
+
 				CSCompResult = csound->PerformKsmps();					
 				getCallbackLock().exit();
 				csndIndex = 0;
