@@ -475,6 +475,21 @@ else if(type=="play_down"){
 	g.fillPath(p);
 	return img;
 }
+else if(type=="skip_end_normal"){
+	Path p;
+	p.addRectangle(10, 10, 80, 80);
+	g.setColour(Colours::red);
+	g.fillPath(p);
+	return img;
+}
+else if(type=="skip_start_normal"){
+	Path p;
+	p.addRectangle(10, 10, 80, 80);
+	g.setColour(Colours::red);
+	g.fillPath(p);
+	return img;
+}
+
 else return img;	
 }
 

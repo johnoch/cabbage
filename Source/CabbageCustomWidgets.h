@@ -2020,6 +2020,38 @@ public:
 						 CabbageUtils::drawSoundfilerButton("play_down"),
 						 .5f,
 						 Colours::yellow);
+						 
+	skipToStartButton->setToggleState(false, true);
+	skipToStartButton->setClickingTogglesState(true);
+	skipToStartButton->setState(Button::buttonDown);
+	skipToStartButton->setImages(false, 
+						 true, 
+						 false, 
+						 CabbageUtils::drawSoundfilerButton("skip_start_normal"), 
+						 .5f, 
+						 Colours::blue, 
+						 CabbageUtils::drawSoundfilerButton("skip_start_normal"), 
+						 .5f, 
+						 Colours::red,
+						 CabbageUtils::drawSoundfilerButton("skip_start_normal"),
+						 .5f,
+						 Colours::yellow);
+						 
+	skipToEndButton->setToggleState(false, true);
+	skipToEndButton->setClickingTogglesState(true);
+	skipToEndButton->setState(Button::buttonDown);
+	skipToEndButton->setImages(false, 
+						 true, 
+						 false, 
+						 CabbageUtils::drawSoundfilerButton("skip_end_normal"), 
+						 .5f, 
+						 Colours::blue, 
+						 CabbageUtils::drawSoundfilerButton("skip_end_normal"), 
+						 .5f, 
+						 Colours::red,
+						 CabbageUtils::drawSoundfilerButton("skip_end_normal"),
+						 .5f,
+						 Colours::yellow);
 	
 	}
 	
