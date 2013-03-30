@@ -231,7 +231,7 @@ if(csCompileResult==0){
         csound->RewindScore();
         //set up PVS struct
 		dataout = new PVSDATEXT;
-        
+        soundFilerTempVector = new MYFLT[csdKsmps];
         CSspout = csound->GetSpout();
         CSspin  = csound->GetSpin();
         cs_scale = csound->Get0dBFS();

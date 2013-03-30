@@ -29,6 +29,7 @@ Soundfiler::Soundfiler(CabbageAudioSource& _audioSource, String fileName, int sr
 
 	viewport = new Viewport();
 	waveformDisplay = new WaveformDisplay(*cabbageAudioSource->audioSourceBuffer, sr);
+	//register a listener callback so that we know when to update our audioSource object
 	cabbageAudioSource->addChangeListener(this);
 	startStop = new TextButton("PlayButton");
 	startStop->setButtonText("Play");

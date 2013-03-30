@@ -47,6 +47,7 @@ public:
 	
 	~WaveformDisplay()
 	{	
+		delete source;
 	}
 	
 	void resized()
@@ -169,6 +170,8 @@ class Soundfiler : public Component,
 public:
 	Soundfiler(CabbageAudioSource& audioSource, String fileName, int sr);
 	~Soundfiler(){
+	cabbageAudioSource->audioSourceBuffer = nullptr;
+	cabbageAudioSource->removeAllChangeListeners();
 	cabbageAudioSource = nullptr;	
 	};
 	

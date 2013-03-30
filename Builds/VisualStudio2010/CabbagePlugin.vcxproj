@@ -127,6 +127,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Source\csPerfThread.cpp" />
+    <ClCompile Include="..\..\Source\DirectoryContentsComponent.cpp" />
     <ClCompile Include="..\..\Source\Main.cpp" />
     <ClCompile Include="..\..\Source\Plugin\CabbagePluginEditor.cpp" />
     <ClCompile Include="..\..\Source\Plugin\CabbagePluginProcessor.cpp" />
@@ -1199,12 +1200,14 @@
       <CallingConvention>StdCall</CallingConvention>
     </ClCompile>
     <ClCompile Include="..\..\JuceLibraryCode\modules\juce_audio_plugin_client\VST\juce_VST_Wrapper.cpp" />
+    <ClCompile Include="..\..\Source\Soundfiler.cpp" />
     <ClCompile Include="..\..\Source\XYPad.cpp" />
     <ClCompile Include="..\..\Source\XYPadAutomation.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Source\CabbageMessageSystem.h" />
     <ClInclude Include="..\..\Source\csPerfThread.hpp" />
+    <ClInclude Include="..\..\Source\DirectoryContentsComponent.h" />
     <ClInclude Include="..\..\Source\Plugin\CabbagePluginEditor.h" />
     <ClInclude Include="..\..\Source\Plugin\CabbagePluginProcessor.h" />
     <ClInclude Include="..\..\Source\BinaryData.h" />
@@ -1644,6 +1647,7 @@
     <ClInclude Include="..\..\JuceLibraryCode\modules\juce_opengl\juce_opengl.h" />
     <ClInclude Include="..\..\JuceLibraryCode\AppConfig.h" />
     <ClInclude Include="..\..\JuceLibraryCode\JuceHeader.h" />
+    <ClInclude Include="..\..\Source\Soundfiler.h" />
     <ClInclude Include="..\..\Source\XYPad.h" />
     <ClInclude Include="..\..\Source\XYPadAutomation.h" />
   </ItemGroup>

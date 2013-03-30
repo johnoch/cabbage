@@ -67,6 +67,7 @@ public:
 			sampleRate = reader->sampleRate;
 			thread.startThread();
 			audioSourceBuffer->prepareToPlay(sampleRate, numSamples);
+			//send message so our soundfilers knows to update
 			sendChangeMessage();
 			return true;
 			}
