@@ -341,6 +341,16 @@ CabbageGUIClass::CabbageGUIClass(String compStr, int ID):
           name.append(String(ID), 1024);
 	}
 
+    else if(strTokens[0].trim() == "transport"){
+          top = 0;
+          left = 0;
+          width = 100;
+          height = 40;
+          name = "transport";
+		  type = name;
+          name.append(String(ID), 1024);
+	}
+	
     else if(strTokens[0].trim() == "csoundoutput"){
           top = 10;
           left = 10;

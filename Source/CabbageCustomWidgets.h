@@ -1990,6 +1990,50 @@ private:
 //==============================================================================
 // custom CabbageLine
 //==============================================================================
+class CabbageTransportControl	:	public Component
+{
+ScopedPointer<ImageButton> playButton;	
+ScopedPointer<ImageButton> skipToStartButton;
+ScopedPointer<ImageButton> skipToEndButton;
+
+public:
+	CabbageTransportControl(int width, int height){
+	playButton = new ImageButton("Play button");
+	addAndMakeVisible(playButton);	
+	skipToStartButton = new ImageButton("Skip to start button");
+	addAndMakeVisible(skipToStartButton);
+	skipToEndButton = new ImageButton("Skip to end button");
+	addAndMakeVisible(skipToEndButton);
+	
+	playButton->setToggleState(false, true);
+	playButton->setClickingTogglesState(true);
+	playButton->setState(Button::buttonDown);
+	playButton->setImages(false, 
+						 true, 
+						 false, 
+						 CabbageUtils::drawSoundfilerButton("play_normal"), 
+						 .5f, 
+						 Colours::blue, 
+						 CabbageUtils::drawSoundfilerButton("play_normal"), 
+						 .5f, 
+						 Colours::red,
+						 CabbageUtils::drawSoundfilerButton("play_down"),
+						 .5f,
+						 Colours::yellow);
+	
+	}
+	
+	~CabbageTransportControl(){}
+	
+	void resized(){
+	playButton->setBounds(0, 0, getWidth()/3, getHeight());	
+	skipToStartButton->setBounds(getWidth()/3, 0, getWidth()/3, getHeight());
+	skipToEndButton->setBounds(2*(getWidth()/3), 0, getWidth()/3, getHeight());	
+	}
+};
+//==============================================================================
+// custom CabbageLine
+//==============================================================================
 class CabbageLine	:	public Component
 {
 Colour col;

@@ -47,12 +47,11 @@ public:
 	
 	~WaveformDisplay()
 	{	
-		delete source;
+		source = nullptr;
 	}
 	
 	void resized()
 	{
-	repaint();	
 	}
 	
     void setFile (const File& file, bool firstTime)
@@ -138,7 +137,7 @@ public:
 	
     AudioThumbnailCache thumbnailCache;
     ScopedPointer<AudioThumbnail> thumbnail;
-    BufferingAudioSource* source;
+    ScopedPointer<BufferingAudioSource> source;
 
 private:
 	AudioFormatManager formatManager;
@@ -181,7 +180,7 @@ public:
 	void resized();
 	void buttonClicked(Button *button);
 	ScopedPointer<WaveformDisplay> waveformDisplay;
-	ScopedPointer<TextButton> startStop;
+	ScopedPointer<ImageButton> startStop;
 	ScopedPointer<TextButton> loadFile;
 	ScopedPointer<Viewport> viewport;
 	CabbageAudioSource* cabbageAudioSource;

@@ -447,6 +447,9 @@ for(int i=0;i<getFilter()->getGUILayoutCtrlsSize();i++){
         else if(getFilter()->getGUILayoutCtrls(i).getStringProp("type")==String("infobutton")){
                 InsertInfoButton(getFilter()->getGUILayoutCtrls(i));   
                 }
+        else if(getFilter()->getGUILayoutCtrls(i).getStringProp("type")==String("transport")){
+                InsertTransport(getFilter()->getGUILayoutCtrls(i));   
+                }
         else if(getFilter()->getGUILayoutCtrls(i).getStringProp("type")==String("soundfiler")){
                 InsertSoundfiler(getFilter()->getGUILayoutCtrls(i));   
                 }
@@ -682,6 +685,57 @@ void CabbagePluginAudioProcessorEditor::InsertLineSeparator(CabbageGUIClass &cAt
         float top = cAttr.getNumProp("top");
         float width = cAttr.getNumProp("width");
         float height = cAttr.getNumProp("height");
+        int relY=0,relX=0;
+        for(int y=0;y<layoutComps.size();y++){
+        if(cAttr.getStringProp("reltoplant").length()>0){
+        if(layoutComps[y]->getProperties().getWithDefault(String("plant"), -99).toString().equalsIgnoreCase(cAttr.getStringProp("reltoplant")))
+        {
+				//if left is < 1 then the user is using the new system
+				if(left>1){
+                width = width*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
+                height = height*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
+                top = top*layoutComps[y]->getProperties().getWithDefault(String("scaleY"), 1).toString().getFloatValue();
+                left = left*layoutComps[y]->getProperties().getWithDefault(String("scaleX"), 1).toString().getFloatValue();
+				}
+				else{    
+					width = (width>1 ? .5 : width*layoutComps[y]->getWidth());
+                    height = (height>1 ? .5 : height*layoutComps[y]->getHeight());
+					top = (top*layoutComps[y]->getHeight());
+					left = (left*layoutComps[y]->getWidth());
+				}
+
+                if(layoutComps[y]->getName().containsIgnoreCase("groupbox")||
+                        layoutComps[y]->getName().containsIgnoreCase("image"))
+                        {                       
+                        layoutComps[idx]->setBounds(left, top, width, height);
+                        //if component is a member of a plant add it directly to the plant
+                        layoutComps[y]->addAndMakeVisible(layoutComps[idx]);
+                        }
+        }
+        }
+        else{
+        layoutComps[idx]->setBounds(left+relX, top+relY, width, height);
+        componentPanel->addAndMakeVisible(layoutComps[idx]);
+        }
+        }
+
+        layoutComps[idx]->getProperties().set(String("plant"), var(cAttr.getStringProp("plant")));
+}
+
+//+++++++++++++++++++++++++++++++++++++++++++
+//                                      transport control
+//+++++++++++++++++++++++++++++++++++++++++++
+void CabbagePluginAudioProcessorEditor::InsertTransport(CabbageGUIClass &cAttr)
+{
+        float left = cAttr.getNumProp("left");
+        float top = cAttr.getNumProp("top");
+        float width = cAttr.getNumProp("width");
+        float height = cAttr.getNumProp("height");
+		
+        layoutComps.add(new CabbageTransportControl(width, height));
+        int idx = layoutComps.size()-1;
+
+
         int relY=0,relX=0;
         for(int y=0;y<layoutComps.size();y++){
         if(cAttr.getStringProp("reltoplant").length()>0){

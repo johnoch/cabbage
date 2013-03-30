@@ -102,6 +102,7 @@ private:
         void InsertPatternMatrix(CabbageGUIClass &cAttr);
         void InsertSnapshot(CabbageGUIClass &cAttr);
         void InsertPVSViewer(CabbageGUIClass &cAttr);
+		void InsertTransport(CabbageGUIClass &cAttr);
         void buttonClicked (Button*);
         void mouseDown(const MouseEvent &e);
 

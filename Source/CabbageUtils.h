@@ -455,6 +455,31 @@ static void setPreference(ApplicationProperties* appPrefs, String pref, String v
 	appPrefs->getUserSettings()->setValue(pref, var(value));
 }
 
+//=======================================================================================
+//draw buttons for transport controls
+static Image drawSoundfilerButton(String type)
+{
+Image img = Image(Image::ARGB, 100, 100, true);
+Graphics g (img);
+if(type=="play_normal"){
+	Path p;
+	p.addTriangle(10, 10, 90, 50, 10, 90);
+	g.setColour(Colours::lime);
+	g.fillPath(p);
+	return img;
+}	
+else if(type=="play_down"){
+	Path p;
+	p.addRectangle(10, 10, 80, 80);
+	g.setColour(Colours::red);
+	g.fillPath(p);
+	return img;
+}
+else return img;	
+}
+
+
+
 };
 
 //===========================================================================================

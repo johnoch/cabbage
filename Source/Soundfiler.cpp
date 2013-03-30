@@ -31,8 +31,38 @@ Soundfiler::Soundfiler(CabbageAudioSource& _audioSource, String fileName, int sr
 	waveformDisplay = new WaveformDisplay(*cabbageAudioSource->audioSourceBuffer, sr);
 	//register a listener callback so that we know when to update our audioSource object
 	cabbageAudioSource->addChangeListener(this);
-	startStop = new TextButton("PlayButton");
-	startStop->setButtonText("Play");
+	startStop = new ImageButton("PlayButton");
+/*	
+ 	    bool  	resizeButtonNowToFitThisImage,
+		bool  	rescaleImagesWhenButtonSizeChanges,
+		bool  	preserveImageProportions,
+		const Image &  	normalImage,
+		float  	imageOpacityWhenNormal,
+		const Colour &  	overlayColourWhenNormal,
+		const Image &  	overImage,
+		float  	imageOpacityWhenOver,
+		const Colour &  	overlayColourWhenOver,
+		const Image &  	downImage,
+		float  	imageOpacityWhenDown,
+		const Colour &  	overlayColourWhenDown,
+		float  	hitTestAlphaThreshold = 0.0f 	
+	*/
+	startStop->setToggleState(false, true);
+	startStop->setClickingTogglesState(true);
+	startStop->setState(Button::buttonDown);
+	startStop->setImages(false, 
+						 true, 
+						 false, 
+						 CabbageUtils::drawSoundfilerButton("play_normal"), 
+						 .5f, 
+						 Colours::blue, 
+						 CabbageUtils::drawSoundfilerButton("play_normal"), 
+						 .5f, 
+						 Colours::red,
+						 CabbageUtils::drawSoundfilerButton("play_down"),
+						 .5f,
+						 Colours::yellow);
+	//startStop->setButtonText("Play");
 	loadFile = new TextButton("Open File");
 	startStop->addListener(this);
 	loadFile->addListener(this);
@@ -45,10 +75,13 @@ Soundfiler::Soundfiler(CabbageAudioSource& _audioSource, String fileName, int sr
     setSize (400, 300);
 
 	waveformDisplay->setFile(File(fileName), true);
+	waveformDisplay->setZoomFactor(1);
 
 	viewport->setViewedComponent(waveformDisplay, false);
 	viewport->setScrollBarsShown(true, true);
 }
+
+
 
 void Soundfiler::changeListenerCallback(ChangeBroadcaster *source)
 {
@@ -56,7 +89,6 @@ CabbageAudioSource* const cabbageAudio = dynamic_cast <CabbageAudioSource*> (sou
 if(cabbageAudio){
 	waveformDisplay->source = cabbageAudio->audioSourceBuffer;
 	}
-
 }
 
 void Soundfiler::buttonClicked(Button *button)
@@ -64,28 +96,32 @@ void Soundfiler::buttonClicked(Button *button)
 	if(button->getName()=="PlayButton"){
 		if(!cabbageAudioSource->isSourcePlaying){
 			waveformDisplay->startTimer(100);
-			startStop->setButtonText("Stop..");
+			//startStop->setButtonText("Stop..");
+			//startStop->setState(Button::buttonDown);
 		}
 		else{
 			waveformDisplay->stopTimer();
-			startStop->setButtonText("Play");
+			//startStop->setButtonText("Play");
 		}
 		cabbageAudioSource->isSourcePlaying=!cabbageAudioSource->isSourcePlaying;
 	}
 	else{
-		FileChooser openFC(String("Open a Cabbage .csd file..."), File::nonexistent, String("*.wav;*.mp3"));
+		FileChooser openFC(String("Open a Cabbage sound file..."), File::nonexistent, String("*.wav;*.mp3"));
 		if(openFC.browseForFileToOpen())
-			cabbageAudioSource->setFile(openFC.getResult().getFullPathName(), 2);
+			if(cabbageAudioSource->setFile(openFC.getResult().getFullPathName(), 2)){
 					waveformDisplay->setFile(openFC.getResult(), false);
+					waveformDisplay->setZoomFactor(1);
+			}
 		
 	}
 }
+
 //==============================================================================
 void Soundfiler::resized()
 {
 waveformDisplay->setSize(800, getHeight()-40);
 viewport->setBounds(0, 0, getWidth(), getHeight()-20);
-startStop->setBounds(0, getHeight()-20, 70, 20);
+startStop->setBounds(0, getHeight()-20, 40, 20);
 loadFile->setBounds(70, getHeight()-20, 70, 20);
 }
 //==============================================================================

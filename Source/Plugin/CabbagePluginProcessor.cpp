@@ -400,6 +400,7 @@ bool multiLine = false;
                                                                 ||tokes.getReference(0).equalsIgnoreCase(String("pvsview"))
                                                                 ||tokes.getReference(0).equalsIgnoreCase(String("hostrecording"))
 																||tokes.getReference(0).equalsIgnoreCase(String("directorylist"))
+																||tokes.getReference(0).equalsIgnoreCase(String("transport"))
                                                                 ||tokes.getReference(0).equalsIgnoreCase(String("groupbox")))
                                                 {
                                                         CabbageGUIClass cAttr(csdLine.trimEnd(), guiID);
