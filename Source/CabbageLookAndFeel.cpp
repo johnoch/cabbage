@@ -2126,4 +2126,131 @@ void CabbageLookAndFeelBasic::drawLabel (Graphics &g, Label &label)
 	}
 }
 
+//======== Document Window title bar ===================================================================
+void CabbageLookAndFeelBasic::drawDocumentWindowTitleBar (DocumentWindow &window, Graphics &g, int w, int h, 
+																						int /*titleSpaceX*/, 
+																						int titleSpaceW, 
+																						const Image */*icon*/, 
+																						bool /*drawTitleTextOnLeft*/)
+{
+	window.setUsingNativeTitleBar(false);
+	window.setOpaque(true);
+	g.setColour (CabbageUtils::getComponentSkin().brighter());
+	g.fillRoundedRectangle(0, 0, w, h+20, 10);
 
+	g.setColour (CabbageUtils::getComponentFontColour());
+	Font font = CabbageUtils::getTitleFont();
+#ifndef MACOSX
+	font.setFallbackFontName("Verdana"); 
+#endif
+	font.setHeight(16);
+	g.setFont (font);
+	g.drawText (CabbageUtils::cabbageString(window.getName(), font, titleSpaceW), (w/2)-(titleSpaceW/2), 
+									(h/2)-(font.getHeight()/2), titleSpaceW, font.getHeight(), 36, false);
+}
+
+//======== Popup Menu background ======================================================================
+void CabbageLookAndFeelBasic::drawPopupMenuBackground(Graphics &g, int width, int height)
+{
+	g.setColour (CabbageUtils::getDarkerBackgroundSkin());
+    g.fillAll();
+
+	g.setColour (CabbageUtils::getComponentSkin());
+	g.drawRect (0, -5, width, height+5, 1); //dont want to see top line
+}
+
+//======== Menubar background ======================================================================
+void CabbageLookAndFeelBasic::drawMenuBarBackground(Graphics &g, int width, int height, bool isMouseOverBar, MenuBarComponent &menuBar)
+{
+	g.setColour (CabbageUtils::getBackgroundSkin());
+	g.fillAll();
+}
+
+//======== Menubar item background ======================================================================
+void CabbageLookAndFeelBasic::drawMenuBarItem(Graphics & g, int width, int height, int itemIndex,
+                                                                              const String &itemText, 
+																			  bool isMouseOverItem,
+                                                                              bool isMenuOpen, 
+																			  bool isMouseOverBar,
+                                                                              MenuBarComponent &menuBar)
+{
+	if ((isMouseOverItem == true) || (isMenuOpen == true)) {
+		g.setColour (CabbageUtils::getBackgroundSkin().darker (0.2));
+		g.fillRect (0, 0, width, height);
+	}
+
+	g.setColour (CabbageUtils::getComponentFontColour());
+	g.setFont (CabbageUtils::getComponentFont());
+    g.drawFittedText(CabbageUtils::cabbageString(itemText, CabbageUtils::getComponentFont(), width*0.9), 5, 0, width, height, 36, 1);
+}
+
+//====== Returns image of a check mark ==============================================
+Image CabbageLookAndFeelBasic::drawCheckMark()
+{
+	Image img = Image(Image::ARGB, 10, 10, true);
+	Graphics g(img);
+
+	Path path;
+	path.startNewSubPath(3, 7);
+	path.lineTo(5, 10);
+	path.lineTo(10, 0);
+	g.setColour (Colours::cornflowerblue);
+	g.strokePath(path, 2.0f);
+
+	return img;
+}
+
+void CabbageLookAndFeelBasic::drawResizableWindowBorder (Graphics &g, int w, int h, const 
+																BorderSize< int > &border, 
+																ResizableWindow &window)
+{
+
+}
+
+//======== Popup Menu Items ===========================================================================
+void CabbageLookAndFeelBasic::drawPopupMenuItem (Graphics &g, int width, int height, bool isSeparator, bool /*isActive*/, 
+																								bool isHighlighted, 
+																								bool isTicked, 
+																								bool hasSubMenu, 
+																								const String &text, 
+																								const String &shortcutKeyText, 
+																								Image */*image*/, 
+																								const Colour */*const textColour*/)
+{
+	if ((isHighlighted == true) && (isSeparator == false)) {
+		g.setColour (CabbageUtils::getComponentSkin());
+		g.fillAll();
+		g.setColour (Colours::cornflowerblue);
+	}
+	else
+		g.setColour (CabbageUtils::getComponentFontColour());
+
+	g.setFont (CabbageUtils::getComponentFont());
+	g.drawText (CabbageUtils::cabbageString(text, CabbageUtils::getComponentFont(), width*0.8), 20, 0, width*0.8, height, 1, false);
+
+	if (isSeparator == true) {
+        g.setColour(CabbageUtils::getComponentSkin());
+        g.drawLine(0, height/2, width, 3);
+    }
+
+	if (isTicked) {
+		Image checkMark = drawCheckMark();
+		g.setColour(Colours::cornflowerblue);
+		g.drawImage(checkMark, 5, (height/2)-5, 10, 10, 0, 0, 10, 10, false);	
+	}
+	if (hasSubMenu) {
+		g.setColour(Colours::cornflowerblue);
+		const Line<float> line(width-15, height*.5, width-5, height*.5);
+		g.drawArrow(line, 0, height*.3, height*.3);
+	}
+        if (shortcutKeyText.isNotEmpty())
+        {
+			const int leftBorder = (height * 5) / 4;
+			const int rightBorder = 4;
+
+            g.drawText (shortcutKeyText,
+                        leftBorder, 0, width - (leftBorder + rightBorder + 4), height,
+                        Justification::centredRight,
+                        true);
+        }
+}

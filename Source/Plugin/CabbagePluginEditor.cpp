@@ -383,7 +383,7 @@ void CabbagePluginAudioProcessorEditor::paint (Graphics& g)
 
                 g.setColour (CabbageUtils::getTitleFontColour());
                 Image logo = ImageCache::getFromMemory (BinaryData::cabbageLogoHBlueText_png, BinaryData::cabbageLogoHBlueText_pngSize);
-             g.drawImage (logo, getWidth() - 100, getHeight()-35, logo.getWidth()*0.55, logo.getHeight()*0.55, 
+                g.drawImage (logo, getWidth() - 100, getHeight()-35, logo.getWidth()*0.55, logo.getHeight()*0.55, 
                    0, 0, logo.getWidth(), logo.getHeight(), true);
                 g.setColour(fontColour);
                 g.drawFittedText(authorText, 10, getHeight()-35, getWidth()*.65, logo.getHeight(), 1, 1);   
@@ -395,12 +395,13 @@ void CabbagePluginAudioProcessorEditor::paint (Graphics& g)
                 g.setColour(formColour);
                 g.fillAll();
                 g.setColour (CabbageUtils::getTitleFontColour());
-               // Image logo = ImageCache::getFromMemory (BinaryData::cabbageLogoHBlueText_png, BinaryData::cabbageLogoHBlueText_pngSize);
-                Image logo = ImageCache::getFromMemory (BinaryData::cabbageLogoHBlueText_png, BinaryData::cabbageLogoHBlueText_pngSize);
-             g.drawImage (logo, getWidth() - 100, getHeight()-35, logo.getWidth()*0.55, logo.getHeight()*0.55, 
+		#ifndef Cabbage_Plugin_Host
+				Image logo = ImageCache::getFromMemory (BinaryData::cabbageLogoHBlueText_png, BinaryData::cabbageLogoHBlueText_pngSize);
+                g.drawImage (logo, getWidth() - 100, getHeight()-35, logo.getWidth()*0.55, logo.getHeight()*0.55, 
                    0, 0, logo.getWidth(), logo.getHeight(), true);
 				   g.setColour(fontColour);
                 g.drawFittedText(authorText, 10, getHeight()-35, getWidth()*.65, logo.getHeight(), 1, 1);  
+		#endif
 #endif
 }
 
@@ -1008,14 +1009,12 @@ void CabbagePluginAudioProcessorEditor::InsertSoundfiler(CabbageGUIClass &cAttr)
         float height = cAttr.getNumProp("height");
 		
         layoutComps.add(new CabbageSoundfiler(cAttr.getStringProp("name"),
-				cAttr.getStringProp("channel"),
 				cAttr.getStringProp("file"),
+				cAttr.getColourProp("colour"),
                 *getFilter()->audioSourcesArray[cAttr.getNumProp("soundfilerIndex")],
                 getFilter()->audioSourcesArray[cAttr.getNumProp("soundfilerIndex")]->sampleRate));
     
         int idx = layoutComps.size()-1;
-		//add soundfiler object to main processor..
-		//getFilter()->soundFilers.add(((Soundfiler*)layoutComps[idx])->transportSource);
 
         //check to see if widgets is anchored
         //if it is offset its position accordingly. 

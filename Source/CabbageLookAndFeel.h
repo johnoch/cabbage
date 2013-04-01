@@ -150,7 +150,8 @@ class CabbageLookAndFeelBasic	:	public LookAndFeel
 public:
 	CabbageLookAndFeelBasic();
 	~CabbageLookAndFeelBasic();
-
+	
+	void drawLabel(Graphics&, Label&);
 	virtual void drawLinearSliderBackground (Graphics &g, int x, int y, int width, int height, 
 																					float sliderPos, 
 																					float minSliderPos, 
@@ -170,7 +171,33 @@ public:
 																							int thumbSize, 
 																							bool isMouseOver, 
 																							bool isMouseDown);
-	void drawLabel (Graphics &g, Label &label);
+	void drawDocumentWindowTitleBar (DocumentWindow &window, Graphics &g, int w, int h, 
+																						int /*titleSpaceX*/, 
+																						int titleSpaceW, 
+																						const Image */*icon*/, 
+		
+																				bool /*drawTitleTextOnLeft*/);
+
+	void drawResizableWindowBorder (Graphics &g, int w, int h, const BorderSize< int > &border, ResizableWindow &window);
+	void drawPopupMenuBackground(Graphics &g, int width, int height);
+	void drawMenuBarBackground(Graphics &g, int width, int height, bool isMouseOverBar, MenuBarComponent &menuBar);
+	Image drawCheckMark();
+	void drawMenuBarItem(Graphics & g, int width, int height, int itemIndex,
+                                                                              const String &itemText, 
+																			  bool isMouseOverItem,
+                                                                              bool isMenuOpen, 
+																			  bool isMouseOverBar,
+                                                                              MenuBarComponent &menuBar);
+	
+	void drawPopupMenuItem (Graphics &g, int width, int height, bool isSeparator, bool /*isActive*/, 
+																					bool isHighlighted, 
+																					bool isTicked, 
+																					bool hasSubMenu, 
+																					const String &text, 
+																					const String &shortcutKeyText, 
+																					Image */*image*/, 
+																					const Colour */*const textColour*/);
+
 	
 	juce_UseDebuggingNewOperator
 

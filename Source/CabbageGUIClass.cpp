@@ -48,7 +48,8 @@ CabbageGUIClass::CabbageGUIClass(String compStr, int ID):
 								sliderIncr(.01),
 								decimalPlaces(0),
 								tabbed(0),
-								soundfilerIndex(0)
+								soundfilerIndex(0),
+								native("")
 {
 //Default values are assigned to all attributres 
 //before parsing begins
@@ -271,7 +272,7 @@ CabbageGUIClass::CabbageGUIClass(String compStr, int ID):
           width = 300;
           height = 200;
           channel = "soundfiler";
-		  colour = CabbageUtils::getComponentFontColour();
+		  colour = Colours::lime;
           fontcolour = CabbageUtils::getComponentFontColour();
           text = "";
           name = "soundfiler";
@@ -523,6 +524,7 @@ int CabbageGUIClass::parse(String str)
     identArray.add("topitem(");
     identArray.add("menuitem(");
     identArray.add("stdout(");
+	identArray.add("native(");
     identArray.add("exit(");
     identArray.add("cssetup(");
     identArray.add("kind(");
@@ -749,6 +751,10 @@ int CabbageGUIClass::parse(String str)
 				preset = strTokens[0].trim();
 			}
 
+			else if(identArray.getReference(indx).toLowerCase().equalsIgnoreCase("native(")){
+				native = strTokens[0].trim();
+			}
+			
 			else if(identArray.getReference(indx).toLowerCase().equalsIgnoreCase("populate(")){
 				fileType = strTokens[0].trim();
 				if(strTokens.size()>1) 
@@ -1275,6 +1281,8 @@ String CabbageGUIClass::getStringProp(String prop)
 			return preset.trim();
 		else if(prop.equalsIgnoreCase("pluginID"))
 			return pluginID;
+		else if(prop.equalsIgnoreCase("native"))
+			return native.trim();
 		else if(prop.equalsIgnoreCase("author"))
 			return author;
 		else if(prop.equalsIgnoreCase("snapshotData")){

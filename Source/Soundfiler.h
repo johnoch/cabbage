@@ -32,9 +32,10 @@ class WaveformDisplay : public Component,
 						public Timer
 {
 public:
-	WaveformDisplay(BufferingAudioSource &source, int sr):
+	WaveformDisplay(BufferingAudioSource &source, int sr, Colour col):
 	thumbnailCache (5), 
 	source(&source), 
+	colour(col),
 	sampleRate(sr),
 	currentPlayPosition(0),
 	mouseDownX(0),
@@ -88,7 +89,7 @@ public:
     void paint (Graphics& g)
     {
         g.fillAll (Colours::black);
-        g.setColour (Colours::lime);
+        g.setColour (colour);
         if (thumbnail->getTotalLength() > 0)
         {
             thumbnail->drawChannels (g, getLocalBounds(),
@@ -132,6 +133,7 @@ public:
     void mouseDrag(const MouseEvent& e)
     {
         mouseUpX = e.x;
+		currentPlayPosition = jmax (0.0, xToTime ((float) e.x));
         repaint();
     }
 	
@@ -141,7 +143,7 @@ public:
 
 private:
 	AudioFormatManager formatManager;
-
+	Colour colour;
 	int mouseDownX, mouseUpX;
     double startTime, endTime;
 	Rectangle<int> localBounds;
@@ -167,7 +169,7 @@ class Soundfiler : public Component,
 					public ChangeListener
 {
 public:
-	Soundfiler(CabbageAudioSource& audioSource, String fileName, int sr);
+	Soundfiler(CabbageAudioSource& audioSource, String fileName, int sr, Colour colour);
 	~Soundfiler(){
 	cabbageAudioSource->audioSourceBuffer = nullptr;
 	cabbageAudioSource->removeAllChangeListeners();

@@ -33,7 +33,8 @@
 // There are two different CabbagePluginAudioProcessor constructors. One for the
 // standalone application and the other for the plugin library
 //==============================================================================
-#ifdef Cabbage_Build_Standalone
+//#ifdef Cabbage_Build_Standalone
+#if defined(Cabbage_Build_Standalone) || defined(Cabbage_Plugin_Host)
 //===========================================================
 // STANDALONE - CONSTRUCTOR 
 //===========================================================
@@ -58,7 +59,8 @@ yieldCallbackBool(false),
 yieldCounter(10),
 isNativeThreadRunning(false),
 soundFileIndex(0),
-scoreEvents()
+scoreEvents(),
+nativePluginEditor(false)
 {
 //set logger
 #ifdef Cabbage_Logger
@@ -93,9 +95,10 @@ csound->SetExternalMidiReadCallback(ReadMidiData);
 //csound->SetExternalMidiOutOpenCallback(OpenMidiOutputDevice);
 //csound->SetExternalMidiWriteCallback(WriteMidiData);
 
-
+#ifndef Cabbage_Plugin_Host
 csoundPerfThread = new CsoundPerformanceThread(csound);
 csoundPerfThread->SetProcessCallback(CabbagePluginAudioProcessor::YieldCallback, (void*)this);
+#endif
 
 csoundChanList = NULL;
 numCsoundChannels = 0;
@@ -303,7 +306,53 @@ void CabbagePluginAudioProcessor::YieldCallback(void* data){
 	cabbage->updateCabbageControls();	
 }
 
+void CabbagePluginAudioProcessor::reCompileCsound()
+{
+this->suspendProcessing(true);
+getCallbackLock().enter();
+midiOutputBuffer.clear();
 
+csound->DeleteChannelList(csoundChanList);
+csound->Reset();
+csound->PreCompile();
+
+csound->SetMessageCallback(CabbagePluginAudioProcessor::messageCallback);
+csound->SetExternalMidiInOpenCallback(OpenMidiInputDevice);
+csound->SetExternalMidiReadCallback(ReadMidiData); 
+csound->SetExternalMidiOutOpenCallback(OpenMidiOutputDevice);
+csound->SetExternalMidiWriteCallback(WriteMidiData);
+
+CSspout = nullptr;
+CSspin = nullptr;
+csCompileResult = csound->Compile(const_cast<char*>(csdFile.getFullPathName().toUTF8().getAddress()));
+
+
+if(csCompileResult==0){
+        //simple hack to allow tables to be set up correctly. 
+		keyboardState.allNotesOff(0);
+		keyboardState.reset();
+        csound->PerformKsmps();
+        csound->SetScoreOffsetSeconds(0);
+        csound->RewindScore();
+        CSspout = csound->GetSpout();
+        CSspin  = csound->GetSpin();
+        Logger::writeToLog("Csound compiled your file");
+        numCsoundChannels = csoundListChannels(csound->GetCsound(), &csoundChanList);
+        cs_scale = csound->Get0dBFS();
+        csoundStatus = true;
+        debugMessageArray.add(CABBAGE_VERSION);
+        debugMessageArray.add(String("\n"));
+		this->suspendProcessing(false);
+		//showMessage("Test");
+		return;
+}
+else{
+    Logger::writeToLog("Csound couldn't compile your file");
+    csoundStatus=false;
+    //debugMessage = "Csound did not compile correctly. Check for snytax errors by compiling with WinXound";
+}
+
+}
 //===========================================================
 // PARSE CSD FILE AND FILL GUI/GUI-LAYOUT VECTORs.
 // NO JUCE WIDGETS GET CREATED IN THIS CLASS. ALL
@@ -323,8 +372,8 @@ String csdLine("");
 csdText.addLines(source);
 bool multiComment = false;
 bool multiLine = false;
-        //reset the size of filter's guiCtrls as the constructor can be called many times..
-    for(int i=0;i<csdText.size();i++)
+//check for minimal Cabbage GUI
+    for(int i=0;i<csdText.size() && !nativePluginEditor;i++)
         {
                 if(csdText[i].indexOfWholeWordIgnoreCase(String("</Cabbage>"))==-1)
 						{
@@ -404,6 +453,8 @@ bool multiLine = false;
                                                                 ||tokes.getReference(0).equalsIgnoreCase(String("groupbox")))
                                                 {
                                                         CabbageGUIClass cAttr(csdLine.trimEnd(), guiID);
+														if(cAttr.getStringProp("native").length()>0)
+															nativePluginEditor = true;
                                                         //showMessage(cAttr.getStringProp("type"));
                                                         csdLine = "";
 														
@@ -506,10 +557,10 @@ bool multiLine = false;
                                         }
                 }
                 else break;
-        }
+        } //end of scan through entire csd text, control vectors are now populated
 
 		//create multitabs now that plants have been inserted to control vector..
-		for(int i=0;i<csdText.size();i++)
+		for(int i=0;i<csdText.size() && !nativePluginEditor;i++)
 			{
 			if(csdText[i].contains("multitab ") && !csdText[i].contains(";"))
 			{
@@ -532,7 +583,51 @@ bool multiLine = false;
 					guiID++;
 				}
 			}
-		}
+		}//end of multitab check
+		
+	//create a basic 'native' gui if specificed by the user. 
+	if(nativePluginEditor){
+		guiID = 0;
+		guiCtrls.clear();
+		for(int i=0;i<numCsoundChannels;i++){
+			const CsoundChannelListEntry& entry = csoundChanList[i];
+			if (entry.type & CSOUND_CONTROL_CHANNEL && entry.type & CSOUND_INPUT_CHANNEL) {
+				MYFLT ddefault, dmin, dmax;
+				int value_type = getCsound()->GetControlChannelParams(entry.name, ddefault, dmin, dmax);
+				String parameterInfo; 
+				float initVal = (ddefault<dmin ? dmin : ddefault);
+				parameterInfo << "channel(\"" << entry.name << "\"), " << "range(" << String(dmin) << ", " << String(dmax) << ", " << String(initVal) << ")";
+				Logger::writeToLog(parameterInfo);
+				CabbageGUIClass cAttr(parameterInfo, guiID);
+				cAttr.setNumProp("sliderRange", dmax-dmin);
+				//cAttr.setStringProp("channel", entry.name);
+				//cAttr.setNumProp("max", (dmax>0 ? dmax : 1));
+				//cAttr.setNumProp("init", (ddefault<dmin ? dmin : ddefault));		
+						
+				    switch(value_type) {
+						case CSOUND_CONTROL_CHANNEL_INT:
+						cAttr.setNumProp("incr", 1);
+						break;
+						
+						case CSOUND_CONTROL_CHANNEL_LIN:
+						cAttr.setNumProp("incr", .01);
+						break;
+						
+						case CSOUND_CONTROL_CHANNEL_EXP:
+						cAttr.setNumProp("skew", .5);
+						break;
+						
+						default:
+
+						break;
+					}
+			
+				guiCtrls.add(cAttr);
+				guiID++;			
+				}
+			}
+		}	
+		
 
 		//init all channels with their init val
 		for(int i=0;i<guiCtrls.size();i++)
@@ -595,7 +690,7 @@ void CabbagePluginAudioProcessor::messageCallback(CSOUND* csound, int /*attr*/, 
 
 
 //==============================================================================
-#ifdef Cabbage_Build_Standalone
+#if defined(Cabbage_Build_Standalone) || defined(Cabbage_Plugin_Host)
 CabbagePluginAudioProcessor* JUCE_CALLTYPE createCabbagePluginFilter(String inputfile, bool guiOnOff)
 {
     return new CabbagePluginAudioProcessor(inputfile, false);
@@ -1119,7 +1214,9 @@ bool CabbagePluginAudioProcessor::hasEditor() const
  
 AudioProcessorEditor* CabbagePluginAudioProcessor::createEditor()
 {
-    return new CabbagePluginAudioProcessorEditor (this);
+    if(!nativePluginEditor)
+	return new CabbagePluginAudioProcessorEditor (this);
+	else return new CabbageGenericAudioProcessorEditor (this);
 }
 
 //==============================================================================

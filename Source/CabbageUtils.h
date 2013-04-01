@@ -24,7 +24,10 @@
 #include <time.h>
 
 #include "../JuceLibraryCode/JuceHeader.h" 
+
+#ifndef Cabbage_Plugin_Host
 #include "BinaryData.h"
+#endif 
 
 using namespace std;
 #pragma warning(disable: 4389)

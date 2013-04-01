@@ -27,6 +27,7 @@
 #include "../XYPadAutomation.h"
 #include "../CabbageMessageSystem.h"
 #include "../Soundfiler.h"
+#include "CabbageGenericAudioProcessorEditor.h"
 
 
 
@@ -123,7 +124,7 @@ class CabbagePluginAudioProcessor  : public AudioProcessor,
 public:
     //==============================================================================
 
-#ifdef Cabbage_Build_Standalone
+#if defined(Cabbage_Build_Standalone) || (Cabbage_Plugin_Host)
     CabbagePluginAudioProcessor(String inputfile, bool guiOnOff);
 #else
         CabbagePluginAudioProcessor();
@@ -138,7 +139,12 @@ public:
 		xyAutosCreated = val;
 	}
 
+	double getTailLengthSeconds(void) const {
+	return 1;
+	}
+
 	int performEntireScore();
+	void reCompileCsound();
     //==============================================================================
     void prepareToPlay (double sampleRate, int samplesPerBlock);
     void releaseResources();
@@ -188,6 +194,7 @@ public:
 	bool showMIDI;
 	bool yieldCallbackBool;
 	int yieldCounter;
+	bool nativePluginEditor;
 	CabbageMessageQueue messageQueue;
 	OwnedArray<CabbageAudioSource> audioSourcesArray;
 	void addSoundfilerSource(String filename, StringArray channels);

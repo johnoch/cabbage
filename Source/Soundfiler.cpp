@@ -23,12 +23,12 @@
 //==============================================================================
 // soundfiler component
 //==============================================================================
-Soundfiler::Soundfiler(CabbageAudioSource& _audioSource, String fileName, int sr)
+Soundfiler::Soundfiler(CabbageAudioSource& _audioSource, String fileName, int sr, Colour colour)
 :cabbageAudioSource(&_audioSource)
 {
 
 	viewport = new Viewport();
-	waveformDisplay = new WaveformDisplay(*cabbageAudioSource->audioSourceBuffer, sr);
+	waveformDisplay = new WaveformDisplay(*cabbageAudioSource->audioSourceBuffer, sr, colour);
 	//register a listener callback so that we know when to update our audioSource object
 	cabbageAudioSource->addChangeListener(this);
 	startStop = new ImageButton("PlayButton");
