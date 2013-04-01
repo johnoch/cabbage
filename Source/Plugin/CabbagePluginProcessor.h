@@ -145,6 +145,7 @@ public:
 
 	int performEntireScore();
 	void reCompileCsound();
+	void setupNativePluginEditor();
     //==============================================================================
     void prepareToPlay (double sampleRate, int samplesPerBlock);
     void releaseResources();

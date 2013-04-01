@@ -143,11 +143,6 @@ Logger::writeToLog("Welcome to Cabbage");
 
 #endif
 
-#ifdef Cabbage_Plugin_Host
-createGUI(csdFile.loadFileAsString());
-#endif
-
-
 }
 #else
 
@@ -306,6 +301,9 @@ void CabbagePluginAudioProcessor::YieldCallback(void* data){
 	cabbage->updateCabbageControls();	
 }
 
+//============================================================================
+//RECOMPILE CSOUND. THIS IS CALLED FROM THE PLUGIN HOST WHEN UDPATES ARE MADE ON THE FLY
+//============================================================================
 void CabbagePluginAudioProcessor::reCompileCsound()
 {
 this->suspendProcessing(true);
@@ -350,7 +348,7 @@ else{
     Logger::writeToLog("Csound couldn't compile your file");
     csoundStatus=false;
     //debugMessage = "Csound did not compile correctly. Check for snytax errors by compiling with WinXound";
-}
+	}
 
 }
 //===========================================================
@@ -373,7 +371,7 @@ csdText.addLines(source);
 bool multiComment = false;
 bool multiLine = false;
 //check for minimal Cabbage GUI
-    for(int i=0;i<csdText.size() && !nativePluginEditor;i++)
+    for(int i=0;i<csdText.size();i++)
         {
                 if(csdText[i].indexOfWholeWordIgnoreCase(String("</Cabbage>"))==-1)
 						{
@@ -453,8 +451,13 @@ bool multiLine = false;
                                                                 ||tokes.getReference(0).equalsIgnoreCase(String("groupbox")))
                                                 {
                                                         CabbageGUIClass cAttr(csdLine.trimEnd(), guiID);
-														if(cAttr.getStringProp("native").length()>0)
+														if(cAttr.getStringProp("native").length()>0){
+															//create generic plugin editor and break..
+															setupNativePluginEditor();
 															nativePluginEditor = true;
+															return;
+														}
+															
                                                         //showMessage(cAttr.getStringProp("type"));
                                                         csdLine = "";
 														
@@ -560,7 +563,7 @@ bool multiLine = false;
         } //end of scan through entire csd text, control vectors are now populated
 
 		//create multitabs now that plants have been inserted to control vector..
-		for(int i=0;i<csdText.size() && !nativePluginEditor;i++)
+		for(int i=0;i<csdText.size();i++)
 			{
 			if(csdText[i].contains("multitab ") && !csdText[i].contains(";"))
 			{
@@ -585,9 +588,36 @@ bool multiLine = false;
 			}
 		}//end of multitab check
 		
+
+		//init all channels with their init val
+		for(int i=0;i<guiCtrls.size();i++)
+		{
+		csound->SetChannel( guiCtrls.getReference(i).getStringProp("channel").toUTF8(), 
+												guiCtrls.getReference(i).getNumProp("value"));
+		//Logger::writeToLog(guiCtrls.getReference(i).getStringProp("channel")+": "+String(guiCtrls.getReference(i).getNumProp("value")));
+		}
+
+		#ifdef Cabbage_Build_Standalone
+
+		if(this->getActiveEditor()){
+			getActiveEditor()->repaint();
+			//((CabbagePluginAudioProcessorEditor*)getActiveEditor())->setEditMode(false);
+			((CabbagePluginAudioProcessorEditor*)getActiveEditor())->setEditMode(false);
+			((CabbagePluginAudioProcessorEditor*)getActiveEditor())->InsertGUIControls();
+			((CabbagePluginAudioProcessorEditor*)getActiveEditor())->setEditMode(checkGUI);
+			//((CabbagePluginAudioProcessorEditor*)getActiveEditor())->setEditMode(true);
+		}
+
+#endif
+}
+
+//============================================================================
+//SETS UP A GENERIC PLUGIN EDITOR 
+//============================================================================
+void CabbagePluginAudioProcessor::setupNativePluginEditor()
+{
 	//create a basic 'native' gui if specificed by the user. 
-	if(nativePluginEditor){
-		guiID = 0;
+		int guiID = 0;
 		guiCtrls.clear();
 		for(int i=0;i<numCsoundChannels;i++){
 			const CsoundChannelListEntry& entry = csoundChanList[i];
@@ -623,32 +653,10 @@ bool multiLine = false;
 					}
 			
 				guiCtrls.add(cAttr);
+				setPluginName("Test Plugin");
 				guiID++;			
 				}
 			}
-		}	
-		
-
-		//init all channels with their init val
-		for(int i=0;i<guiCtrls.size();i++)
-		{
-		csound->SetChannel( guiCtrls.getReference(i).getStringProp("channel").toUTF8(), 
-												guiCtrls.getReference(i).getNumProp("value"));
-		//Logger::writeToLog(guiCtrls.getReference(i).getStringProp("channel")+": "+String(guiCtrls.getReference(i).getNumProp("value")));
-		}
-
-		#ifdef Cabbage_Build_Standalone
-
-		if(this->getActiveEditor()){
-			getActiveEditor()->repaint();
-			//((CabbagePluginAudioProcessorEditor*)getActiveEditor())->setEditMode(false);
-				((CabbagePluginAudioProcessorEditor*)getActiveEditor())->setEditMode(false);
-			((CabbagePluginAudioProcessorEditor*)getActiveEditor())->InsertGUIControls();
-			((CabbagePluginAudioProcessorEditor*)getActiveEditor())->setEditMode(checkGUI);
-			//((CabbagePluginAudioProcessorEditor*)getActiveEditor())->setEditMode(true);
-		}
-
-#endif
 }
 
 //===========================================================
@@ -667,7 +675,6 @@ bool multiLine = false;
 //===========================================================
 // CALLBACKS FOR STANDALONE
 //===========================================================
-//I don't think this is thread safe! 
 #ifndef Cabbage_No_Csound
 void CabbagePluginAudioProcessor::messageCallback(CSOUND* csound, int /*attr*/,  const char* fmt, va_list args)
 {
@@ -681,8 +688,6 @@ void CabbagePluginAudioProcessor::messageCallback(CSOUND* csound, int /*attr*/, 
   //Logger::writeToLog(String(msg).trim());
   ud->sendChangeMessage();
 // MOD - End
-//#endif
-  //ud->clearDebugMessageArray();
   ud->debugMessage = "";
   ud = nullptr;
 }
