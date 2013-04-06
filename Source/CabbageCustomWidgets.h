@@ -1988,7 +1988,7 @@ private:
 
 
 //==============================================================================
-// custom CabbageLine
+// custom CabbageTransportControl
 //==============================================================================
 class CabbageTransportControl	:	public Component
 {
@@ -2005,62 +2005,45 @@ public:
 	skipToEndButton = new ImageButton("Skip to end button");
 	addAndMakeVisible(skipToEndButton);
 	
-	playButton->setToggleState(false, true);
+	//playButton->setToggleState(false, true);
 	playButton->setClickingTogglesState(true);
-	playButton->setState(Button::buttonDown);
-	playButton->setImages(false, 
-						 true, 
-						 false, 
-						 CabbageUtils::drawSoundfilerButton("play_normal"), 
-						 .5f, 
-						 Colours::blue, 
-						 CabbageUtils::drawSoundfilerButton("play_normal"), 
-						 .5f, 
-						 Colours::red,
-						 CabbageUtils::drawSoundfilerButton("play_down"),
-						 .5f,
-						 Colours::yellow);
-						 
-	skipToStartButton->setToggleState(false, true);
-	skipToStartButton->setClickingTogglesState(true);
-	skipToStartButton->setState(Button::buttonDown);
-	skipToStartButton->setImages(false, 
-						 true, 
-						 false, 
-						 CabbageUtils::drawSoundfilerButton("skip_start_normal"), 
-						 .5f, 
-						 Colours::blue, 
-						 CabbageUtils::drawSoundfilerButton("skip_start_normal"), 
-						 .5f, 
-						 Colours::red,
-						 CabbageUtils::drawSoundfilerButton("skip_start_normal"),
-						 .5f,
-						 Colours::yellow);
-						 
-	skipToEndButton->setToggleState(false, true);
-	skipToEndButton->setClickingTogglesState(true);
-	skipToEndButton->setState(Button::buttonDown);
-	skipToEndButton->setImages(false, 
-						 true, 
-						 false, 
-						 CabbageUtils::drawSoundfilerButton("skip_end_normal"), 
-						 .5f, 
-						 Colours::blue, 
-						 CabbageUtils::drawSoundfilerButton("skip_end_normal"), 
-						 .5f, 
-						 Colours::red,
-						 CabbageUtils::drawSoundfilerButton("skip_end_normal"),
-						 .5f,
-						 Colours::yellow);
-	
+	//playButton->setState(Button::buttonDown);
+
+	playButton->setImages(false, true, true, 
+		CabbageUtils::drawSoundfilerButton("play_normal"), 1.0f, Colours::transparentBlack,
+		CabbageUtils::drawSoundfilerButton("play_hover"), 1.0f, Colours::transparentBlack,
+		CabbageUtils::drawSoundfilerButton("play_down"), 1.0f, Colours::transparentBlack);
+
+	skipToStartButton->setImages(false, true, true, 
+		CabbageUtils::drawSoundfilerButton("skip_start_normal"), 1.0f, Colours::transparentBlack,
+		CabbageUtils::drawSoundfilerButton("skip_start_hover"), 1.0f, Colours::transparentBlack,
+		CabbageUtils::drawSoundfilerButton("skip_start_down"), 1.0f, Colours::transparentBlack);
+
+	skipToEndButton->setImages(false, true, true, 
+		CabbageUtils::drawSoundfilerButton("skip_end_normal"), 1.0f, Colours::transparentBlack,
+		CabbageUtils::drawSoundfilerButton("skip_end_hover"), 1.0f, Colours::transparentBlack,
+		CabbageUtils::drawSoundfilerButton("skip_end_down"), 1.0f, Colours::transparentBlack);	
 	}
 	
 	~CabbageTransportControl(){}
 	
-	void resized(){
-	playButton->setBounds(0, 0, getWidth()/3, getHeight());	
-	skipToStartButton->setBounds(getWidth()/3, 0, getWidth()/3, getHeight());
-	skipToEndButton->setBounds(2*(getWidth()/3), 0, getWidth()/3, getHeight());	
+	void resized()
+	{
+		int numOfButtons = 3;
+		float buttonWidth = getWidth() / (numOfButtons+1); //jmin(getHeight()*0.8f, (float)getWidth()/(numOfButtons+1));
+		float buttonGap = buttonWidth / (numOfButtons+1); //(getWidth()-(buttonWidth*numOfButtons)) / numOfButtons;
+		float buttonHeight = getHeight() - (buttonGap*2);
+
+		skipToStartButton->setBounds(buttonGap, buttonGap, buttonWidth, buttonHeight);	
+		playButton->setBounds(buttonGap*2 + buttonWidth, buttonGap, buttonWidth, buttonHeight);
+		skipToEndButton->setBounds(buttonGap*3 + buttonWidth*2, buttonGap, buttonWidth, buttonHeight);	
+	}
+
+	void paint(Graphics& g) 
+	{
+		//g.setColour(CabbageUtils::getDarkerBackgroundSkin());
+		g.setColour(Colours::lightgrey);
+		g.fillAll();
 	}
 };
 //==============================================================================

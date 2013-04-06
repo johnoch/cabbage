@@ -1157,19 +1157,12 @@ unsigned char *mbuf, int nbytes)
                    cnt += 3;
                    }
                    else if(message.isNoteOff()){
-String midiInfo;
-midiInfo << "\nNote off - Channel: " << String(message.getChannel()) << " NoteNumber: " << String(message.getNoteNumber()) << " Vel: " << String(message.getVelocity()); 
-midiData->getCsound()->Message(midiInfo.toUTF8());
-					   //Logger::writeToLog("just note off");
                         *mbuf++ = (unsigned char)0x80 + message.getChannel();
                    *mbuf++ = (unsigned char)message.getNoteNumber();
                    *mbuf++ = (unsigned char)message.getVelocity();
                    cnt += 3;
                    }
 				   else if(message.isAllSoundOff()){
-String midiInfo;
-midiInfo << "\nAll sounds off - Channel: " << String(message.getChannel()) << " NoteNumber: " << String(message.getNoteNumber()) << " Vel: " << String(message.getVelocity()); 
-midiData->getCsound()->Message(midiInfo.toUTF8());
                         *mbuf++ = (unsigned char)0x7B + message.getChannel();
                    *mbuf++ = (unsigned char)message.getNoteNumber();
                    *mbuf++ = (unsigned char)message.getVelocity();

@@ -462,40 +462,157 @@ static void setPreference(ApplicationProperties* appPrefs, String pref, String v
 //draw buttons for transport controls
 static Image drawSoundfilerButton(String type)
 {
-Image img = Image(Image::ARGB, 100, 100, true);
-Graphics g (img);
-if(type=="play_normal"){
-	Path p;
-	p.addTriangle(10, 10, 90, 50, 10, 90);
-	g.setColour(Colours::lime);
-	g.fillPath(p);
-	return img;
-}	
-else if(type=="play_down"){
-	Path p;
-	p.addRectangle(10, 10, 80, 80);
-	g.setColour(Colours::red);
-	g.fillPath(p);
-	return img;
-}
-else if(type=="skip_end_normal"){
-	Path p;
-	p.addRectangle(10, 10, 80, 80);
-	g.setColour(Colours::red);
-	g.fillPath(p);
-	return img;
-}
-else if(type=="skip_start_normal"){
-	Path p;
-	p.addRectangle(10, 10, 80, 80);
-	g.setColour(Colours::red);
-	g.fillPath(p);
-	return img;
-}
+	Image img = Image(Image::ARGB, 100, 100, true);
+	Graphics g (img);
+	if (type == "play_normal") {
+		Path p;
+		p.addTriangle(img.getWidth()*0.3f, img.getHeight()*0.2f, img.getWidth()*0.7f, img.getHeight()*0.5f, 
+			img.getWidth()*0.3f, img.getHeight()*0.8f);
+		g.setColour(CabbageUtils::getComponentFontColour());
+		g.fillPath(p);
 
-else return img;	
-}
+		return img;
+	}	
+	else if (type == "play_hover") {
+		Path p;
+		p.addTriangle(img.getWidth()*0.3f, img.getHeight()*0.2f, img.getWidth()*0.7f, img.getHeight()*0.5f, 
+			img.getWidth()*0.3f, img.getHeight()*0.8f);
+		g.setColour(CabbageUtils::getComponentFontColour());
+		g.fillPath(p);
 
+		ColourGradient shadow = ColourGradient (Colour::fromRGBA(50, 50, 50, 50), 0, 0, 
+			Colour::fromRGBA(10, 10, 10, 100), img.getWidth(), img.getHeight(), false);
+		g.setGradientFill(shadow);
+		g.drawRoundedRectangle(0.5f, 0.5f, img.getWidth()-2.5f, img.getHeight()-2.5f, jmin(img.getWidth()/20.0f, 
+			img.getHeight()/20.0f), 2.5f);
+
+		return img;
+	}
+	else if (type == "play_down") {
+		//g.setColour(CabbageUtils::getDarkerBackgroundSkin().darker(0.9f));
+		g.setColour(Colours::black.withAlpha(0.4f));
+		g.fillRoundedRectangle(0, 0, img.getWidth(), img.getHeight(), jmin(img.getWidth()/20.0f, 
+			img.getHeight()/20.0f));
+
+		g.setColour(Colours::cornflowerblue.withBrightness(5.0f));
+		g.fillRoundedRectangle(img.getWidth()*0.3f, img.getHeight()*0.2f, 
+			img.getWidth()*0.1f, img.getHeight()*0.6f, img.getWidth()/20.0f);
+		g.fillRoundedRectangle(img.getWidth()*0.6f, img.getHeight()*0.2f, 
+			img.getWidth()*0.1f, img.getHeight()*0.6f, img.getWidth()/20.0f);
+
+		//3D outline
+		ColourGradient shadow = ColourGradient (Colours::black, 0, 0, 
+			Colour::fromRGBA(50, 50, 50, 50), img.getWidth(), img.getHeight(), false);
+		g.setGradientFill(shadow);
+		g.drawRoundedRectangle(1.5f, 1.5f, img.getWidth()-2.0f, img.getHeight()-2.0f, jmin(img.getWidth()/20.0f, 
+			img.getHeight()/20.0f), 2.0f);
+
+		return img;
+	}
+	else if (type == "skip_end_normal") {
+		Path p;
+		p.addTriangle(img.getWidth()*0.2f, img.getHeight()*0.2f, img.getWidth()*0.6f, img.getHeight()*0.5f, 
+			img.getWidth()*0.2f, img.getHeight()*0.8f);
+		g.setColour(CabbageUtils::getComponentFontColour());
+		g.fillPath(p);
+		g.fillRoundedRectangle(img.getWidth()*0.7f, img.getHeight()*0.2f, 
+			img.getWidth()*0.1f, img.getHeight()*0.6f, img.getWidth()/20.0f);
+		return img;
+	}
+	else if (type == "skip_end_hover") {
+		Path p;
+		p.addTriangle(img.getWidth()*0.2f, img.getHeight()*0.2f, img.getWidth()*0.6f, img.getHeight()*0.5f, 
+			img.getWidth()*0.2f, img.getHeight()*0.8f);
+		g.setColour(CabbageUtils::getComponentFontColour());
+		g.fillPath(p);
+		g.fillRoundedRectangle(img.getWidth()*0.7f, img.getHeight()*0.2f, 
+			img.getWidth()*0.1f, img.getHeight()*0.6f, img.getWidth()/20.0f);
+
+		//3D outline
+		ColourGradient shadow = ColourGradient (Colour::fromRGBA(50, 50, 50, 50), 0, 0, 
+			Colour::fromRGBA(10, 10, 10, 100), img.getWidth(), img.getHeight(), false);
+		g.setGradientFill(shadow);
+		g.drawRoundedRectangle(0.5f, 0.5f, img.getWidth()-2.5f, img.getHeight()-2.5f, jmin(img.getWidth()/20.0f, 
+			img.getHeight()/20.0f), 2.5f);
+
+		return img;
+	}
+	else if (type == "skip_end_down") {
+		//g.setColour(CabbageUtils::getDarkerBackgroundSkin().darker(0.9f));
+		g.setColour(Colours::black.withAlpha(0.4f));
+		g.fillRoundedRectangle(0, 0, img.getWidth(), img.getHeight(), jmin(img.getWidth()/20.0f, 
+			img.getHeight()/20.0f));
+
+		Path p;
+		p.addTriangle(img.getWidth()*0.2f, img.getHeight()*0.2f, img.getWidth()*0.6f, img.getHeight()*0.5f, 
+			img.getWidth()*0.2f, img.getHeight()*0.8f);
+		g.setColour(Colours::cornflowerblue.withBrightness(5.0f));
+		g.fillPath(p);
+		g.fillRoundedRectangle(img.getWidth()*0.7f, img.getHeight()*0.2f, 
+			img.getWidth()*0.1f, img.getHeight()*0.6f, img.getWidth()/20.0f);
+
+		//3D outline
+		ColourGradient shadow = ColourGradient (Colours::black, 0, 0, 
+			Colour::fromRGBA(50, 50, 50, 50), img.getWidth(), img.getHeight(), false);
+		g.setGradientFill(shadow);
+		g.drawRoundedRectangle(1.5f, 1.5f, img.getWidth()-2.0f, img.getHeight()-2.0f, jmin(img.getWidth()/20.0f, 
+			img.getHeight()/20.0f), 2.0f);
+
+		return img;
+	}
+	else if (type == "skip_start_normal") {
+		Path p;
+		p.addTriangle(img.getWidth()*0.4f, img.getHeight()*0.5f, img.getWidth()*0.8f, img.getHeight()*0.2f, 
+			img.getWidth()*0.8f, img.getHeight()*0.8f);
+		g.setColour(CabbageUtils::getComponentFontColour());
+		g.fillPath(p);
+		g.fillRoundedRectangle(img.getWidth()*0.2f, img.getHeight()*0.2f, 
+			img.getWidth()*0.1f, img.getHeight()*0.6f, img.getWidth()/20.0f);
+		return img;
+	}
+	else if (type == "skip_start_hover") {
+		Path p;
+		p.addTriangle(img.getWidth()*0.4f, img.getHeight()*0.5f, img.getWidth()*0.8f, img.getHeight()*0.2f, 
+			img.getWidth()*0.8f, img.getHeight()*0.8f);
+		g.setColour(CabbageUtils::getComponentFontColour());
+		g.fillPath(p);
+		g.fillRoundedRectangle(img.getWidth()*0.2f, img.getHeight()*0.2f, 
+			img.getWidth()*0.1f, img.getHeight()*0.6f, img.getWidth()/20.0f);
+
+		//3D outline
+		ColourGradient shadow = ColourGradient (Colour::fromRGBA(50, 50, 50, 50), 0, 0, 
+			Colour::fromRGBA(10, 10, 10, 100), img.getWidth(), img.getHeight(), false);
+		g.setGradientFill(shadow);
+		g.drawRoundedRectangle(0.5f, 0.5f, img.getWidth()-2.5f, img.getHeight()-2.5f, jmin(img.getWidth()/20.0f, 
+			img.getHeight()/20.0f), 2.5f);
+		return img;
+	}
+	else if (type == "skip_start_down") {
+		//g.setColour(CabbageUtils::getDarkerBackgroundSkin().darker(0.9f));
+		g.setColour(Colours::black.withAlpha(0.4f));
+		g.fillRoundedRectangle(0, 0, img.getWidth(), img.getHeight(), jmin(img.getWidth()/20.0f, 
+			img.getHeight()/20.0f));
+
+		Path p;
+		p.addTriangle(img.getWidth()*0.4f, img.getHeight()*0.5f, img.getWidth()*0.8f, img.getHeight()*0.2f, 
+			img.getWidth()*0.8f, img.getHeight()*0.8f);
+		g.setColour(Colours::cornflowerblue.withBrightness(5.0f));
+		g.fillPath(p);
+		g.fillRoundedRectangle(img.getWidth()*0.2f, img.getHeight()*0.2f, 
+			img.getWidth()*0.1f, img.getHeight()*0.6f, img.getWidth()/20.0f);
+
+		//3D outline
+		ColourGradient shadow = ColourGradient (Colours::black, 0, 0, 
+			Colour::fromRGBA(50, 50, 50, 50), img.getWidth(), img.getHeight(), false);
+		g.setGradientFill(shadow);
+		g.drawRoundedRectangle(1.5f, 1.5f, img.getWidth()-2.0f, img.getHeight()-2.0f, jmin(img.getWidth()/20.0f, 
+			img.getHeight()/20.0f), 2.0f);		
+
+		return img;
+	}
+
+	else return img;	
+}
 
 
 };
