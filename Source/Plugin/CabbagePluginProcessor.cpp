@@ -5,7 +5,7 @@
   and/or modify it under the terms of the GNU Lesser General Public
   License as published by the Free Software Foundation; either
   version 2.1 of the License, or (at your option) any later version.   
-
+    
   Cabbage is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -167,7 +167,8 @@ xyAutosCreated(false),
 updateTable(false),
 yieldCallbackBool(false),
 yieldCounter(10),
-soundFileIndex(0)
+soundFileIndex(0),
+nativePluginEditor(false)
 {
 //Cabbage plugins always try to load a csd file with the same name as the plugin library.
 //Therefore we need to find the name of the library and append a '.csd' to it. 
@@ -191,11 +192,11 @@ Logger::writeToLog("File doesn't exist"+String(csdFile.getFullPathName()));
 File(csdFile.getFullPathName()).setAsCurrentWorkingDirectory();
 
 //set logger
-#ifdef Cabbage_Logger
-logFile = File(File(csdFile.getFullPathName()).getParentDirectory()+"/CabbageLog.txt"));
+//#ifdef Cabbage_Logger
+logFile = File(File(csdFile.getFullPathName()).getParentDirectory().getFullPathName()+"/CabbageLog.txt");
 fileLogger = new FileLogger(logFile, String("Cabbage Log.."));
 Logger::setCurrentLogger(fileLogger);
-#endif
+//#endif
 
 #ifndef Cabbage_No_Csound
 csound = new Csound();
@@ -229,13 +230,13 @@ if(csCompileResult==0){
         csound->RewindScore();
         //set up PVS struct
 		dataout = new PVSDATEXT;
+		csdKsmps = csound->GetKsmps();
         soundFilerTempVector = new MYFLT[csdKsmps];
         CSspout = csound->GetSpout();
         CSspin  = csound->GetSpin();
         cs_scale = csound->Get0dBFS();
         numCsoundChannels = csoundListChannels(csound->GetCsound(), &csoundChanList);
         csndIndex = csound->GetKsmps();
-		csdKsmps = csound->GetKsmps();
 		//soundFilerVector = new MYFLT[csdKsmps];
         csoundStatus = true;
         debugMessageArray.add(VERSION);
@@ -1113,6 +1114,7 @@ if(!isSuspended()){
 }
 	if(!midiBuffer.isEmpty())
 	midiMessages.swapWith(midiOutputBuffer);
+
 }
 
 
@@ -1155,12 +1157,19 @@ unsigned char *mbuf, int nbytes)
                    cnt += 3;
                    }
                    else if(message.isNoteOff()){
+String midiInfo;
+midiInfo << "\nNote off - Channel: " << String(message.getChannel()) << " NoteNumber: " << String(message.getNoteNumber()) << " Vel: " << String(message.getVelocity()); 
+midiData->getCsound()->Message(midiInfo.toUTF8());
+					   //Logger::writeToLog("just note off");
                         *mbuf++ = (unsigned char)0x80 + message.getChannel();
                    *mbuf++ = (unsigned char)message.getNoteNumber();
                    *mbuf++ = (unsigned char)message.getVelocity();
                    cnt += 3;
                    }
-                   else if(message.isAllNotesOff()){
+				   else if(message.isAllSoundOff()){
+String midiInfo;
+midiInfo << "\nAll sounds off - Channel: " << String(message.getChannel()) << " NoteNumber: " << String(message.getNoteNumber()) << " Vel: " << String(message.getVelocity()); 
+midiData->getCsound()->Message(midiInfo.toUTF8());
                         *mbuf++ = (unsigned char)0x7B + message.getChannel();
                    *mbuf++ = (unsigned char)message.getNoteNumber();
                    *mbuf++ = (unsigned char)message.getVelocity();
