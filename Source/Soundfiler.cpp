@@ -31,43 +31,43 @@ Soundfiler::Soundfiler(CabbageAudioSource& _audioSource, String fileName, int sr
 	waveformDisplay = new WaveformDisplay(*cabbageAudioSource->audioSourceBuffer, sr, colour);
 	//register a listener callback so that we know when to update our audioSource object
 	cabbageAudioSource->addChangeListener(this);
-	startStop = new ImageButton("PlayButton");
-/*	
- 	    bool  	resizeButtonNowToFitThisImage,
-		bool  	rescaleImagesWhenButtonSizeChanges,
-		bool  	preserveImageProportions,
-		const Image &  	normalImage,
-		float  	imageOpacityWhenNormal,
-		const Colour &  	overlayColourWhenNormal,
-		const Image &  	overImage,
-		float  	imageOpacityWhenOver,
-		const Colour &  	overlayColourWhenOver,
-		const Image &  	downImage,
-		float  	imageOpacityWhenDown,
-		const Colour &  	overlayColourWhenDown,
-		float  	hitTestAlphaThreshold = 0.0f 	
-	*/
-	startStop->setToggleState(false, true);
-	startStop->setClickingTogglesState(true);
-	startStop->setState(Button::buttonDown);
-	startStop->setImages(false, 
-						 true, 
-						 false, 
-						 CabbageUtils::drawSoundfilerButton("play_normal"), 
-						 .5f, 
-						 Colours::blue, 
-						 CabbageUtils::drawSoundfilerButton("play_normal"), 
-						 .5f, 
-						 Colours::red,
-						 CabbageUtils::drawSoundfilerButton("play_down"),
-						 .5f,
-						 Colours::yellow);
-	//startStop->setButtonText("Play");
+
+	playButton = new ImageButton("Play button");
+	playButton->addListener(this);
+	addAndMakeVisible(playButton);	
+	skipToStartButton = new ImageButton("Skip to start button");
+	skipToStartButton->addListener(this);
+	addAndMakeVisible(skipToStartButton);
+	
+	skipToEndButton = new ImageButton("Skip to end button");
+	skipToEndButton->addListener(this);
+	//addAndMakeVisible(skipToEndButton);
+	
+	//playButton->setToggleState(false, true);
+	playButton->setClickingTogglesState(true);
+	//playButton->setState(Button::buttonDown);
+
+	playButton->setImages(false, true, true, 
+		CabbageUtils::drawSoundfilerButton("play_normal"), 1.0f, Colours::transparentBlack,
+		CabbageUtils::drawSoundfilerButton("play_hover"), 1.0f, Colours::transparentBlack,
+		CabbageUtils::drawSoundfilerButton("play_down"), 1.0f, Colours::transparentBlack);
+
+	skipToStartButton->setImages(false, true, true, 
+		CabbageUtils::drawSoundfilerButton("skip_start_normal"), 1.0f, Colours::transparentBlack,
+		CabbageUtils::drawSoundfilerButton("skip_start_hover"), 1.0f, Colours::transparentBlack,
+		CabbageUtils::drawSoundfilerButton("skip_start_down"), 1.0f, Colours::transparentBlack);
+
+	skipToEndButton->setImages(false, true, true, 
+		CabbageUtils::drawSoundfilerButton("skip_end_normal"), 1.0f, Colours::transparentBlack,
+		CabbageUtils::drawSoundfilerButton("skip_end_hover"), 1.0f, Colours::transparentBlack,
+		CabbageUtils::drawSoundfilerButton("skip_end_down"), 1.0f, Colours::transparentBlack);	
+
+
 	loadFile = new TextButton("Open File");
-	startStop->addListener(this);
+
 	loadFile->addListener(this);
 
-	addAndMakeVisible(startStop);
+
 	addAndMakeVisible(loadFile);
 
 
@@ -93,7 +93,7 @@ if(cabbageAudio){
 
 void Soundfiler::buttonClicked(Button *button)
 {
-	if(button->getName()=="PlayButton"){
+	if(button->getName()=="Play button"){
 		if(!cabbageAudioSource->isSourcePlaying){
 			waveformDisplay->startTimer(100);
 			//startStop->setButtonText("Stop..");
@@ -104,6 +104,12 @@ void Soundfiler::buttonClicked(Button *button)
 			//startStop->setButtonText("Play");
 		}
 		cabbageAudioSource->isSourcePlaying=!cabbageAudioSource->isSourcePlaying;
+	}
+	else if(button->getName()=="Skip to start button"){
+		waveformDisplay->rewindToStart();
+	}
+	else if(button->getName()=="Skip to end button"){
+		waveformDisplay->skipForward();
 	}
 	else{
 		FileChooser openFC(String("Open a Cabbage sound file..."), File::nonexistent, String("*.wav;*.mp3"));
@@ -121,8 +127,12 @@ void Soundfiler::resized()
 {
 waveformDisplay->setSize(800, getHeight()-40);
 viewport->setBounds(0, 0, getWidth(), getHeight()-20);
-startStop->setBounds(0, getHeight()-20, 40, 20);
-loadFile->setBounds(70, getHeight()-20, 70, 20);
+//startStop->setBounds(0, getHeight()-20, 40, 20);
+skipToStartButton->setBounds(0, getHeight()-20, 20, 20);	
+playButton->setBounds(20, getHeight()-20, 20, 20);
+skipToEndButton->setBounds(40, getHeight()-20, 20, 20);	
+
+loadFile->setBounds(80, getHeight()-20, 70, 20);
 }
 //==============================================================================
 void Soundfiler::paint (Graphics& g)

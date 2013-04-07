@@ -39,7 +39,8 @@ public:
 	sampleRate(sr),
 	currentPlayPosition(0),
 	mouseDownX(0),
-	mouseUpX(0)
+	mouseUpX(0),
+	drawWaveform(true)
 	{	
     formatManager.registerBasicFormats();  
 	thumbnail = new AudioThumbnail(512, formatManager, thumbnailCache); 
@@ -57,7 +58,7 @@ public:
 	
     void setFile (const File& file, bool firstTime)
     {
-		if(file.existsAsFile())
+		if(file.existsAsFile()){
 			if(firstTime){
 			thumbnail->setSource (new FileInputSource(file));
 			}
@@ -68,6 +69,10 @@ public:
 			thumbnail->setSource (new FileInputSource(file));
 			//delete inFileStream;
 			}
+			drawWaveform=true;
+		}
+		else
+			drawWaveform = false;
 
 		startTime = 0;
         endTime = thumbnail->getTotalLength();
@@ -90,19 +95,21 @@ public:
     {
         g.fillAll (Colours::black);
         g.setColour (colour);
-        if (thumbnail->getTotalLength() > 0)
-        {
-            thumbnail->drawChannels (g, getLocalBounds(),
-                                    startTime, endTime, 2.0f);
-        }
-        else
-        {
-            g.setFont (14.0f);
-            g.drawFittedText ("(No audio file selected)", getLocalBounds(), Justification::centred, 2);
-        }
-		g.setColour(Colours::yellow.withAlpha(.6f));
-		//g.fillRect(mouseDownX ,0 , mouseUpX - mouseDownX, getHeight());
-		g.drawLine(timeToX(currentPlayPosition), 0, timeToX(currentPlayPosition), getHeight(), 2);
+		if(drawWaveform){
+			if (thumbnail->getTotalLength() > 0)
+			{
+				thumbnail->drawChannels (g, getLocalBounds(),
+										startTime, endTime, 2.0f);
+			}
+			else
+			{
+				g.setFont (14.0f);
+				g.drawFittedText ("(No audio file selected)", getLocalBounds(), Justification::centred, 2);
+			}
+			g.setColour(Colours::yellow.withAlpha(.6f));
+			//g.fillRect(mouseDownX ,0 , mouseUpX - mouseDownX, getHeight());
+			g.drawLine(timeToX(currentPlayPosition), 0, timeToX(currentPlayPosition), getHeight(), 2);
+		}
     }
 
     void timerCallback()
@@ -137,6 +144,15 @@ public:
         repaint();
     }
 	
+	void rewindToStart(){
+		source->setNextReadPosition (0);
+		currentPlayPosition = 0.f;	
+}
+	
+	void skipForward(){
+		currentPlayPosition = currentPlayPosition+1.f; 
+	}
+	
     AudioThumbnailCache thumbnailCache;
     ScopedPointer<AudioThumbnail> thumbnail;
     ScopedPointer<BufferingAudioSource> source;
@@ -149,6 +165,7 @@ private:
 	Rectangle<int> localBounds;
 	float sampleRate;
 	double currentPlayPosition;
+	bool drawWaveform;
 
     DrawableRectangle currentPositionMarker;
 
@@ -182,7 +199,9 @@ public:
 	void resized();
 	void buttonClicked(Button *button);
 	ScopedPointer<WaveformDisplay> waveformDisplay;
-	ScopedPointer<ImageButton> startStop;
+	ScopedPointer<ImageButton> playButton;	
+	ScopedPointer<ImageButton> skipToStartButton;
+	ScopedPointer<ImageButton> skipToEndButton;
 	ScopedPointer<TextButton> loadFile;
 	ScopedPointer<Viewport> viewport;
 	CabbageAudioSource* cabbageAudioSource;

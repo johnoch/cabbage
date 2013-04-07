@@ -42,7 +42,7 @@ class CabbageAudioSource : public ChangeBroadcaster
 TimeSliceThread thread;
 public:
 	CabbageAudioSource(String audioFile, int _numSamples, int channels=2)
-	:thread("audio source"), isSourcePlaying(false), index(0), numSamples(_numSamples)
+	:thread("audio source"), isSourcePlaying(false), index(0), numSamples(_numSamples), isValidFile(false)
 	{
 	setFile(audioFile, channels);
 	}
@@ -62,7 +62,9 @@ public:
 		AudioFormatReader* reader;
 		audioSource = nullptr;
 		audioSourceBuffer = nullptr;
-		if(File(audioFile).existsAsFile()) 
+		//check for valid file
+		if(audioFile.length()>2){ 
+		isValidFile = true;
 		reader = formatManager.createReaderFor (File(audioFile));  
 			if(reader!=0){
 			audioSource = new AudioFormatReaderSource (reader, true);
@@ -74,7 +76,12 @@ public:
 			sendChangeMessage();
 			return true;
 			}
-			else return false;
+			
+		}
+			else{
+			isValidFile = false;
+			return false;	
+			} 
 			
 	}
 	
@@ -83,6 +90,7 @@ public:
 	PositionableAudioSource* audioSource;
 	int sampleRate, index, numSamples;	
 	bool isSourcePlaying;
+	bool isValidFile;
 	AudioSourceChannelInfo sourceChannelInfo;
 	StringArray channels;
 	

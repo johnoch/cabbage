@@ -993,7 +993,8 @@ void CabbagePluginAudioProcessor::prepareToPlay (double sampleRate, int samplesP
     // initialisation that you need..
     keyboardState.reset();
 	for(int i=0;i<audioSourcesArray.size();i++)
-		audioSourcesArray[i]->audioSourceBuffer->prepareToPlay(samplesPerBlock, sampleRate);
+		if(audioSourcesArray[i]->isValidFile)
+			audioSourcesArray[i]->audioSourceBuffer->prepareToPlay(samplesPerBlock, sampleRate);
 }
 //==============================================================================
 void CabbagePluginAudioProcessor::releaseResources()
@@ -1222,8 +1223,9 @@ bool CabbagePluginAudioProcessor::hasEditor() const
 AudioProcessorEditor* CabbagePluginAudioProcessor::createEditor()
 {
     if(!nativePluginEditor)
-	return new CabbagePluginAudioProcessorEditor (this);
-	else return new CabbageGenericAudioProcessorEditor (this);
+		return new CabbagePluginAudioProcessorEditor (this);
+	else 
+		return new CabbageGenericAudioProcessorEditor (this);
 }
 
 //==============================================================================

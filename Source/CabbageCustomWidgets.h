@@ -1990,6 +1990,9 @@ private:
 //==============================================================================
 // custom CabbageTransportControl
 //==============================================================================
+/*
+ * this will need a fast forward, skip to start, play/pause and 
+ */ 
 class CabbageTransportControl	:	public Component
 {
 ScopedPointer<ImageButton> playButton;	
