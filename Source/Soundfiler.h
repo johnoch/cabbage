@@ -40,7 +40,8 @@ public:
 	currentPlayPosition(0),
 	mouseDownX(0),
 	mouseUpX(0),
-	drawWaveform(true)
+	drawWaveform(true),
+	numOfSamples(0)
 	{	
     formatManager.registerBasicFormats();  
 	thumbnail = new AudioThumbnail(512, formatManager, thumbnailCache); 
@@ -106,7 +107,7 @@ public:
 				g.setFont (14.0f);
 				g.drawFittedText ("(No audio file selected)", getLocalBounds(), Justification::centred, 2);
 			}
-			g.setColour(Colours::yellow.withAlpha(.6f));
+			g.setColour(colour.brighter(.4f));
 			//g.fillRect(mouseDownX ,0 , mouseUpX - mouseDownX, getHeight());
 			g.drawLine(timeToX(currentPlayPosition), 0, timeToX(currentPlayPosition), getHeight(), 2);
 		}
@@ -159,6 +160,7 @@ public:
 
 private:
 	AudioFormatManager formatManager;
+	int64 numOfSamples;
 	Colour colour;
 	int mouseDownX, mouseUpX;
     double startTime, endTime;
@@ -188,6 +190,7 @@ class Soundfiler : public Component,
 public:
 	Soundfiler(CabbageAudioSource& audioSource, String fileName, int sr, Colour colour);
 	~Soundfiler(){
+	cabbageAudioSource->isSourcePlaying = false;
 	cabbageAudioSource->audioSourceBuffer = nullptr;
 	cabbageAudioSource->removeAllChangeListeners();
 	cabbageAudioSource = nullptr;	
@@ -203,6 +206,7 @@ public:
 	ScopedPointer<ImageButton> skipToStartButton;
 	ScopedPointer<ImageButton> skipToEndButton;
 	ScopedPointer<TextButton> loadFile;
+	ScopedPointer<ToggleButton> loopFile;
 	ScopedPointer<Viewport> viewport;
 	CabbageAudioSource* cabbageAudioSource;
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Soundfiler);

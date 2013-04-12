@@ -64,9 +64,12 @@ Soundfiler::Soundfiler(CabbageAudioSource& _audioSource, String fileName, int sr
 
 
 	loadFile = new TextButton("Open File");
-
+	loopFile = new ToggleButton("Looping");
+	loopFile->getProperties().set("isRect", 1);
+	loopFile->getProperties().set("colour", colour.toString());
+	addAndMakeVisible(loopFile);
 	loadFile->addListener(this);
-
+	loopFile->addListener(this);
 
 	addAndMakeVisible(loadFile);
 
@@ -111,6 +114,12 @@ void Soundfiler::buttonClicked(Button *button)
 	else if(button->getName()=="Skip to end button"){
 		waveformDisplay->skipForward();
 	}
+	else if(button->getName()=="Looping"){
+		if(button->getToggleState()==true)
+		cabbageAudioSource->audioSource->setLooping(true);
+		else
+		cabbageAudioSource->audioSource->setLooping(false);	
+	}
 	else{
 		FileChooser openFC(String("Open a Cabbage sound file..."), File::nonexistent, String("*.wav;*.mp3"));
 		if(openFC.browseForFileToOpen())
@@ -131,8 +140,8 @@ viewport->setBounds(0, 0, getWidth(), getHeight()-20);
 skipToStartButton->setBounds(0, getHeight()-20, 20, 20);	
 playButton->setBounds(20, getHeight()-20, 20, 20);
 skipToEndButton->setBounds(40, getHeight()-20, 20, 20);	
-
-loadFile->setBounds(80, getHeight()-20, 70, 20);
+loopFile->setBounds(40, getHeight()-20, 60, 20);
+loadFile->setBounds(120, getHeight()-20, 70, 20);
 }
 //==============================================================================
 void Soundfiler::paint (Graphics& g)

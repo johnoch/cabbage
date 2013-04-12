@@ -329,7 +329,7 @@ void Table::paint (Graphics& g)
 		
 	//draw the crubber if needed
 	if(scrubberPosition>0){
-	g.setColour(Colours::yellow);
+	g.setColour(currColour);
 	scrubberPosition = scrubberPosition*getWidth();
 	g.drawLine(scrubberPosition, 0, scrubberPosition, getHeight(), 2);
 	}

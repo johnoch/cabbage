@@ -70,9 +70,7 @@ class CabbagePluginAudioProcessor  : public AudioProcessor,
 		AudioSourceChannelInfo soundfilerChannelData;
 		int soundFileIndex;
 		ScopedPointer<FileLogger> fileLogger;
-		File logFile;
-		
-		
+		File logFile;		
 
         //============== Csound related variables/methods ==============================
 #ifndef Cabbage_No_Csound
@@ -143,6 +141,22 @@ public:
 	return 1;
 	}
 
+	int getNumberCsoundOutChannels(){
+		return csound->GetNchnls();
+	}
+
+	int getNumberCsoundInChannels(){
+		return csound->GetInNchnls();
+	}
+
+	int getCsoundSamplingRate(){
+		return csound->GetSr();
+	}
+	
+	int getCsoundKsmpsSize(){
+		return csound->GetKsmps();
+	}
+	
 	int performEntireScore();
 	void reCompileCsound();
 	void setupNativePluginEditor();
@@ -200,6 +214,8 @@ public:
 	OwnedArray<CabbageAudioSource> audioSourcesArray;
 	void addSoundfilerSource(String filename, StringArray channels);
 	StringArray scoreEvents;
+	int averageSampleIndex;
+	float outputNo1;
 	
 			
 	//==============================================================================

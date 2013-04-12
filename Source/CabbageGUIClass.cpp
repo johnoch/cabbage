@@ -753,6 +753,7 @@ int CabbageGUIClass::parse(String str)
 
 			else if(identArray.getReference(indx).toLowerCase().equalsIgnoreCase("native(")){
 				native = strTokens[0].trim();
+				Logger::writeToLog(native);
 			}
 			
 			else if(identArray.getReference(indx).toLowerCase().equalsIgnoreCase("populate(")){

@@ -60,9 +60,9 @@ yieldCounter(10),
 isNativeThreadRunning(false),
 soundFileIndex(0),
 scoreEvents(),
-nativePluginEditor(false)
+nativePluginEditor(false),
+averageSampleIndex(0)
 {
-//set logger
 #ifdef Cabbage_Logger
 logFile = File((appProperties->getCommonSettings(true)->getFile().getParentDirectory().getFullPathName()+"/CabbageLog.txt"));
 fileLogger = new FileLogger(logFile, String("Cabbage Log.."));
@@ -71,6 +71,7 @@ Logger::setCurrentLogger(fileLogger);
 //reset patMatrix. If this has more than one we know that
 //pattern matrix object is being used
 patStepMatrix.clear();
+
 patPfieldMatrix.clear();
 setPlayConfigDetails(2, 2, 44100, 512); 
 #ifndef Cabbage_No_Csound
@@ -113,6 +114,11 @@ csCompileResult = csound->Compile(const_cast<char*>(inputfile.toUTF8().getAddres
 
 if(csCompileResult==0){
 
+	setPlayConfigDetails(getNumberCsoundOutChannels(),
+						getNumberCsoundOutChannels(),
+						getCsoundSamplingRate(),
+						getCsoundKsmpsSize());
+						
         //simple hack to allow tables to be set up correctly. 
         csound->PerformKsmps();
         csound->SetScoreOffsetSeconds(0);
@@ -168,7 +174,12 @@ updateTable(false),
 yieldCallbackBool(false),
 yieldCounter(10),
 soundFileIndex(0),
-nativePluginEditor(false)
+nativePluginEditor(false),
+output1(float[4096]),
+output2(float[4096]),
+output3(float[4096]),
+output4(float[4096]),
+averageSampleIndex(0)
 {
 //Cabbage plugins always try to load a csd file with the same name as the plugin library.
 //Therefore we need to find the name of the library and append a '.csd' to it. 
@@ -232,6 +243,7 @@ if(csCompileResult==0){
 		dataout = new PVSDATEXT;
 		csdKsmps = csound->GetKsmps();
         soundFilerTempVector = new MYFLT[csdKsmps];
+		if(csound->GetSpout()==nullptr);
         CSspout = csound->GetSpout();
         CSspin  = csound->GetSpin();
         cs_scale = csound->Get0dBFS();
@@ -308,13 +320,12 @@ void CabbagePluginAudioProcessor::YieldCallback(void* data){
 void CabbagePluginAudioProcessor::reCompileCsound()
 {
 this->suspendProcessing(true);
-getCallbackLock().enter();
 midiOutputBuffer.clear();
-
+getCallbackLock().enter();
 csound->DeleteChannelList(csoundChanList);
 csound->Reset();
 csound->PreCompile();
-
+numCsoundChannels = 0;
 csound->SetMessageCallback(CabbagePluginAudioProcessor::messageCallback);
 csound->SetExternalMidiInOpenCallback(OpenMidiInputDevice);
 csound->SetExternalMidiReadCallback(ReadMidiData); 
@@ -323,18 +334,18 @@ csound->SetExternalMidiWriteCallback(WriteMidiData);
 
 CSspout = nullptr;
 CSspin = nullptr;
-csCompileResult = csound->Compile(const_cast<char*>(csdFile.getFullPathName().toUTF8().getAddress()));
 
+csCompileResult = csound->Compile(const_cast<char*>(csdFile.getFullPathName().toUTF8().getAddress()));
 
 if(csCompileResult==0){
         //simple hack to allow tables to be set up correctly. 
 		keyboardState.allNotesOff(0);
 		keyboardState.reset();
+        CSspout = csound->GetSpout();
+        CSspin  = csound->GetSpin();
         csound->PerformKsmps();
         csound->SetScoreOffsetSeconds(0);
         csound->RewindScore();
-        CSspout = csound->GetSpout();
-        CSspin  = csound->GetSpin();
         Logger::writeToLog("Csound compiled your file");
         numCsoundChannels = csoundListChannels(csound->GetCsound(), &csoundChanList);
         cs_scale = csound->Get0dBFS();
@@ -342,7 +353,7 @@ if(csCompileResult==0){
         debugMessageArray.add(CABBAGE_VERSION);
         debugMessageArray.add(String("\n"));
 		this->suspendProcessing(false);
-		//showMessage("Test");
+		getCallbackLock().exit();
 		return;
 }
 else{
@@ -350,7 +361,7 @@ else{
     csoundStatus=false;
     //debugMessage = "Csound did not compile correctly. Check for snytax errors by compiling with WinXound";
 	}
-
+getCallbackLock().exit();
 }
 //===========================================================
 // PARSE CSD FILE AND FILL GUI/GUI-LAYOUT VECTORs.
@@ -1049,6 +1060,7 @@ void CabbagePluginAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiB
 {
 if(!isSuspended()){
 	float* audioBuffer;
+	float lastOutputAmp;
 	#ifndef Cabbage_No_Csound
 
 	if(csCompileResult==0){
@@ -1087,9 +1099,11 @@ if(!isSuspended()){
 				{
 				pos = csndIndex*getNumInputChannels();
 				CSspin[channel+pos] = audioBuffer[i]*cs_scale;  
-				audioBuffer[i] = (CSspout[channel+pos]/cs_scale);       
+				audioBuffer[i] = (CSspout[channel+pos]/cs_scale);     
+				lastOutputAmp = audioBuffer[i]; 
+				outputNo1 = lastOutputAmp;
 				}
-			else audioBuffer[i]=0; 
+			//else audioBuffer[i]=0; 
 			}
                         
 		}

@@ -10,7 +10,7 @@ and then Rory made shit of it....
 
 */
 #include "ComponentLayoutEditor.h"
-#include "./Standalone/CabbageStandaloneDialog.h"
+//#include "./Standalone/CabbageStandaloneDialog.h"
 
 
 ChildAlias::ChildAlias (Component* targetChild, String type, int ind)
@@ -203,7 +203,7 @@ void ChildAlias::mouseDown (const MouseEvent& e)
 				bool clashingNames=false;
 				int result; 
 				
-				String plantDir = appProperties->getUserSettings()->getValue("PlantFileDir", "");	
+				String plantDir = "";//appProperties->getUserSettings()->getValue("PlantFileDir", "");	
 				Logger::writeToLog(plantDir);
 				Array<File> tempfiles;
 				StringArray plants;   

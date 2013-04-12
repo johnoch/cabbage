@@ -1972,7 +1972,7 @@ void CabbageLookAndFeelBasic::drawLinearSliderBackground (Graphics &g, int /*x*/
 	if (slider.isMouseButtonDown())
 		fillColour = Colours::cornflowerblue.withMultipliedBrightness(2.0f);
 	g.setColour(fillColour);
-	g.fillRoundedRectangle (0, slider.getHeight()*0.4, sliderPos, slider.getHeight()*0.2, slider.getHeight() / 20.0f);
+	//g.fillRoundedRectangle (0, slider.getHeight()*0.4, sliderPos, slider.getHeight()*0.2, slider.getHeight() / 20.0f);
 
 	//Fill border
 	g.setColour(Colours::black);
