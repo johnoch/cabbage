@@ -60,8 +60,7 @@ yieldCounter(10),
 isNativeThreadRunning(false),
 soundFileIndex(0),
 scoreEvents(),
-nativePluginEditor(false),
-averageSampleIndex(0)
+nativePluginEditor(false)
 {
 #ifdef Cabbage_Logger
 logFile = File((appProperties->getCommonSettings(true)->getFile().getParentDirectory().getFullPathName()+"/CabbageLog.txt"));
@@ -174,12 +173,7 @@ updateTable(false),
 yieldCallbackBool(false),
 yieldCounter(10),
 soundFileIndex(0),
-nativePluginEditor(false),
-output1(float[4096]),
-output2(float[4096]),
-output3(float[4096]),
-output4(float[4096]),
-averageSampleIndex(0)
+nativePluginEditor(false)
 {
 //Cabbage plugins always try to load a csd file with the same name as the plugin library.
 //Therefore we need to find the name of the library and append a '.csd' to it. 

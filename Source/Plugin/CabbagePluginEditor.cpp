@@ -32,8 +32,15 @@
 
 //==============================================================================
 CabbagePluginAudioProcessorEditor::CabbagePluginAudioProcessorEditor (CabbagePluginAudioProcessor* ownerFilter)
-: AudioProcessorEditor (ownerFilter), lineNumber(0), inValue(0), authorText(""), keyIsPressed(false), xyPadIndex(0)
+: AudioProcessorEditor (ownerFilter), 
+lineNumber(0), 
+inValue(0), 
+authorText(""), 
+keyIsPressed(false), 
+xyPadIndex(0),
+popupText(new PopupText())
 {
+popupText->setInterceptsMouseClicks(false, true);
 //set custom skin yo use
 lookAndFeel = new CabbageLookAndFeel(); 
 basicLookAndFeel = new CabbageLookAndFeelBasic();
@@ -147,7 +154,14 @@ if(presetFileText.length()>1)
 //===========================================================================
 void CabbagePluginAudioProcessorEditor::changeListenerCallback(ChangeBroadcaster *source)
 {
-//see actionListener...
+CabbageSlider* const cSlider = dynamic_cast <CabbageSlider*> (source);
+if(cSlider){
+	String text;
+	text << cSlider->getProperties().getWithDefault("channel", cSlider->getName()).toString() << String(": ") << String(cSlider->slider->getValue(), 2); 
+	popupText->setText(text);
+	popupText->setTopLeftPosition(cSlider->getX(), cSlider->getY()+cSlider->getHeight()/2);
+	componentPanel->addAndMakeVisible(popupText);
+	}
 }
 //==============================================================================
 // this function will display a context menu on right mouse click. The menu 
@@ -1367,7 +1381,8 @@ void CabbagePluginAudioProcessorEditor::InsertSlider(CabbageGUIClass &cAttr)
 		incomingValues.add(cAttr.getNumProp("value"));
 
         ((CabbageSlider*)controls[idx])->slider->addListener(this);
-
+		((CabbageSlider*)controls[idx])->addChangeListener(this);
+		controls[idx]->getProperties().set(String("channel"), cAttr.getStringProp("channel"));
         controls[idx]->getProperties().set(String("midiChan"), cAttr.getNumProp("midiChan"));
         controls[idx]->getProperties().set(String("midiCtrl"), cAttr.getNumProp("midiCtrl")); 
 }
@@ -1382,6 +1397,16 @@ void CabbagePluginAudioProcessorEditor::sliderValueChanged (Slider* sliderThatWa
 for(int i=0;i<(int)getFilter()->getGUICtrlsSize();i++)//find correct control from vector
        if(getFilter()->getGUICtrls(i).getStringProp("name")==sliderThatWasMoved->getParentComponent()->getName())
 		   {
+			String text;
+			text << getFilter()->getGUICtrls(i).getStringProp("channel") << String(": ") << String(sliderThatWasMoved->getValue(), 2); 
+			popupText->setText(text);
+			CabbageSlider* cSlider = sliderThatWasMoved->findParentComponentOfClass<CabbageSlider>();
+			if(cSlider){
+				popupText->setTopLeftPosition(cSlider->getX(), cSlider->getY()+cSlider->getHeight()/2);
+			}
+
+
+			   
 #ifndef Cabbage_Build_Standalone
 			getFilter()->getGUICtrls(i).setNumProp("value", (float)sliderThatWasMoved->getValue());
 			float min = getFilter()->getGUICtrls(i).getNumProp("min");
@@ -1402,6 +1427,7 @@ for(int i=0;i<(int)getFilter()->getGUICtrlsSize();i++)//find correct control fro
             }
 #endif
 }
+
 
 //+++++++++++++++++++++++++++++++++++++++++++
 //                                      button

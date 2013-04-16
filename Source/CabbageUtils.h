@@ -36,6 +36,48 @@ using namespace std;
 #pragma warning(disable: 4100)
 #pragma warning(disable: 4305)
 
+
+
+//simple component class for popup displays
+class PopupText : public Component,
+				  public Timer
+{
+public:
+	  PopupText():timerCount(0){}
+	  ~PopupText(){}
+	  
+	  void setText(String input){
+		  Font font = Font ("Verdana", 11.5, 1);
+		  textWidth = font.getStringWidth(input);
+		  setSize(textWidth, 15);
+		  text = input;
+		  timerCount = 0;
+		  startTimer(20);
+	  }
+	
+	void timerCallback(){
+		timerCount++;
+		if(timerCount>30){	
+			stopTimer();
+			setVisible(false);
+		}
+	}
+	
+	void paint(Graphics &g){
+		g.fillAll(Colours::whitesmoke);
+		g.setColour(Colours::black);
+
+        g.drawFittedText (text,
+                          0, 0, textWidth, getHeight(),
+                          Justification::centredLeft, 1);
+	}
+	
+private:
+	float textWidth;
+	int timerCount;
+	String text;
+	
+};
 //class for our audio source, used by soundfilers
 class CabbageAudioSource : public ChangeBroadcaster
 {

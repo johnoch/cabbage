@@ -108,16 +108,34 @@ JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CabbageButton);
 //==============================================================================
 // custom slider component with optional surrounding groupbox
 //==============================================================================
-class CabbageSlider : public Component
+class CabbageSlider : public Component,
+					  public ChangeBroadcaster
 {
 int offX, offY, offWidth, offHeight, plantX, plantY;
 String sliderType, compName, cl;
 int resizeCount;
 String tracker;
 
+//subclass slider here to expose mouse listener method
+		class cSlider : public Slider
+		{
+		public:
+			cSlider(String text, CabbageSlider* _slider):Slider(text), 
+														slider(_slider){}
+			~cSlider(){};
+			
+		private:
+			void mouseMove(const MouseEvent& event){
+				slider->sendChangeMessage();
+			}	
+			
+
+		CabbageSlider* slider;
+		};
+
 public:
 ScopedPointer<GroupComponent> groupbox;
-ScopedPointer<Slider> slider;
+ScopedPointer<cSlider> slider;
 //---- constructor -----
 CabbageSlider(String name, String text, String caption, String kind, String colour, String fontColour, int textBox, String trackerFill, int decPlaces)
 	: plantX(-99), plantY(-99), sliderType(kind), compName(caption), cl(colour), tracker(trackerFill)
@@ -125,7 +143,7 @@ CabbageSlider(String name, String text, String caption, String kind, String colo
 	setName(name);
 	offX=offY=offWidth=offHeight=0;
 	groupbox = new GroupComponent(String("groupbox_")+name);
-	slider = new Slider(text);
+	slider = new cSlider(text, this);
 	slider->toFront(true);
 	addAndMakeVisible(slider);
 	addAndMakeVisible(groupbox);

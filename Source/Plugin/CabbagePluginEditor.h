@@ -162,6 +162,7 @@ private:
 		ScopedPointer<CabbageLookAndFeelBasic> basicLookAndFeel;
         ScopedPointer<Label> debugLabel;
 		StringArray scoreEvents;
+		ScopedPointer<PopupText> popupText;
 		
         JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CabbagePluginAudioProcessorEditor);
 
