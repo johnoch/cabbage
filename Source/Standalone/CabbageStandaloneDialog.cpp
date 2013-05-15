@@ -1122,7 +1122,9 @@ int StandaloneFilterWindow::setUniquePluginID(File binFile, File csdFile, bool A
     {
 		StringArray tokes;
 		tokes.addTokens(csdText[i].trimEnd(), ", ", "\"");
+		if(tokes.size())
 		if(tokes.getReference(0).equalsIgnoreCase(String("form"))){
+			Logger::writeToLog(csdText[i].trimEnd());
 			CabbageGUIClass cAttr(csdText[i].trimEnd(), 0);		
 			if(cAttr.getStringProp("pluginID").length()!=4){
 				showMessage(String("Your plugin ID is not the right size. It MUST be 4 characters long. Some hosts may not be able to load your plugin"), lookAndFeel);
@@ -1134,6 +1136,7 @@ int StandaloneFilterWindow::setUniquePluginID(File binFile, File csdFile, bool A
 			}			
 		}
 	}
+	
 	
 	size_t file_size;
 	const char *pluginID;
