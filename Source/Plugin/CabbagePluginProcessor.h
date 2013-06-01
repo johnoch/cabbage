@@ -146,7 +146,7 @@ public:
 	}
 
 	int getNumberCsoundInChannels(){
-		return csound->GetInNchnls();
+	//	return csound->GetInNchnls();
 	}
 
 	int getCsoundSamplingRate(){
