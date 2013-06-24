@@ -32,15 +32,8 @@
 
 //==============================================================================
 CabbagePluginAudioProcessorEditor::CabbagePluginAudioProcessorEditor (CabbagePluginAudioProcessor* ownerFilter)
-: AudioProcessorEditor (ownerFilter), 
-lineNumber(0), 
-inValue(0), 
-authorText(""), 
-keyIsPressed(false), 
-xyPadIndex(0),
-popupText(new PopupText())
+: AudioProcessorEditor (ownerFilter), lineNumber(0), inValue(0), authorText(""), keyIsPressed(false), xyPadIndex(0)
 {
-popupText->setInterceptsMouseClicks(false, true);
 //set custom skin yo use
 lookAndFeel = new CabbageLookAndFeel(); 
 basicLookAndFeel = new CabbageLookAndFeelBasic();
@@ -154,14 +147,7 @@ if(presetFileText.length()>1)
 //===========================================================================
 void CabbagePluginAudioProcessorEditor::changeListenerCallback(ChangeBroadcaster *source)
 {
-CabbageSlider* const cSlider = dynamic_cast <CabbageSlider*> (source);
-if(cSlider){
-	String text;
-	text << cSlider->getProperties().getWithDefault("channel", cSlider->getName()).toString() << String(": ") << String(cSlider->slider->getValue(), 2); 
-	popupText->setText(text);
-	popupText->setTopLeftPosition(cSlider->getX(), cSlider->getY()+cSlider->getHeight()/2);
-	componentPanel->addAndMakeVisible(popupText);
-	}
+//see actionListener...
 }
 //==============================================================================
 // this function will display a context menu on right mouse click. The menu 
@@ -191,7 +177,8 @@ subm.addItem(7, "groupbox");
 subm.addItem(8, "image");
 subm.addItem(9, "keyboard");
 subm.addItem(10, "xypad");
-//subm.addItem(11, "line");
+subm.addItem(11, "label");
+subm.addItem(12, "infobutton");
 m.addSubMenu(String("Indigenous"), subm);
 subm.clear();
 
@@ -227,6 +214,10 @@ if (e.mods.isRightButtonDown())
 			 insertCabbageText(String("keyboard bounds(")+String(e.getPosition().getX())+(", ")+String(e.getPosition().getY())+String(", 150, 60)"));
 	 else if(choice==10)
 			 insertCabbageText(String("xypad bounds(")+String(e.getPosition().getX())+(", ")+String(e.getPosition().getY())+String(", 200, 200), channel(\"xchan\", \"ychan\"), rangex(0, 100, 0), rangey(0, 100, 0)"));
+	 else if(choice==11)
+			 insertCabbageText(String("label bounds(")+String(e.getPosition().getX())+(", ")+String(e.getPosition().getY())+String(", 50, 15), text(\"Label\"), fontcolour(\"white\")"));
+	 else if(choice==12)
+			 insertCabbageText(String("infobutton bounds(")+String(e.getPosition().getX())+(", ")+String(e.getPosition().getY())+String(", 60, 25), text(\"Info\"), file(\"info.html\")"));
 
 
 	 else if(choice>=100){
@@ -933,7 +924,7 @@ void CabbagePluginAudioProcessorEditor::InsertCsoundOutput(CabbageGUIClass &cAtt
 }
 
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-//      Source button. 
+//      Source button.  
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 void CabbagePluginAudioProcessorEditor::InsertSourceButton(CabbageGUIClass &cAttr)
 {
@@ -1003,8 +994,8 @@ void CabbagePluginAudioProcessorEditor::InsertInfoButton(CabbageGUIClass &cAttr)
 			}
         }
 		
-        //((CabbageButton*)layoutComps[idx])->button->setName("infobutton");
-        //((CabbageButton*)layoutComps[idx])->button->getProperties().set(String("filename"), cAttr.getStringProp("file"));
+        ((CabbageButton*)layoutComps[idx])->button->setName("infobutton");
+        ((CabbageButton*)layoutComps[idx])->button->getProperties().set(String("filename"), cAttr.getStringProp("file"));
         layoutComps[idx]->getProperties().set(String("plant"), var(cAttr.getStringProp("plant")));
         ((CabbageButton*)layoutComps[idx])->button->addListener(this);
         ((CabbageButton*)layoutComps[idx])->button->setButtonText(cAttr.getItems(0));
@@ -1381,8 +1372,7 @@ void CabbagePluginAudioProcessorEditor::InsertSlider(CabbageGUIClass &cAttr)
 		incomingValues.add(cAttr.getNumProp("value"));
 
         ((CabbageSlider*)controls[idx])->slider->addListener(this);
-		((CabbageSlider*)controls[idx])->addChangeListener(this);
-		controls[idx]->getProperties().set(String("channel"), cAttr.getStringProp("channel"));
+
         controls[idx]->getProperties().set(String("midiChan"), cAttr.getNumProp("midiChan"));
         controls[idx]->getProperties().set(String("midiCtrl"), cAttr.getNumProp("midiCtrl")); 
 }
@@ -1397,16 +1387,6 @@ void CabbagePluginAudioProcessorEditor::sliderValueChanged (Slider* sliderThatWa
 for(int i=0;i<(int)getFilter()->getGUICtrlsSize();i++)//find correct control from vector
        if(getFilter()->getGUICtrls(i).getStringProp("name")==sliderThatWasMoved->getParentComponent()->getName())
 		   {
-			String text;
-			text << getFilter()->getGUICtrls(i).getStringProp("channel") << String(": ") << String(sliderThatWasMoved->getValue(), 2); 
-			popupText->setText(text);
-			CabbageSlider* cSlider = sliderThatWasMoved->findParentComponentOfClass<CabbageSlider>();
-			if(cSlider){
-				popupText->setTopLeftPosition(cSlider->getX(), cSlider->getY()+cSlider->getHeight()/2);
-			}
-
-
-			   
 #ifndef Cabbage_Build_Standalone
 			getFilter()->getGUICtrls(i).setNumProp("value", (float)sliderThatWasMoved->getValue());
 			float min = getFilter()->getGUICtrls(i).getNumProp("min");
@@ -1427,7 +1407,6 @@ for(int i=0;i<(int)getFilter()->getGUICtrlsSize();i++)//find correct control fro
             }
 #endif
 }
-
 
 //+++++++++++++++++++++++++++++++++++++++++++
 //                                      button
@@ -1607,20 +1586,25 @@ if(!getFilter()->isGuiEnabled()){
 								{   
                                 //toggle button values
                                 if(getFilter()->getGUICtrls(i).getNumProp("value")==0){
+								getFilter()->setParameter(i, 1.f);
                                 getFilter()->setParameterNotifyingHost(i, 1.f);
                                 //getFilter()->getCsound()->SetChannel(getFilter()->getGUICtrls(i).getStringProp("channel").toUTF8(), 1.f);
-                                getFilter()->getGUICtrls(i).setNumProp("value", 1);
-                                }
+                                //getFilter()->getGUICtrls(i).setNumProp("value", 1);
+                                button->setButtonText(getFilter()->getGUICtrls(i).getItems(1));
+								}
                                 else{
-                                getFilter()->setParameterNotifyingHost(i, 0.f);
+                                getFilter()->setParameter(i, 0.f);
+								getFilter()->setParameterNotifyingHost(i, 0.f);
                                 //getFilter()->getCsound()->SetChannel(getFilter()->getGUICtrls(i).getStringProp("channel").toUTF8(), 0.f);
-                                getFilter()->getGUICtrls(i).setNumProp("value", 0);
-                                }
-                                //toggle text values
+                                //getFilter()->getGUICtrls(i).setNumProp("value", 0);
+								button->setButtonText(getFilter()->getGUICtrls(i).getItems(0));
+                                button->repaint();
+								}
+                                /*toggle text values
                                 if(getFilter()->getGUICtrls(i).getItems(1)==button->getButtonText())
                                         button->setButtonText(getFilter()->getGUICtrls(i).getItems(0));
                                 else if(getFilter()->getGUICtrls(i).getItems(0)==button->getButtonText())
-                                        button->setButtonText(getFilter()->getGUICtrls(i).getItems(1));
+                                        button->setButtonText(getFilter()->getGUICtrls(i).getItems(1));*/
 								}
 								
 							}
@@ -2490,8 +2474,8 @@ for(int i=0;i<(int)getFilter()->getGUICtrlsSize();i++)
         
         else if(getFilter()->getGUICtrls(i).getStringProp("type")==String("button")){
         if(controls[i])
-                ((CabbageButton*)controls[i])->button->setButtonText(getFilter()->getGUICtrls(i).getItems(1-(int)inValue));
-				incomingValues.set(i, 1-(int)inValue);
+                ((CabbageButton*)controls[i])->button->setButtonText(getFilter()->getGUICtrls(i).getItems((int)inValue));
+				incomingValues.set(i,(int)inValue);
         }
   
         else if(getFilter()->getGUICtrls(i).getStringProp("type")==String("xypad") &&

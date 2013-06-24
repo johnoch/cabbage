@@ -34,7 +34,7 @@ public:
 	void drawTableHeaderBackground (Graphics& g, TableHeaderComponent& header);
 	Image drawLinearThumbImage (float width, float height, const Colour thumbFill, bool isVertical);
 	static Image drawToggleImage (float width, float height, bool isToggleOn, Colour colour, bool isRect);
-	Image drawTextButtonImage (float width, float height, bool isButtonDown);
+	Image drawTextButtonImage (float width, float height, bool isButtonDown, Colour colour);
 	virtual void drawRotarySlider (Graphics &g, int x, int y, int width, int height, float sliderPosProportional, 
 																					float rotaryStartAngle, 
 																					float rotaryEndAngle, 

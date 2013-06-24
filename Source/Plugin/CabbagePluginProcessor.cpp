@@ -60,7 +60,8 @@ yieldCounter(10),
 isNativeThreadRunning(false),
 soundFileIndex(0),
 scoreEvents(),
-nativePluginEditor(false)
+nativePluginEditor(false),
+averageSampleIndex(0)
 {
 #ifdef Cabbage_Logger
 logFile = File((appProperties->getCommonSettings(true)->getFile().getParentDirectory().getFullPathName()+"/CabbageLog.txt"));
@@ -173,7 +174,8 @@ updateTable(false),
 yieldCallbackBool(false),
 yieldCounter(10),
 soundFileIndex(0),
-nativePluginEditor(false)
+nativePluginEditor(false),
+averageSampleIndex(0)
 {
 //Cabbage plugins always try to load a csd file with the same name as the plugin library.
 //Therefore we need to find the name of the library and append a '.csd' to it. 
@@ -1084,8 +1086,10 @@ if(!isSuspended()){
 				}
 				if(audioSourcesArray.size()>0)
 				sendAudioToCsoundFromSoundFilers(csound->GetKsmps());		
-
+				
 				CSCompResult = csound->PerformKsmps();					
+				if(CSCompResult!=0)
+					suspendProcessing(true);
 				getCallbackLock().exit();
 				csndIndex = 0;
 			}
@@ -1150,7 +1154,7 @@ unsigned char *mbuf, int nbytes)
         if(!userData){
                 cout << "\n\nInvalid";
                 return 0;
-                }
+                } 
         int cnt=0;
 
         if(!midiData->midiBuffer.isEmpty() && cnt <= (nbytes - 3)){
@@ -1178,7 +1182,7 @@ unsigned char *mbuf, int nbytes)
                    cnt += 3;
                    }
 				   else if(message.isController()){
-						*mbuf++ = (unsigned char)0xB0 + message.getChannel();
+						*mbuf++ = (unsigned char)0xB0 + message.getChannel()-1;
 				   *mbuf++ = (unsigned char)message.getControllerNumber();
 				   *mbuf++ = (unsigned char)message.getControllerValue();
 				   cnt += 3;

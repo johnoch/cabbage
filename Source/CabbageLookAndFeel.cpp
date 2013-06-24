@@ -427,7 +427,7 @@ Image CabbageLookAndFeel::drawToggleImage (float width, float height, bool isTog
 }
 
 //========= Text button image ========================================================
-Image CabbageLookAndFeel::drawTextButtonImage (float width, float height, bool isButtonDown)
+Image CabbageLookAndFeel::drawTextButtonImage (float width, float height, bool isButtonDown, Colour colour)
 {
 	Image img = Image(Image::ARGB, width, height, true);
 	Graphics g (img);
@@ -451,8 +451,11 @@ Image CabbageLookAndFeel::drawTextButtonImage (float width, float height, bool i
 		opacity = 0.1;
 
 	//----- Filling in the button
-	Colour bg1 = Colour::fromRGBA (25, 25, 28, 255);
-	Colour bg2 = Colour::fromRGBA (15, 15, 18, 255);
+	//Colour bg1 = Colour::fromRGBA (25, 25, 28, 255);
+	//Colour bg2 = Colour::fromRGBA (15, 15, 18, 255);
+	Colour bg1 = colour;
+	Colour bg2 = colour.darker();
+	
 	ColourGradient cg = ColourGradient (bg1, 0, 0, bg2, width*0.5, height*0.5, false);
 	g.setGradientFill (cg);
 	g.fillRoundedRectangle (width*0.01, height*0.01, width*0.93, height*0.93, height*0.1);
@@ -594,8 +597,8 @@ void CabbageLookAndFeel::drawRotarySlider(Graphics& g, int /*x*/, int /*y*/, int
 
 		g.setColour(Colour::fromString(valueFontColour));
 		g.setFont (valueFont);
-	//	g.drawText (sliderValue, (slider.getWidth()/2) - (strWidth/2), destHeight/2 - valueFont.getHeight()/2, 
-	//		(int)strWidth, valueFont.getHeight(), Justification::centred, false);
+		g.drawText (sliderValue, (slider.getWidth()/2) - (strWidth/2), destHeight/2 - valueFont.getHeight()/2, 
+			(int)strWidth, valueFont.getHeight(), Justification::centred, false);
 	}
 }
 
@@ -685,7 +688,7 @@ void CabbageLookAndFeel::drawLinearSliderBackground (Graphics &g, int x, int /*y
         if (showNameLabel) {
             nameLabel = CabbageUtils::cabbageString (nameLabel, CabbageUtils::getComponentFont(), nameLabelWidth);
 			g.setFont(nameLabelFont);
-			g.setColour(CabbageUtils::getComponentFontColour());
+			g.setColour(fontcolour);
 			g.drawText (nameLabel, 0, (height/2) - (CabbageUtils::getComponentFont().getHeight()/2), 
 				(int)nameLabelWidth, CabbageUtils::getComponentFont().getHeight(), just, false);
             destX += nameLabelWidth; 
@@ -737,7 +740,7 @@ void CabbageLookAndFeel::drawLinearSliderBackground (Graphics &g, int x, int /*y
         sliderEndPosition = slider.getHeight() - destY;
 
 		g.setFont(nameLabelFont);
-		g.setColour(CabbageUtils::getComponentFontColour());
+		g.setColour(fontcolour);
 
         // If no textbox.....Name label goes at top, value goes at bottom.
         if (slider.getTextBoxPosition() == Slider::NoTextBox) {
@@ -984,8 +987,8 @@ void CabbageLookAndFeel::drawButtonBackground (Graphics& g, Button& button, cons
 {
 	float width = button.getWidth();
 	float height = button.getHeight();
-
-	Image newButton = drawTextButtonImage (width, height, isButtonDown);
+	String colour = button.getProperties().getWithDefault("colour", "");
+	Image newButton = drawTextButtonImage (width, height, isButtonDown, Colour::fromString(colour));
 	g.drawImage (newButton, 0, 0, width, height, 0, 0, width, height, false);
 }
 
@@ -1520,9 +1523,9 @@ void CabbageLookAndFeel::drawAlertBox (Graphics& g,
 
         if (alert.getAlertType() == AlertWindow::WarningIcon)
         {
-				//Image logo = ImageCache::getFromMemory (BinaryData::logo_cabbage_Black_png, BinaryData::logo_cabbage_Black_pngSize);
-				//g.setOpacity(.2f);
-				//g.drawImage(logo, -300, -100, 600, 500, 0, 0, logo.getWidth(), logo.getHeight());
+				Image logo = ImageCache::getFromMemory (BinaryData::logo_cabbage_Black_png, BinaryData::logo_cabbage_Black_pngSize);
+				g.setOpacity(.2f);
+				g.drawImage(logo, -300, -100, 600, 500, 0, 0, logo.getWidth(), logo.getHeight());
 				
         }
         else
