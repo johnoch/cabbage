@@ -1058,20 +1058,26 @@ if(!isSuspended()){
 	float* audioBuffer;
 	float lastOutputAmp;
 	#ifndef Cabbage_No_Csound
+	int numSamples = buffer.getNumSamples();
 
 	if(csCompileResult==0){
 	keyboardState.processNextMidiBuffer (midiMessages, 0, buffer.getNumSamples(), true);
 	midiBuffer = midiMessages;
 	ccBuffer = midiMessages;
-	
 
+	//if no inputs are used clear buffer in case it's not empty..
+	if(getNumInputChannels()==0)
+		buffer.clear();
+
+#if JucePlugin_ProducesMidiOutput 
 	if(!midiOutputBuffer.isEmpty())
 		midiMessages.swapWith(midiOutputBuffer);
+#endif
 
-	for(int i=0;i<buffer.getNumSamples();i++, csndIndex++)
+	for(int i=0;i<numSamples;i++, csndIndex++)
 	   {                                
 
-		for(int channel = 0; channel < getNumInputChannels(); channel++ )
+		for(int channel = 0; channel < getNumOutputChannels(); channel++ )
 			{
 			audioBuffer = buffer.getSampleData(channel,0);
 			if(csndIndex == csound->GetKsmps())
@@ -1095,19 +1101,19 @@ if(!isSuspended()){
 			}
 			if(!CSCompResult)
 				{
-				pos = csndIndex*getNumInputChannels();
+				pos = csndIndex*getNumOutputChannels();
 				CSspin[channel+pos] = audioBuffer[i]*cs_scale;  
 				audioBuffer[i] = (CSspout[channel+pos]/cs_scale);     
-				lastOutputAmp = audioBuffer[i]; 
-				outputNo1 = lastOutputAmp;
+				//lastOutputAmp = audioBuffer[i]; 
+				//outputNo1 = lastOutputAmp;
 				}
-			//else audioBuffer[i]=0; 
+			else audioBuffer[i]=0; 
 			}
                         
 		}
 	}//if not compiled just mute output
 	else{
-			for(int i=0;i<buffer.getNumSamples();i++, csndIndex++)
+			for(int i=0;i<numSamples;i++, csndIndex++)
 					{
 					for(int channel = 0; channel < getNumInputChannels(); channel++ )
 							{
@@ -1116,18 +1122,14 @@ if(!isSuspended()){
 							}
 					}
 	}
-		// in case we have more outputs than inputs, we'll clear any output
-		// channels that didn't contain input data, (because these aren't
-		// guaranteed to be empty - they may contain garbage).
-		for (int i = getNumInputChannels(); i < getNumOutputChannels(); ++i)
-		{
-			buffer.clear (i, 0, buffer.getNumSamples());
-		}
-		#endif
+
+	#endif
 }
+
+#if JucePlugin_ProducesMidiOutput 
 	if(!midiBuffer.isEmpty())
 	midiMessages.swapWith(midiOutputBuffer);
-
+#endif
 }
 
 
@@ -1164,19 +1166,19 @@ unsigned char *mbuf, int nbytes)
            while (i.getNextEvent (message, messageFrameRelativeTothisProcess))
            {
                    if(message.isNoteOn()){
-                        *mbuf++ = (unsigned char)0x90 + message.getChannel();
+                        *mbuf++ = (unsigned char)0x90 + message.getChannel()-1;
                    *mbuf++ = (unsigned char)message.getNoteNumber();
                    *mbuf++ = (unsigned char)message.getVelocity();
                    cnt += 3;
                    }
                    else if(message.isNoteOff()){
-                        *mbuf++ = (unsigned char)0x80 + message.getChannel();
+                        *mbuf++ = (unsigned char)0x80 + message.getChannel()-1;
                    *mbuf++ = (unsigned char)message.getNoteNumber();
                    *mbuf++ = (unsigned char)message.getVelocity();
                    cnt += 3;
                    }
 				   else if(message.isAllSoundOff()){
-                        *mbuf++ = (unsigned char)0x7B + message.getChannel();
+                        *mbuf++ = (unsigned char)0x7B + message.getChannel()-1;
                    *mbuf++ = (unsigned char)message.getNoteNumber();
                    *mbuf++ = (unsigned char)message.getVelocity();
                    cnt += 3;
