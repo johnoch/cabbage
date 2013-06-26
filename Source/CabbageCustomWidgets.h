@@ -88,6 +88,8 @@ CabbageButton(String name, String caption, String buttonText, String colour, Str
 
 	if(fontcolour.length()>0)
 	button->getProperties().set("fontcolour", fontcolour);
+	if(colour.length()>0)
+	button->getProperties().set("colour", colour);
 }
 //---------------------------------------------
 ~CabbageButton(){
