@@ -1567,8 +1567,13 @@ if(!getFilter()->isGuiEnabled()){
 										{
 										File selectedFile = browser.getSelectedFile (0);
 										//showMessage("", selectedFile.getFullPathName(), lookAndFeel, this);
+										#ifdef CSOUND5
 										getFilter()->getCsound()->SetChannel(getFilter()->getGUILayoutCtrls(i).getStringProp("channel").toUTF8(),
 																				selectedFile.getFullPathName().toUTF8());
+										#else
+										getFilter()->getCsound()->SetChannel(getFilter()->getGUILayoutCtrls(i).getStringProp("channel").toUTF8().getAddress(),
+																				selectedFile.getFullPathName().toUTF8().getAddress());
+										#endif	
 										}
 								}
 							 }

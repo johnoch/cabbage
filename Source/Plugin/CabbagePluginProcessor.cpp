@@ -85,7 +85,9 @@ setPlayConfigDetails(2, 2, 44100, 512);
 csound = new Csound();
 
 //Logger::writeToLog(csound->GetEnv("OPCODEDIR64"));
+#ifdef CSOUND5
 csound->PreCompile();
+#endif
 csound->SetHostData(this);
 
 csound->SetMessageCallback(CabbagePluginAudioProcessor::messageCallback);
@@ -320,7 +322,9 @@ midiOutputBuffer.clear();
 getCallbackLock().enter();
 csound->DeleteChannelList(csoundChanList);
 csound->Reset();
+#ifdef CSOUND5
 csound->PreCompile();
+#endif
 numCsoundChannels = 0;
 csound->SetMessageCallback(CabbagePluginAudioProcessor::messageCallback);
 csound->SetExternalMidiInOpenCallback(OpenMidiInputDevice);
@@ -624,6 +628,7 @@ bool multiLine = false;
 //============================================================================
 void CabbagePluginAudioProcessor::setupNativePluginEditor()
 {
+/* not yet implemented
 	//create a basic 'native' gui if specificed by the user. 
 		int guiID = 0;
 		guiCtrls.clear();
@@ -665,6 +670,7 @@ void CabbagePluginAudioProcessor::setupNativePluginEditor()
 				guiID++;			
 				}
 			}
+			 */
 }
 
 //===========================================================
