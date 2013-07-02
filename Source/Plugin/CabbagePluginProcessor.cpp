@@ -74,29 +74,24 @@ patStepMatrix.clear();
 
 patPfieldMatrix.clear();
 setPlayConfigDetails(2, 2, 44100, 512); 
+
 #ifndef Cabbage_No_Csound
-//String localCsoundDirectory = File(inputfile).getParentDirectory().getFullPathName()+"/csound";
-//if(File(localCsoundDirectory).exists())
-//	if(csoundSetGlobalEnv(String("OPCODEDIR64").toUTF8(), localCsoundDirectory.toUTF8()))
-//		Logger::writeToLog("couldn't write environment variables");
-
-
 //don't start of run Csound in edit mode
 csound = new Csound();
-
+#ifndef CSOUND_5
+csound->SetHostImplementedMIDIIO(true);
+#endif
+csound->Reset();
 //Logger::writeToLog(csound->GetEnv("OPCODEDIR64"));
-#ifdef CSOUND5
+#ifdef CSOUND_5
 csound->PreCompile();
 #endif
 csound->SetHostData(this);
-
 csound->SetMessageCallback(CabbagePluginAudioProcessor::messageCallback);
-//for host midi to get sent to Csound, don't need this for standalone
-//but might use it in the future foir midi mapping to controls
 csound->SetExternalMidiInOpenCallback(OpenMidiInputDevice);
 csound->SetExternalMidiReadCallback(ReadMidiData); 
-//csound->SetExternalMidiOutOpenCallback(OpenMidiOutputDevice);
-//csound->SetExternalMidiWriteCallback(WriteMidiData);
+csound->SetExternalMidiOutOpenCallback(OpenMidiOutputDevice);
+csound->SetExternalMidiWriteCallback(WriteMidiData);
 
 #ifndef Cabbage_Plugin_Host
 csoundPerfThread = new CsoundPerformanceThread(csound);
@@ -209,8 +204,15 @@ Logger::setCurrentLogger(fileLogger);
 
 #ifndef Cabbage_No_Csound
 csound = new Csound();
+#ifndef CSOUND_5
+csound->SetHostImplementedMIDIIO(true);
+#endif
+csound->Reset();
+#ifdef CSOUND_5
 csound->PreCompile();
+#endif
 csound->SetHostData(this);
+midiOutputBuffer.clear();
 //for host midi to get sent to Csound, don't need this for standalone
 //but might use it in the future for midi mapping to controls
 csound->SetMessageCallback(CabbagePluginAudioProcessor::messageCallback);
