@@ -134,11 +134,29 @@ StandaloneFilterWindow::StandaloneFilterWindow (const String& title,
 	setPreference(appProperties, "AutoUpdate",0);
 	
 	//opens a default file that matches the name of the current executable
-	//this can be used to create more 'standalone' like apps
-	if(File(defaultCSDFile).existsAsFile()){
+	//this can be used to create 'standalone-esque' apps
+	if(File(File::getSpecialLocation(File::currentExecutableFile)).getFileNameWithoutExtension()!="Cabbage"){
+	standaloneMode = true;
+		if(File(defaultCSDFile).existsAsFile()){
 		standaloneMode = true;
 		openFile(defaultCSDFile);
+		}
+		else{
+		
+		File directory = File(defaultCSDFile).getParentDirectory();
+		directory.findChildFiles(cabbageFiles, File::findFiles, false, "*.csd");
+		//if multiple files....
+			standaloneFileDialogue = new StandaloneFileDialogue("File selector", Colours::cornflowerblue);
+			standaloneFileDialogue->mainComponent->setLookAndFeel(lookAndFeel);
+			standaloneFileDialogue->mainComponent->addActionListener(this);
+			standaloneFileDialogue->addItemsToCombo(cabbageFiles);
+			//standaloneFileDialogue->setCurrentFile(File(defaultCSDFile).getFileName());
+			standaloneFileDialogue->setVisible(true); 
+			//standaloneFileDialogue->setAlwaysOnTop(true);
+		}
 	}
+	else 
+		setAlwaysOnTop(alwaysontop);
 }
 //==============================================================================
 // Destructor

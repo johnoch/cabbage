@@ -2280,8 +2280,10 @@ for(int i=0;i<(int)getFilter()->getGUICtrlsSize();i++)//find correct control fro
                                                                         ((CabbageCheckbox*)controls[u])->button->setToggleState((bool)val, true);
                                                                         }
                                                                         else if(getFilter()->getGUICtrls(u).getStringProp("type")==String("combobox")){
-                                                                        //if(controls[u])
-                                                                        //((CabbageComboBox*)controls[u])->combo->setSelectedItemIndex(val);
+                                                                        if(controls[u]){
+                                                                        ((CabbageComboBox*)controls[u])->combo->setSelectedItemIndex(val-1);
+																		Logger::writeToLog("Combo val: "+String(val));
+																		}
                                                                         }
                                                                         //update host when preset ares recalled
                                                                         getFilter()->setParameterNotifyingHost(u, val);
