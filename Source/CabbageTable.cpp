@@ -269,6 +269,8 @@ void Table::paint (Graphics& g)
 		for (int i=startIndx+1; i<=endIndx; i++) {
 			currY = convertAmpToPixel (tableData.amps[i]);
 			g.drawLine (prevX, prevY, prevX+numPixelsPerIndex, currY, minWaveHeight);
+			//g.drawLine (prevX, prevY, prevX+numPixelsPerIndex, prevY, prevX+numPixelsPerIndex);
+			//g.fillRect(prevX, prevY, prevX+numPixelsPerIndex, prevY);
 			// For drawing index markers
 			if (numPixelsPerIndex > 4)
 				g.drawVerticalLine (prevX+numPixelsPerIndex, currY-3, currY+3);

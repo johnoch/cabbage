@@ -906,7 +906,7 @@ else{
 		FileChooser openFC(String("Open a Cabbage .csd file..."), File::nonexistent, String("*.csd"));
 		this->setAlwaysOnTop(false);
 		if(openFC.browseForFileToOpen()){
-			csdFile = openFC.getResult();
+			csdFile = File::getCurrentWorkingDirectory().getChildFile (openFC.getResult().getFullPathName());
 			csdFile.getParentDirectory().setAsCurrentWorkingDirectory();
 			lastSaveTime = csdFile.getLastModificationTime();
 			resetFilter();
